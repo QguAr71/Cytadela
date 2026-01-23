@@ -1,5 +1,8 @@
 # Citadel++ (Cytadela++) — Hardened Local DNS Stack (DNSCrypt + CoreDNS + NFTables)
 
+[![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 ## PL — Opis projektu
 
 Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
@@ -14,6 +17,20 @@ Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos D
 - **Szyfrowany upstream** (DNSCrypt/DoH przez dnscrypt-proxy).
 - **Zabezpieczenie przed „leakami”**: aplikacje nie powinny móc wysyłać DNS `:53` wprost do internetu.
 - **Adblock na poziomie DNS**: blokowanie domen reklam/telemetrii/malware przez zwracanie `0.0.0.0`.
+
+### Optymalizacje pod Polskę
+
+- Wbudowana jest lista PolishFilters (PPB / Polish Annoyance) jako jedno ze źródeł do budowy `blocklist.hosts`.
+- Stos jest nastawiony na użycie lokalnego CoreDNS i szyfrowanego upstreamu (DNSCrypt/DoH), co w praktyce jest sensowne dla PL/EU.
+
+Jeśli chcesz dodatkowo „pod Polskę” dopasować upstreamy DNS:
+- Edytuj `server_names` w `/etc/dnscrypt-proxy/dnscrypt-proxy.toml` i wybierz serwery, które preferujesz (np. EU-friendly).
+- Po zmianach uruchom:
+
+```bash
+sudo systemctl restart dnscrypt-proxy
+sudo ./cytadela++.sh verify
+```
 
 ### Szybki start (bezpieczny)
 
@@ -91,6 +108,9 @@ sudo ./cytadela++.sh adblock-query doubleclick.net
 - PL: `CITADEL++_NOTES.md`
 - EN: `CITADEL++_NOTES_EN.md`
 - Angielski entrypoint skryptu: `citadela_en.sh`
+
+Tracking poprawek:
+- Jeśli chcesz trzymać listę planowanych zmian w repo, użyj GitHub Issues.
 
 ---
 
@@ -176,3 +196,20 @@ sudo ./citadela_en.sh adblock-query doubleclick.net
 - Polish notes: `CITADEL++_NOTES.md`
 - English notes: `CITADEL++_NOTES_EN.md`
 - English script entrypoint: `citadela_en.sh`
+
+Tracking improvements:
+- If you want lightweight tracking for future changes, use GitHub Issues.
+
+### Poland-focused optimizations
+
+- The PolishFilters list (PPB / Polish Annoyance) is included as one of the blocklist sources.
+- The stack is geared towards a local CoreDNS resolver with encrypted upstream (DNSCrypt/DoH), which is a sensible default for PL/EU.
+
+If you want to tune upstream resolvers specifically for Poland/EU:
+- Edit `server_names` in `/etc/dnscrypt-proxy/dnscrypt-proxy.toml` and pick your preferred resolvers.
+- After changes:
+
+```bash
+sudo systemctl restart dnscrypt-proxy
+sudo ./citadela_en.sh verify
+```
