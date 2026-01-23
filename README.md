@@ -7,6 +7,10 @@
 
 Ten projekt jest **hobbystyczny** i jest udostępniany **"as-is"** (bez gwarancji i bez supportu).
 
+Cytadela++ to narzędzie bezpieczeństwa, a nie „produkt”.
+Istnieje dla osób, które rozumieją kompromisy.
+Używaj go, jeśli pasuje do Twojego threat modelu. Jeśli nie — nie używaj.
+
 Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
 
 - **Warstwa 1**: `dnscrypt-proxy` — szyfrowany upstream (DNSCrypt/DoH), dynamiczny port lokalny.
@@ -128,6 +132,10 @@ Tracking poprawek:
 ## EN — Project overview
 
 This is a **hobby project** provided **"as-is"** (no warranty, no support).
+
+Cytadela++ is a security tool, not a product.
+It exists for people who understand the trade-offs.
+Use it if it fits your threat model. Otherwise – don’t.
 
 Citadel++ is an install/config script that builds a local DNS privacy stack:
 
