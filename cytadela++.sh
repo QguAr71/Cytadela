@@ -1527,6 +1527,7 @@ smart_ipv6_detection() {
     # Auto-reconfigure DNSCrypt based on IPv6 availability
     # NOTE: do not touch listen_addresses/ports here to avoid breaking custom configs.
     local dnscrypt_config="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
+    local coredns_corefile="/etc/coredns/Corefile"
 
     if [[ -f "$dnscrypt_config" ]]; then
         log_info "Aktualizacja konfiguracji DNSCrypt dla IPv6..."
@@ -1550,6 +1551,29 @@ smart_ipv6_detection() {
         fi
 
         systemctl is-active --quiet dnscrypt-proxy && systemctl restart dnscrypt-proxy
+    fi
+
+    if [[ -f "$coredns_corefile" ]]; then
+        log_info "Aktualizacja konfiguracji CoreDNS dla IPv6..."
+
+        sed -i '/^[[:space:]]*template[[:space:]]\+IN[[:space:]]\+AAAA[[:space:]]*{/,/^[[:space:]]*}[[:space:]]*$/d' "$coredns_corefile" || true
+
+        if [[ "$IPV6_AVAILABLE" != "true" ]]; then
+            awk '
+                BEGIN{added=0}
+                /^[[:space:]]*forward[[:space:]]+\.[[:space:]]+/ {
+                    if (added==0) {
+                        print "    template IN AAAA {"
+                        print "        rcode NXDOMAIN"
+                        print "    }"
+                        added=1
+                    }
+                }
+                { print }
+            ' "$coredns_corefile" > "${coredns_corefile}.citadel.tmp" && mv "${coredns_corefile}.citadel.tmp" "$coredns_corefile"
+        fi
+
+        systemctl is-active --quiet coredns && systemctl restart coredns
     fi
 
     echo "IPv6 Status: $IPV6_AVAILABLE"
