@@ -491,7 +491,7 @@ EOF
 nameserver 127.0.0.1
 options edns0 trust-ad
 EOF
-    chattr +i /etc/resolv.conf
+    chattr +i /etc/resolv.conf 2>/dev/null || true
 
     log_info "Test lokalnego DNS po przełączeniu..."
     if command -v dig >/dev/null 2>&1 && dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
