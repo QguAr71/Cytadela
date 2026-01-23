@@ -112,6 +112,15 @@ sudo ./cytadela++.sh adblock-query doubleclick.net
 Tracking poprawek:
 - Jeśli chcesz trzymać listę planowanych zmian w repo, użyj GitHub Issues.
 
+### GPL-3.0 w praktyce (FAQ)
+
+- Jeśli używasz/modyfikujesz Citadel++ **tylko u siebie** (home/lab) i nikomu nie przekazujesz kopii: **nic nie musisz publikować**.
+- Obowiązki GPL pojawiają się dopiero, gdy **dystrybuujesz** (przekazujesz dalej) kopię skryptu lub zmodyfikowaną wersję.
+- Jeśli dystrybuujesz, musisz:
+  - zostawić licencję GPL-3.0,
+  - udostępnić kod źródłowy (w przypadku bash to po prostu skrypt),
+  - nie nakładać dodatkowych ograniczeń na odbiorcę.
+
 ---
 
 ## EN — Project overview
@@ -199,6 +208,15 @@ sudo ./citadela_en.sh adblock-query doubleclick.net
 
 Tracking improvements:
 - If you want lightweight tracking for future changes, use GitHub Issues.
+
+### GPL-3.0 in practice (FAQ)
+
+- If you use/modify Citadel++ **only on your own machines** (home/lab) and you don't share copies with others: **you don't need to publish anything**.
+- GPL obligations apply when you **distribute** (convey) a copy of the script or a modified version.
+- If you distribute it, you must:
+  - keep it under GPL-3.0,
+  - provide the corresponding source (for bash: the script itself),
+  - avoid adding extra restrictions for recipients.
 
 ### Poland-focused optimizations
 
