@@ -38,6 +38,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 ACTION=${1:-help}
+ARG1=${2:-}
+ARG2=${3:-}
 
  DNSCRYPT_PORT_DEFAULT=5353
  COREDNS_PORT_DEFAULT=53
@@ -360,6 +362,138 @@ EOF
     fi
 
     log_success "Moduł CoreDNS zainstalowany"
+}
+
+adblock_rebuild() {
+    local custom="/etc/coredns/zones/custom.hosts"
+    local blocklist="/etc/coredns/zones/blocklist.hosts"
+    local combined="/etc/coredns/zones/combined.hosts"
+
+    mkdir -p /etc/coredns/zones
+    touch "$custom" "$blocklist"
+    cat "$custom" "$blocklist" | sort -u > "$combined"
+}
+
+adblock_reload() {
+    systemctl reload coredns 2>/dev/null || systemctl restart coredns 2>/dev/null || true
+}
+
+adblock_status() {
+    log_section "🧱 CITADEL++ ADBLOCK STATUS"
+
+    if systemctl is-active --quiet coredns; then
+        echo "  ✓ coredns: running"
+    else
+        echo "  ✗ coredns: not running"
+    fi
+
+    if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined\.hosts' /etc/coredns/Corefile; then
+        echo "  ✓ Corefile: uses combined.hosts"
+    else
+        echo "  ✗ Corefile: missing combined.hosts"
+    fi
+
+    if [[ -f /etc/coredns/zones/custom.hosts ]]; then
+        echo "  ✓ custom.hosts:   $(wc -l < /etc/coredns/zones/custom.hosts)"
+    else
+        echo "  ✗ custom.hosts: missing"
+    fi
+    if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
+        echo "  ✓ blocklist.hosts: $(wc -l < /etc/coredns/zones/blocklist.hosts)"
+    else
+        echo "  ✗ blocklist.hosts: missing"
+    fi
+    if [[ -f /etc/coredns/zones/combined.hosts ]]; then
+        echo "  ✓ combined.hosts:  $(wc -l < /etc/coredns/zones/combined.hosts)"
+    else
+        echo "  ✗ combined.hosts: missing"
+    fi
+}
+
+adblock_stats() {
+    log_section "📈 CITADEL++ ADBLOCK STATS"
+    echo "custom.hosts:   $(wc -l < /etc/coredns/zones/custom.hosts 2>/dev/null || echo 0)"
+    echo "blocklist.hosts: $(wc -l < /etc/coredns/zones/blocklist.hosts 2>/dev/null || echo 0)"
+    echo "combined.hosts:  $(wc -l < /etc/coredns/zones/combined.hosts 2>/dev/null || echo 0)"
+}
+
+adblock_show() {
+    local which="$1"
+    case "$which" in
+        custom)
+            sed -n '1,200p' /etc/coredns/zones/custom.hosts 2>/dev/null || true
+            ;;
+        blocklist)
+            sed -n '1,200p' /etc/coredns/zones/blocklist.hosts 2>/dev/null || true
+            ;;
+        combined)
+            sed -n '1,200p' /etc/coredns/zones/combined.hosts 2>/dev/null || true
+            ;;
+        *)
+            log_error "Użycie: adblock-show custom|blocklist|combined"
+            return 1
+            ;;
+    esac
+}
+
+adblock_query() {
+    local domain="$1"
+    if [[ -z "$domain" ]]; then
+        log_error "Użycie: adblock-query domena"
+        return 1
+    fi
+    dig +short @127.0.0.1 "$domain" 2>/dev/null || true
+}
+
+adblock_add() {
+    local domain="$1"
+    if [[ -z "$domain" ]]; then
+        log_error "Użycie: adblock-add domena"
+        return 1
+    fi
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Nieprawidłowa domena: $domain"
+        return 1
+    fi
+    mkdir -p /etc/coredns/zones
+    touch /etc/coredns/zones/custom.hosts
+    if grep -qE "^[0-9.:]+[[:space:]]+${domain}$" /etc/coredns/zones/custom.hosts 2>/dev/null; then
+        log_info "Już istnieje w custom.hosts: $domain"
+    else
+        printf '0.0.0.0 %s\n' "$domain" >> /etc/coredns/zones/custom.hosts
+        log_success "Dodano do custom.hosts: $domain"
+    fi
+    adblock_rebuild
+    adblock_reload
+}
+
+adblock_remove() {
+    local domain="$1"
+    if [[ -z "$domain" ]]; then
+        log_error "Użycie: adblock-remove domena"
+        return 1
+    fi
+    if [[ ! -f /etc/coredns/zones/custom.hosts ]]; then
+        log_warning "Brak /etc/coredns/zones/custom.hosts"
+        return 0
+    fi
+    sed -i -E "/^[0-9.:]+[[:space:]]+${domain//./\.}([[:space:]]|
+|$)/d" /etc/coredns/zones/custom.hosts || true
+    log_success "Usunięto z custom.hosts (jeśli istniało): $domain"
+    adblock_rebuild
+    adblock_reload
+}
+
+adblock_edit() {
+    local editor
+    editor="${EDITOR:-}"
+    [[ -z "$editor" ]] && command -v micro >/dev/null 2>&1 && editor="micro"
+    [[ -z "$editor" ]] && editor="nano"
+    mkdir -p /etc/coredns/zones
+    touch /etc/coredns/zones/custom.hosts
+    "$editor" /etc/coredns/zones/custom.hosts
+    adblock_rebuild
+    adblock_reload
 }
 
 # ==============================================================================
@@ -1100,10 +1234,20 @@ ${GREEN}Rekomendowany workflow:${NC}
   ${CYAN}5.${NC} ping -c 3 google.com                      ${YELLOW}# Test internetu${NC}
   ${CYAN}6.${NC} sudo ./citadel++.sh firewall-strict        ${YELLOW}# STRICT: pełna blokada DNS-leak${NC}
 
-${GREEN}Nowe narzędzia v3.0:${NC}
+${GREEN}Nowe narzędzia v3.0${CYAN}Tools:${NC}
   citadel-top           Real-time terminal dashboard
   citadel edit          Editor with auto-restart
   citadel status        Quick status check
+
+${CYAN}Adblock Panel (DNS):${NC}
+  adblock-status        Show adblock/CoreDNS integration status
+  adblock-stats         Show counts of custom/blocklist/combined
+  adblock-show          Show: custom|blocklist|combined (first 200 lines)
+  adblock-edit          Edit /etc/coredns/zones/custom.hosts and reload
+  adblock-add           Add domain to custom.hosts (0.0.0.0 domain)
+  adblock-remove        Remove domain from custom.hosts
+  adblock-rebuild       Rebuild combined.hosts from custom+blocklist and reload
+  adblock-query         Query a domain via local DNS (127.0.0.1)
 
 ${CYAN}Advanced Configuration:${NC}
   DNSCrypt config:      /etc/dnscrypt-proxy/dnscrypt-proxy.toml
@@ -1476,6 +1620,32 @@ case "$ACTION" in
         ;;
     firewall-strict)
         firewall_strict
+        ;;
+    adblock-status)
+        adblock_status
+        ;;
+    adblock-stats)
+        adblock_stats
+        ;;
+    adblock-show)
+        adblock_show "$ARG1"
+        ;;
+    adblock-edit)
+        adblock_edit
+        ;;
+    adblock-add)
+        adblock_add "$ARG1"
+        ;;
+    adblock-remove)
+        adblock_remove "$ARG1"
+        ;;
+    adblock-rebuild)
+        adblock_rebuild
+        adblock_reload
+        log_success "Adblock rebuilt + CoreDNS reloaded"
+        ;;
+    adblock-query)
+        adblock_query "$ARG1"
         ;;
     configure-system)
         configure_system
