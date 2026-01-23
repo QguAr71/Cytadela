@@ -31,6 +31,34 @@ log_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1"; }
 log_section() { echo -e "\n${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}"; echo -e "${BLUE}║${NC} $1"; echo -e "${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}\n"; }
 
+require_cmd() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+require_cmds() {
+    local missing=()
+    local c
+    for c in "$@"; do
+        if ! require_cmd "$c"; then
+            missing+=("$c")
+        fi
+    done
+    if (( ${#missing[@]} > 0 )); then
+        log_error "Brak wymaganych narzędzi: ${missing[*]}"
+        return 1
+    fi
+}
+
+dnssec_enabled() {
+    if [[ "${CITADEL_DNSSEC:-}" =~ ^(1|true|yes|on)$ ]]; then
+        return 0
+    fi
+    if [[ "${ARG1:-}" == "--dnssec" || "${ARG2:-}" == "--dnssec" ]]; then
+        return 0
+    fi
+    return 1
+}
+
 # Root check
 if [[ $EUID -ne 0 ]]; then
     log_error "Ten skrypt wymaga uprawnień root. Uruchom: sudo $0"
@@ -83,6 +111,8 @@ ARG2=${3:-}
 install_dnscrypt() {
     log_section "MODULE 1: DNSCrypt-Proxy Installation"
 
+    require_cmds ss awk grep tee systemctl dnscrypt-proxy || return 1
+
     # Create dedicated user
     if ! id dnscrypt &>/dev/null; then
         log_info "Tworzenie dedykowanego użytkownika 'dnscrypt'..."
@@ -105,6 +135,10 @@ install_dnscrypt() {
 
     # Create configuration - MINIMAL VERSION
     log_info "Tworzenie konfiguracji DNSCrypt (z listą resolverów + weryfikacją minisign)..."
+    local dnssec_value="false"
+    if dnssec_enabled; then
+        dnssec_value="true"
+    fi
     tee /etc/dnscrypt-proxy/dnscrypt-proxy.toml >/dev/null <<EOF
 listen_addresses = ['127.0.0.1:${dnscrypt_port}']
 max_clients = 250
@@ -114,7 +148,7 @@ ipv6_servers = false
 dnscrypt_servers = true
 doh_servers = true
 
-require_dnssec = false
+require_dnssec = ${dnssec_value}
 require_nolog = true
 require_nofilter = false
 
@@ -231,6 +265,8 @@ EOF
 # ==============================================================================
 install_coredns() {
     log_section "MODULE 2: CoreDNS Installation"
+
+    require_cmds coredns curl awk sort wc mktemp systemctl || return 1
 
     # Determine current DNSCrypt listen port early (needed for bootstrap DNS)
     local dnscrypt_port
@@ -542,6 +578,8 @@ adblock_edit() {
 # ==============================================================================
 install_nftables() {
     log_section "MODULE 3: NFTables Firewall Rules"
+
+    require_cmds nft grep awk systemctl || return 1
 
     mkdir -p /etc/nftables.d
 
@@ -993,6 +1031,12 @@ smart_ipv6_detection() {
 # ==============================================================================
 install_citadel_top() {
     log_section "📊 TERMINAL DASHBOARD INSTALLATION"
+
+    require_cmds curl jq systemctl || return 1
+    if ! command -v pacman >/dev/null 2>&1; then
+        log_warning "Brak pacman - pomijam instalację zależności dla dashboard"
+        return 1
+    fi
     
     # Install dependencies
     log_info "Instalowanie zależności dla dashboard..."
@@ -1070,6 +1114,11 @@ EOF
 # ==============================================================================
 install_editor_integration() {
     log_section "✏️ EDITOR INTEGRATION SETUP"
+
+    if ! command -v yay >/dev/null 2>&1; then
+        log_warning "Brak yay - nie mogę automatycznie zainstalować micro"
+        return 1
+    fi
     
     # Install micro editor
     if ! command -v micro >/dev/null; then
@@ -1162,12 +1211,11 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/bin/bash -c '
-# Set real-time priority for DNS processes
-renice -20 $(pgrep dnscrypt-proxy) 2>/dev/null || true
-renice -15 $(pgrep coredns) 2>/dev/null || true
-ionice -c 1 -n 7 $(pgrep dnscrypt-proxy) 2>/dev/null || true
-ionice -c 1 -n 7 $(pgrep coredns) 2>/dev/null || true
-logger "Citadel++: Applied real-time priority to DNS processes"
+renice -10 $(pgrep dnscrypt-proxy) 2>/dev/null || true
+renice -10 $(pgrep coredns) 2>/dev/null || true
+ionice -c 2 -n 0 $(pgrep dnscrypt-proxy) 2>/dev/null || true
+ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true
+logger "Citadel++: Applied priority tuning to DNS processes"
 '
 EOF
 
@@ -1283,6 +1331,10 @@ ${CYAN}Installation Commands (BEZPIECZNE):${NC}
   install-nftables      Install NFTables rules only
   install-all           Install all DNS modules (NIE wyłącza systemd-resolved)
 
+${CYAN}DNSSEC (opcjonalnie):${NC}
+  CITADEL_DNSSEC=1       Wygeneruj DNSCrypt z require_dnssec = true
+  --dnssec               Alternatywnie: dodaj flagę przy install-dnscrypt/install-all
+
 ${YELLOW}NEW FEATURES v3.0:${NC}
   smart-ipv6           Smart IPv6 detection & auto-reconfiguration
   install-dashboard    Install terminal dashboard (citadel-top)
@@ -1363,39 +1415,33 @@ smart_ipv6_detection() {
     fi
     
     # Auto-reconfigure DNSCrypt based on IPv6 availability
+    # NOTE: do not touch listen_addresses/ports here to avoid breaking custom configs.
     local dnscrypt_config="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
-    
+
     if [[ -f "$dnscrypt_config" ]]; then
         log_info "Aktualizacja konfiguracji DNSCrypt dla IPv6..."
-        
-        if [[ "$IPV6_AVAILABLE" == "true" ]]; then
-            # Enable IPv6
-            sed -i "s|listen_addresses = \['127.0.0.1:5353'\]|listen_addresses = ['127.0.0.1:5353', '[::1]:5353']|g" "$dnscrypt_config"
-            sed -i 's|ipv6_servers = false|ipv6_servers = true|g' "$dnscrypt_config"
-            log_success "IPv6 włączony w konfiguracji"
+
+        if grep -qE '^ipv6_servers[[:space:]]*=' "$dnscrypt_config"; then
+            if [[ "$IPV6_AVAILABLE" == "true" ]]; then
+                sed -i 's/^ipv6_servers[[:space:]]*=.*$/ipv6_servers = true/' "$dnscrypt_config"
+                log_success "ipv6_servers = true"
+            else
+                sed -i 's/^ipv6_servers[[:space:]]*=.*$/ipv6_servers = false/' "$dnscrypt_config"
+                log_success "ipv6_servers = false"
+            fi
         else
-            # Disable IPv6 for stability
-            sed -i "s|listen_addresses = \['127.0.0.1:5353', '\[::1\]:5353'\]|listen_addresses = ['127.0.0.1:5353']|g" "$dnscrypt_config"
-            sed -i 's|ipv6_servers = true|ipv6_servers = false|g' "$dnscrypt_config"
-            log_success "IPv6 wyłączony dla stabilności"
+            if [[ "$IPV6_AVAILABLE" == "true" ]]; then
+                printf '\nipv6_servers = true\n' >> "$dnscrypt_config"
+                log_success "Dodano ipv6_servers = true"
+            else
+                printf '\nipv6_servers = false\n' >> "$dnscrypt_config"
+                log_success "Dodano ipv6_servers = false"
+            fi
         fi
-        
-        # Restart DNSCrypt if running
+
         systemctl is-active --quiet dnscrypt-proxy && systemctl restart dnscrypt-proxy
     fi
-    
-    # Update CoreDNS for IPv6
-    local coredns_config="/etc/coredns/Corefile"
-    if [[ -f "$coredns_config" ]]; then
-        if [[ "$IPV6_AVAILABLE" == "true" ]]; then
-            sed -i 's|bind 0.0.0.0 ::|bind 0.0.0.0 ::|g' "$coredns_config"
-            log_success "CoreDNS skonfigurowany dla IPv6"
-        else
-            sed -i 's|bind 0.0.0.0 ::|bind 0.0.0.0|g' "$coredns_config"
-            log_success "CoreDNS skonfigurowany tylko dla IPv4"
-        fi
-    fi
-    
+
     echo "IPv6 Status: $IPV6_AVAILABLE"
 }
 
@@ -1404,10 +1450,16 @@ smart_ipv6_detection() {
 # ==============================================================================
 install_citadel_top() {
     log_section "📊 TERMINAL DASHBOARD INSTALLATION"
+
+    require_cmds curl jq systemctl || return 1
+    if ! command -v pacman >/dev/null 2>&1; then
+        log_warning "Brak pacman - pomijam instalację zależności dla dashboard"
+        return 1
+    fi
     
     # Install dependencies
     log_info "Instalowanie zależności dla dashboard..."
-    pacman -Q curl jq || sudo pacman -S curl jq --noconfirm
+    pacman -Q curl jq >/dev/null || sudo pacman -S curl jq --noconfirm
     
     # Create citadel-top script
     tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
@@ -1576,7 +1628,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'renice -20 $(pgrep coredns) 2>/dev/null || true; ionice -c 1 -n 7 $(pgrep coredns) 2>/dev/null || true; logger "Citadel++: Applied real-time priority to DNS processes"'
+ExecStart=/bin/bash -c 'renice -10 $(pgrep coredns) 2>/dev/null || true; ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true; logger "Citadel++: Applied priority tuning to DNS processes"'
 EOF
 
     tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
