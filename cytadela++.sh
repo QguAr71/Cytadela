@@ -979,6 +979,36 @@ verify_stack() {
     fi
 }
 
+test_all() {
+    log_section "🧪 CITADEL++ TEST-ALL"
+
+    verify_stack
+
+    echo ""
+    echo -e "${CYAN}Leak test (STRICT expected to block):${NC}"
+    if command -v dig >/dev/null 2>&1; then
+        if dig +time=2 +tries=1 @1.1.1.1 test.com >/dev/null 2>&1; then
+            echo "  ✗ Leak test: NOT blocked (dig @1.1.1.1 succeeded)"
+        else
+            echo "  ✓ Leak test: blocked/time-out (expected in STRICT)"
+        fi
+    else
+        echo "  (dig not installed)"
+    fi
+
+    echo ""
+    echo -e "${CYAN}IPv6 test:${NC}"
+    if command -v ping6 >/dev/null 2>&1; then
+        if ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
+            echo "  ✓ IPv6 connectivity OK"
+        else
+            echo "  ⚠ IPv6 connectivity FAILED"
+        fi
+    else
+        echo "  (ping6 not installed)"
+    fi
+}
+
 # ==============================================================================
 # NEW FEATURES MODULE 5: Smart IPv6 Detection
 # ==============================================================================
@@ -1357,6 +1387,7 @@ ${CYAN}Diagnostic Commands:${NC}
   diagnostics           Run full system diagnostics
   status                Show service status
   verify                Verify full stack (ports/services/DNS/NFT/metrics)
+  test-all              Smoke test (verify + leak test + IPv6)
 
 ${CYAN}Firewall Modes:${NC}
   firewall-safe         Ustaw reguły SAFE (nie zrywa internetu)
@@ -1813,6 +1844,9 @@ case "$ACTION" in
         ;;
     safe-test)
         safe_test_mode
+        ;;
+    test-all)
+        test_all
         ;;
     # Emergency commands
     emergency-refuse)

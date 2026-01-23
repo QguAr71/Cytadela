@@ -1,0 +1,10 @@
+# Editor / OS
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# Local artifacts
+/tmp/
