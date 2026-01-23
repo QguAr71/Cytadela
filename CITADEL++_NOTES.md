@@ -6,6 +6,10 @@ Ten dokument opisuje:
 - bezpieczny workflow instalacji i przełączenia systemu,
 - nową komendę `verify`.
 
+Dodatkowo zawiera aktualny opis:
+- panelu zarządzania DNS-adblock (blocklist/custom),
+- automatycznego healthcheck po `install-all`.
+
 ## TL;DR (bezpieczny workflow)
 
 1. Zainstaluj komponenty:
@@ -87,7 +91,30 @@ sudo ./cytadela++.sh <komenda>
 - **`install-dnscrypt`**: instaluje/konfiguruje `dnscrypt-proxy` (z `[sources]` dla resolverów), dobiera wolny port, uruchamia usługę.
 - **`install-coredns`**: instaluje/konfiguruje CoreDNS (cache + blocklist + forward do DNSCrypt), metryki Prometheus na `127.0.0.1:9153`.
 - **`install-nftables`**: generuje reguły NFTables w trybach SAFE/STRICT i ładuje domyślnie SAFE.
-- **`install-all`**: uruchamia: DNSCrypt → CoreDNS → NFTables (bez automatycznego przełączania DNS systemu).
+- **`install-all`**: uruchamia: DNSCrypt → CoreDNS → NFTables (bez automatycznego przełączania DNS systemu) i na końcu robi krótki healthcheck DNS/Adblock.
+
+### DNS Adblock (panel)
+
+CoreDNS korzysta z list w formacie „hosts” i blokuje domeny przez zwracanie `0.0.0.0`.
+
+Pliki:
+- `/etc/coredns/zones/custom.hosts` – Twoje ręczne wpisy (nie są nadpisywane przez auto-update).
+- `/etc/coredns/zones/blocklist.hosts` – listy pobierane automatycznie.
+- `/etc/coredns/zones/combined.hosts` – plik używany przez CoreDNS (custom + blocklist).
+
+Ważne: CoreDNS działa jako użytkownik `coredns`, więc pliki list muszą być czytelne dla tego usera:
+- `blocklist.hosts` i `combined.hosts`: owner `root:coredns`, uprawnienia `0640`
+- `custom.hosts`: `0644`
+
+Komendy panelu (uruchamiane przez `sudo ./cytadela++.sh <komenda>`):
+- **`adblock-status`** – status integracji (czy CoreDNS używa combined, liczba wpisów).
+- **`adblock-stats`** – liczba wpisów w custom/blocklist/combined.
+- **`adblock-show custom|blocklist|combined`** – podgląd pierwszych 200 linii.
+- **`adblock-edit`** – edycja `custom.hosts` + rebuild + reload.
+- **`adblock-add <domena>`** – dodaje domenę do custom (blokada).
+- **`adblock-remove <domena>`** – usuwa domenę z custom.
+- **`adblock-rebuild`** – przebudowuje `combined.hosts` + reload CoreDNS.
+- **`adblock-query <domena>`** – test zapytania DNS przez `127.0.0.1`.
 
 ### DNS systemu (przełączanie / rollback)
 
@@ -153,6 +180,16 @@ To jest mechanizm „samozabezpieczenia”: najpierw SAFE → zmiana DNS → tes
 4. **DNSCrypt ma poprawne źródło resolverów**
 
 W konfiguracji generowanej przez skrypt jest sekcja `[sources]` z URL do listy resolverów i `minisign_key`, żeby dnscrypt-proxy zawsze widział serwery z `server_names`.
+
+5. **Install-coredns ma "bootstrap DNS" i utwardzone pobieranie list**
+
+Żeby w trakcie `install-coredns` nie stracić rozwiązywania nazw (gdy system DNS jest już ustawiony na `127.0.0.1`), skrypt najpierw uruchamia tymczasowy CoreDNS forwardujący do aktualnego portu DNSCrypt.
+
+Pobieranie list jest utwardzone:
+- `curl -f` (błędy HTTP przerywają pobieranie),
+- generowanie do plików tymczasowych,
+- podmiana list tylko jeśli wynik ma sensowną liczbę wpisów (żeby auto-update nie „wyzerował” listy),
+- źródło PolishFilters: używany jest plik `PPB.txt` (działający URL).
 
 ---
 
