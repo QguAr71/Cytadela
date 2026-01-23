@@ -241,9 +241,15 @@ install_coredns() {
     # Download blocklists
     log_info "Pobieranie blocklist (OISD + KADhosts + Polish Annoyance)..."
     {
-        curl -s https://big.oisd.nl | grep -v "^#" > /tmp/block.txt
-        curl -s https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> /tmp/block.txt
-        curl -s https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/sections/annoyances.txt | grep -v "^#" >> /tmp/block.txt
+        local tmp_raw tmp_block tmp_combined
+        tmp_raw="$(mktemp)"
+        tmp_block="$(mktemp)"
+        tmp_combined="$(mktemp)"
+
+        curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"
+        curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"
+        curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"
+
         awk '
             function emit(d) {
                 gsub(/^[*.]+/, "", d)
@@ -282,10 +288,18 @@ install_coredns() {
                     next
                 }
             }
-        ' /tmp/block.txt | sort -u > /etc/coredns/zones/blocklist.hosts
-        cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > /etc/coredns/zones/combined.hosts
-        rm -f /tmp/block.txt
-        log_success "Blocklist pobrana ($(wc -l < /etc/coredns/zones/blocklist.hosts) wpisów)"
+        ' "$tmp_raw" | sort -u > "$tmp_block"
+
+        if [[ $(wc -l < "$tmp_block") -lt 1000 ]]; then
+            log_warning "Blocklist wygląda na pustą/uszkodzoną ($(wc -l < "$tmp_block") wpisów) - zostawiam poprzednią"
+            rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"
+        else
+            mv "$tmp_block" /etc/coredns/zones/blocklist.hosts
+            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"
+            mv "$tmp_combined" /etc/coredns/zones/combined.hosts
+            rm -f "$tmp_raw"
+            log_success "Blocklist pobrana ($(wc -l < /etc/coredns/zones/blocklist.hosts) wpisów)"
+        fi
     } || {
         log_warning "Nie udało się pobrać blocklist - tworzę pusty plik"
         touch /etc/coredns/zones/blocklist.hosts
@@ -330,7 +344,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'set -e; curl -s https://big.oisd.nl | grep -v "^#" > /tmp/block.txt; curl -s https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> /tmp/block.txt; curl -s https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/sections/annoyances.txt | grep -v "^#" >> /tmp/block.txt; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2) emit(a[2]); next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" /tmp/block.txt | sort -u > /etc/coredns/zones/blocklist.tmp; mv /etc/coredns/zones/blocklist.tmp /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > /etc/coredns/zones/combined.tmp; mv /etc/coredns/zones/combined.tmp /etc/coredns/zones/combined.hosts; rm -f /tmp/block.txt; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
+ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
 EOF
 
     tee /etc/systemd/system/citadel-update-blocklist.timer >/dev/null <<'EOF'
