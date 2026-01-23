@@ -232,11 +232,34 @@ EOF
 install_coredns() {
     log_section "MODULE 2: CoreDNS Installation"
 
+    # Determine current DNSCrypt listen port early (needed for bootstrap DNS)
+    local dnscrypt_port
+    dnscrypt_port="$(get_dnscrypt_listen_port || true)"
+    if [[ -z "$dnscrypt_port" ]]; then
+        dnscrypt_port="$DNSCRYPT_PORT_DEFAULT"
+    fi
+
     # Create directories
     mkdir -p /etc/coredns/zones
     touch /etc/coredns/zones/custom.hosts
     touch /etc/coredns/zones/blocklist.hosts
     touch /etc/coredns/zones/combined.hosts
+    chmod 0644 /etc/coredns/zones/custom.hosts 2>/dev/null || true
+    chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
+    chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
+
+    # Bootstrap CoreDNS so system DNS works during downloads (when resolv.conf points to 127.0.0.1)
+    log_info "Bootstrap DNS (CoreDNS forward -> DNSCrypt) na czas pobierania list..."
+    tee /etc/coredns/Corefile >/dev/null <<EOF
+.:${COREDNS_PORT_DEFAULT} {
+    bind 127.0.0.1
+    errors
+    forward . 127.0.0.1:${dnscrypt_port}
+}
+EOF
+    systemctl enable --now coredns 2>/dev/null || true
+    systemctl restart coredns 2>/dev/null || true
+    sleep 1
 
     # Download blocklists
     log_info "Pobieranie blocklist (OISD + KADhosts + Polish Annoyance)..."
@@ -293,24 +316,25 @@ install_coredns() {
         if [[ $(wc -l < "$tmp_block") -lt 1000 ]]; then
             log_warning "Blocklist wygląda na pustą/uszkodzoną ($(wc -l < "$tmp_block") wpisów) - zostawiam poprzednią"
             rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"
+            tmp_combined="$(mktemp)"
+            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"
+            mv "$tmp_combined" /etc/coredns/zones/combined.hosts
+            chown root:coredns /etc/coredns/zones/combined.hosts 2>/dev/null || true
+            chmod 0640 /etc/coredns/zones/combined.hosts 2>/dev/null || true
         else
             mv "$tmp_block" /etc/coredns/zones/blocklist.hosts
             cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"
             mv "$tmp_combined" /etc/coredns/zones/combined.hosts
             rm -f "$tmp_raw"
+            chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
+            chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
             log_success "Blocklist pobrana ($(wc -l < /etc/coredns/zones/blocklist.hosts) wpisów)"
         fi
     } || {
         log_warning "Nie udało się pobrać blocklist - tworzę pusty plik"
         touch /etc/coredns/zones/blocklist.hosts
+        adblock_rebuild 2>/dev/null || true
     }
-
-    # Create CoreDNS configuration
-    local dnscrypt_port
-    dnscrypt_port="$(get_dnscrypt_listen_port || true)"
-    if [[ -z "$dnscrypt_port" ]]; then
-        dnscrypt_port="$DNSCRYPT_PORT_DEFAULT"
-    fi
 
     log_info "Tworzenie konfiguracji CoreDNS..."
     tee /etc/coredns/Corefile >/dev/null <<EOF
@@ -322,10 +346,10 @@ ${COREDNS_METRICS_ADDR} {
     bind 127.0.0.1
     errors
     log
-    cache 30
     hosts /etc/coredns/zones/combined.hosts {
         fallthrough
     }
+    cache 30
     forward . 127.0.0.1:${dnscrypt_port}
     loop
     reload
@@ -344,7 +368,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
+ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
 EOF
 
     tee /etc/systemd/system/citadel-update-blocklist.timer >/dev/null <<'EOF'
@@ -385,7 +409,10 @@ adblock_rebuild() {
 
     mkdir -p /etc/coredns/zones
     touch "$custom" "$blocklist"
+    chmod 0644 "$custom" 2>/dev/null || true
     cat "$custom" "$blocklist" | sort -u > "$combined"
+    chown root:coredns "$blocklist" "$combined" 2>/dev/null || true
+    chmod 0640 "$blocklist" "$combined" 2>/dev/null || true
 }
 
 adblock_reload() {
@@ -737,6 +764,36 @@ install_all() {
     # Status check
     log_info "Status serwisów:"
     systemctl --no-pager status dnscrypt-proxy coredns nftables || true
+
+    echo ""
+    log_section "🧪 HEALTHCHECK: DNS + ADBLOCK"
+    adblock_rebuild 2>/dev/null || true
+    systemctl restart coredns 2>/dev/null || true
+    sleep 1
+    adblock_stats 2>/dev/null || true
+
+    if command -v dig >/dev/null 2>&1; then
+        if dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
+            echo "  ✓ DNS (google.com) via 127.0.0.1: OK"
+        else
+            echo "  ✗ DNS (google.com) via 127.0.0.1: FAILED"
+        fi
+
+        local test_domain
+        test_domain="$(awk 'NF>=2 {print $2; exit}' /etc/coredns/zones/custom.hosts 2>/dev/null || true)"
+        [[ -z "$test_domain" ]] && test_domain="$(awk 'NF>=2 {print $2; exit}' /etc/coredns/zones/combined.hosts 2>/dev/null || true)"
+        if [[ -z "$test_domain" ]]; then
+            echo "  ⚠ Adblock test: custom.hosts/combined.hosts empty/missing"
+        else
+            if dig +time=2 +tries=1 +short "$test_domain" @127.0.0.1 2>/dev/null | head -n 1 | grep -qx "0.0.0.0"; then
+                echo "  ✓ Adblock test ($test_domain): BLOCKED (0.0.0.0)"
+            else
+                echo "  ✗ Adblock test ($test_domain): FAILED"
+            fi
+        fi
+    else
+        log_warning "Brak narzędzia 'dig' - pomijam testy DNS/Adblock"
+    fi
 
     echo ""
     log_info "Testy diagnostyczne:"
