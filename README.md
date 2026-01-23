@@ -11,6 +11,11 @@ Cytadela++ to narzędzie bezpieczeństwa, a nie „produkt”.
 Istnieje dla osób, które rozumieją kompromisy.
 Używaj go, jeśli pasuje do Twojego threat modelu. Jeśli nie — nie używaj.
 
+### Własność bezpieczeństwa (twardy wniosek z audytu)
+
+Na podstawie analizy ruchu (`tcpdump`) można stwierdzić technicznie: Cytadela działa jako **secure DNS gateway na poziomie jądra** — system nie posiada ścieżki DNS do świata zewnętrznego (DNS `:53`) poza lokalnym stackiem (localhost).
+Jest to ten sam typ wyniku, jaki zobaczysz w architekturach typu Qubes `sys-firewall`, Whonix Gateway, hardened VPN gateway.
+
 Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
 
 - **Warstwa 1**: `dnscrypt-proxy` — szyfrowany upstream (DNSCrypt/DoH), dynamiczny port lokalny.
@@ -79,6 +84,14 @@ dig @1.1.1.1 test.com
 
 Jeśli masz włączony STRICT, drugie polecenie powinno być zablokowane/timeout (to jest szybki test, że `nftables` faktycznie blokuje DNS poza localhost).
 
+Możesz też użyć testu wprost na `:53`:
+
+```bash
+nslookup google.com 8.8.8.8
+```
+
+W trybie STRICT powinno timeoutować (`no servers could be reached`).
+
 Uwagi:
 - `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
 
@@ -137,6 +150,11 @@ Cytadela++ is a security tool, not a product.
 It exists for people who understand the trade-offs.
 Use it if it fits your threat model. Otherwise – don’t.
 
+### Security property (audit conclusion)
+
+Based on `tcpdump` traffic analysis, Citadel++ meets the requirements of a **secure DNS gateway at the kernel level**: the system has no external DNS path (DNS `:53`) to the Internet outside the local stack (localhost).
+This is the same kind of outcome you would expect from architectures such as Qubes `sys-firewall`, Whonix Gateway, or hardened VPN gateway setups.
+
 Citadel++ is an install/config script that builds a local DNS privacy stack:
 
 - **Layer 1**: `dnscrypt-proxy` — encrypted upstream (DNSCrypt/DoH), dynamic local port.
@@ -183,6 +201,14 @@ dig @1.1.1.1 test.com
 ```
 
 If STRICT is enabled, the second command should be blocked / time out (quick confirmation that `nftables` actually prevents DNS leaks outside localhost).
+
+You can also test classic DNS directly on `:53`:
+
+```bash
+nslookup google.com 8.8.8.8
+```
+
+In STRICT mode it should time out (`no servers could be reached`).
 
 Notes:
 - `install-nftables` is safe to run repeatedly (it flushes `citadel_*` tables and removes historical duplicate `include` lines in `/etc/nftables.conf`).

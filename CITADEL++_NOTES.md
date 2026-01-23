@@ -58,6 +58,14 @@ dig @1.1.1.1 test.com
 
 Jeśli masz włączony tryb STRICT, powyższe zapytanie powinno być zablokowane/timeout.
 
+Możesz też przetestować klasyczny DNS wprost na `:53`:
+
+```bash
+nslookup google.com 8.8.8.8
+```
+
+W trybie STRICT powinno timeoutować (`no servers could be reached`).
+
 6. Rollback (gdyby coś poszło źle):
 
 ```bash
@@ -83,6 +91,11 @@ sudo ./cytadela++.sh restore-system
 
 To dotyczy głównie klasycznego DNS (`UDP/TCP 53`).
 Jeśli aplikacja ma wbudowany **DoH** (DNS-over-HTTPS) na `443` i sama robi zapytania HTTPs do dostawcy DNS, to nie jest to „DNS leak na 53” i te reguły tego nie zatrzymają.
+
+### Własność bezpieczeństwa (twardy wniosek z audytu)
+
+Na podstawie analizy ruchu (`tcpdump`) można stwierdzić technicznie: Cytadela spełnia warunek **secure DNS gateway na poziomie jądra** — system fizycznie nie posiada ścieżki DNS (DNS `:53`) do świata zewnętrznego poza lokalnym stackiem (localhost).
+Jest to ten sam typ wyniku, jaki zobaczysz na: Qubes `sys-firewall`, Whonix gateway, hardened VPN gateway.
 
 ---
 

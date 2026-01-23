@@ -58,6 +58,14 @@ dig @1.1.1.1 test.com
 
 If STRICT mode is enabled, the query above should be blocked / time out.
 
+You can also test classic DNS directly on `:53`:
+
+```bash
+nslookup google.com 8.8.8.8
+```
+
+In STRICT mode it should time out (`no servers could be reached`).
+
 6. Rollback (if something goes wrong):
 
 ```bash
@@ -83,6 +91,11 @@ A **DNS leak** here means a situation where an application or the OS sends DNS q
 
 This mostly applies to classic DNS (`UDP/TCP 53`).
 If an application uses built-in **DoH** (DNS-over-HTTPS) over port `443`, that is not a “DNS leak on port 53”, and these rules do not stop it.
+
+### Security property (audit conclusion)
+
+Based on `tcpdump` traffic analysis, Citadel++ meets the requirements of a **secure DNS gateway at the kernel level**: the system physically has no external DNS path (DNS `:53`) to the Internet outside the local stack (localhost).
+This is the same kind of outcome you would expect from: Qubes `sys-firewall`, Whonix Gateway, hardened VPN gateway setups.
 
 ---
 
