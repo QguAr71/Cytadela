@@ -278,9 +278,11 @@ install_coredns() {
     # Create directories
     mkdir -p /etc/coredns/zones
     touch /etc/coredns/zones/custom.hosts
+    touch /etc/coredns/zones/allowlist.txt
     touch /etc/coredns/zones/blocklist.hosts
     touch /etc/coredns/zones/combined.hosts
     chmod 0644 /etc/coredns/zones/custom.hosts 2>/dev/null || true
+    chmod 0644 /etc/coredns/zones/allowlist.txt 2>/dev/null || true
     chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
     chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
 
@@ -405,7 +407,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/multi-light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
+ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; allowlist="/etc/coredns/zones/allowlist.txt"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/hagezi/dns-blocklists/main/hosts/multi-light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u | awk -v AL="$allowlist" "BEGIN{while((getline l < AL)>0){sub(/\\r$/,\"\",l); gsub(/^[[:space:]]+|[[:space:]]+$/,\"\",l); if(l!\"\" && l !~ /^#/){a[tolower(l)]=1}}} {d=\$2; if(d==\"\") next; if(a[tolower(d)]) next; print}" > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
 EOF
 
     tee /etc/systemd/system/citadel-update-blocklist.timer >/dev/null <<'EOF'
@@ -441,15 +443,67 @@ EOF
 
 adblock_rebuild() {
     local custom="/etc/coredns/zones/custom.hosts"
+    local allowlist="/etc/coredns/zones/allowlist.txt"
     local blocklist="/etc/coredns/zones/blocklist.hosts"
     local combined="/etc/coredns/zones/combined.hosts"
 
     mkdir -p /etc/coredns/zones
-    touch "$custom" "$blocklist"
+    touch "$custom" "$allowlist" "$blocklist"
     chmod 0644 "$custom" 2>/dev/null || true
-    cat "$custom" "$blocklist" | sort -u > "$combined"
+    chmod 0644 "$allowlist" 2>/dev/null || true
+    if [[ -s "$allowlist" ]]; then
+        cat "$custom" "$blocklist" | sort -u | awk -v AL="$allowlist" 'BEGIN{while((getline l < AL)>0){sub(/\r$/,"",l); gsub(/^[[:space:]]+|[[:space:]]+$/,"",l); if(l!="" && l !~ /^#/){a[tolower(l)]=1}}} {d=$2; if(d=="") next; if(a[tolower(d)]) next; print}' > "$combined"
+    else
+        cat "$custom" "$blocklist" | sort -u > "$combined"
+    fi
     chown root:coredns "$blocklist" "$combined" 2>/dev/null || true
     chmod 0640 "$blocklist" "$combined" 2>/dev/null || true
+}
+
+allowlist_list() {
+    mkdir -p /etc/coredns/zones
+    touch /etc/coredns/zones/allowlist.txt
+    chmod 0644 /etc/coredns/zones/allowlist.txt 2>/dev/null || true
+    cat /etc/coredns/zones/allowlist.txt 2>/dev/null || true
+}
+
+allowlist_add() {
+    local domain="$1"
+    if [[ -z "$domain" ]]; then
+        log_error "Usage: allowlist-add <domain>"
+        return 1
+    fi
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Invalid domain: $domain"
+        return 1
+    fi
+    mkdir -p /etc/coredns/zones
+    touch /etc/coredns/zones/allowlist.txt
+    chmod 0644 /etc/coredns/zones/allowlist.txt 2>/dev/null || true
+    if grep -qiE "^${domain//./\.}$" /etc/coredns/zones/allowlist.txt 2>/dev/null; then
+        log_info "Already present in allowlist: $domain"
+    else
+        printf '%s\n' "$domain" >> /etc/coredns/zones/allowlist.txt
+        log_success "Added to allowlist: $domain"
+    fi
+    adblock_rebuild
+    adblock_reload
+}
+
+allowlist_remove() {
+    local domain="$1"
+    if [[ -z "$domain" ]]; then
+        log_error "Usage: allowlist-remove <domain>"
+        return 1
+    fi
+    if [[ ! -f /etc/coredns/zones/allowlist.txt ]]; then
+        log_warning "Missing /etc/coredns/zones/allowlist.txt"
+        return 0
+    fi
+    sed -i -E "/^[[:space:]]*${domain//./\.}[[:space:]]*$/Id" /etc/coredns/zones/allowlist.txt || true
+    log_success "Removed from allowlist (if present): $domain"
+    adblock_rebuild
+    adblock_reload
 }
 
 adblock_reload() {
@@ -1815,6 +1869,15 @@ case "$ACTION" in
         ;;
     adblock-query)
         adblock_query "$ARG1"
+        ;;
+    allowlist-list)
+        allowlist_list
+        ;;
+    allowlist-add)
+        allowlist_add "$ARG1"
+        ;;
+    allowlist-remove)
+        allowlist_remove "$ARG1"
         ;;
     configure-system)
         configure_system
