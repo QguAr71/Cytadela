@@ -173,6 +173,10 @@ To celowe: przełączenie DNS systemu jest najbardziej ryzykownym momentem. Tera
 - `firewall-strict`:
   - to „twarda” ochrona: blokuje DNS na `:53` poza localhost.
 
+Dodatkowo `install-nftables` jest bezpieczne do uruchamiania wielokrotnie:
+- czyści stan tabel `citadel_dns` / `citadel_emergency` przed ponownym załadowaniem reguł,
+- usuwa historyczne duplikaty linii `include "/etc/nftables.d/citadel-dns.nft"` w `/etc/nftables.conf`.
+
 3. **`configure-system` automatycznie przełącza na STRICT dopiero po udanym teście DNS**
 
 To jest mechanizm „samozabezpieczenia”: najpierw SAFE → zmiana DNS → test → dopiero potem STRICT.

@@ -164,6 +164,10 @@ This is intentional: switching system DNS is the riskiest step. You do it consci
 - `firewall-safe`: exceptions to avoid breaking connectivity during setup.
 - `firewall-strict`: hard protection: blocks DNS `:53` outside localhost.
 
+Additionally, `install-nftables` is safe to run repeatedly:
+- it flushes `citadel_dns` / `citadel_emergency` tables before reloading rules,
+- it removes historical duplicate `include "/etc/nftables.d/citadel-dns.nft"` lines in `/etc/nftables.conf`.
+
 3. **`configure-system` switches to STRICT only after a successful DNS test**
 
 Safety mechanism: SAFE → switch DNS → test → STRICT.

@@ -47,6 +47,9 @@ sudo ./cytadela++.sh configure-system
 sudo ./cytadela++.sh verify
 ```
 
+Uwagi:
+- `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
+
 ### Rollback
 
 Jeśli po przełączeniu systemu coś pójdzie źle:
@@ -121,6 +124,9 @@ sudo ./citadela_en.sh configure-system
 ```bash
 sudo ./citadela_en.sh verify
 ```
+
+Notes:
+- `install-nftables` is safe to run repeatedly (it flushes `citadel_*` tables and removes historical duplicate `include` lines in `/etc/nftables.conf`).
 
 ### Rollback
 
