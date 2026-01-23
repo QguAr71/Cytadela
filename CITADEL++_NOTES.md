@@ -233,3 +233,87 @@ To przywraca:
 - `systemd-resolved` (unmask + enable + start),
 - usuwa override NetworkManager,
 - naprawia `/etc/resolv.conf`.
+
+---
+
+## FAQ / Najczęstsze problemy
+
+### 1) `curl: (6) Could not resolve host ...` podczas `install-all` / `install-coredns`
+
+Oznacza, że w danym momencie **system nie ma działającego resolvera**, a `curl` nie potrafi rozwiązać nazw.
+
+Co zrobić:
+- Uruchom ponownie `sudo ./cytadela++.sh install-coredns`.
+- Sprawdź, czy lokalny DNS działa:
+
+```bash
+dig +short google.com @127.0.0.1
+```
+
+Jeśli powyższe nie działa, sprawdź logi:
+
+```bash
+journalctl -u coredns -n 50 --no-pager
+journalctl -u dnscrypt-proxy -n 50 --no-pager
+```
+
+### 2) `curl: (22) The requested URL returned error: 404` podczas pobierania list
+
+To znaczy, że jedno ze źródeł list zmieniło URL.
+
+Skrypt jest utwardzony tak, żeby **nie wyzerować list** w takiej sytuacji (zostawia poprzednią działającą).
+Możesz po prostu uruchomić `install-coredns` ponownie później.
+
+### 3) `nftables.service` jest `inactive (dead)` – czy firewall działa?
+
+Tak, to często normalne (unit typu "oneshot" ładuje reguły i kończy).
+Sprawdź, czy reguły Citadel są w rulesecie:
+
+```bash
+sudo nft list ruleset | grep -i citadel
+```
+
+### 4) Adblock nie działa (domena zwraca normalne IP)
+
+Najczęstsze powody:
+
+- **Uprawnienia plików list**: CoreDNS działa jako user `coredns` i musi móc czytać listy.
+  Wymagane:
+  - `blocklist.hosts` i `combined.hosts`: `root:coredns` + `0640`
+  - `custom.hosts`: `0644`
+
+Możesz to sprawdzić:
+
+```bash
+stat -c '%U %G %a %n' /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts
+```
+
+I naprawić (bezpiecznie) przez:
+
+```bash
+sudo ./cytadela++.sh adblock-rebuild
+sudo systemctl restart coredns
+```
+
+- **Cache**: po zmianach w `custom.hosts` czasem warto zrobić restart CoreDNS.
+
+Test blokowania:
+
+```bash
+sudo ./cytadela++.sh adblock-query doubleclick.net
+```
+
+### 5) `install-all` pokazuje FAIL w healthcheck
+
+Najpierw uruchom ręcznie:
+
+```bash
+sudo ./cytadela++.sh verify
+sudo ./cytadela++.sh adblock-status
+```
+
+Jeśli `verify` pokazuje, że DNS działa, a healthcheck nie – zwykle pomaga:
+
+```bash
+sudo systemctl restart coredns
+```
