@@ -621,6 +621,17 @@ EOF
         printf '%s\n' '#!/usr/bin/nft -f' > /etc/nftables.conf
     fi
 
+    # Deduplicate Citadel include line (in case older runs appended it multiple times)
+    if [[ $(grep -cE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf 2>/dev/null || echo 0) -gt 1 ]]; then
+        local tmp_nftconf
+        tmp_nftconf="$(mktemp)"
+        awk 'BEGIN{seen=0}
+            /^[[:space:]]*include[[:space:]]+"\/etc\/nftables\.d\/citadel-dns\.nft"[[:space:]]*$/ { if (seen==0) { print; seen=1 } ; next }
+            { print }
+        ' /etc/nftables.conf > "$tmp_nftconf"
+        mv "$tmp_nftconf" /etc/nftables.conf
+    fi
+
     if ! grep -qE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf; then
         printf '\ninclude "/etc/nftables.d/citadel-dns.nft"\n' >> /etc/nftables.conf
     fi
@@ -638,6 +649,8 @@ EOF
 
     # Load rules
     systemctl enable --now nftables 2>/dev/null || true
+    nft flush table inet citadel_dns 2>/dev/null || true
+    nft flush table inet citadel_emergency 2>/dev/null || true
     nft delete table inet citadel_dns 2>/dev/null || true
     nft delete table inet citadel_emergency 2>/dev/null || true
     nft -f /etc/nftables.d/citadel-dns.nft
