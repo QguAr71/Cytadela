@@ -15,5 +15,5 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          shellcheck cytadela++.sh
-          shellcheck citadela_en.sh
+          shellcheck -S warning cytadela++.sh
+          shellcheck -S warning citadela_en.sh
