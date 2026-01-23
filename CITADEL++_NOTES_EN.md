@@ -50,6 +50,14 @@ sudo ./cytadela++.sh configure-system
 sudo ./cytadela++.sh verify
 ```
 
+After updating the script, it is recommended to run `verify` again and perform a quick leak test:
+
+```bash
+dig @1.1.1.1 test.com
+```
+
+If STRICT mode is enabled, the query above should be blocked / time out.
+
 6. Rollback (if something goes wrong):
 
 ```bash

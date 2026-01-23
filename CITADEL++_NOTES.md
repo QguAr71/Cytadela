@@ -50,6 +50,14 @@ sudo ./cytadela++.sh configure-system
 sudo ./cytadela++.sh verify
 ```
 
+Po aktualizacji skryptu warto uruchomić `verify` ponownie oraz wykonać prosty leak-test:
+
+```bash
+dig @1.1.1.1 test.com
+```
+
+Jeśli masz włączony tryb STRICT, powyższe zapytanie powinno być zablokowane/timeout.
+
 6. Rollback (gdyby coś poszło źle):
 
 ```bash

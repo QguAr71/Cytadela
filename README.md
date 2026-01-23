@@ -47,6 +47,15 @@ sudo ./cytadela++.sh configure-system
 sudo ./cytadela++.sh verify
 ```
 
+Po aktualizacji skryptu:
+
+```bash
+sudo ./cytadela++.sh verify
+dig @1.1.1.1 test.com
+```
+
+Jeśli masz włączony STRICT, drugie polecenie powinno być zablokowane/timeout (to jest szybki test, że `nftables` faktycznie blokuje DNS poza localhost).
+
 Uwagi:
 - `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
 
@@ -124,6 +133,15 @@ sudo ./citadela_en.sh configure-system
 ```bash
 sudo ./citadela_en.sh verify
 ```
+
+After updating the script:
+
+```bash
+sudo ./citadela_en.sh verify
+dig @1.1.1.1 test.com
+```
+
+If STRICT is enabled, the second command should be blocked / time out (quick confirmation that `nftables` actually prevents DNS leaks outside localhost).
 
 Notes:
 - `install-nftables` is safe to run repeatedly (it flushes `citadel_*` tables and removes historical duplicate `include` lines in `/etc/nftables.conf`).
