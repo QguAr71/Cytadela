@@ -121,12 +121,12 @@ ignore_system_dns = true
 
 server_names = ['cloudflare', 'google', 'quad9-dnscrypt-ip4-filter-pri']
 
+log_level = 2
+
 [sources.'public-resolvers']
 urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md']
 minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
 cache_file = 'public-resolvers.md'
-
-log_level = 2
 EOF
 
     # Create log directory
@@ -338,7 +338,7 @@ install_nftables() {
     tee /etc/nftables.d/citadel-dns-safe.nft >/dev/null <<EOF
 table inet citadel_dns {
     chain output {
-        type filter hook output priority -200; policy accept;
+        type filter hook output priority -400; policy accept;
 
         ip daddr {127.0.0.1, 127.0.0.53, 127.0.0.54} udp dport 53 counter accept
         ip daddr {127.0.0.1, 127.0.0.53, 127.0.0.54} tcp dport 53 counter accept
@@ -368,7 +368,7 @@ EOF
     tee /etc/nftables.d/citadel-dns-strict.nft >/dev/null <<EOF
 table inet citadel_dns {
     chain output {
-        type filter hook output priority -200; policy accept;
+        type filter hook output priority -400; policy accept;
 
         ip daddr 127.0.0.1 udp dport 53 counter accept
         ip daddr 127.0.0.1 tcp dport 53 counter accept
@@ -400,11 +400,19 @@ EOF
         log_info "Backup: /etc/nftables.conf -> /etc/nftables.conf.backup-citadel"
     fi
 
-    echo 'include "/etc/nftables.d/citadel-dns.nft"' > /etc/nftables.conf
+    if [[ ! -f /etc/nftables.conf ]]; then
+        printf '%s\n' '#!/usr/bin/nft -f' > /etc/nftables.conf
+    fi
+
+    if ! grep -qE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf; then
+        printf '\ninclude "/etc/nftables.d/citadel-dns.nft"\n' >> /etc/nftables.conf
+    fi
 
     # Validate syntax
     log_info "Walidacja składni nftables..."
-    if nft -c -f /etc/nftables.d/citadel-dns-safe.nft && nft -c -f /etc/nftables.d/citadel-dns-strict.nft; then
+    if nft -c -f <(printf '%s\n' 'flush ruleset'; cat /etc/nftables.d/citadel-dns-safe.nft) \
+        && nft -c -f <(printf '%s\n' 'flush ruleset'; cat /etc/nftables.d/citadel-dns-strict.nft);
+    then
         log_success "Składnia nftables poprawna"
     else
         log_error "Błąd w składni nftables"
@@ -413,7 +421,9 @@ EOF
 
     # Load rules
     systemctl enable --now nftables 2>/dev/null || true
-    nft -f /etc/nftables.conf
+    nft delete table inet citadel_dns 2>/dev/null || true
+    nft delete table inet citadel_emergency 2>/dev/null || true
+    nft -f /etc/nftables.d/citadel-dns.nft
 
     log_success "Moduł NFTables zainstalowany"
 }
@@ -421,14 +431,22 @@ EOF
 firewall_safe() {
     log_section "MODULE 3: NFTables Safe Mode"
     ln -sf /etc/nftables.d/citadel-dns-safe.nft /etc/nftables.d/citadel-dns.nft
-    nft -f /etc/nftables.conf
+    nft flush table inet citadel_dns 2>/dev/null || true
+    nft flush table inet citadel_emergency 2>/dev/null || true
+    nft delete table inet citadel_dns 2>/dev/null || true
+    nft delete table inet citadel_emergency 2>/dev/null || true
+    nft -f /etc/nftables.d/citadel-dns-safe.nft || log_warning "Nie udało się załadować reguł SAFE (sprawdź: sudo nft -c -f /etc/nftables.d/citadel-dns-safe.nft)"
     log_success "Firewall ustawiony na SAFE"
 }
 
 firewall_strict() {
     log_section "MODULE 3: NFTables Strict Mode"
     ln -sf /etc/nftables.d/citadel-dns-strict.nft /etc/nftables.d/citadel-dns.nft
-    nft -f /etc/nftables.conf
+    nft flush table inet citadel_dns 2>/dev/null || true
+    nft flush table inet citadel_emergency 2>/dev/null || true
+    nft delete table inet citadel_dns 2>/dev/null || true
+    nft delete table inet citadel_emergency 2>/dev/null || true
+    nft -f /etc/nftables.d/citadel-dns-strict.nft || log_warning "Nie udało się załadować reguł STRICT (sprawdź: sudo nft -c -f /etc/nftables.d/citadel-dns-strict.nft)"
     log_success "Firewall ustawiony na STRICT"
 }
 
