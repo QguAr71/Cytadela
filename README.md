@@ -1,0 +1,154 @@
+# Citadel++ (Cytadela++) — Hardened Local DNS Stack (DNSCrypt + CoreDNS + NFTables)
+
+## PL — Opis projektu
+
+Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
+
+- **Warstwa 1**: `dnscrypt-proxy` — szyfrowany upstream (DNSCrypt/DoH), dynamiczny port lokalny.
+- **Warstwa 2**: `CoreDNS` — cache + DNS-adblock (blocklist/custom) + metryki Prometheus.
+- **Warstwa 3**: `nftables` — **blokada DNS leaków** na `:53` poza `localhost` (SAFE/STRICT).
+
+### Dlaczego to ma sens
+
+- **Jedno miejsce rozwiązywania nazw** (CoreDNS na `127.0.0.1:53`).
+- **Szyfrowany upstream** (DNSCrypt/DoH przez dnscrypt-proxy).
+- **Zabezpieczenie przed „leakami”**: aplikacje nie powinny móc wysyłać DNS `:53` wprost do internetu.
+- **Adblock na poziomie DNS**: blokowanie domen reklam/telemetrii/malware przez zwracanie `0.0.0.0`.
+
+### Szybki start (bezpieczny)
+
+1) Instalacja komponentów:
+
+```bash
+sudo ./cytadela++.sh install-all
+```
+
+2) SAFE firewall (na czas wdrażania):
+
+```bash
+sudo ./cytadela++.sh firewall-safe
+```
+
+3) Test lokalnego DNS:
+
+```bash
+dig +short google.com @127.0.0.1
+```
+
+4) Przełączenie DNS systemu (dopiero gdy test działa):
+
+```bash
+sudo ./cytadela++.sh configure-system
+```
+
+5) Szybka weryfikacja:
+
+```bash
+sudo ./cytadela++.sh verify
+```
+
+### Rollback
+
+Jeśli po przełączeniu systemu coś pójdzie źle:
+
+```bash
+sudo ./cytadela++.sh restore-system
+```
+
+### DNS Adblock (panel)
+
+Pliki:
+- `/etc/coredns/zones/custom.hosts` — Twoje ręczne wpisy
+- `/etc/coredns/zones/blocklist.hosts` — listy pobierane automatycznie
+- `/etc/coredns/zones/combined.hosts` — plik używany przez CoreDNS
+
+Komendy:
+
+```bash
+sudo ./cytadela++.sh adblock-status
+sudo ./cytadela++.sh adblock-stats
+sudo ./cytadela++.sh adblock-add example.com
+sudo ./cytadela++.sh adblock-remove example.com
+sudo ./cytadela++.sh adblock-edit
+sudo ./cytadela++.sh adblock-rebuild
+sudo ./cytadela++.sh adblock-query doubleclick.net
+```
+
+### Dokumentacja
+
+- PL: `CITADEL++_NOTES.md`
+- EN: `CITADEL++_NOTES_EN.md`
+- Angielski entrypoint skryptu: `citadela_en.sh`
+
+---
+
+## EN — Project overview
+
+Citadel++ is an install/config script that builds a local DNS privacy stack:
+
+- **Layer 1**: `dnscrypt-proxy` — encrypted upstream (DNSCrypt/DoH), dynamic local port.
+- **Layer 2**: `CoreDNS` — cache + DNS-level adblock (blocklist/custom) + Prometheus metrics.
+- **Layer 3**: `nftables` — DNS leak prevention on `:53` outside localhost (SAFE/STRICT).
+
+### Quick start (safe)
+
+1) Install components:
+
+```bash
+sudo ./citadela_en.sh install-all
+```
+
+2) SAFE firewall mode during rollout:
+
+```bash
+sudo ./citadela_en.sh firewall-safe
+```
+
+3) Test local DNS:
+
+```bash
+dig +short google.com @127.0.0.1
+```
+
+4) Switch system DNS only after the test succeeds:
+
+```bash
+sudo ./citadela_en.sh configure-system
+```
+
+5) Verify:
+
+```bash
+sudo ./citadela_en.sh verify
+```
+
+### Rollback
+
+```bash
+sudo ./citadela_en.sh restore-system
+```
+
+### DNS Adblock (panel)
+
+Files:
+- `/etc/coredns/zones/custom.hosts`
+- `/etc/coredns/zones/blocklist.hosts`
+- `/etc/coredns/zones/combined.hosts`
+
+Commands:
+
+```bash
+sudo ./citadela_en.sh adblock-status
+sudo ./citadela_en.sh adblock-stats
+sudo ./citadela_en.sh adblock-add example.com
+sudo ./citadela_en.sh adblock-remove example.com
+sudo ./citadela_en.sh adblock-edit
+sudo ./citadela_en.sh adblock-rebuild
+sudo ./citadela_en.sh adblock-query doubleclick.net
+```
+
+### Docs
+
+- Polish notes: `CITADEL++_NOTES.md`
+- English notes: `CITADEL++_NOTES_EN.md`
+- English script entrypoint: `citadela_en.sh`
