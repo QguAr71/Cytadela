@@ -5,6 +5,8 @@
 
 ## PL — Opis projektu
 
+Ten projekt jest **hobbystyczny** i jest udostępniany **"as-is"** (bez gwarancji i bez supportu).
+
 Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
 
 - **Warstwa 1**: `dnscrypt-proxy` — szyfrowany upstream (DNSCrypt/DoH), dynamiczny port lokalny.
@@ -124,6 +126,8 @@ Tracking poprawek:
 ---
 
 ## EN — Project overview
+
+This is a **hobby project** provided **"as-is"** (no warranty, no support).
 
 Citadel++ is an install/config script that builds a local DNS privacy stack:
 
