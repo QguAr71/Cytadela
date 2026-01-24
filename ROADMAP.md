@@ -51,6 +51,12 @@ This file tracks planned changes and feature ideas. It is intentionally short an
   - If outside trusted location and firewall is in SAFE mode: prompt to switch to STRICT.
   - Optional: manage a separate nftables include (e.g. `/etc/nftables.d/citadel-location.nft`) for location-specific allowances.
 
+### Network stack detection
+
+- **Detect network manager (NetworkManager vs systemd-networkd)**
+  - Add a small helper to detect which network stack manages interfaces.
+  - Use it as a prerequisite for modules like IPv6 reset and SSID-based location logic.
+
 ### Firewall / exposure audit
 
 - **Ghost-Check (port audit)**
