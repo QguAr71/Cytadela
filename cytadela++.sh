@@ -1138,6 +1138,46 @@ smart_ipv6_detection() {
     echo "IPv6 Status: $IPV6_AVAILABLE"
 }
 
+ipv6_privacy_on() {
+    local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
+
+    log_section "🔒 IPV6 PRIVACY EXTENSIONS"
+    log_info "Włączanie IPv6 Privacy Extensions (prefer temporary addresses)..."
+
+    sudo tee "$sysctl_file" >/dev/null <<'EOF'
+net.ipv6.conf.all.use_tempaddr = 2
+net.ipv6.conf.default.use_tempaddr = 2
+EOF
+
+    sudo sysctl --system >/dev/null 2>&1 || true
+    ipv6_privacy_status
+}
+
+ipv6_privacy_off() {
+    local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
+
+    log_section "🔓 IPV6 PRIVACY EXTENSIONS"
+    log_info "Wyłączanie IPv6 Privacy Extensions..."
+
+    sudo tee "$sysctl_file" >/dev/null <<'EOF'
+net.ipv6.conf.all.use_tempaddr = 0
+net.ipv6.conf.default.use_tempaddr = 0
+EOF
+
+    sudo sysctl --system >/dev/null 2>&1 || true
+    ipv6_privacy_status
+}
+
+ipv6_privacy_status() {
+    log_section "🔎 IPV6 PRIVACY EXTENSIONS STATUS"
+
+    echo "net.ipv6.conf.all.use_tempaddr = $(sysctl -n net.ipv6.conf.all.use_tempaddr 2>/dev/null || echo '?')"
+    echo "net.ipv6.conf.default.use_tempaddr = $(sysctl -n net.ipv6.conf.default.use_tempaddr 2>/dev/null || echo '?')"
+    echo ""
+    echo "Adresy IPv6 (global/temporary):"
+    ip -6 addr show scope global 2>/dev/null | sed -n '1,120p' || true
+}
+
 # ==============================================================================
 # NEW FEATURES MODULE 6: Terminal Dashboard
 # ==============================================================================
@@ -1449,6 +1489,9 @@ ${CYAN}DNSSEC (opcjonalnie):${NC}
 
 ${YELLOW}NEW FEATURES v3.0:${NC}
   smart-ipv6           Smart IPv6 detection & auto-reconfiguration
+  ipv6-privacy-on      Włącz IPv6 Privacy Extensions (prefer temporary)
+  ipv6-privacy-off     Wyłącz IPv6 Privacy Extensions
+  ipv6-privacy-status  Pokaż status IPv6 Privacy Extensions
   install-dashboard    Install terminal dashboard (citadel-top)
   install-editor       Install editor integration (citadel edit)
   optimize-kernel      Apply real-time priority for DNS processes
@@ -1944,6 +1987,15 @@ case "$ACTION" in
     # NEW FEATURES v3.0
     smart-ipv6)
         smart_ipv6_detection
+        ;;
+    ipv6-privacy-on)
+        ipv6_privacy_on
+        ;;
+    ipv6-privacy-off)
+        ipv6_privacy_off
+        ;;
+    ipv6-privacy-status)
+        ipv6_privacy_status
         ;;
     install-dashboard)
         install_citadel_top
