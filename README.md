@@ -1,5 +1,7 @@
 # Citadel++ (Cytadela++) — Hardened Local DNS Stack (DNSCrypt + CoreDNS + NFTables)
 
+> *No cloud. No telemetry. No trust. Only local control.*
+
 [![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
