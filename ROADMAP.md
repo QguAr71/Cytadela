@@ -57,6 +57,16 @@ This file tracks planned changes and feature ideas. It is intentionally short an
   - Add a small helper to detect which network stack manages interfaces.
   - Use it as a prerequisite for modules like IPv6 reset and SSID-based location logic.
 
+- **`discover` command (network + firewall sanity snapshot)**
+  - Print a quick, human-readable snapshot of:
+    - Active interface (IPv4/IPv6) detected via route lookup (e.g. `ip route get 1.1.1.1`, `ip -6 route get 2001:4860:4860::8888`).
+    - Network stack manager (NetworkManager vs systemd-networkd) to choose safe reconnect methods for other modules.
+    - nftables status (version) and whether Citadel tables/chains are loaded (e.g. `citadel_*`).
+  - Goal: fast triage when connectivity/DNS/firewall behaves unexpectedly.
+
+- **Non-goal / avoid bad assumptions**
+  - nftables does not require NetworkManager to “map” interface names; interface/network-stack detection is primarily for network-related helpers (IPv6 reset, SSID-based location) and better diagnostics, not for basic DNS leak protection rules.
+
 ### Firewall / exposure audit
 
 - **Ghost-Check (port audit)**
