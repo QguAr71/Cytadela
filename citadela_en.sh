@@ -1518,7 +1518,10 @@ smart_ipv6_detection() {
     log_info "Checking IPv6 connectivity..."
     IPV6_AVAILABLE=false
     
-    if ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
+    if ip -6 route get 2001:4860:4860::8888 >/dev/null 2>&1; then
+        IPV6_AVAILABLE=true
+        log_success "IPv6 available"
+    elif (command -v ping >/dev/null 2>&1 && ping -6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1) || (command -v ping6 >/dev/null 2>&1 && ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1); then
         IPV6_AVAILABLE=true
         log_success "IPv6 available"
     else
