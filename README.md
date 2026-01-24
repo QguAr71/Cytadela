@@ -13,6 +13,8 @@ Używaj go, jeśli pasuje do Twojego threat modelu. Jeśli nie — nie używaj.
 
 Planowane zmiany i pomysły: `ROADMAP.md`.
 
+Issues/roadmap są prowadzone po angielsku, ale szczegóły zgłoszeń mogą być po polsku (templates mają pola EN+PL).
+
 ### Własność bezpieczeństwa (twardy wniosek z audytu)
 
 Na podstawie analizy ruchu (`tcpdump`) można stwierdzić technicznie: Cytadela działa jako **secure DNS gateway na poziomie jądra** — system nie posiada ścieżki DNS do świata zewnętrznego (DNS `:53`) poza lokalnym stackiem (localhost).
