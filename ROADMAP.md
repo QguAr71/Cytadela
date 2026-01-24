@@ -21,6 +21,28 @@ This file tracks planned changes and feature ideas. It is intentionally short an
   - Temporarily bypass local DNS stack when apps work by IP but DNS is stuck.
   - Must be explicit and reversible (state file + restore command) and must not silently weaken leak protection.
 
+### Operational hardening
+
+- **Fail-fast + better debugging**
+  - Global `trap ERR` with actionable error output (line/function/command) to speed up troubleshooting.
+
+- **Panic-bypass / recovery mode**
+  - One command to temporarily restore connectivity (flush nftables + temporary resolv.conf), ideally with auto-rollback timer.
+  - Goal: reduce operator lock-out / SPOF risk.
+
+- **Systemd restart/watchdog + health checks**
+  - Improve restart policy and add health checks to detect DNS stack stalls.
+
+### Supply chain / updates
+
+- **Supply-chain protection for updates**
+  - Optional verification for downloaded assets (sha256/gpg/minisign).
+
+### nftables observability
+
+- **Optional nft debug chain**
+  - Rate-limited logging and/or counters for debugging leak blocks.
+
 ### Firewall / exposure audit
 
 - **Ghost-Check (port audit)**
