@@ -43,6 +43,14 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 - **Optional nft debug chain**
   - Rate-limited logging and/or counters for debugging leak blocks.
 
+### Location-aware security (advisory)
+
+- **Location-aware firewall advisory (SSID/profile based)**
+  - Detect a "trusted" location via SSID (NetworkManager `nmcli`), with user-configured SSID list.
+  - Run a port exposure audit (list listening sockets bound to `0.0.0.0` / `::`) and warn about unexpected ports.
+  - If outside trusted location and firewall is in SAFE mode: prompt to switch to STRICT.
+  - Optional: manage a separate nftables include (e.g. `/etc/nftables.d/citadel-location.nft`) for location-specific allowances.
+
 ### Firewall / exposure audit
 
 - **Ghost-Check (port audit)**
