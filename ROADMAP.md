@@ -1,0 +1,34 @@
+# Roadmap
+
+This file tracks planned changes and feature ideas. It is intentionally short and outcome-oriented.
+
+## Planned / Ideas
+
+### IPv6
+
+- **IPv6 Reset (deep reset)**
+  - Refresh IPv6 without touching router UI.
+  - Example actions: flush IPv6 neighbor cache, reconnect interface, send Router Solicitation / wait for RA.
+  - Goal: recover from transient IPv6 failures when `ping -6` by IP fails.
+
+- **IPv6 Privacy: auto-ensure**
+  - Ensure temporary IPv6 addresses (`temporary`) exist after sleep/resume.
+  - If missing: re-apply `use_tempaddr=2` and reconnect interface.
+
+### DNS resiliency
+
+- **DNS bypass / switcher (emergency)**
+  - Temporarily bypass local DNS stack when apps work by IP but DNS is stuck.
+  - Must be explicit and reversible (state file + restore command) and must not silently weaken leak protection.
+
+### Firewall / exposure audit
+
+- **Ghost-Check (port audit)**
+  - Enumerate listening sockets and highlight ones bound to `0.0.0.0` / `::`.
+  - Optional allowlist (e.g., Sunshine/Moonlight) and warnings for unexpected exposure.
+  - Prefer nftables-aware checks (project uses nftables, not UFW).
+
+## Notes
+
+- Features should be ISP-agnostic (no Orange/FunBox assumptions).
+- Prefer safe operations; network resets must warn about dropping connectivity.
