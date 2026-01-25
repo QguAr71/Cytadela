@@ -862,6 +862,320 @@ ipv6_deep_reset() {
     log_success "IPv6 deep reset complete"
 }
 
+# ==============================================================================
+# SYSTEMD HEALTH CHECKS (Roadmap: restart/watchdog + health probes)
+# ==============================================================================
+HEALTH_CHECK_SERVICES=(dnscrypt-proxy coredns)
+
+health_check_dns() {
+    # Quick DNS health probe - returns 0 if healthy
+    local test_domain="cloudflare.com"
+    local timeout=3
+    
+    if command -v dig &>/dev/null; then
+        dig +short +time=$timeout "$test_domain" @127.0.0.1 >/dev/null 2>&1
+        return $?
+    elif command -v nslookup &>/dev/null; then
+        timeout $timeout nslookup "$test_domain" 127.0.0.1 >/dev/null 2>&1
+        return $?
+    else
+        # Fallback: just check if coredns is listening
+        ss -ln | grep -q ":53 " && return 0 || return 1
+    fi
+}
+
+health_status() {
+    log_section "🏥 HEALTH STATUS"
+    
+    local all_healthy=1
+    
+    # Check services
+    echo "=== SERVICES ==="
+    for svc in "${HEALTH_CHECK_SERVICES[@]}"; do
+        local status
+        if systemctl is-active --quiet "$svc" 2>/dev/null; then
+            printf "${GREEN}%-20s ACTIVE${NC}\n" "$svc"
+        else
+            printf "${RED}%-20s INACTIVE${NC}\n" "$svc"
+            all_healthy=0
+        fi
+    done
+    
+    # Check DNS resolution
+    echo ""
+    echo "=== DNS PROBE ==="
+    if health_check_dns; then
+        log_success "DNS resolution working (127.0.0.1)"
+    else
+        log_error "DNS resolution FAILED"
+        all_healthy=0
+    fi
+    
+    # Check nftables
+    echo ""
+    echo "=== FIREWALL ==="
+    if nft list tables 2>/dev/null | grep -q "citadel"; then
+        log_success "Citadel firewall rules loaded"
+    else
+        log_warning "Citadel firewall rules NOT loaded"
+    fi
+    
+    echo ""
+    if [[ $all_healthy -eq 1 ]]; then
+        log_success "All health checks PASSED"
+        return 0
+    else
+        log_error "Some health checks FAILED"
+        return 1
+    fi
+}
+
+install_health_watchdog() {
+    log_section "🔧 INSTALLING HEALTH WATCHDOG"
+    
+    # Create health check script
+    log_info "Creating health check script..."
+    cat > /usr/local/bin/citadel-health-check <<'EOF'
+#!/bin/bash
+# Citadel DNS Health Check - for systemd watchdog
+
+# Quick DNS probe
+if dig +short +time=2 cloudflare.com @127.0.0.1 >/dev/null 2>&1; then
+    exit 0
+else
+    # Try restart before failing
+    systemctl restart coredns 2>/dev/null
+    sleep 2
+    if dig +short +time=2 cloudflare.com @127.0.0.1 >/dev/null 2>&1; then
+        exit 0
+    fi
+    exit 1
+fi
+EOF
+    chmod +x /usr/local/bin/citadel-health-check
+    
+    # Create systemd override for dnscrypt-proxy
+    log_info "Creating systemd overrides..."
+    mkdir -p /etc/systemd/system/dnscrypt-proxy.service.d
+    cat > /etc/systemd/system/dnscrypt-proxy.service.d/citadel-restart.conf <<'EOF'
+[Service]
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=5
+EOF
+    
+    # Create systemd override for coredns
+    mkdir -p /etc/systemd/system/coredns.service.d
+    cat > /etc/systemd/system/coredns.service.d/citadel-restart.conf <<'EOF'
+[Service]
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=5
+EOF
+    
+    # Create health check timer
+    log_info "Creating health check timer..."
+    cat > /etc/systemd/system/citadel-health.service <<'EOF'
+[Unit]
+Description=Citadel DNS Health Check
+After=network.target coredns.service dnscrypt-proxy.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/citadel-health-check
+EOF
+    
+    cat > /etc/systemd/system/citadel-health.timer <<'EOF'
+[Unit]
+Description=Citadel DNS Health Check Timer
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable --now citadel-health.timer
+    
+    log_success "Health watchdog installed"
+    log_info "Services will auto-restart on failure"
+    log_info "Health check runs every 5 minutes"
+}
+
+uninstall_health_watchdog() {
+    log_section "🗑️ UNINSTALLING HEALTH WATCHDOG"
+    
+    systemctl disable --now citadel-health.timer 2>/dev/null || true
+    rm -f /etc/systemd/system/citadel-health.service
+    rm -f /etc/systemd/system/citadel-health.timer
+    rm -f /etc/systemd/system/dnscrypt-proxy.service.d/citadel-restart.conf
+    rm -f /etc/systemd/system/coredns.service.d/citadel-restart.conf
+    rm -f /usr/local/bin/citadel-health-check
+    rmdir /etc/systemd/system/dnscrypt-proxy.service.d 2>/dev/null || true
+    rmdir /etc/systemd/system/coredns.service.d 2>/dev/null || true
+    systemctl daemon-reload
+    
+    log_success "Health watchdog uninstalled"
+}
+
+# ==============================================================================
+# SUPPLY-CHAIN VERIFICATION (Roadmap: sha256/gpg verification)
+# ==============================================================================
+SUPPLY_CHAIN_CHECKSUMS="/etc/cytadela/checksums.sha256"
+
+supply_chain_verify_file() {
+    local file="$1"
+    local expected_hash="$2"
+    
+    if [[ ! -f "$file" ]]; then
+        log_error "File not found: $file"
+        return 2
+    fi
+    
+    local actual_hash
+    actual_hash=$(sha256sum "$file" | awk '{print $1}')
+    
+    if [[ "$actual_hash" == "$expected_hash" ]]; then
+        return 0
+    else
+        log_error "Hash mismatch for $file"
+        log_error "  Expected: $expected_hash"
+        log_error "  Actual:   $actual_hash"
+        return 1
+    fi
+}
+
+supply_chain_download() {
+    local url="$1"
+    local dest="$2"
+    local expected_hash="${3:-}"
+    
+    log_info "Downloading: $url"
+    
+    local staging
+    staging=$(mktemp)
+    
+    if ! curl -sSL --connect-timeout 10 --max-time 120 "$url" -o "$staging" 2>/dev/null; then
+        log_error "Download failed: $url"
+        rm -f "$staging"
+        return 1
+    fi
+    
+    # Verify hash if provided
+    if [[ -n "$expected_hash" ]]; then
+        local actual_hash
+        actual_hash=$(sha256sum "$staging" | awk '{print $1}')
+        
+        if [[ "$actual_hash" != "$expected_hash" ]]; then
+            log_error "Hash verification FAILED for $url"
+            log_error "  Expected: $expected_hash"
+            log_error "  Actual:   $actual_hash"
+            rm -f "$staging"
+            return 1
+        fi
+        log_success "Hash verified: $actual_hash"
+    else
+        log_warning "No hash provided - skipping verification"
+    fi
+    
+    # Atomic move
+    mv "$staging" "$dest"
+    log_success "Downloaded: $dest"
+    return 0
+}
+
+supply_chain_status() {
+    log_section "🔐 SUPPLY-CHAIN STATUS"
+    
+    echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
+    
+    if [[ -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
+        echo "Status: EXISTS"
+        echo "Entries: $(grep -c -v '^#' "$SUPPLY_CHAIN_CHECKSUMS" 2>/dev/null || echo 0)"
+        echo ""
+        echo "Contents:"
+        cat "$SUPPLY_CHAIN_CHECKSUMS" | head -20
+    else
+        echo "Status: NOT FOUND"
+        log_info "Run 'supply-chain-init' to create checksums file"
+    fi
+}
+
+supply_chain_init() {
+    log_section "🔐 SUPPLY-CHAIN INIT"
+    
+    mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
+    
+    local tmp
+    tmp=$(mktemp)
+    
+    echo "# Cytadela Supply-Chain Checksums" > "$tmp"
+    echo "# Generated: $(date -Iseconds)" >> "$tmp"
+    echo "# Format: sha256  url  description" >> "$tmp"
+    echo "" >> "$tmp"
+    
+    # Add known blocklist URLs with current hashes
+    log_info "Fetching current blocklist hash..."
+    local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
+    local blocklist_hash
+    blocklist_hash=$(curl -sSL --connect-timeout 10 "$blocklist_url" 2>/dev/null | sha256sum | awk '{print $1}')
+    
+    if [[ -n "$blocklist_hash" && "$blocklist_hash" != "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" ]]; then
+        echo "$blocklist_hash  $blocklist_url  # Hagezi Pro blocklist" >> "$tmp"
+        log_success "Added blocklist hash"
+    else
+        log_warning "Could not fetch blocklist hash"
+    fi
+    
+    mv "$tmp" "$SUPPLY_CHAIN_CHECKSUMS"
+    chmod 644 "$SUPPLY_CHAIN_CHECKSUMS"
+    
+    log_success "Supply-chain checksums initialized: $SUPPLY_CHAIN_CHECKSUMS"
+    log_info "Note: Blocklist hashes change frequently - use for audit, not strict enforcement"
+}
+
+supply_chain_verify() {
+    log_section "🔐 SUPPLY-CHAIN VERIFY"
+    
+    if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
+        log_warning "No checksums file. Run 'supply-chain-init' first."
+        return 0
+    fi
+    
+    local errors=0
+    
+    # Verify local files from integrity manifest
+    if [[ -f "$CYTADELA_MANIFEST" ]]; then
+        log_info "Verifying integrity manifest..."
+        while IFS='  ' read -r hash filepath; do
+            [[ -z "$hash" || "$hash" == "#"* ]] && continue
+            
+            if [[ -f "$filepath" ]]; then
+                if supply_chain_verify_file "$filepath" "$hash"; then
+                    log_success "OK: $filepath"
+                else
+                    ((errors++))
+                fi
+            else
+                log_warning "Missing: $filepath"
+            fi
+        done < "$CYTADELA_MANIFEST"
+    fi
+    
+    if [[ $errors -eq 0 ]]; then
+        log_success "All supply-chain checks passed"
+    else
+        log_error "$errors verification error(s)"
+        return 1
+    fi
+}
+
 require_cmd() {
     command -v "$1" >/dev/null 2>&1
 }
@@ -2372,6 +2686,16 @@ ${CYAN}Diagnostic Commands:${NC}
   ipv6-deep-reset       Flush IPv6 + neighbor cache + reconnect
   test-all              Smoke test (verify + leak test + IPv6)
 
+${GREEN}Health Watchdog:${NC}
+  health-status         Show health status (services, DNS probe, firewall)
+  health-install        Install auto-restart + health check timer
+  health-uninstall      Remove health watchdog
+
+${GREEN}Supply-Chain Verification:${NC}
+  supply-chain-status   Show checksums file status
+  supply-chain-init     Initialize checksums for known assets
+  supply-chain-verify   Verify local files against manifest
+
 ${YELLOW}Integrity (Local-First):${NC}
   integrity-init        Create integrity manifest for scripts/binaries
   integrity-check       Verify integrity against manifest
@@ -2932,6 +3256,26 @@ case "$ACTION" in
         ;;
     ipv6-deep-reset)
         ipv6_deep_reset
+        ;;
+    # Health checks
+    health-status)
+        health_status
+        ;;
+    health-install)
+        install_health_watchdog
+        ;;
+    health-uninstall)
+        uninstall_health_watchdog
+        ;;
+    # Supply-chain verification
+    supply-chain-status)
+        supply_chain_status
+        ;;
+    supply-chain-init)
+        supply_chain_init
+        ;;
+    supply-chain-verify)
+        supply_chain_verify
         ;;
     # Diagnostic commands
     diagnostics)
