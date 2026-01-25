@@ -584,6 +584,8 @@ panic_bypass() {
     
     # Step 2: Set temporary resolv.conf to public DNS
     log_info "Setting temporary public DNS..."
+    # Remove symlink if exists (systemd-resolved creates symlink)
+    rm -f /etc/resolv.conf 2>/dev/null || true
     cat > /etc/resolv.conf <<EOF
 # CYTADELA PANIC MODE - Temporary public DNS
 # Auto-rollback scheduled or run: sudo cytadela++.sh panic-restore

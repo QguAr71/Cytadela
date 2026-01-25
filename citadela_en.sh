@@ -546,6 +546,8 @@ panic_bypass() {
     nft flush ruleset 2>/dev/null || true
     
     log_info "Setting temporary public DNS..."
+    # Remove symlink if exists (systemd-resolved creates symlink)
+    rm -f /etc/resolv.conf 2>/dev/null || true
     cat > /etc/resolv.conf <<EOF
 # CYTADELA PANIC MODE - Temporary public DNS
 # Auto-rollback scheduled or run: sudo citadela_en.sh panic-restore
