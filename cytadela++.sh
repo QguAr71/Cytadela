@@ -17,6 +17,18 @@
 set -euo pipefail
 
 # ==============================================================================
+# GLOBAL ERROR TRAP - Better debugging (Roadmap: fail-fast)
+# ==============================================================================
+trap_err_handler() {
+    local exit_code=$?
+    local line_no=${BASH_LINENO[0]}
+    local func_name=${FUNCNAME[1]:-main}
+    local command="$BASH_COMMAND"
+    echo -e "\033[0;31m✗ ERROR in ${func_name}() at line ${line_no}: '${command}' exited with code ${exit_code}\033[0m" >&2
+}
+trap 'trap_err_handler' ERR
+
+# ==============================================================================
 # INTEGRITY LAYER - Local-First Security Policy
 # ==============================================================================
 CYTADELA_MANIFEST="/etc/cytadela/manifest.sha256"
@@ -196,6 +208,185 @@ integrity_status() {
     echo "LKG directory: $CYTADELA_LKG_DIR"
     if [[ -d "$CYTADELA_LKG_DIR" ]]; then
         echo "LKG files: $(find "$CYTADELA_LKG_DIR" -type f 2>/dev/null | wc -l)"
+    fi
+}
+
+# ==============================================================================
+# DISCOVER - Network & Firewall Sanity Snapshot (Issue #10)
+# ==============================================================================
+discover_active_interface() {
+    # Detect active interface via route lookup (IPv4 primary, IPv6 fallback)
+    local iface=""
+    # Try IPv4 first
+    iface=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1); exit}' || true)
+    if [[ -z "$iface" ]]; then
+        # Fallback to IPv6
+        iface=$(ip -6 route get 2001:4860:4860::8888 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev") print $(i+1); exit}' || true)
+    fi
+    echo "$iface"
+}
+
+discover_network_stack() {
+    # Detect which network manager is active
+    if systemctl is-active --quiet NetworkManager 2>/dev/null; then
+        echo "NetworkManager"
+    elif systemctl is-active --quiet systemd-networkd 2>/dev/null; then
+        echo "systemd-networkd"
+    elif command -v nmcli &>/dev/null && nmcli -t -f RUNNING general 2>/dev/null | grep -q running; then
+        echo "NetworkManager"
+    else
+        echo "unknown"
+    fi
+}
+
+discover_nftables_status() {
+    # Check nftables version and Citadel tables
+    local nft_version=""
+    local citadel_tables=""
+    
+    if command -v nft &>/dev/null; then
+        nft_version=$(nft --version 2>/dev/null | head -1 || echo "unknown")
+        citadel_tables=$(nft list tables 2>/dev/null | grep -c "citadel" || echo "0")
+    else
+        nft_version="not installed"
+        citadel_tables="0"
+    fi
+    
+    echo "version:${nft_version}|citadel_tables:${citadel_tables}"
+}
+
+discover() {
+    log_section "🔍 DISCOVER - Network & Firewall Snapshot"
+    
+    local iface
+    iface=$(discover_active_interface)
+    local stack
+    stack=$(discover_network_stack)
+    local nft_status
+    nft_status=$(discover_nftables_status)
+    
+    echo "Active Interface: ${iface:-none detected}"
+    echo "Network Stack: $stack"
+    echo "NFTables: $nft_status"
+    
+    # IPv4 info
+    if [[ -n "$iface" ]]; then
+        local ipv4_addr
+        ipv4_addr=$(ip -4 addr show dev "$iface" 2>/dev/null | awk '/inet / {print $2; exit}' || true)
+        echo "IPv4 Address: ${ipv4_addr:-none}"
+        
+        # IPv6 info
+        local ipv6_global
+        ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | awk '/inet6/ {print $2; exit}' || true)
+        local ipv6_temp
+        ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ {print $2; exit}' || true)
+        echo "IPv6 Global: ${ipv6_global:-none}"
+        echo "IPv6 Temporary: ${ipv6_temp:-none}"
+    fi
+    
+    # DNS stack status
+    echo ""
+    echo "DNS Stack:"
+    for svc in dnscrypt-proxy coredns; do
+        if systemctl is-active --quiet "$svc" 2>/dev/null; then
+            echo "  $svc: active"
+        else
+            echo "  $svc: inactive"
+        fi
+    done
+}
+
+# ==============================================================================
+# IPv6 PRIVACY AUTO-ENSURE (Issue #9)
+# ==============================================================================
+ipv6_privacy_auto_ensure() {
+    log_section "🔒 IPv6 PRIVACY AUTO-ENSURE"
+    
+    # Step 1: Detect active interface
+    local iface
+    iface=$(discover_active_interface)
+    if [[ -z "$iface" ]]; then
+        log_warning "No active interface detected. Skipping."
+        return 0
+    fi
+    log_info "Active interface: $iface"
+    
+    # Step 2: Check IPv6 availability
+    local ipv6_global
+    ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | grep -v temporary | awk '/inet6/ {print $2; exit}' || true)
+    if [[ -z "$ipv6_global" ]]; then
+        log_info "No global IPv6 on $iface. Ensuring sysctl is configured anyway."
+    fi
+    
+    # Step 3: Check for usable temporary address
+    local ipv6_temp
+    ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ && /preferred_lft/ {print $2; exit}' || true)
+    
+    # Also check preferred_lft > 0
+    local temp_preferred=0
+    if [[ -n "$ipv6_temp" ]]; then
+        local pref_lft
+        pref_lft=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | grep -oP 'preferred_lft \K[0-9]+' | head -1 || echo "0")
+        if [[ "$pref_lft" -gt 0 ]]; then
+            temp_preferred=1
+        fi
+    fi
+    
+    if [[ $temp_preferred -eq 1 ]]; then
+        log_success "Usable temporary IPv6 address found: $ipv6_temp"
+        log_success "IPv6 Privacy Extensions are working correctly."
+        return 0
+    fi
+    
+    # Step 4: Remediation needed
+    log_warning "No usable temporary IPv6 address. Applying remediation..."
+    
+    # 4a: Ensure sysctl config is set (persistent)
+    local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
+    log_info "Setting sysctl for IPv6 privacy extensions..."
+    cat > "$sysctl_file" <<EOF
+# Cytadela IPv6 Privacy Extensions
+net.ipv6.conf.all.use_tempaddr = 2
+net.ipv6.conf.default.use_tempaddr = 2
+net.ipv6.conf.${iface}.use_tempaddr = 2
+EOF
+    sysctl --system >/dev/null 2>&1 || true
+    log_success "Sysctl configured: use_tempaddr=2"
+    
+    # 4b: Trigger address regeneration (stack-aware)
+    local stack
+    stack=$(discover_network_stack)
+    log_info "Network stack: $stack. Triggering address regeneration..."
+    
+    if [[ "$stack" == "NetworkManager" ]]; then
+        # NM: reconnect interface
+        if command -v nmcli &>/dev/null; then
+            log_info "Reconnecting $iface via NetworkManager..."
+            nmcli dev disconnect "$iface" 2>/dev/null || true
+            sleep 1
+            nmcli dev connect "$iface" 2>/dev/null || true
+            sleep 2
+        fi
+    elif [[ "$stack" == "systemd-networkd" ]]; then
+        # networkd: reconfigure
+        if command -v networkctl &>/dev/null; then
+            log_info "Reconfiguring $iface via systemd-networkd..."
+            networkctl reconfigure "$iface" 2>/dev/null || true
+            sleep 2
+        fi
+    else
+        # Fallback: just apply sysctl, user may need to reconnect manually
+        log_warning "Unknown network stack. Sysctl applied, but you may need to reconnect manually."
+    fi
+    
+    # Verify result
+    sleep 1
+    ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ {print $2; exit}' || true)
+    if [[ -n "$ipv6_temp" ]]; then
+        log_success "Temporary IPv6 address now active: $ipv6_temp"
+    else
+        log_warning "Temporary address not yet visible. It may take a moment to appear."
+        log_info "Check with: ip -6 addr show dev $iface scope global temporary"
     fi
 }
 
@@ -1672,6 +1863,8 @@ ${YELLOW}NEW FEATURES v3.0:${NC}
   ipv6-privacy-on      Włącz IPv6 Privacy Extensions (prefer temporary)
   ipv6-privacy-off     Wyłącz IPv6 Privacy Extensions
   ipv6-privacy-status  Pokaż status IPv6 Privacy Extensions
+  ipv6-privacy-auto    Auto-ensure IPv6 privacy (detect + fix if needed)
+  discover             Network & firewall sanity snapshot (Issue #10)
   install-dashboard    Install terminal dashboard (citadel-top)
   install-editor       Install editor integration (citadel edit)
   optimize-kernel      Apply real-time priority for DNS processes
@@ -2182,6 +2375,12 @@ case "$ACTION" in
         ;;
     ipv6-privacy-status)
         ipv6_privacy_status
+        ;;
+    ipv6-privacy-auto)
+        ipv6_privacy_auto_ensure
+        ;;
+    discover)
+        discover
         ;;
     install-dashboard)
         install_citadel_top
