@@ -5,7 +5,7 @@
 [![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-## PL — Opis projektu
+## PL — Opis projektu (If you want the text in English, scroll down.)
 
 Ten projekt jest **hobbystyczny** i jest udostępniany **"as-is"** (bez gwarancji i bez supportu).
 
