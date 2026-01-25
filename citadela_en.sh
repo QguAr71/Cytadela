@@ -367,6 +367,268 @@ EOF
     fi
 }
 
+# ==============================================================================
+# LKG (Last Known Good) - Blocklist Cache Management (Issue #1 part 2)
+# ==============================================================================
+LKG_BLOCKLIST="${CYTADELA_LKG_DIR}/blocklist.hosts"
+LKG_BLOCKLIST_META="${CYTADELA_LKG_DIR}/blocklist.meta"
+
+lkg_validate_blocklist() {
+    local file="$1"
+    local min_lines=1000
+    
+    if [[ ! -s "$file" ]]; then
+        log_warning "LKG: File empty or missing: $file"
+        return 1
+    fi
+    
+    local lines
+    lines=$(wc -l < "$file")
+    if [[ $lines -lt $min_lines ]]; then
+        log_warning "LKG: File too small ($lines lines, min $min_lines): $file"
+        return 1
+    fi
+    
+    if grep -qiE '<html|<!DOCTYPE|AccessDenied|404 Not Found|403 Forbidden' "$file" 2>/dev/null; then
+        log_warning "LKG: File looks like error page: $file"
+        return 1
+    fi
+    
+    if ! head -100 "$file" | grep -qE '^(0\.0\.0\.0|127\.0\.0\.1)[[:space:]]' 2>/dev/null; then
+        log_warning "LKG: File doesn't look like hosts format: $file"
+        return 1
+    fi
+    
+    return 0
+}
+
+lkg_save_blocklist() {
+    local source="/etc/coredns/zones/blocklist.hosts"
+    
+    if [[ ! -f "$source" ]]; then
+        log_warning "LKG: No blocklist to save"
+        return 1
+    fi
+    
+    if ! lkg_validate_blocklist "$source"; then
+        log_warning "LKG: Current blocklist failed validation, not saving"
+        return 1
+    fi
+    
+    mkdir -p "$CYTADELA_LKG_DIR"
+    cp "$source" "$LKG_BLOCKLIST"
+    echo "saved=$(date -Iseconds)" > "$LKG_BLOCKLIST_META"
+    echo "lines=$(wc -l < "$LKG_BLOCKLIST")" >> "$LKG_BLOCKLIST_META"
+    echo "sha256=$(sha256sum "$LKG_BLOCKLIST" | awk '{print $1}')" >> "$LKG_BLOCKLIST_META"
+    
+    log_success "LKG: Blocklist saved ($(wc -l < "$LKG_BLOCKLIST") lines)"
+}
+
+lkg_restore_blocklist() {
+    local target="/etc/coredns/zones/blocklist.hosts"
+    
+    if [[ ! -f "$LKG_BLOCKLIST" ]]; then
+        log_warning "LKG: No saved blocklist to restore"
+        return 1
+    fi
+    
+    if ! lkg_validate_blocklist "$LKG_BLOCKLIST"; then
+        log_error "LKG: Saved blocklist failed validation"
+        return 1
+    fi
+    
+    cp "$LKG_BLOCKLIST" "$target"
+    chown root:coredns "$target" 2>/dev/null || true
+    chmod 0640 "$target" 2>/dev/null || true
+    
+    log_success "LKG: Blocklist restored from cache"
+}
+
+lkg_status() {
+    log_section "📦 LKG (Last Known Good) STATUS"
+    
+    echo "LKG Directory: $CYTADELA_LKG_DIR"
+    
+    if [[ -f "$LKG_BLOCKLIST" ]]; then
+        echo "Blocklist cache: EXISTS"
+        echo "  Lines: $(wc -l < "$LKG_BLOCKLIST")"
+        if [[ -f "$LKG_BLOCKLIST_META" ]]; then
+            cat "$LKG_BLOCKLIST_META" | sed 's/^/  /'
+        fi
+    else
+        echo "Blocklist cache: NOT FOUND"
+        echo "  Run: sudo $0 lkg-save"
+    fi
+}
+
+lists_update() {
+    log_section "📥 LISTS UPDATE (with LKG fallback)"
+    
+    local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
+    local staging_file
+    staging_file=$(mktemp)
+    local target="/etc/coredns/zones/blocklist.hosts"
+    
+    log_info "Downloading blocklist..."
+    
+    if curl -sSL --connect-timeout 10 --max-time 60 "$blocklist_url" -o "$staging_file" 2>/dev/null; then
+        log_info "Download complete. Validating..."
+        
+        if lkg_validate_blocklist "$staging_file"; then
+            mv "$staging_file" "$target"
+            chown root:coredns "$target" 2>/dev/null || true
+            chmod 0640 "$target" 2>/dev/null || true
+            
+            log_success "Blocklist updated ($(wc -l < "$target") lines)"
+            lkg_save_blocklist
+            adblock_rebuild
+            adblock_reload
+            log_success "Adblock rebuilt + CoreDNS reloaded"
+        else
+            log_warning "Downloaded blocklist failed validation"
+            rm -f "$staging_file"
+            log_info "Keeping current blocklist"
+        fi
+    else
+        log_warning "Download failed. Using LKG fallback..."
+        rm -f "$staging_file"
+        
+        if lkg_restore_blocklist; then
+            adblock_rebuild
+            adblock_reload
+            log_success "Restored from LKG cache"
+        else
+            log_warning "No LKG available. Keeping current blocklist."
+        fi
+    fi
+}
+
+# ==============================================================================
+# PANIC-BYPASS / RECOVERY MODE (Roadmap: SPOF mitigation)
+# ==============================================================================
+PANIC_STATE_FILE="${CYTADELA_STATE_DIR}/panic.state"
+PANIC_BACKUP_RESOLV="${CYTADELA_STATE_DIR}/resolv.conf.pre-panic"
+PANIC_ROLLBACK_TIMER=300
+
+panic_bypass() {
+    log_section "🚨 PANIC BYPASS - Emergency Recovery Mode"
+    
+    local rollback_seconds="${1:-$PANIC_ROLLBACK_TIMER}"
+    
+    if [[ -f "$PANIC_STATE_FILE" ]]; then
+        log_warning "Already in panic mode. Use 'panic-restore' to exit."
+        return 1
+    fi
+    
+    log_warning "This will temporarily disable DNS protection!"
+    log_info "Auto-rollback in ${rollback_seconds} seconds (or run 'panic-restore')"
+    
+    if [[ -t 0 && -t 1 ]]; then
+        echo -n "Continue? [y/N]: "
+        read -r answer
+        if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+            log_info "Cancelled."
+            return 0
+        fi
+    fi
+    
+    mkdir -p "$CYTADELA_STATE_DIR"
+    
+    log_info "Saving current state..."
+    cp /etc/resolv.conf "$PANIC_BACKUP_RESOLV" 2>/dev/null || true
+    nft list ruleset > "${CYTADELA_STATE_DIR}/nft.pre-panic" 2>/dev/null || true
+    
+    echo "started=$(date -Iseconds)" > "$PANIC_STATE_FILE"
+    echo "rollback_at=$(date -d "+${rollback_seconds} seconds" -Iseconds 2>/dev/null || date -Iseconds)" >> "$PANIC_STATE_FILE"
+    echo "rollback_seconds=$rollback_seconds" >> "$PANIC_STATE_FILE"
+    
+    log_info "Flushing nftables rules..."
+    nft flush ruleset 2>/dev/null || true
+    
+    log_info "Setting temporary public DNS..."
+    cat > /etc/resolv.conf <<EOF
+# CYTADELA PANIC MODE - Temporary public DNS
+# Auto-rollback scheduled or run: sudo citadela_en.sh panic-restore
+nameserver 9.9.9.9
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+EOF
+    
+    log_success "Panic bypass ACTIVE"
+    log_warning "DNS protection DISABLED - using public DNS"
+    log_info "Restore with: sudo $0 panic-restore"
+    
+    if [[ $rollback_seconds -gt 0 ]]; then
+        log_info "Auto-rollback scheduled in ${rollback_seconds}s..."
+        (
+            sleep "$rollback_seconds"
+            if [[ -f "$PANIC_STATE_FILE" ]]; then
+                "$CYTADELA_SCRIPT_PATH" panic-restore --auto 2>/dev/null || true
+            fi
+        ) &
+        disown
+    fi
+}
+
+panic_restore() {
+    log_section "🔄 PANIC RESTORE - Returning to Protected Mode"
+    
+    local auto_mode="${1:-}"
+    
+    if [[ ! -f "$PANIC_STATE_FILE" ]]; then
+        log_info "Not in panic mode. Nothing to restore."
+        return 0
+    fi
+    
+    if [[ "$auto_mode" == "--auto" ]]; then
+        log_info "Auto-rollback triggered"
+    fi
+    
+    log_info "Restoring resolv.conf..."
+    if [[ -f "$PANIC_BACKUP_RESOLV" ]]; then
+        cp "$PANIC_BACKUP_RESOLV" /etc/resolv.conf
+    else
+        cat > /etc/resolv.conf <<EOF
+# Generated by Cytadela
+nameserver 127.0.0.1
+EOF
+    fi
+    
+    log_info "Restoring nftables rules..."
+    if [[ -f "${CYTADELA_STATE_DIR}/nft.pre-panic" ]]; then
+        nft -f "${CYTADELA_STATE_DIR}/nft.pre-panic" 2>/dev/null || true
+    else
+        systemctl restart nftables 2>/dev/null || true
+    fi
+    
+    log_info "Restarting DNS services..."
+    systemctl restart dnscrypt-proxy 2>/dev/null || true
+    systemctl restart coredns 2>/dev/null || true
+    
+    rm -f "$PANIC_STATE_FILE"
+    rm -f "$PANIC_BACKUP_RESOLV"
+    rm -f "${CYTADELA_STATE_DIR}/nft.pre-panic"
+    
+    log_success "Panic mode DEACTIVATED"
+    log_success "DNS protection RESTORED"
+}
+
+panic_status() {
+    log_section "🚨 PANIC MODE STATUS"
+    
+    if [[ -f "$PANIC_STATE_FILE" ]]; then
+        echo "Status: PANIC MODE ACTIVE"
+        echo ""
+        cat "$PANIC_STATE_FILE" | sed 's/^/  /'
+        echo ""
+        log_warning "DNS protection is DISABLED"
+        log_info "Restore with: sudo $0 panic-restore"
+    else
+        echo "Status: Normal (protected mode)"
+        log_success "DNS protection is ACTIVE"
+    fi
+}
+
 require_cmd() {
     command -v "$1" >/dev/null 2>&1
 }
@@ -1855,6 +2117,17 @@ ${CYAN}Emergency Commands:${NC}
   killswitch-on         Activate DNS kill-switch (block all non-localhost)
   killswitch-off        Deactivate kill-switch
 
+${RED}Panic Bypass (SPOF recovery):${NC}
+  panic-bypass [secs]   Disable protection + auto-rollback (default 300s)
+  panic-restore         Manually restore protected mode
+  panic-status          Show panic mode status
+
+${YELLOW}LKG (Last Known Good):${NC}
+  lkg-save              Save current blocklist to cache
+  lkg-restore           Restore blocklist from cache
+  lkg-status            Show LKG cache status
+  lists-update          Update blocklist with LKG fallback
+
 ${CYAN}Diagnostic Commands:${NC}
   diagnostics           Run full system diagnostics
   status                Show service status
@@ -2390,6 +2663,31 @@ case "$ACTION" in
         ;;
     killswitch-off)
         emergency_killswitch_off
+        ;;
+    # LKG (Last Known Good) commands
+    lkg-save)
+        lkg_save_blocklist
+        ;;
+    lkg-restore)
+        lkg_restore_blocklist
+        adblock_rebuild
+        adblock_reload
+        ;;
+    lkg-status)
+        lkg_status
+        ;;
+    lists-update)
+        lists_update
+        ;;
+    # Panic bypass commands
+    panic-bypass)
+        panic_bypass "$ARG1"
+        ;;
+    panic-restore)
+        panic_restore "$ARG1"
+        ;;
+    panic-status)
+        panic_status
         ;;
     # Diagnostic commands
     diagnostics)
