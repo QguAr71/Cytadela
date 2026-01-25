@@ -16,6 +16,27 @@
 
 set -euo pipefail
 
+# ==============================================================================
+# INTEGRITY LAYER - Local-First Security Policy
+# ==============================================================================
+CYTADELA_MANIFEST="/etc/cytadela/manifest.sha256"
+CYTADELA_STATE_DIR="/var/lib/cytadela"
+CYTADELA_LKG_DIR="${CYTADELA_STATE_DIR}/lkg"
+CYTADELA_OPT_BIN="/opt/cytadela/bin"
+CYTADELA_MODE="secure"
+CYTADELA_SCRIPT_PATH="$(realpath "$0")"
+
+# Parse --dev flag from any position in argv
+for arg in "$@"; do
+    if [[ "$arg" == "--dev" ]]; then
+        CYTADELA_MODE="developer"
+    fi
+done
+# Also check for developer mode file
+if [[ -f "${HOME}/.cytadela_dev" ]] || [[ -f "/root/.cytadela_dev" ]]; then
+    CYTADELA_MODE="developer"
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -30,6 +51,153 @@ log_success() { echo -e "${GREEN}✓${NC} $1"; }
 log_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1"; }
 log_section() { echo -e "\n${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}"; echo -e "${BLUE}║${NC} $1"; echo -e "${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}\n"; }
+
+# ==============================================================================
+# INTEGRITY FUNCTIONS
+# ==============================================================================
+integrity_verify_file() {
+    local file="$1"
+    local expected_hash="$2"
+    if [[ ! -f "$file" ]]; then
+        return 2  # file missing
+    fi
+    local actual_hash
+    actual_hash=$(sha256sum "$file" | awk '{print $1}')
+    if [[ "$actual_hash" == "$expected_hash" ]]; then
+        return 0  # match
+    else
+        return 1  # mismatch
+    fi
+}
+
+integrity_check() {
+    local silent="${1:-}"
+    local has_errors=0
+    local has_warnings=0
+
+    if [[ "$CYTADELA_MODE" == "developer" ]]; then
+        [[ -z "$silent" ]] && log_info "[DEV MODE] Integrity checks bypassed"
+        return 0
+    fi
+
+    if [[ ! -f "$CYTADELA_MANIFEST" ]]; then
+        log_warning "Integrity not initialized. Run: sudo $0 integrity-init"
+        return 0  # don't fail on missing manifest (bootstrap)
+    fi
+
+    [[ -z "$silent" ]] && log_info "Verifying integrity from $CYTADELA_MANIFEST ..."
+
+    while IFS='  ' read -r hash filepath; do
+        [[ -z "$hash" || "$hash" == "#"* ]] && continue
+        
+        # Determine file type for policy
+        local is_binary=0
+        if [[ "$filepath" == "$CYTADELA_OPT_BIN"/* ]]; then
+            is_binary=1
+        fi
+
+        if [[ ! -f "$filepath" ]]; then
+            log_warning "Missing: $filepath"
+            has_warnings=1
+            continue
+        fi
+
+        if ! integrity_verify_file "$filepath" "$hash"; then
+            if [[ $is_binary -eq 1 ]]; then
+                log_error "INTEGRITY FAIL (binary): $filepath"
+                has_errors=1
+            else
+                log_warning "INTEGRITY MISMATCH (module): $filepath"
+                has_warnings=1
+                # In secure mode without TTY: fail
+                if [[ ! -t 0 && ! -t 1 ]]; then
+                    log_error "Non-interactive mode: aborting due to integrity mismatch"
+                    has_errors=1
+                else
+                    # TTY present: prompt
+                    echo -n "Continue despite mismatch? [y/N]: "
+                    read -r answer
+                    if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+                        has_errors=1
+                    fi
+                fi
+            fi
+        else
+            [[ -z "$silent" ]] && log_success "OK: $filepath"
+        fi
+    done < "$CYTADELA_MANIFEST"
+
+    if [[ $has_errors -eq 1 ]]; then
+        log_error "Integrity check FAILED. Aborting."
+        exit 1
+    fi
+
+    [[ -z "$silent" ]] && log_success "Integrity check passed"
+    return 0
+}
+
+integrity_init() {
+    log_section "🔐 INTEGRITY INIT"
+
+    # Create directories if needed
+    mkdir -p "$(dirname "$CYTADELA_MANIFEST")"
+    mkdir -p "$CYTADELA_LKG_DIR"
+    mkdir -p "$CYTADELA_OPT_BIN"
+
+    local manifest_tmp
+    manifest_tmp=$(mktemp)
+
+    echo "# Cytadela integrity manifest - generated $(date -Iseconds)" > "$manifest_tmp"
+    echo "# Format: sha256  filepath" >> "$manifest_tmp"
+
+    # Add main scripts
+    for script in "$CYTADELA_SCRIPT_PATH"; do
+        if [[ -f "$script" ]]; then
+            sha256sum "$script" >> "$manifest_tmp"
+            log_info "Added: $script"
+        fi
+    done
+
+    # Add Polish version if exists (same directory)
+    local script_dir
+    script_dir=$(dirname "$CYTADELA_SCRIPT_PATH")
+    if [[ -f "${script_dir}/cytadela++.sh" ]]; then
+        sha256sum "${script_dir}/cytadela++.sh" >> "$manifest_tmp"
+        log_info "Added: ${script_dir}/cytadela++.sh"
+    fi
+
+    # Add binaries from /opt/cytadela/bin if any
+    if [[ -d "$CYTADELA_OPT_BIN" ]]; then
+        for bin in "$CYTADELA_OPT_BIN"/*; do
+            if [[ -f "$bin" && -x "$bin" ]]; then
+                sha256sum "$bin" >> "$manifest_tmp"
+                log_info "Added: $bin"
+            fi
+        done
+    fi
+
+    mv "$manifest_tmp" "$CYTADELA_MANIFEST"
+    chmod 644 "$CYTADELA_MANIFEST"
+
+    log_success "Manifest created: $CYTADELA_MANIFEST"
+    log_info "To verify: sudo $0 integrity-check"
+}
+
+integrity_status() {
+    log_section "🔐 INTEGRITY STATUS"
+    echo "Mode: $CYTADELA_MODE"
+    echo "Manifest: $CYTADELA_MANIFEST"
+    if [[ -f "$CYTADELA_MANIFEST" ]]; then
+        echo "Manifest exists: YES"
+        echo "Entries: $(grep -c -v '^#' "$CYTADELA_MANIFEST" 2>/dev/null || echo 0)"
+    else
+        echo "Manifest exists: NO (run integrity-init to create)"
+    fi
+    echo "LKG directory: $CYTADELA_LKG_DIR"
+    if [[ -d "$CYTADELA_LKG_DIR" ]]; then
+        echo "LKG files: $(find "$CYTADELA_LKG_DIR" -type f 2>/dev/null | wc -l)"
+    fi
+}
 
 require_cmd() {
     command -v "$1" >/dev/null 2>&1
@@ -65,7 +233,19 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-ACTION=${1:-help}
+# Developer mode banner
+if [[ "$CYTADELA_MODE" == "developer" ]]; then
+    echo -e "${YELLOW}[!] Cytadela running in DEVELOPER MODE - integrity checks relaxed${NC}"
+fi
+
+# Filter out --dev from ACTION parsing
+ACTION="help"
+for arg in "$@"; do
+    if [[ "$arg" != "--dev" ]]; then
+        ACTION="$arg"
+        break
+    fi
+done
 ARG1=${2:-}
 ARG2=${3:-}
 
@@ -1511,6 +1691,12 @@ ${CYAN}Diagnostic Commands:${NC}
   verify                Verify full stack (ports/services/DNS/NFT/metrics)
   test-all              Smoke test (verify + leak test + IPv6)
 
+${YELLOW}Integrity (Local-First):${NC}
+  integrity-init        Create integrity manifest for scripts/binaries
+  integrity-check       Verify integrity against manifest
+  integrity-status      Show integrity mode and manifest info
+  --dev                 Run in developer mode (relaxed integrity checks)
+
 ${CYAN}Firewall Modes:${NC}
   firewall-safe         Set SAFE rules (won't break connectivity)
   firewall-strict       Set STRICT rules (blocks DNS leaks)
@@ -2038,6 +2224,16 @@ case "$ACTION" in
         ;;
     status)
         systemctl status --no-pager dnscrypt-proxy coredns nftables
+        ;;
+    # Integrity commands (Local-First)
+    integrity-init)
+        integrity_init
+        ;;
+    integrity-check)
+        integrity_check
+        ;;
+    integrity-status)
+        integrity_status
         ;;
     help|--help|-h)
         show_help
