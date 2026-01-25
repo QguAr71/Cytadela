@@ -3628,7 +3628,7 @@ case "$ACTION" in
         integrity_init
         ;;
     integrity-check)
-        integrity_check ""
+        integrity_check
         ;;
     integrity-status)
         integrity_status
