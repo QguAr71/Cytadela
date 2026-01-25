@@ -144,7 +144,11 @@ integrity_check() {
         exit 1
     fi
 
-    [[ -z "$silent" ]] && log_success "Integrity check passed"
+    if [[ $has_warnings -gt 0 ]]; then
+        [[ -z "$silent" ]] && log_warning "Integrity check passed with $has_warnings warning(s)"
+    else
+        [[ -z "$silent" ]] && log_success "Integrity check passed"
+    fi
     return 0
 }
 
@@ -163,7 +167,7 @@ integrity_init() {
     echo "# Format: sha256  filepath" >> "$manifest_tmp"
 
     # Add main scripts
-    for script in "$CYTADELA_SCRIPT_PATH"; do
+    for script in "$CYTADELA_SCRIPT_PATH" "$(dirname "$CYTADELA_SCRIPT_PATH")/cytadela++.sh"; do
         if [[ -f "$script" ]]; then
             sha256sum "$script" >> "$manifest_tmp"
             log_info "Added: $script"
@@ -1127,8 +1131,10 @@ location_get_firewall_mode() {
 location_status() {
     log_section "📍 LOCATION STATUS"
     
-    local ssid=$(location_get_ssid)
-    local fw_mode=$(location_get_firewall_mode)
+    local ssid
+    ssid=$(location_get_ssid)
+    local fw_mode
+    fw_mode=$(location_get_firewall_mode)
     
     echo "=== NETWORK ==="
     if [[ -n "$ssid" ]]; then
@@ -1152,7 +1158,8 @@ location_status() {
     echo ""
     echo "=== TRUSTED SSIDS ==="
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
-        local count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
+        local count
+        count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
         echo "File: $TRUSTED_SSIDS_FILE"
         echo "Count: $count"
         [[ $count -gt 0 ]] && grep -v '^#' "$TRUSTED_SSIDS_FILE" | sed 's/^/  - /'
@@ -1165,8 +1172,10 @@ location_status() {
 location_check() {
     log_section "📍 LOCATION CHECK"
     
-    local ssid=$(location_get_ssid)
-    local fw_mode=$(location_get_firewall_mode)
+    local ssid
+    ssid=$(location_get_ssid)
+    local fw_mode
+    fw_mode=$(location_get_firewall_mode)
     local is_trusted=0
     
     if [[ -n "$ssid" ]]; then
@@ -1247,11 +1256,13 @@ location_remove_trusted() {
 location_list_trusted() {
     log_section "📍 TRUSTED SSIDS"
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
-        local count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
+        local count
+        count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
         echo "Count: $count"
         if [[ $count -gt 0 ]]; then
             echo ""
-            local current_ssid=$(location_get_ssid)
+            local current_ssid
+            current_ssid=$(location_get_ssid)
             grep -v '^#' "$TRUSTED_SSIDS_FILE" | while read -r ssid; do
                 [[ -z "$ssid" ]] && continue
                 if [[ "$ssid" == "$current_ssid" ]]; then
@@ -1283,7 +1294,7 @@ nft_debug_on() {
     nft add rule inet $NFT_DEBUG_TABLE debug_log udp dport 53 limit rate 5/minute counter log prefix \"[CITADEL-DNS] \" 2>/dev/null || true
     nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 53 limit rate 5/minute counter log prefix \"[CITADEL-DNS] \" 2>/dev/null || true
     nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 853 limit rate 5/minute counter log prefix \"[CITADEL-DOT] \" 2>/dev/null || true
-    nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 443 ip daddr { 8.8.8.8, 8.8.4.4, 1.1.1.1, 1.0.0.1, 9.9.9.9 } limit rate 5/minute counter log prefix \"[CITADEL-DOH] \" 2>/dev/null || true
+    nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 443 ip daddr '{ 8.8.8.8, 8.8.4.4, 1.1.1.1, 1.0.0.1, 9.9.9.9 }' limit rate 5/minute counter log prefix '"[CITADEL-DOH] "' 2>/dev/null || true
     nft add rule inet $NFT_DEBUG_TABLE debug_log counter 2>/dev/null || true
     
     log_success "Debug chain enabled"

@@ -144,7 +144,11 @@ integrity_check() {
         exit 1
     fi
 
-    [[ -z "$silent" ]] && log_success "Integrity check passed"
+    if [[ $has_warnings -gt 0 ]]; then
+        [[ -z "$silent" ]] && log_warning "Integrity check passed with $has_warnings warning(s)"
+    else
+        [[ -z "$silent" ]] && log_success "Integrity check passed"
+    fi
     return 0
 }
 
@@ -163,7 +167,7 @@ integrity_init() {
     echo "# Format: sha256  filepath" >> "$manifest_tmp"
 
     # Add main scripts
-    for script in "$CYTADELA_SCRIPT_PATH"; do
+    for script in "$CYTADELA_SCRIPT_PATH" "$(dirname "$CYTADELA_SCRIPT_PATH")/citadela_en.sh"; do
         if [[ -f "$script" ]]; then
             sha256sum "$script" >> "$manifest_tmp"
             log_info "Added: $script"
@@ -892,7 +896,6 @@ health_status() {
     # Check services
     echo "=== SERVICES ==="
     for svc in "${HEALTH_CHECK_SERVICES[@]}"; do
-        local status
         if systemctl is-active --quiet "$svc" 2>/dev/null; then
             printf "${GREEN}%-20s ACTIVE${NC}\n" "$svc"
         else
@@ -1416,7 +1419,7 @@ nft_debug_on() {
     nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 853 limit rate 5/minute counter log prefix \"[CITADEL-DOT] \" 2>/dev/null || true
     
     # Log DoH attempts (common ports)
-    nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 443 ip daddr { 8.8.8.8, 8.8.4.4, 1.1.1.1, 1.0.0.1, 9.9.9.9 } limit rate 5/minute counter log prefix \"[CITADEL-DOH] \" 2>/dev/null || true
+    nft add rule inet $NFT_DEBUG_TABLE debug_log tcp dport 443 ip daddr '{ 8.8.8.8, 8.8.4.4, 1.1.1.1, 1.0.0.1, 9.9.9.9 }' limit rate 5/minute counter log prefix '"[CITADEL-DOH] "' 2>/dev/null || true
     
     # General counter for all forwarded traffic
     nft add rule inet $NFT_DEBUG_TABLE debug_log counter 2>/dev/null || true
