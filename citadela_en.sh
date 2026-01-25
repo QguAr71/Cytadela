@@ -632,6 +632,172 @@ panic_status() {
     fi
 }
 
+# ==============================================================================
+# GHOST-CHECK - Port Audit (Roadmap: firewall/exposure audit)
+# ==============================================================================
+GHOST_ALLOWED_PORTS=(22 53 5353 9153)  # SSH, DNS, DNSCrypt, CoreDNS metrics
+
+ghost_check() {
+    log_section "👻 GHOST-CHECK - Port Exposure Audit"
+    
+    local warnings=0
+    local iface
+    iface=$(discover_active_interface)
+    
+    log_info "Scanning listening sockets..."
+    echo ""
+    
+    echo "=== LISTENING SOCKETS ==="
+    printf "%-8s %-25s %-20s %s\n" "PROTO" "LOCAL ADDRESS" "STATE" "PROCESS"
+    echo "-------------------------------------------------------------------"
+    
+    while IFS= read -r line; do
+        local proto addr state process port bind_addr
+        proto=$(echo "$line" | awk '{print $1}')
+        addr=$(echo "$line" | awk '{print $5}')
+        state=$(echo "$line" | awk '{print $2}')
+        process=$(echo "$line" | awk '{print $7}' | sed 's/users:(("//' | sed 's/".*$//')
+        
+        port=$(echo "$addr" | grep -oE '[0-9]+$')
+        bind_addr=$(echo "$addr" | sed "s/:${port}$//")
+        
+        local exposed=0
+        local exposure_type=""
+        if [[ "$bind_addr" == "0.0.0.0" ]]; then
+            exposed=1
+            exposure_type="IPv4-ALL"
+        elif [[ "$bind_addr" == "*" ]]; then
+            exposed=1
+            exposure_type="ALL"
+        elif [[ "$bind_addr" == "::" || "$bind_addr" == "[::]" ]]; then
+            exposed=1
+            exposure_type="IPv6-ALL"
+        fi
+        
+        if [[ $exposed -eq 1 ]]; then
+            local allowed=0
+            for p in "${GHOST_ALLOWED_PORTS[@]}"; do
+                if [[ "$port" == "$p" ]]; then
+                    allowed=1
+                    break
+                fi
+            done
+            
+            if [[ $allowed -eq 0 ]]; then
+                printf "${YELLOW}%-8s %-25s %-20s %s${NC} ⚠ EXPOSED (%s)\n" "$proto" "$addr" "$state" "$process" "$exposure_type"
+                ((warnings++))
+            else
+                printf "${GREEN}%-8s %-25s %-20s %s${NC} ✓ (allowed)\n" "$proto" "$addr" "$state" "$process"
+            fi
+        else
+            printf "%-8s %-25s %-20s %s\n" "$proto" "$addr" "$state" "$process"
+        fi
+    done < <(ss -tulnp 2>/dev/null | tail -n +2)
+    
+    echo ""
+    echo "=== SUMMARY ==="
+    echo "Allowed ports: ${GHOST_ALLOWED_PORTS[*]}"
+    
+    if [[ $warnings -gt 0 ]]; then
+        log_warning "$warnings port(s) exposed to all interfaces (not in allowed list)"
+        log_info "Review above and consider binding to 127.0.0.1 or specific interface"
+    else
+        log_success "No unexpected exposed ports found"
+    fi
+    
+    echo ""
+    echo "=== NFTABLES STATUS ==="
+    if command -v nft &>/dev/null; then
+        local tables
+        tables=$(nft list tables 2>/dev/null | wc -l)
+        echo "Active tables: $tables"
+        if nft list tables 2>/dev/null | grep -q "citadel"; then
+            log_success "Citadel firewall rules loaded"
+        else
+            log_warning "Citadel firewall rules NOT loaded"
+        fi
+    else
+        log_warning "nftables not installed"
+    fi
+}
+
+# ==============================================================================
+# IPv6 DEEP RESET (Roadmap: refresh IPv6 without router UI)
+# ==============================================================================
+ipv6_deep_reset() {
+    log_section "🔄 IPv6 DEEP RESET"
+    
+    local iface
+    iface=$(discover_active_interface)
+    if [[ -z "$iface" ]]; then
+        log_error "No active interface detected"
+        return 1
+    fi
+    log_info "Active interface: $iface"
+    
+    log_info "Current IPv6 addresses:"
+    ip -6 addr show dev "$iface" scope global 2>/dev/null | grep inet6 || echo "  (none)"
+    
+    if [[ -t 0 && -t 1 ]]; then
+        echo ""
+        log_warning "This will temporarily disrupt IPv6 connectivity!"
+        echo -n "Continue? [y/N]: "
+        read -r answer
+        if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+            log_info "Cancelled."
+            return 0
+        fi
+    fi
+    
+    log_info "Flushing IPv6 neighbor cache..."
+    ip -6 neigh flush dev "$iface" 2>/dev/null || true
+    
+    log_info "Flushing global IPv6 addresses..."
+    ip -6 addr flush dev "$iface" scope global 2>/dev/null || true
+    
+    local stack
+    stack=$(discover_network_stack)
+    log_info "Network stack: $stack"
+    
+    if [[ "$stack" == "NetworkManager" ]]; then
+        log_info "Reconnecting via NetworkManager..."
+        nmcli dev disconnect "$iface" 2>/dev/null || true
+        sleep 1
+        nmcli dev connect "$iface" 2>/dev/null || true
+    elif [[ "$stack" == "systemd-networkd" ]]; then
+        log_info "Reconfiguring via systemd-networkd..."
+        networkctl reconfigure "$iface" 2>/dev/null || true
+    else
+        log_info "Cycling interface..."
+        ip link set "$iface" down 2>/dev/null || true
+        sleep 1
+        ip link set "$iface" up 2>/dev/null || true
+    fi
+    
+    log_info "Waiting for Router Advertisement..."
+    sleep 3
+    
+    if command -v rdisc6 &>/dev/null; then
+        log_info "Sending Router Solicitation..."
+        rdisc6 "$iface" 2>/dev/null || true
+        sleep 2
+    fi
+    
+    echo ""
+    log_info "New IPv6 addresses:"
+    ip -6 addr show dev "$iface" scope global 2>/dev/null | grep inet6 || echo "  (none - may take a moment)"
+    
+    local ipv6_temp
+    ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ {print $2; exit}' || true)
+    if [[ -n "$ipv6_temp" ]]; then
+        log_success "Temporary address active: $ipv6_temp"
+    else
+        log_info "No temporary address yet. Run 'ipv6-privacy-auto' if needed."
+    fi
+    
+    log_success "IPv6 deep reset complete"
+}
+
 require_cmd() {
     command -v "$1" >/dev/null 2>&1
 }
@@ -2135,6 +2301,8 @@ ${CYAN}Diagnostic Commands:${NC}
   diagnostics           Run full system diagnostics
   status                Show service status
   verify                Verify full stack (ports/services/DNS/NFT/metrics)
+  ghost-check           Port exposure audit (warn about 0.0.0.0/::)
+  ipv6-deep-reset       Flush IPv6 + neighbor cache + reconnect
   test-all              Smoke test (verify + leak test + IPv6)
 
 ${YELLOW}Integrity (Local-First):${NC}
@@ -2691,6 +2859,13 @@ case "$ACTION" in
         ;;
     panic-status)
         panic_status
+        ;;
+    # Ghost-Check and IPv6 Deep Reset
+    ghost-check)
+        ghost_check
+        ;;
+    ipv6-deep-reset)
+        ipv6_deep_reset
         ;;
     # Diagnostic commands
     diagnostics)
