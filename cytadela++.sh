@@ -627,6 +627,7 @@ panic_restore() {
     
     # Restore resolv.conf
     log_info "Restoring resolv.conf..."
+    rm -f /etc/resolv.conf 2>/dev/null || true
     if [[ -f "$PANIC_BACKUP_RESOLV" ]]; then
         cp "$PANIC_BACKUP_RESOLV" /etc/resolv.conf
     else
