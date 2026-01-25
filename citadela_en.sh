@@ -2230,9 +2230,9 @@ install_all() {
     echo ""
 
     log_info "To switch system DNS to Citadel++ (disable resolved):"
-    echo "  sudo ./citadela++.sh configure-system"
+    echo "  sudo ./citadela_en.sh configure-system"
     log_info "Rollback (if something goes wrong):"
-    echo "  sudo ./citadela++.sh restore-system"
+    echo "  sudo ./citadela_en.sh restore-system"
 }
 
 # ==============================================================================
