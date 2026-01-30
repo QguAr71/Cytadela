@@ -9,6 +9,72 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-blue.svg)](https://www.linux.org/)
 [![Arch](https://img.shields.io/badge/arch-x86__64-orange.svg)](https://archlinux.org/)
 
+---
+
+## 🧠 Quick Mental Model
+
+**What it does:**
+```
+Cytadela++ secures all DNS traffic on Linux using encrypted resolvers,
+massive blocklists, and kernel-level enforcement.
+```
+
+**How it works:**
+```
+┌─────────────┐
+│ Application │  Your browser, apps, etc.
+└──────┬──────┘
+       │ DNS query (example.com?)
+       ▼
+┌─────────────────────────────────┐
+│ CoreDNS (127.0.0.1:53)         │  Local DNS resolver
+│ ├─ Cache (85-90% hit rate)     │  Fast responses
+│ ├─ Adblock (318k+ domains)     │  Blocks ads/trackers
+│ └─ Metrics (Prometheus)        │  Monitoring
+└──────┬──────────────────────────┘
+       │ Cache miss? Forward to...
+       ▼
+┌─────────────────────────────────┐
+│ DNSCrypt-Proxy                 │  Encryption layer
+│ └─ Encrypted (DoH/DoT)         │  ISP can't see queries
+└──────┬──────────────────────────┘
+       │ Encrypted DNS query
+       ▼
+   🌐 Internet (Privacy protected)
+
+┌─────────────────────────────────┐
+│ NFTables (Kernel-level)        │  Leak prevention
+│ └─ Blocks external :53 ✗       │  Apps can't bypass
+│    (applies to all outbound    │  System-wide enforcement
+│     traffic, not a hop)        │
+└─────────────────────────────────┘
+```
+
+**Visual Flow:**
+```mermaid
+graph TD
+    A[Application] -->|DNS Query| B[CoreDNS :53]
+    B -->|Cache Hit 85%| A
+    B -->|Blocked Domain| C[0.0.0.0]
+    B -->|Cache Miss| D[DNSCrypt-Proxy]
+    D -->|Encrypted DoH/DoT| E[Internet]
+    F[NFTables] -.->|Blocks| G[Direct DNS :53 ✗]
+    
+    style B fill:#90EE90
+    style D fill:#87CEEB
+    style F fill:#FFB6C1
+    style G fill:#FF6B6B
+```
+
+**Why it's better:**
+- ✅ **Privacy:** ISP can't see your DNS queries (encrypted)
+- ✅ **Security:** Apps can't bypass your DNS (kernel enforcement)
+- ✅ **Speed:** Local cache = faster browsing (85-90% hit rate)
+- ✅ **Clean:** Blocks ads/trackers at DNS level (318k+ domains)
+- ✅ **Control:** Everything runs locally, no cloud dependencies
+
+---
+
 ## 🎉 v3.1.0 - Modular Architecture
 
 **Nowa wersja v3.1.0** wprowadza modularną architekturę z lazy loading:
