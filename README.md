@@ -4,6 +4,35 @@
 
 [![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Release](https://img.shields.io/github/v/release/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/releases)
+
+## 🎉 v3.1.0 - Modular Architecture
+
+**Nowa wersja v3.1.0** wprowadza modularną architekturę z lazy loading:
+- **45% redukcja kodu** (~3200 linii usunięte)
+- **17 modułów funkcjonalnych** w `/opt/cytadela/modules/`
+- **5 core libraries** w `/opt/cytadela/lib/`
+- **100% backward compatibility** - wszystkie komendy działają identycznie
+- **Lazy loading** - moduły ładowane tylko gdy potrzebne
+
+### Instalacja v3.1.0
+
+```bash
+git clone https://github.com/QguAr71/Cytadela.git
+cd Cytadela
+git checkout v3.1.0
+sudo ./install-refactored.sh
+```
+
+Po instalacji dostępne są komendy:
+```bash
+sudo cytadela++ help    # Polska wersja
+sudo citadela help      # Angielska wersja
+```
+
+**Dokumentacja refactoringu:** [REFACTORING_COMPLETE.md](REFACTORING_COMPLETE.md)
+
+---
 
 ## PL — Opis projektu (If you want the text in English, scroll down.)
 
@@ -51,7 +80,14 @@ sudo ./cytadela++.sh verify
 
 ### Szybki start (bezpieczny)
 
-1) Instalacja komponentów:
+**Wersja v3.1.0 (modular - zalecane):**
+
+```bash
+sudo ./install-refactored.sh  # Instalacja do /opt/cytadela
+sudo cytadela++ install-all   # Instalacja komponentów DNS
+```
+
+**Lub wersja legacy (monolithic):**
 
 ```bash
 sudo ./cytadela++.sh install-all
@@ -60,7 +96,8 @@ sudo ./cytadela++.sh install-all
 2) SAFE firewall (na czas wdrażania):
 
 ```bash
-sudo ./cytadela++.sh firewall-safe
+sudo cytadela++ firewall-safe    # v3.1.0
+# lub: sudo ./cytadela++.sh firewall-safe
 ```
 
 3) Test lokalnego DNS:
@@ -72,19 +109,21 @@ dig +short google.com @127.0.0.1
 4) Przełączenie DNS systemu (dopiero gdy test działa):
 
 ```bash
-sudo ./cytadela++.sh configure-system
+sudo cytadela++ configure-system    # v3.1.0
+# lub: sudo ./cytadela++.sh configure-system
 ```
 
 5) Szybka weryfikacja:
 
 ```bash
-sudo ./cytadela++.sh verify
+sudo cytadela++ verify    # v3.1.0
+# lub: sudo ./cytadela++.sh verify
 ```
 
 Po aktualizacji skryptu:
 
 ```bash
-sudo ./cytadela++.sh verify
+sudo cytadela++ verify    # v3.1.0
 dig @1.1.1.1 test.com
 ```
 
@@ -106,7 +145,8 @@ Uwagi:
 Jeśli po przełączeniu systemu coś pójdzie źle:
 
 ```bash
-sudo ./cytadela++.sh restore-system
+sudo cytadela++ restore-system    # v3.1.0
+# lub: sudo ./cytadela++.sh restore-system
 ```
 
 ### DNS Adblock (panel)
@@ -119,13 +159,13 @@ Pliki:
 Komendy:
 
 ```bash
-sudo ./cytadela++.sh adblock-status
-sudo ./cytadela++.sh adblock-stats
-sudo ./cytadela++.sh adblock-add example.com
-sudo ./cytadela++.sh adblock-remove example.com
-sudo ./cytadela++.sh adblock-edit
-sudo ./cytadela++.sh adblock-rebuild
-sudo ./cytadela++.sh adblock-query doubleclick.net
+sudo cytadela++ adblock-status           # v3.1.0
+sudo cytadela++ adblock-stats
+sudo cytadela++ adblock-add example.com
+sudo cytadela++ adblock-remove example.com
+sudo cytadela++ adblock-edit
+sudo cytadela++ adblock-rebuild
+sudo cytadela++ adblock-query doubleclick.net
 ```
 
 ### Dokumentacja
@@ -169,7 +209,14 @@ Citadel++ is an install/config script that builds a local DNS privacy stack:
 
 ### Quick start (safe)
 
-1) Install components:
+**Version v3.1.0 (modular - recommended):**
+
+```bash
+sudo ./install-refactored.sh  # Install to /opt/cytadela
+sudo citadela install-all     # Install DNS components
+```
+
+**Or legacy version (monolithic):**
 
 ```bash
 sudo ./citadela_en.sh install-all
@@ -178,7 +225,8 @@ sudo ./citadela_en.sh install-all
 2) SAFE firewall mode during rollout:
 
 ```bash
-sudo ./citadela_en.sh firewall-safe
+sudo citadela firewall-safe    # v3.1.0
+# or: sudo ./citadela_en.sh firewall-safe
 ```
 
 3) Test local DNS:
@@ -190,19 +238,21 @@ dig +short google.com @127.0.0.1
 4) Switch system DNS only after the test succeeds:
 
 ```bash
-sudo ./citadela_en.sh configure-system
+sudo citadela configure-system    # v3.1.0
+# or: sudo ./citadela_en.sh configure-system
 ```
 
 5) Verify:
 
 ```bash
-sudo ./citadela_en.sh verify
+sudo citadela verify    # v3.1.0
+# or: sudo ./citadela_en.sh verify
 ```
 
 After updating the script:
 
 ```bash
-sudo ./citadela_en.sh verify
+sudo citadela verify    # v3.1.0
 dig @1.1.1.1 test.com
 ```
 
@@ -222,7 +272,8 @@ Notes:
 ### Rollback
 
 ```bash
-sudo ./citadela_en.sh restore-system
+sudo citadela restore-system    # v3.1.0
+# or: sudo ./citadela_en.sh restore-system
 ```
 
 ### DNS Adblock (panel)
@@ -235,13 +286,13 @@ Files:
 Commands:
 
 ```bash
-sudo ./citadela_en.sh adblock-status
-sudo ./citadela_en.sh adblock-stats
-sudo ./citadela_en.sh adblock-add example.com
-sudo ./citadela_en.sh adblock-remove example.com
-sudo ./citadela_en.sh adblock-edit
-sudo ./citadela_en.sh adblock-rebuild
-sudo ./citadela_en.sh adblock-query doubleclick.net
+sudo citadela adblock-status           # v3.1.0
+sudo citadela adblock-stats
+sudo citadela adblock-add example.com
+sudo citadela adblock-remove example.com
+sudo citadela adblock-edit
+sudo citadela adblock-rebuild
+sudo citadela adblock-query doubleclick.net
 ```
 
 ### Docs
