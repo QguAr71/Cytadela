@@ -2,10 +2,64 @@
 # ╔═══════════════════════════════════════════════════════════════════════════╗
 # ║  CYTADELA++ INSTALL-WIZARD MODULE v3.1                                    ║
 # ║  Interactive installer with checklist (Issue #25)                         ║
+# ║  Bilingual: EN/PL                                                         ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# ==============================================================================
+# LANGUAGE DETECTION AND SELECTION
+# ==============================================================================
+
+detect_language() {
+    # Check $LANG environment variable
+    if [[ "${LANG}" =~ ^pl ]]; then
+        echo "pl"
+    else
+        echo "en"
+    fi
+}
+
+select_language() {
+    local lang="${1:-}"
+    
+    # If language specified via parameter, use it
+    if [[ "$lang" == "en" || "$lang" == "pl" ]]; then
+        echo "$lang"
+        return 0
+    fi
+    
+    # Auto-detect from $LANG
+    local detected
+    detected=$(detect_language)
+    
+    # Ask user to confirm or change
+    if command -v whiptail &>/dev/null; then
+        local choice
+        choice=$(whiptail --title "Language / Język" \
+            --menu "Select language / Wybierz język:" 12 50 2 \
+            "en" "English" \
+            "pl" "Polski" \
+            3>&1 1>&2 2>&3)
+        
+        if [[ -n "$choice" ]]; then
+            echo "$choice"
+        else
+            echo "$detected"
+        fi
+    else
+        echo "$detected"
+    fi
+}
+
 install_wizard() {
-    log_section "🎯 INTERACTIVE INSTALLER WIZARD"
+    # Language selection
+    local WIZARD_LANG
+    WIZARD_LANG=$(select_language "${1:-}")
+    
+    if [[ "$WIZARD_LANG" == "pl" ]]; then
+        log_section "🎯 INTERAKTYWNY KREATOR INSTALACJI"
+    else
+        log_section "🎯 INTERACTIVE INSTALLER WIZARD"
+    fi
     
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
@@ -17,17 +71,33 @@ install_wizard() {
     fi
     
     # Module definitions: key|Name|Description|Default|Required
-    declare -A MODULES=(
-        [dnscrypt]="DNSCrypt-Proxy|Szyfrowany resolver DNS (DNSCrypt/DoH)|1|1"
-        [coredns]="CoreDNS|Lokalny serwer DNS z adblockiem i cache|1|1"
-        [nftables]="NFTables|Reguły firewall (ochrona przed DNS leak)|1|1"
-        [health]="Health Watchdog|Auto-restart usług przy awarii|0|0"
-        [supply-chain]="Supply-chain|Weryfikacja binariów (sumy kontrolne)|0|0"
-        [lkg]="LKG Cache|Cache Last Known Good dla blocklist|1|0"
-        [ipv6]="IPv6 Privacy|Zarządzanie rozszerzeniami prywatności IPv6|0|0"
-        [location]="Location-aware|Firewall zależny od SSID|0|0"
-        [nft-debug]="NFT Debug|Łańcuch debug NFTables z logowaniem|0|0"
-    )
+    declare -A MODULES
+    
+    if [[ "$WIZARD_LANG" == "pl" ]]; then
+        MODULES=(
+            [dnscrypt]="DNSCrypt-Proxy|Szyfrowany resolver DNS (DNSCrypt/DoH)|1|1"
+            [coredns]="CoreDNS|Lokalny serwer DNS z adblockiem i cache|1|1"
+            [nftables]="NFTables|Reguły firewall (ochrona przed DNS leak)|1|1"
+            [health]="Health Watchdog|Auto-restart usług przy awarii|0|0"
+            [supply-chain]="Supply-chain|Weryfikacja binariów (sumy kontrolne)|0|0"
+            [lkg]="LKG Cache|Cache Last Known Good dla blocklist|1|0"
+            [ipv6]="IPv6 Privacy|Zarządzanie rozszerzeniami prywatności IPv6|0|0"
+            [location]="Location-aware|Firewall zależny od SSID|0|0"
+            [nft-debug]="NFT Debug|Łańcuch debug NFTables z logowaniem|0|0"
+        )
+    else
+        MODULES=(
+            [dnscrypt]="DNSCrypt-Proxy|Encrypted DNS resolver (DNSCrypt/DoH)|1|1"
+            [coredns]="CoreDNS|Local DNS server with adblock + cache|1|1"
+            [nftables]="NFTables|Firewall rules (DNS leak prevention)|1|1"
+            [health]="Health Watchdog|Auto-restart services on failure|0|0"
+            [supply-chain]="Supply-chain|Binary verification (checksums)|0|0"
+            [lkg]="LKG Cache|Last Known Good blocklist cache|1|0"
+            [ipv6]="IPv6 Privacy|IPv6 privacy extensions management|0|0"
+            [location]="Location-aware|SSID-based firewall advisory|0|0"
+            [nft-debug]="NFT Debug|NFTables debug chain with logging|0|0"
+        )
+    fi
     
     # Build checklist options for whiptail
     local options=()
@@ -54,8 +124,18 @@ install_wizard() {
     
     # Show checklist
     local selected
-    selected=$(whiptail --title "Cytadela++ v3.1 - Kreator Instalacji" \
-        --checklist "\nWybierz moduły do instalacji:\n(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)\n\nModuły wymagane są wstępnie zaznaczone i nie można ich wyłączyć." \
+    local dialog_title dialog_text
+    
+    if [[ "$WIZARD_LANG" == "pl" ]]; then
+        dialog_title="Cytadela++ v3.1 - Kreator Instalacji"
+        dialog_text="\nWybierz moduły do instalacji:\n(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)\n\nModuły wymagane są wstępnie zaznaczone i nie można ich wyłączyć."
+    else
+        dialog_title="Cytadela++ v3.1 - Installation Wizard"
+        dialog_text="\nSelect modules to install:\n(SPACE to toggle, TAB to navigate, ENTER to confirm)\n\nRequired modules are pre-selected and cannot be disabled."
+    fi
+    
+    selected=$(whiptail --title "$dialog_title" \
+        --checklist "$dialog_text" \
         24 78 10 \
         "${options[@]}" \
         3>&1 1>&2 2>&3)
@@ -109,7 +189,11 @@ install_wizard() {
         IFS='|' read -r name desc default required <<< "${MODULES[$module]}"
         
         echo ""
-        log_info "Instalowanie: $name"
+        if [[ "$WIZARD_LANG" == "pl" ]]; then
+            log_info "Instalowanie: $name"
+        else
+            log_info "Installing: $name"
+        fi
         
         case "$module" in
             dnscrypt)
@@ -117,9 +201,17 @@ install_wizard() {
                     load_module "install-dnscrypt"
                 fi
                 if install_dnscrypt; then
-                    log_success "$name zainstalowany"
+                    if [[ "$WIZARD_LANG" == "pl" ]]; then
+                        log_success "$name zainstalowany"
+                    else
+                        log_success "$name installed"
+                    fi
                 else
-                    log_error "Instalacja $name nie powiodła się"
+                    if [[ "$WIZARD_LANG" == "pl" ]]; then
+                        log_error "Instalacja $name nie powiodła się"
+                    else
+                        log_error "$name installation failed"
+                    fi
                     ((failed++))
                 fi
                 ;;
@@ -129,9 +221,9 @@ install_wizard() {
                     load_module "install-coredns"
                 fi
                 if install_coredns; then
-                    log_success "$name zainstalowany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
-                    log_error "Instalacja $name nie powiodła się"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
                     ((failed++))
                 fi
                 ;;
@@ -141,9 +233,9 @@ install_wizard() {
                     load_module "install-nftables"
                 fi
                 if install_nftables; then
-                    log_success "$name zainstalowany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
-                    log_error "Instalacja $name nie powiodła się"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
                     ((failed++))
                 fi
                 ;;
@@ -153,9 +245,9 @@ install_wizard() {
                     load_module "health"
                 fi
                 if install_health_watchdog; then
-                    log_success "$name zainstalowany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
-                    log_error "Instalacja $name nie powiodła się"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
                     ((failed++))
                 fi
                 ;;
@@ -165,9 +257,9 @@ install_wizard() {
                     load_module "supply-chain"
                 fi
                 if supply_chain_init; then
-                    log_success "$name zainicjalizowany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainicjalizowany" || log_success "$name initialized"
                 else
-                    log_error "Inicjalizacja $name nie powiodła się"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Inicjalizacja $name nie powiodła się" || log_error "$name initialization failed"
                     ((failed++))
                 fi
                 ;;
@@ -177,9 +269,9 @@ install_wizard() {
                     load_module "lkg"
                 fi
                 if lkg_save_blocklist; then
-                    log_success "Cache $name zapisany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "Cache $name zapisany" || log_success "$name cache saved"
                 else
-                    log_warning "Cache $name nie zapisany (zostanie utworzony przy pierwszej aktualizacji)"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Cache $name nie zapisany (zostanie utworzony przy pierwszej aktualizacji)" || log_warning "$name cache not saved (will be created on first update)"
                 fi
                 ;;
             
@@ -188,9 +280,9 @@ install_wizard() {
                     load_module "ipv6"
                 fi
                 if ipv6_privacy_auto_ensure; then
-                    log_success "$name skonfigurowany"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name skonfigurowany" || log_success "$name configured"
                 else
-                    log_warning "Konfiguracja $name pominięta"
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Konfiguracja $name pominięta" || log_warning "$name configuration skipped"
                 fi
                 ;;
             
@@ -198,37 +290,53 @@ install_wizard() {
                 if ! declare -f location_status >/dev/null 2>&1; then
                     load_module "location"
                 fi
-                log_info "Moduł $name załadowany (użyj: location-add-trusted <SSID>)"
+                [[ "$WIZARD_LANG" == "pl" ]] && log_info "Moduł $name załadowany (użyj: location-add-trusted <SSID>)" || log_info "$name module loaded (use: location-add-trusted <SSID>)"
                 ;;
             
             nft-debug)
                 if ! declare -f nft_debug_on >/dev/null 2>&1; then
                     load_module "nft-debug"
                 fi
-                log_info "Moduł $name załadowany (użyj: nft-debug-on aby włączyć)"
+                [[ "$WIZARD_LANG" == "pl" ]] && log_info "Moduł $name załadowany (użyj: nft-debug-on aby włączyć)" || log_info "$name module loaded (use: nft-debug-on to enable)"
                 ;;
             
             *)
-                log_warning "Nieznany moduł: $module"
+                [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Nieznany moduł: $module" || log_warning "Unknown module: $module"
                 ;;
         esac
     done
     
     # Final summary
     echo ""
-    log_section "✅ INSTALACJA ZAKOŃCZONA"
-    
-    if [[ $failed -eq 0 ]]; then
-        log_success "Wszystkie moduły zainstalowane pomyślnie!"
+    if [[ "$WIZARD_LANG" == "pl" ]]; then
+        log_section "✅ INSTALACJA ZAKOŃCZONA"
+        
+        if [[ $failed -eq 0 ]]; then
+            log_success "Wszystkie moduły zainstalowane pomyślnie!"
+        else
+            log_warning "Instalacja $failed modułu/ów nie powiodła się"
+        fi
+        
+        echo ""
+        log_info "Następne kroki:"
+        echo "  1. Test DNS: dig +short google.com @127.0.0.1"
+        echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
+        echo "  3. Weryfikacja: sudo cytadela++ verify"
     else
-        log_warning "Instalacja $failed modułu/ów nie powiodła się"
+        log_section "✅ INSTALLATION COMPLETE"
+        
+        if [[ $failed -eq 0 ]]; then
+            log_success "All modules installed successfully!"
+        else
+            log_warning "$failed module(s) failed to install"
+        fi
+        
+        echo ""
+        log_info "Next steps:"
+        echo "  1. Test DNS: dig +short google.com @127.0.0.1"
+        echo "  2. Configure system: sudo cytadela++ configure-system"
+        echo "  3. Verify: sudo cytadela++ verify"
     fi
-    
-    echo ""
-    log_info "Następne kroki:"
-    echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-    echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
-    echo "  3. Weryfikacja: sudo cytadela++ verify"
     
     if ! declare -f diagnostics >/dev/null 2>&1; then
         load_module "diagnostics"
