@@ -13,6 +13,8 @@
 
 ## ⚡ Quick Install
 
+### Option 1: Interactive Installer (Recommended)
+
 ```bash
 # Clone repository
 git clone https://github.com/QguAr71/Cytadela.git
@@ -21,10 +23,24 @@ cd Cytadela
 # Checkout latest version
 git checkout v3.2.0
 
-# Install (requires root)
-sudo ./install-refactored.sh
+# Install whiptail (if not installed)
+sudo pacman -S libnewt
 
-# Configure system DNS
+# Run interactive installer
+sudo ./install-refactored.sh
+sudo cytadela++ install-wizard
+```
+
+**Interactive menu** lets you choose which modules to install (Health Watchdog, IPv6 Privacy, etc.)
+
+### Option 2: Automatic Install
+
+```bash
+# Clone and install everything automatically
+git clone https://github.com/QguAr71/Cytadela.git
+cd Cytadela
+git checkout v3.2.0
+sudo ./install-refactored.sh
 sudo cytadela++ configure-system
 ```
 
