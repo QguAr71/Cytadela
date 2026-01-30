@@ -135,14 +135,23 @@ ${GREEN}Nowe narzędzia v3.1:${NC}
   cytadela edit         Editor z auto-restart
   cytadela status       Szybki check statusu
 
-${CYAN}Panel Adblock (DNS):${NC}
-  adblock-status        Pokaż status integracji adblock/CoreDNS
-  adblock-stats         Pokaż liczby custom/blocklist/combined
-  adblock-show          Pokaż: custom|blocklist|combined (pierwsze 200 linii)
-  adblock-edit          Edytuj /etc/coredns/zones/custom.hosts i przeładuj
-  adblock-add           Dodaj domenę do custom.hosts (0.0.0.0 domain)
-  adblock-remove        Usuń domenę z custom.hosts
-  adblock-rebuild       Przebuduj combined.hosts z custom+blocklist i przeładuj
+${CYAN}Panel ${YELLOW}Blocklist Manager (Issue #17):${NC}
+  blocklist-list        Pokaż dostępne profile blocklist
+  blocklist-switch <p>  Przełącz profil (light/balanced/aggressive/privacy/polish/custom)
+  blocklist-status      Pokaż aktywny profil i statystyki
+  blocklist-add-url <u> Dodaj URL do custom profile
+  blocklist-remove-url  Usuń URL z custom profile
+  blocklist-show-urls   Pokaż custom URLs
+
+${YELLOW}Adblock (DNS-level):${NC}
+  adblock-status        Pokaż status adblock (liczba domen)
+  adblock-stats         Statystyki (top blocked, query count)
+  adblock-show          Pokaż zawartość blocklist
+  adblock-query <dom>   Sprawdź czy domena jest zablokowana
+  adblock-add <dom>     Dodaj domenę do custom.hosts
+  adblock-remove <dom>  Usuń domenę z custom.hosts
+  adblock-edit          Edytuj custom.hosts (nano)
+  adblock-rebuild       Przebuduj combined.hosts (custom + blocklist - allowlist) przeładuj
   adblock-query         Zapytaj domenę przez lokalny DNS (127.0.0.1)
   allowlist-list        Pokaż allowlist (domeny wyłączone z blokady)
   allowlist-add         Dodaj domenę do allowlist

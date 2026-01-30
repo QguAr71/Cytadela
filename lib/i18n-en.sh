@@ -135,14 +135,23 @@ ${GREEN}New tools v3.1:${NC}
   citadela edit         Editor with auto-restart
   citadela status       Quick status check
 
-${CYAN}Adblock Panel (DNS):${NC}
-  adblock-status        Show adblock/CoreDNS integration status
-  adblock-stats         Show counts of custom/blocklist/combined
-  adblock-show          Show: custom|blocklist|combined (first 200 lines)
-  adblock-edit          Edit /etc/coredns/zones/custom.hosts and reload
-  adblock-add           Add domain to custom.hosts (0.0.0.0 domain)
-  adblock-remove        Remove domain from custom.hosts
-  adblock-rebuild       Rebuild combined.hosts from custom+blocklist and reload
+${YELLOW}Blocklist Manager (Issue #17):${NC}
+  blocklist-list        Show available blocklist profiles
+  blocklist-switch <p>  Switch profile (light/balanced/aggressive/privacy/polish/custom)
+  blocklist-status      Show active profile and statistics
+  blocklist-add-url <u> Add URL to custom profile
+  blocklist-remove-url  Remove URL from custom profile
+  blocklist-show-urls   Show custom URLs
+
+${YELLOW}Adblock (DNS-level):${NC}
+  adblock-status        Show adblock status (domain count)
+  adblock-stats         Statistics (top blocked, query count)
+  adblock-show          Show blocklist contents
+  adblock-query <dom>   Check if domain is blocked
+  adblock-add <dom>     Add domain to custom.hosts
+  adblock-remove <dom>  Remove domain from custom.hosts
+  adblock-edit          Edit custom.hosts (nano)
+  adblock-rebuild       Rebuild combined.hosts (custom + blocklist - allowlist) and reload
   adblock-query         Query a domain via local DNS (127.0.0.1)
   allowlist-list        Show allowlist (domains excluded from blocking)
   allowlist-add         Add domain to allowlist

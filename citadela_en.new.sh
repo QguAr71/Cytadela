@@ -86,6 +86,12 @@ case "$ACTION" in
         ${ACTION//-/_} "$@"
         ;;
     
+    # Blocklist Manager
+    blocklist-list|blocklist-switch|blocklist-status|blocklist-add-url|blocklist-remove-url|blocklist-show-urls)
+        load_module "blocklist-manager"
+        ${ACTION//-/_} "$@"
+        ;;
+    
     # Allowlist
     allowlist-list|allowlist-add|allowlist-remove)
         load_module "adblock"
