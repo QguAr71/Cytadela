@@ -11,6 +11,29 @@
 
 ---
 
+## ⚡ Quick Install
+
+```bash
+# Clone repository
+git clone https://github.com/QguAr71/Cytadela.git
+cd Cytadela
+
+# Checkout latest version
+git checkout v3.2.0
+
+# Install (requires root)
+sudo ./install-refactored.sh
+
+# Configure system DNS
+sudo cytadela++ configure-system
+```
+
+**That's it!** Your DNS is now encrypted, ad-blocked, and leak-proof. 🛡️
+
+📖 **Full documentation:** [CYTADELA_INSTRUKCJA.md](CYTADELA_INSTRUKCJA.md) (PL) | [CITADEL_EN_COMPLETE_MANUAL.md](CITADEL_EN_COMPLETE_MANUAL.md) (EN)
+
+---
+
 ## 🧠 Quick Mental Model
 
 **What it does:**
