@@ -33,6 +33,7 @@ load_module() {
     
     # Load module
     log_debug "Loading module: $module"
+    # shellcheck source=/dev/null
     source "$module_file"
     
     # Mark as loaded
@@ -85,7 +86,8 @@ list_available_modules() {
     local modules=()
     for module_file in "${CYTADELA_MODULES}"/*.sh; do
         [[ -f "$module_file" ]] || continue
-        local module=$(basename "$module_file" .sh)
+        local module
+        module=$(basename "$module_file" .sh)
         modules+=("$module")
     done
     echo "${modules[@]}"
