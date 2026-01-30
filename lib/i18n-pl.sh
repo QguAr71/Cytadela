@@ -56,6 +56,31 @@ ${YELLOW}LKG (Last Known Good):${NC}
   lkg-status            Pokaż status cache LKG
   lists-update          Aktualizuj blocklist z LKG fallback
 
+${YELLOW}Auto-update (Issue #13):${NC}
+  auto-update-enable    Włącz automatyczne aktualizacje blocklist (daily)
+  auto-update-disable   Wyłącz automatyczne aktualizacje
+  auto-update-status    Pokaż status auto-update
+  auto-update-now       Uruchom aktualizację teraz (ręcznie)
+  auto-update-configure Konfiguruj częstotliwość (daily/weekly/custom)
+
+${YELLOW}Config Backup/Restore (Issue #14):${NC}
+  config-backup         Utwórz backup konfiguracji (tar.gz)
+  config-restore <file> Przywróć konfigurację z backupu
+  config-list           Pokaż dostępne backupy
+  config-delete <file>  Usuń backup
+
+${YELLOW}Cache Stats (Issue #15):${NC}
+  cache-stats [N]       Pokaż statystyki cache DNS (hit rate, latency)
+  cache-stats-top [N]   Top N najczęstszych domen (domyślnie 20)
+  cache-stats-reset     Reset statystyk (restart CoreDNS)
+  cache-stats-watch     Live monitoring statystyk (2s refresh)
+
+${YELLOW}Desktop Notifications (Issue #16):${NC}
+  notify-enable         Włącz powiadomienia systemowe
+  notify-disable        Wyłącz powiadomienia
+  notify-status         Pokaż status powiadomień
+  notify-test           Wyślij testowe powiadomienie
+
 ${CYAN}Komendy diagnostyczne:${NC}
   diagnostics           Uruchom pełną diagnostykę systemu
   status                Pokaż status usług

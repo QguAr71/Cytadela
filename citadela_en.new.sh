@@ -68,6 +68,12 @@ case "$ACTION" in
         ${ACTION//-/_}
         ;;
     
+    # Auto-update
+    auto-update-enable|auto-update-disable|auto-update-status|auto-update-now|auto-update-configure)
+        load_module "auto-update"
+        ${ACTION//-/_}
+        ;;
+    
     # Emergency
     panic-bypass|panic-restore|panic-status|emergency-refuse|emergency-restore|killswitch-on|killswitch-off)
         load_module "emergency"
@@ -140,6 +146,24 @@ case "$ACTION" in
     install-all)
         load_module "install-all"
         install_all
+        ;;
+    
+    # Config Backup/Restore
+    config-backup|config-restore|config-list|config-delete)
+        load_module "config-backup"
+        ${ACTION//-/_} "$@"
+        ;;
+    
+    # Cache Stats
+    cache-stats|cache-stats-top|cache-stats-reset|cache-stats-watch)
+        load_module "cache-stats"
+        ${ACTION//-/_} "$@"
+        ;;
+    
+    # Notifications
+    notify-enable|notify-disable|notify-status|notify-test)
+        load_module "notify"
+        ${ACTION//-/_}
         ;;
     
     # Diagnostics
