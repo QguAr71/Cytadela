@@ -10,8 +10,8 @@ set -euo pipefail
 # BOOTSTRAP - Load Core Libraries
 # ==============================================================================
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-CYTADELA_LIB="${SCRIPT_DIR}/lib"
-CYTADELA_MODULES="${SCRIPT_DIR}/modules"
+export CYTADELA_LIB="${SCRIPT_DIR}/lib"
+export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
 
 # Load core library
 source "${CYTADELA_LIB}/cytadela-core.sh"
