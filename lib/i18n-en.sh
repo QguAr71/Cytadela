@@ -5,8 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 show_help_en() {
-    cat <<EOF
-
+    echo -e "
 ${BLUE}╔═══════════════════════════════════════════════════════════════════════════╗${NC}
 ${BLUE}║                  CITADEL++ v3.1 - Command Reference                       ║${NC}
 ${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}
@@ -165,6 +164,5 @@ ${CYAN}Advanced Configuration:${NC}
 
 ${CYAN}Documentation:${NC}
   GitHub:              https://github.com/QguAr71/Cytadela
-
-EOF
+"
 }
