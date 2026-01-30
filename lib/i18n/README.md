@@ -111,8 +111,12 @@ Each translation file (`lib/i18n/*.sh`) contains exported variables:
 - 🇩🇪 **German** (`de`) - Complete
 - 🇫🇷 **French** (`fr`) - Complete
 - 🇪🇸 **Spanish** (`es`) - Complete
-- 🇮🇹 **Italian** (`it`) - Template ready (copy en.sh and translate)
-- 🇷🇺 **Russian** (`ru`) - Template ready (copy en.sh and translate)
+- 🇮🇹 **Italian** (`it`) - Complete
+- 🇷🇺 **Russian** (`ru`) - Complete
+
+**Total: 7 languages supported!**
+
+Want to add more? Copy `en.sh`, translate 35 strings, and submit a PR!
 
 ---
 
