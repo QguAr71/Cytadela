@@ -18,15 +18,15 @@ install_wizard() {
     
     # Module definitions: key|Name|Description|Default|Required
     declare -A MODULES=(
-        [dnscrypt]="DNSCrypt-Proxy|Encrypted DNS resolver (DNSCrypt/DoH)|1|1"
-        [coredns]="CoreDNS|Local DNS server with adblock + cache|1|1"
-        [nftables]="NFTables|Firewall rules (DNS leak prevention)|1|1"
-        [health]="Health Watchdog|Auto-restart services on failure|0|0"
-        [supply-chain]="Supply-chain|Binary verification (checksums)|0|0"
-        [lkg]="LKG Cache|Last Known Good blocklist cache|1|0"
-        [ipv6]="IPv6 Privacy|IPv6 privacy extensions management|0|0"
-        [location]="Location-aware|SSID-based firewall advisory|0|0"
-        [nft-debug]="NFT Debug|NFTables debug chain with logging|0|0"
+        [dnscrypt]="DNSCrypt-Proxy|Szyfrowany resolver DNS (DNSCrypt/DoH)|1|1"
+        [coredns]="CoreDNS|Lokalny serwer DNS z adblockiem i cache|1|1"
+        [nftables]="NFTables|Reguły firewall (ochrona przed DNS leak)|1|1"
+        [health]="Health Watchdog|Auto-restart usług przy awarii|0|0"
+        [supply-chain]="Supply-chain|Weryfikacja binariów (sumy kontrolne)|0|0"
+        [lkg]="LKG Cache|Cache Last Known Good dla blocklist|1|0"
+        [ipv6]="IPv6 Privacy|Zarządzanie rozszerzeniami prywatności IPv6|0|0"
+        [location]="Location-aware|Firewall zależny od SSID|0|0"
+        [nft-debug]="NFT Debug|Łańcuch debug NFTables z logowaniem|0|0"
     )
     
     # Build checklist options for whiptail
@@ -54,8 +54,8 @@ install_wizard() {
     
     # Show checklist
     local selected
-    selected=$(whiptail --title "Cytadela++ v3.1 - Installation Wizard" \
-        --checklist "\nSelect modules to install:\n(SPACE to toggle, TAB to navigate, ENTER to confirm)\n\nRequired modules are pre-selected and cannot be disabled." \
+    selected=$(whiptail --title "Cytadela++ v3.1 - Kreator Instalacji" \
+        --checklist "\nWybierz moduły do instalacji:\n(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)\n\nModuły wymagane są wstępnie zaznaczone i nie można ich wyłączyć." \
         24 78 10 \
         "${options[@]}" \
         3>&1 1>&2 2>&3)
@@ -63,7 +63,7 @@ install_wizard() {
     local exit_code=$?
     
     if [[ $exit_code -ne 0 ]]; then
-        log_warning "Installation cancelled by user"
+        log_warning "Instalacja anulowana przez użytkownika"
         return 1
     fi
     
@@ -109,7 +109,7 @@ install_wizard() {
         IFS='|' read -r name desc default required <<< "${MODULES[$module]}"
         
         echo ""
-        log_info "Installing: $name"
+        log_info "Instalowanie: $name"
         
         case "$module" in
             dnscrypt)
@@ -117,9 +117,9 @@ install_wizard() {
                     load_module "install-dnscrypt"
                 fi
                 if install_dnscrypt; then
-                    log_success "$name installed"
+                    log_success "$name zainstalowany"
                 else
-                    log_error "$name installation failed"
+                    log_error "Instalacja $name nie powiodła się"
                     ((failed++))
                 fi
                 ;;
@@ -129,9 +129,9 @@ install_wizard() {
                     load_module "install-coredns"
                 fi
                 if install_coredns; then
-                    log_success "$name installed"
+                    log_success "$name zainstalowany"
                 else
-                    log_error "$name installation failed"
+                    log_error "Instalacja $name nie powiodła się"
                     ((failed++))
                 fi
                 ;;
@@ -141,9 +141,9 @@ install_wizard() {
                     load_module "install-nftables"
                 fi
                 if install_nftables; then
-                    log_success "$name installed"
+                    log_success "$name zainstalowany"
                 else
-                    log_error "$name installation failed"
+                    log_error "Instalacja $name nie powiodła się"
                     ((failed++))
                 fi
                 ;;
@@ -153,9 +153,9 @@ install_wizard() {
                     load_module "health"
                 fi
                 if install_health_watchdog; then
-                    log_success "$name installed"
+                    log_success "$name zainstalowany"
                 else
-                    log_error "$name installation failed"
+                    log_error "Instalacja $name nie powiodła się"
                     ((failed++))
                 fi
                 ;;
@@ -165,9 +165,9 @@ install_wizard() {
                     load_module "supply-chain"
                 fi
                 if supply_chain_init; then
-                    log_success "$name initialized"
+                    log_success "$name zainicjalizowany"
                 else
-                    log_error "$name initialization failed"
+                    log_error "Inicjalizacja $name nie powiodła się"
                     ((failed++))
                 fi
                 ;;
@@ -177,9 +177,9 @@ install_wizard() {
                     load_module "lkg"
                 fi
                 if lkg_save_blocklist; then
-                    log_success "$name cache saved"
+                    log_success "Cache $name zapisany"
                 else
-                    log_warning "$name cache not saved (will be created on first update)"
+                    log_warning "Cache $name nie zapisany (zostanie utworzony przy pierwszej aktualizacji)"
                 fi
                 ;;
             
@@ -188,9 +188,9 @@ install_wizard() {
                     load_module "ipv6"
                 fi
                 if ipv6_privacy_auto_ensure; then
-                    log_success "$name configured"
+                    log_success "$name skonfigurowany"
                 else
-                    log_warning "$name configuration skipped"
+                    log_warning "Konfiguracja $name pominięta"
                 fi
                 ;;
             
@@ -198,37 +198,37 @@ install_wizard() {
                 if ! declare -f location_status >/dev/null 2>&1; then
                     load_module "location"
                 fi
-                log_info "$name module loaded (use: location-add-trusted <SSID>)"
+                log_info "Moduł $name załadowany (użyj: location-add-trusted <SSID>)"
                 ;;
             
             nft-debug)
                 if ! declare -f nft_debug_on >/dev/null 2>&1; then
                     load_module "nft-debug"
                 fi
-                log_info "$name module loaded (use: nft-debug-on to enable)"
+                log_info "Moduł $name załadowany (użyj: nft-debug-on aby włączyć)"
                 ;;
             
             *)
-                log_warning "Unknown module: $module"
+                log_warning "Nieznany moduł: $module"
                 ;;
         esac
     done
     
     # Final summary
     echo ""
-    log_section "✅ INSTALLATION COMPLETE"
+    log_section "✅ INSTALACJA ZAKOŃCZONA"
     
     if [[ $failed -eq 0 ]]; then
-        log_success "All modules installed successfully!"
+        log_success "Wszystkie moduły zainstalowane pomyślnie!"
     else
-        log_warning "$failed module(s) failed to install"
+        log_warning "Instalacja $failed modułu/ów nie powiodła się"
     fi
     
     echo ""
-    log_info "Next steps:"
+    log_info "Następne kroki:"
     echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-    echo "  2. Configure system: sudo cytadela++ configure-system"
-    echo "  3. Verify: sudo cytadela++ verify"
+    echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
+    echo "  3. Weryfikacja: sudo cytadela++ verify"
     
     if ! declare -f diagnostics >/dev/null 2>&1; then
         load_module "diagnostics"
