@@ -144,7 +144,8 @@ configure_system() {
     log_section "MODULE 4: System Configuration"
 
     log_warning "Ten krok zmienia DNS systemu (może chwilowo przerwać internet jeśli DNS nie działa)."
-    read -p "Czy na pewno chcesz kontynuować? (tak/nie): " -r
+    echo -n "Czy na pewno chcesz kontynuować? (tak/nie): "
+    read -r REPLY
     if [[ ! $REPLY =~ ^(tak|TAK|yes|YES|y|Y)$ ]]; then
         log_info "Anulowano"
         return 0
