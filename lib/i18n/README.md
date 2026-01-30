@@ -106,11 +106,13 @@ Each translation file (`lib/i18n/*.sh`) contains exported variables:
 
 ## Supported Languages
 
-- 🇬🇧 **English** (`en`) - Default
+- 🇬🇧 **English** (`en`) - Complete
 - 🇵🇱 **Polish** (`pl`) - Complete
-- 🇩🇪 **German** (`de`) - Template ready (needs translation)
-- 🇫🇷 **French** (`fr`) - Template ready (needs translation)
-- 🇪🇸 **Spanish** (`es`) - Template ready (needs translation)
+- 🇩🇪 **German** (`de`) - Complete
+- 🇫🇷 **French** (`fr`) - Complete
+- 🇪🇸 **Spanish** (`es`) - Complete
+- 🇮🇹 **Italian** (`it`) - Template ready (copy en.sh and translate)
+- 🇷🇺 **Russian** (`ru`) - Template ready (copy en.sh and translate)
 
 ---
 
