@@ -95,6 +95,13 @@ adblock_query() {
         log_error "Użycie: adblock-query domena"
         return 1
     fi
+    
+    # Validate domain format (prevent injection)
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Invalid domain format: $domain"
+        return 1
+    fi
+    
     dig +short @127.0.0.1 "$domain" 2>/dev/null || true
 }
 
@@ -103,6 +110,19 @@ adblock_add() {
     
     if [[ -z "$domain" ]]; then
         log_error "Usage: adblock-add <domain>"
+        return 1
+    fi
+    
+    # Validate domain format (prevent injection)
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Invalid domain format: $domain"
+        log_error "Domain must contain only alphanumeric characters, dots, and hyphens"
+        return 1
+    fi
+    
+    # Check for suspicious characters
+    if [[ "$domain" =~ [[:space:]\;\|\&\$\`\\] ]]; then
+        log_error "Domain contains invalid characters: $domain"
         return 1
     fi
     
@@ -136,6 +156,12 @@ adblock_remove() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
         log_error "Użycie: adblock-remove domena"
+        return 1
+    fi
+    
+    # Validate domain format (prevent injection)
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Invalid domain format: $domain"
         return 1
     fi
     
@@ -203,6 +229,12 @@ allowlist_remove() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
         log_error "Użycie: allowlist-remove domena"
+        return 1
+    fi
+    
+    # Validate domain format (prevent injection)
+    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        log_error "Invalid domain format: $domain"
         return 1
     fi
     

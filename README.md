@@ -3,8 +3,11 @@
 > *No cloud. No telemetry. No trust. Only local control.*
 
 [![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
+[![Smoke Tests](https://github.com/QguAr71/Cytadela/actions/workflows/smoke-tests.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/smoke-tests.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Release](https://img.shields.io/github/v/release/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/releases)
+[![Platform](https://img.shields.io/badge/platform-Linux-blue.svg)](https://www.linux.org/)
+[![Arch](https://img.shields.io/badge/arch-x86__64-orange.svg)](https://archlinux.org/)
 
 ## 🎉 v3.1.0 - Modular Architecture
 
@@ -139,6 +142,42 @@ W trybie STRICT powinno timeoutować (`no servers could be reached`).
 
 Uwagi:
 - `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
+
+### 📊 Porównanie z alternatywami
+
+| Feature | **Cytadela++** | Pi-hole | AdGuard Home | Unbound + DNSCrypt |
+|---------|----------------|---------|--------------|-------------------|
+| **DNS Encryption** | ✅ DNSCrypt/DoH | ❌ Optional | ✅ DoH/DoT | ✅ DNSCrypt |
+| **DNS Leak Prevention** | ✅ NFTables kernel-level | ⚠️ Manual | ⚠️ Manual | ⚠️ Manual |
+| **Adblock** | ✅ 318k+ domains | ✅ Extensive | ✅ Extensive | ❌ None |
+| **Local Cache** | ✅ CoreDNS | ✅ dnsmasq | ✅ Built-in | ✅ Unbound |
+| **Prometheus Metrics** | ✅ Built-in | ✅ Available | ✅ Built-in | ❌ None |
+| **Web UI** | ❌ CLI only | ✅ Full UI | ✅ Full UI | ❌ CLI only |
+| **Multi-device** | ⚠️ Gateway mode | ✅ Network-wide | ✅ Network-wide | ⚠️ Gateway mode |
+| **Setup Complexity** | Medium | Easy | Easy | Hard |
+| **Resource Usage** | Low | Low | Medium | Low |
+| **Privacy Focus** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Leak Protection** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+
+**Cytadela++ advantages:**
+- **Kernel-level leak prevention** - NFTables blocks DNS bypass attempts
+- **No web UI** - No attack surface, no telemetry
+- **Modular architecture** - Easy to customize and extend
+- **Polish optimization** - PolishFilters integration
+- **Supply-chain verification** - SHA256 integrity checks
+- **Panic recovery** - Emergency bypass and rollback
+
+**When to use alternatives:**
+- **Pi-hole**: Need web UI, multi-device network, easy setup
+- **AdGuard Home**: Want modern UI, DoH/DoT, family-friendly features
+- **Unbound + DNSCrypt**: Maximum privacy, willing to configure manually
+
+**Cytadela++ is ideal for:**
+- Privacy-conscious Linux users
+- Single-device or gateway setups
+- Users who prefer CLI over web UI
+- Arch/CachyOS enthusiasts
+- Those who want kernel-level leak prevention
 
 ### Rollback
 
