@@ -6,6 +6,7 @@
 
 METRICS_URL="http://${COREDNS_METRICS_ADDR:-127.0.0.1:9153}/metrics"
 
+# shellcheck disable=SC2120
 cache_stats() {
     log_section "📊 DNS CACHE STATISTICS"
     
