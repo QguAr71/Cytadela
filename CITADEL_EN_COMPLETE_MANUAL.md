@@ -1,6 +1,7 @@
-# CITADEL++ v3.0 — COMPLETE MANUAL
+# CITADEL++ v3.1 — COMPLETE MANUAL
 
-> **Fortified DNS Infrastructure** — Advanced Hardened Resolver with Full Privacy Stack
+> **Fortified DNS Infrastructure** — Advanced Hardened Resolver with Full Privacy Stack  
+> **Modular Architecture** — Lazy Loading, Interactive Installer, Multi-Blocklist Support
 
 * * *
 
@@ -33,16 +34,16 @@
 
 * * *
 
-## 👤 Usefulness for Users: **9/10**
+## 👤 User friendliness: **9.5/10**
 
 | Aspect | Rating | Notes |
-| --- | --- | --- |
-| **Installation** | ⭐⭐⭐⭐ | Single script, simple workflow |
-| **Diagnostics** | ⭐⭐⭐⭐⭐ | discover, health-status, ghost-check |
-| **Recovery** | ⭐⭐⭐⭐⭐ | panic-bypass with auto-rollback |
+|--------|--------|-------|
+| **Installation** | ⭐⭐⭐⭐⭐ | Interactive wizard, modular architecture |
+| **Diagnostics** | ⭐⭐⭐⭐⭐ | `discover`, `health-status`, `cache-stats` |
+| **Recovery** | ⭐⭐⭐⭐⭐ | `panic-bypass`, `config-backup/restore` |
 | **Documentation** | ⭐⭐⭐⭐⭐ | Complete manual, built-in help |
-| **Maintenance** | ⭐⭐⭐⭐⭐ | Health watchdog, auto-restart |
-| **Flexibility** | ⭐⭐⭐⭐ | SAFE/STRICT modes, location-aware |
+| **Maintenance** | ⭐⭐⭐⭐⭐ | Auto-update, health watchdog, notifications |
+| **Flexibility** | ⭐⭐⭐⭐⭐ | Multi-blocklist, SAFE/STRICT, location-aware |
 
 ### Ideal for:
 
@@ -67,12 +68,17 @@
 | AdGuard Home | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | DNSCrypt Only | ⭐⭐⭐⭐⭐ | ❌ | ⭐⭐ | ⭐⭐⭐ |
 
-### Citadel's Advantage:
-
--   Full nftables integration (leak prevention)
--   Modular architecture
--   Panic recovery
--   IPv6 privacy management
+### Citadel advantages (v3.1):
+- Full nftables integration (leak prevention)
+- **Modular architecture with lazy loading**
+- **Interactive installer wizard**
+- **Multi-blocklist support (6 profiles)**
+- **Auto-update with LKG fallback**
+- **Config backup/restore**
+- **Cache statistics from Prometheus**
+- **Desktop notifications**
+- Panic recovery
+- IPv6 privacy management
 
 * * *
 
@@ -84,7 +90,17 @@
 -   **Usefulness:** High, especially thanks to diagnostics and recovery
 -   **Uniqueness:** Combination of DNSCrypt + CoreDNS + nftables + health monitoring
 
-### Final Rating: 8.5/10 🛡️
+### Final Rating: 9/10 🛡️
+
+**What's New in v3.1:**
+- ✨ Modular architecture (45% code reduction)
+- 🎯 Interactive installer with checklist
+- 📦 Multi-blocklist (light/balanced/aggressive/privacy/polish/custom)
+- 🔄 Auto-update blocklist (systemd timer)
+- 💾 Config backup/restore
+- 📊 Cache statistics (hit rate, latency)
+- 🔔 Desktop notifications
+- 🚀 Lazy loading modules
 
 * * *
 
@@ -157,21 +173,34 @@ text
 
 # INSTALLATION
 
-## Installation Commands
+## Installation commands (v3.1)
 
 | Command | Description |
-| --- | --- |
-| install-dnscrypt | Install only DNSCrypt-Proxy |
-| install-coredns | Install only CoreDNS |
-| install-nftables | Install only NFTables rules |
-| install-all | Install all DNS modules (DOES NOT disable systemd-resolved) |
+|---------|-------------|
+| `install-wizard` | 🎯 **Interactive installer with checklist (RECOMMENDED)** |
+| `install-all` | Install all DNS modules (does NOT disable systemd-resolved) |
+| `install-dnscrypt` | Install DNSCrypt-Proxy only |
+| `install-coredns` | Install CoreDNS only |
+| `install-nftables` | Install NFTables rules only |
 
-## Recommended Workflow
+## Recommended workflow (v3.1)
 
-Bash
+### Option A: Interactive Wizard (easiest)
 
-    # 1. Install all modules
-    sudo ./cytadela++.sh install-all
+```bash
+# 1. Install via wizard
+sudo citadela install-wizard
+# Select modules with SPACE, confirm with ENTER
+
+# 2. Switch system to Citadel++ DNS
+sudo citadela configure-system
+```
+
+### Option B: Traditional installation
+
+```bash
+# 1. Install all modules
+sudo citadela install-all
     
     # 2. Set firewall SAFE (does not break internet)
     sudo ./cytadela++.sh firewall-safe
@@ -494,13 +523,154 @@ text
 
 * * *
 
+# NEW FEATURES v3.1
+
+## Multi-Blocklist Support (Issue #17)
+
+**6 blocklist profiles to choose from:**
+
+| Profile | Description | Domains |
+|---------|-------------|---------|
+| `light` | Minimal blocking, fast DNS | ~50k |
+| `balanced` | **Default** - balanced | ~1.2M |
+| `aggressive` | Maximum blocking | ~2M+ |
+| `privacy` | Focus on telemetry/tracking | ~800k |
+| `polish` | Optimized for Poland 🇵🇱 | ~1.5M |
+| `custom` | User-defined URLs | - |
+
+### Commands
+
+```bash
+# Show available profiles
+sudo citadela blocklist-list
+
+# Switch profile
+sudo citadela blocklist-switch light
+sudo citadela blocklist-switch aggressive
+sudo citadela blocklist-switch polish
+
+# Status
+sudo citadela blocklist-status
+
+# Custom URLs
+sudo citadela blocklist-add-url https://example.com/list.txt
+sudo citadela blocklist-remove-url https://example.com/list.txt
+sudo citadela blocklist-show-urls
+```
+
+## Auto-Update Blocklist (Issue #13)
+
+**Automatic blocklist updates via systemd timer.**
+
+```bash
+# Enable auto-update (daily)
+sudo citadela auto-update-enable
+
+# Disable
+sudo citadela auto-update-disable
+
+# Status and schedule
+sudo citadela auto-update-status
+
+# Run now (manual)
+sudo citadela auto-update-now
+
+# Configure frequency
+sudo citadela auto-update-configure
+# Choose: daily/weekly/custom
+```
+
+**Features:**
+- Systemd timer with randomized delay (1h)
+- LKG fallback integration
+- Automatic journald logging
+- Restart on failure
+
+## Config Backup/Restore (Issue #14)
+
+**Backup and restore entire configuration.**
+
+```bash
+# Create backup
+sudo citadela config-backup
+# Saves to: /var/lib/cytadela/backups/cytadela-backup-YYYYMMDD-HHMMSS.tar.gz
+
+# List backups
+sudo citadela config-list
+
+# Restore from backup
+sudo citadela config-restore /var/lib/cytadela/backups/cytadela-backup-20260130-163000.tar.gz
+
+# Delete backup
+sudo citadela config-delete /var/lib/cytadela/backups/cytadela-backup-20260130-163000.tar.gz
+```
+
+**Backup includes:**
+- DNSCrypt config (toml, cloaking-rules)
+- CoreDNS config (Corefile, zones)
+- NFTables rules
+- NetworkManager config
+- Cytadela state (manifest, panic, location)
+- Systemd units
+
+## Cache Statistics (Issue #15)
+
+**DNS cache statistics from Prometheus metrics.**
+
+```bash
+# Show statistics
+sudo citadela cache-stats
+
+# Top N domains
+sudo citadela cache-stats-top 20
+
+# Reset statistics (restart CoreDNS)
+sudo citadela cache-stats-reset
+
+# Live monitoring (2s refresh)
+sudo citadela cache-stats-watch
+```
+
+**Metrics:**
+- Cache hit rate (%)
+- Request types (A, AAAA, PTR)
+- Response codes (NOERROR, NXDOMAIN, SERVFAIL)
+- Query latency (ms)
+- Adblock stats
+
+## Desktop Notifications (Issue #16)
+
+**System notifications (libnotify).**
+
+```bash
+# Enable notifications
+sudo citadela notify-enable
+
+# Disable
+sudo citadela notify-disable
+
+# Status
+sudo citadela notify-status
+
+# Test
+sudo citadela notify-test
+```
+
+**Notifications for:**
+- Health check failures
+- Service restarts
+- Blocklist updates
+- Panic mode activation
+
+---
+
 # ADBLOCK PANEL
 
 ## Commands
 
 | Command | Description |
-| --- | --- |
-| adblock-status | Show adblock/CoreDNS status |
+|---------|-------------|
+| `adblock-status` | Show adblock/CoreDNS status |
 | adblock-stats | Show numbers: custom/blocklist/combined |
 | adblock-show \[type\] | Show: custom|blocklist|combined (first 200 lines) |
 | adblock-edit | Edit custom.hosts and reload |

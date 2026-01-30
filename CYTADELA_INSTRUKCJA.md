@@ -1,6 +1,7 @@
-# CYTADELA++ v3.0 — KOMPLETNY PODRĘCZNIK
+# CYTADELA++ v3.1 — KOMPLETNY PODRĘCZNIK
 
-> **Fortified DNS Infrastructure** — Advanced Hardened Resolver with Full Privacy Stack
+> **Fortified DNS Infrastructure** — Advanced Hardened Resolver with Full Privacy Stack  
+> **Modular Architecture** — Lazy Loading, Interactive Installer, Multi-Blocklist Support
 
 ---
 
@@ -31,16 +32,16 @@
 
 ---
 
-## 👤 Przydatność dla użytkowników: **9/10**
+## 👤 Przydatność dla użytkowników: **9.5/10**
 
 | Aspekt | Ocena | Uwagi |
 |--------|-------|-------|
-| **Instalacja** | ⭐⭐⭐⭐ | Jeden skrypt, prosty workflow |
-| **Diagnostyka** | ⭐⭐⭐⭐⭐ | `discover`, `health-status`, `ghost-check` |
-| **Recovery** | ⭐⭐⭐⭐⭐ | `panic-bypass` z auto-rollback |
+| **Instalacja** | ⭐⭐⭐⭐⭐ | Interactive wizard, modular architecture |
+| **Diagnostyka** | ⭐⭐⭐⭐⭐ | `discover`, `health-status`, `cache-stats` |
+| **Recovery** | ⭐⭐⭐⭐⭐ | `panic-bypass`, `config-backup/restore` |
 | **Dokumentacja** | ⭐⭐⭐⭐⭐ | Kompletny manual, help wbudowany |
-| **Maintenance** | ⭐⭐⭐⭐⭐ | Health watchdog, auto-restart |
-| **Flexibility** | ⭐⭐⭐⭐ | SAFE/STRICT modes, location-aware |
+| **Maintenance** | ⭐⭐⭐⭐⭐ | Auto-update, health watchdog, notifications |
+| **Flexibility** | ⭐⭐⭐⭐⭐ | Multi-blocklist, SAFE/STRICT, location-aware |
 
 ### Dla kogo idealne:
 - 🎯 Privacy-conscious użytkownicy
@@ -63,9 +64,15 @@
 | AdGuard Home | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | Tylko DNSCrypt | ⭐⭐⭐⭐⭐ | ❌ | ⭐⭐ | ⭐⭐⭐ |
 
-### Przewaga Cytadeli:
+### Przewaga Cytadeli (v3.1):
 - Pełna integracja nftables (leak prevention)
-- Modułowa architektura
+- **Modułowa architektura z lazy loading**
+- **Interactive installer wizard**
+- **Multi-blocklist support (6 profili)**
+- **Auto-update z LKG fallback**
+- **Config backup/restore**
+- **Cache statistics z Prometheus**
+- **Desktop notifications**
 - Panic recovery
 - IPv6 privacy management
 
@@ -79,7 +86,17 @@
 - **Przydatność:** Wysoka, szczególnie dzięki diagnostyce i recovery
 - **Unikalność:** Kombinacja DNSCrypt + CoreDNS + nftables + health monitoring
 
-### Ocena końcowa: 8.5/10 🛡️
+### Ocena końcowa: 9/10 🛡️
+
+**Nowości v3.1:**
+- ✨ Modułowa architektura (45% redukcja kodu)
+- 🎯 Interactive installer z checklistą
+- 📦 Multi-blocklist (light/balanced/aggressive/privacy/polish/custom)
+- 🔄 Auto-update blocklist (systemd timer)
+- 💾 Config backup/restore
+- 📊 Cache statistics (hit rate, latency)
+- 🔔 Desktop notifications
+- 🚀 Lazy loading modułów
 
 ---
 
@@ -152,20 +169,34 @@
 
 # INSTALACJA
 
-## Komendy instalacyjne
+## Komendy instalacyjne (v3.1)
 
 | Komenda | Opis |
 |---------|------|
+| `install-wizard` | 🎯 **Interactive installer z checklistą (ZALECANE)** |
+| `install-all` | Instaluj wszystkie moduły DNS (NIE wyłącza systemd-resolved) |
 | `install-dnscrypt` | Instaluj tylko DNSCrypt-Proxy |
 | `install-coredns` | Instaluj tylko CoreDNS |
 | `install-nftables` | Instaluj tylko reguły NFTables |
-| `install-all` | Instaluj wszystkie moduły DNS (NIE wyłącza systemd-resolved) |
 
-## Rekomendowany workflow
+## Rekomendowany workflow (v3.1)
+
+### Opcja A: Interactive Wizard (najłatwiejsze)
+
+```bash
+# 1. Instalacja przez wizard
+sudo cytadela++ install-wizard
+# Wybierz moduły SPACE, potwierdź ENTER
+
+# 2. Przełącz system na Cytadel++ DNS
+sudo cytadela++ configure-system
+```
+
+### Opcja B: Tradycyjna instalacja
 
 ```bash
 # 1. Instalacja wszystkich modułów
-sudo ./cytadela++.sh install-all
+sudo cytadela++ install-all
 
 # 2. Ustaw firewall SAFE (nie zrywa internetu)
 sudo ./cytadela++.sh firewall-safe
@@ -456,6 +487,147 @@ panic-status          # Pokaż status panic mode
 /var/lib/cytadela/resolv.conf.pre-panic    # Backup resolv.conf
 /var/lib/cytadela/nft.pre-panic            # Backup nftables
 ```
+
+---
+
+# NOWE FUNKCJE v3.1
+
+## Multi-Blocklist Support (Issue #17)
+
+**6 profili blocklist do wyboru:**
+
+| Profil | Opis | Domeny |
+|--------|------|--------|
+| `light` | Minimal blocking, szybki DNS | ~50k |
+| `balanced` | **Default** - zbalansowany | ~1.2M |
+| `aggressive` | Maksymalna blokada | ~2M+ |
+| `privacy` | Focus na telemetry/tracking | ~800k |
+| `polish` | Zoptymalizowany pod Polskę 🇵🇱 | ~1.5M |
+| `custom` | Własne URL-e użytkownika | - |
+
+### Komendy
+
+```bash
+# Pokaż dostępne profile
+sudo cytadela++ blocklist-list
+
+# Przełącz profil
+sudo cytadela++ blocklist-switch light
+sudo cytadela++ blocklist-switch aggressive
+sudo cytadela++ blocklist-switch polish
+
+# Status
+sudo cytadela++ blocklist-status
+
+# Custom URLs
+sudo cytadela++ blocklist-add-url https://example.com/list.txt
+sudo cytadela++ blocklist-remove-url https://example.com/list.txt
+sudo cytadela++ blocklist-show-urls
+```
+
+## Auto-Update Blocklist (Issue #13)
+
+**Automatyczne aktualizacje blocklist przez systemd timer.**
+
+```bash
+# Włącz auto-update (daily)
+sudo cytadela++ auto-update-enable
+
+# Wyłącz
+sudo cytadela++ auto-update-disable
+
+# Status i harmonogram
+sudo cytadela++ auto-update-status
+
+# Uruchom teraz (ręcznie)
+sudo cytadela++ auto-update-now
+
+# Konfiguruj częstotliwość
+sudo cytadela++ auto-update-configure
+# Wybierz: daily/weekly/custom
+```
+
+**Features:**
+- Systemd timer z randomized delay (1h)
+- Integracja z LKG fallback
+- Automatyczne logowanie do journald
+- Restart on failure
+
+## Config Backup/Restore (Issue #14)
+
+**Backup i restore całej konfiguracji.**
+
+```bash
+# Utwórz backup
+sudo cytadela++ config-backup
+# Zapisuje do: /var/lib/cytadela/backups/cytadela-backup-YYYYMMDD-HHMMSS.tar.gz
+
+# Pokaż backupy
+sudo cytadela++ config-list
+
+# Przywróć z backupu
+sudo cytadela++ config-restore /var/lib/cytadela/backups/cytadela-backup-20260130-163000.tar.gz
+
+# Usuń backup
+sudo cytadela++ config-delete /var/lib/cytadela/backups/cytadela-backup-20260130-163000.tar.gz
+```
+
+**Backup zawiera:**
+- DNSCrypt config (toml, cloaking-rules)
+- CoreDNS config (Corefile, zones)
+- NFTables rules
+- NetworkManager config
+- Cytadela state (manifest, panic, location)
+- Systemd units
+
+## Cache Statistics (Issue #15)
+
+**Statystyki DNS cache z Prometheus metrics.**
+
+```bash
+# Pokaż statystyki
+sudo cytadela++ cache-stats
+
+# Top N domen
+sudo cytadela++ cache-stats-top 20
+
+# Reset statystyk (restart CoreDNS)
+sudo cytadela++ cache-stats-reset
+
+# Live monitoring (2s refresh)
+sudo cytadela++ cache-stats-watch
+```
+
+**Metryki:**
+- Cache hit rate (%)
+- Request types (A, AAAA, PTR)
+- Response codes (NOERROR, NXDOMAIN, SERVFAIL)
+- Query latency (ms)
+- Adblock stats
+
+## Desktop Notifications (Issue #16)
+
+**Powiadomienia systemowe (libnotify).**
+
+```bash
+# Włącz powiadomienia
+sudo cytadela++ notify-enable
+
+# Wyłącz
+sudo cytadela++ notify-disable
+
+# Status
+sudo cytadela++ notify-status
+
+# Test
+sudo cytadela++ notify-test
+```
+
+**Powiadomienia dla:**
+- Health check failures
+- Service restarts
+- Blocklist updates
+- Panic mode activation
 
 ---
 
