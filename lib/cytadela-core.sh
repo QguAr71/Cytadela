@@ -82,11 +82,13 @@ load_i18n_module() {
     
     # Always load common strings first
     if [[ -f "${CYTADELA_LIB}/i18n/common/${lang}.sh" ]]; then
+        # shellcheck source=/dev/null
         source "${CYTADELA_LIB}/i18n/common/${lang}.sh"
     fi
     
     # Load module-specific strings
     if [[ -n "$module" && -f "${CYTADELA_LIB}/i18n/${module}/${lang}.sh" ]]; then
+        # shellcheck source=/dev/null
         source "${CYTADELA_LIB}/i18n/${module}/${lang}.sh"
     fi
 }
