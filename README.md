@@ -13,21 +13,34 @@
 
 ## ⚡ Quick Install
 
-### Option 1: Interactive Installer (Recommended)
+### ⚠️ IMPORTANT: Check Dependencies First!
+
+Before installation, verify you have all required packages:
 
 ```bash
 # Clone repository
 git clone https://github.com/QguAr71/Cytadela.git
 cd Cytadela
-
-# Checkout latest version
 git checkout v3.2.0
 
-# Install whiptail (if not installed)
-sudo pacman -S libnewt
-
-# Run interactive installer
+# Install base script
 sudo ./install-refactored.sh
+
+# CHECK DEPENDENCIES (DO THIS FIRST!)
+sudo cytadela++ check-deps
+
+# Auto-install missing packages
+sudo cytadela++ check-deps --install
+```
+
+**This prevents "command not found" errors during installation!**
+
+---
+
+### Option 1: Interactive Installer (Recommended)
+
+```bash
+# After checking dependencies, run interactive installer
 sudo cytadela++ install-wizard
 ```
 
@@ -36,11 +49,7 @@ sudo cytadela++ install-wizard
 ### Option 2: Automatic Install
 
 ```bash
-# Clone and install everything automatically
-git clone https://github.com/QguAr71/Cytadela.git
-cd Cytadela
-git checkout v3.2.0
-sudo ./install-refactored.sh
+# After checking dependencies, configure system
 sudo cytadela++ configure-system
 ```
 
