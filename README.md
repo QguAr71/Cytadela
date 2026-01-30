@@ -251,6 +251,72 @@ W trybie STRICT powinno timeoutować (`no servers could be reached`).
 Uwagi:
 - `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
 
+---
+
+## 🧪 Testing & Verification
+
+### Quick Test (Automated)
+
+Run the automated test suite to verify your installation:
+
+```bash
+./test-cytadela.sh
+```
+
+This will check:
+- ✅ DNS resolution works
+- ✅ Adblock is active
+- ✅ Firewall protects against DNS leaks
+- ✅ Services are running
+- ✅ Internet connectivity works
+
+**Expected result:** All tests should pass (green ✓)
+
+### Manual Tests
+
+**Test 1: DNS works**
+```bash
+dig google.com @127.0.0.1 +short
+# Should return IP address
+```
+
+**Test 2: Ads are blocked**
+```bash
+dig ads.google.com @127.0.0.1 +short
+# Should return 0.0.0.0
+```
+
+**Test 3: No DNS leak**
+```bash
+# Visit https://dnsleaktest.com
+# Should NOT show your ISP's DNS servers
+```
+
+**Test 4: Firewall blocks external DNS**
+```bash
+dig google.com @8.8.8.8
+# Should timeout (if firewall-strict is enabled)
+```
+
+### Troubleshooting
+
+If tests fail, see detailed troubleshooting guide:
+- 📖 **[TESTING_USER_GUIDE.md](TESTING_USER_GUIDE.md)** - Complete testing & troubleshooting guide
+
+Common fixes:
+```bash
+# Restart services
+sudo systemctl restart coredns dnscrypt-proxy
+
+# Reconfigure system
+sudo cytadela++ configure-system
+
+# Restore to previous state
+sudo cytadela++ restore-system
+```
+
+---
+
 ### 📊 Porównanie z alternatywami
 
 | Feature | **Cytadela++** | Pi-hole | AdGuard Home | Unbound + DNSCrypt |
