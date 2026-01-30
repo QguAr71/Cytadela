@@ -63,10 +63,21 @@ install_wizard() {
     
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
-        log_error "whiptail not found. Install it first:"
-        echo "  Arch/Manjaro: sudo pacman -S libnewt"
-        echo "  Debian/Ubuntu: sudo apt install whiptail"
-        echo "  Fedora: sudo dnf install newt"
+        if [[ "$WIZARD_LANG" == "pl" ]]; then
+            log_error "whiptail nie znaleziony. Zainstaluj najpierw:"
+            echo "  Arch/Manjaro: sudo pacman -S libnewt"
+            echo "  Debian/Ubuntu: sudo apt install whiptail"
+            echo "  Fedora: sudo dnf install newt"
+            echo ""
+            log_info "Lub uruchom: sudo cytadela++ check-deps --install"
+        else
+            log_error "whiptail not found. Install it first:"
+            echo "  Arch/Manjaro: sudo pacman -S libnewt"
+            echo "  Debian/Ubuntu: sudo apt install whiptail"
+            echo "  Fedora: sudo dnf install newt"
+            echo ""
+            log_info "Or run: sudo cytadela++ check-deps --install"
+        fi
         return 1
     fi
     

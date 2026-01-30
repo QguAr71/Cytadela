@@ -128,6 +128,16 @@ case "$ACTION" in
         ${ACTION//-/_}
         ;;
     
+    # Dependency checker
+    check-deps|check-dependencies)
+        load_module "check-dependencies"
+        if [[ "$2" == "--install" ]]; then
+            check_dependencies_install
+        else
+            check_dependencies
+        fi
+        ;;
+    
     # Installation
     install-wizard)
         load_module "install-wizard"
