@@ -4,7 +4,7 @@
 # ║  Quick validation without requiring root/sudo                             ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-set -euo pipefail
+set -uo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -179,9 +179,10 @@ test_file_structure() {
     local required_files=(
         "cytadela++.new.sh"
         "citadela_en.new.sh"
-        "lib/core.sh"
+        "lib/cytadela-core.sh"
         "lib/module-loader.sh"
-        "lib/colors.sh"
+        "lib/i18n-pl.sh"
+        "lib/i18n-en.sh"
         "modules/install-all.sh"
         "modules/diagnostics.sh"
         "modules/discover.sh"
