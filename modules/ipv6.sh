@@ -7,20 +7,24 @@
 ipv6_privacy_auto_ensure() {
     log_section "🔒 IPv6 PRIVACY AUTO-ENSURE"
     
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     if [[ -z "$iface" ]]; then
         log_warning "No active interface detected. Skipping."
         return 0
     fi
     log_info "Active interface: $iface"
     
-    local ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | grep -v temporary | awk '/inet6/ {print $2; exit}' || true)
+    local ipv6_global
+    ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | grep -v temporary | awk '/inet6/ {print $2; exit}' || true)
     [[ -z "$ipv6_global" ]] && log_info "No global IPv6 on $iface. Ensuring sysctl is configured anyway."
     
-    local ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ && /preferred_lft/ {print $2; exit}' || true)
+    local ipv6_temp
+    ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ && /preferred_lft/ {print $2; exit}' || true)
     local temp_preferred=0
     if [[ -n "$ipv6_temp" ]]; then
-        local pref_lft=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | grep -oP 'preferred_lft \K[0-9]+' | head -1 || echo "0")
+        local pref_lft
+        pref_lft=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | grep -oP 'preferred_lft \K[0-9]+' | head -1 || echo "0")
         [[ "$pref_lft" -gt 0 ]] && temp_preferred=1
     fi
     
@@ -43,7 +47,8 @@ EOF
     sysctl --system >/dev/null 2>&1 || true
     log_success "Sysctl configured: use_tempaddr=2"
     
-    local stack=$(discover_network_stack)
+    local stack
+    stack=$(discover_network_stack)
     log_info "Network stack: $stack. Triggering address regeneration..."
     
     if [[ "$stack" == "NetworkManager" ]]; then
@@ -76,7 +81,8 @@ EOF
 
 ipv6_privacy_on() {
     log_section "🔒 IPv6 PRIVACY ON"
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     [[ -z "$iface" ]] && { log_error "No active interface"; return 1; }
     
     log_info "Enabling IPv6 Privacy Extensions on $iface..."
@@ -92,7 +98,8 @@ EOF
 
 ipv6_privacy_off() {
     log_section "🔓 IPv6 PRIVACY OFF"
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     [[ -z "$iface" ]] && { log_error "No active interface"; return 1; }
     
     log_info "Disabling IPv6 Privacy Extensions on $iface..."
@@ -108,13 +115,15 @@ EOF
 
 ipv6_privacy_status() {
     log_section "🔍 IPv6 PRIVACY STATUS"
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     [[ -z "$iface" ]] && { log_error "No active interface"; return 1; }
     
     echo "Interface: $iface"
     echo "Sysctl use_tempaddr: $(sysctl -n net.ipv6.conf.${iface}.use_tempaddr 2>/dev/null || echo 'unknown')"
     
-    local ipv6_addrs=$(ip -6 addr show dev "$iface" scope global 2>/dev/null)
+    local ipv6_addrs
+    ipv6_addrs=$(ip -6 addr show dev "$iface" scope global 2>/dev/null)
     echo ""
     echo "IPv6 Addresses:"
     echo "$ipv6_addrs" | grep inet6 | while read -r line; do
@@ -128,7 +137,8 @@ ipv6_privacy_status() {
 
 ipv6_deep_reset() {
     log_section "🔄 IPv6 DEEP RESET"
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     [[ -z "$iface" ]] && { log_error "No active interface"; return 1; }
     
     log_info "Flushing IPv6 addresses on $iface..."
@@ -137,7 +147,8 @@ ipv6_deep_reset() {
     log_info "Flushing IPv6 neighbor cache..."
     ip -6 neigh flush dev "$iface" 2>/dev/null || true
     
-    local stack=$(discover_network_stack)
+    local stack
+    stack=$(discover_network_stack)
     if [[ "$stack" == "NetworkManager" ]]; then
         log_info "Reconnecting via NetworkManager..."
         nmcli dev disconnect "$iface" 2>/dev/null || true
@@ -155,7 +166,8 @@ ipv6_deep_reset() {
 
 smart_ipv6_detection() {
     log_section "🔍 SMART IPv6 DETECTION"
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     [[ -z "$iface" ]] && { log_error "No active interface"; return 1; }
     
     log_info "Testing IPv6 connectivity..."

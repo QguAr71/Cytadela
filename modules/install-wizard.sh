@@ -75,7 +75,8 @@ install_wizard() {
     
     # Ensure required modules are included
     for key in dnscrypt coredns nftables; do
-        if [[ ! " ${modules_to_install[*]} " =~ " ${key} " ]]; then
+        local pattern=" $key "
+        if [[ ! " ${modules_to_install[*]} " =~ $pattern ]]; then
             modules_to_install+=("$key")
         fi
     done

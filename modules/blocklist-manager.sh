@@ -25,7 +25,8 @@ declare -A BLOCKLIST_PROFILES=(
 blocklist_list() {
     log_section "📋 AVAILABLE BLOCKLIST PROFILES"
     
-    local current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
+    local current_profile
+    current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
     
     echo "Available profiles:"
     echo ""
@@ -65,7 +66,8 @@ blocklist_switch() {
     
     log_section "🔄 SWITCHING BLOCKLIST PROFILE"
     
-    local current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
+    local current_profile
+    current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
     
     if [[ "$new_profile" == "$current_profile" ]]; then
         log_warning "Already using profile: $new_profile"
@@ -90,8 +92,10 @@ blocklist_switch() {
     # Download new blocklist
     log_info "Downloading blocklist for profile: $new_profile"
     
-    local tmp_raw=$(mktemp)
-    local tmp_block=$(mktemp)
+    local tmp_raw
+    tmp_raw=$(mktemp)
+    local tmp_block
+    tmp_block=$(mktemp)
     local download_failed=0
     
     if [[ "$urls" == "CUSTOM" ]]; then
@@ -165,7 +169,8 @@ blocklist_switch() {
     ' "$tmp_raw" | sort -u > "$tmp_block"
     
     # Validate
-    local entry_count=$(wc -l < "$tmp_block")
+    local entry_count
+    entry_count=$(wc -l < "$tmp_block")
     log_info "Processed entries: $entry_count"
     
     if [[ $entry_count -lt 1000 ]]; then
@@ -205,7 +210,8 @@ blocklist_switch() {
 blocklist_status() {
     log_section "📊 BLOCKLIST STATUS"
     
-    local current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
+    local current_profile
+    current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
     IFS='|' read -r name desc urls <<< "${BLOCKLIST_PROFILES[$current_profile]}"
     
     echo "Current profile: ${GREEN}$current_profile${NC}"
@@ -213,14 +219,16 @@ blocklist_status() {
     echo ""
     
     if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
-        local total=$(wc -l < /etc/coredns/zones/blocklist.hosts)
+        local total
+        total=$(wc -l < /etc/coredns/zones/blocklist.hosts)
         printf "Blocked domains: %'d\n" "$total"
     else
         echo "Blocked domains: N/A (blocklist not found)"
     fi
     
     if [[ -f /etc/coredns/zones/combined.hosts ]]; then
-        local combined=$(wc -l < /etc/coredns/zones/combined.hosts)
+        local combined
+        combined=$(wc -l < /etc/coredns/zones/combined.hosts)
         printf "Total entries:   %'d (blocklist + custom)\n" "$combined"
     fi
     
@@ -263,7 +271,8 @@ blocklist_add_url() {
     log_success "Added URL: $url"
     
     # Switch to custom profile if not already
-    local current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
+    local current_profile
+    current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
     if [[ "$current_profile" != "custom" ]]; then
         log_info "Switching to custom profile..."
         blocklist_switch custom
@@ -295,7 +304,8 @@ blocklist_remove_url() {
     log_success "Removed URL: $url"
     
     # Rebuild if using custom profile
-    local current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
+    local current_profile
+    current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
     if [[ "$current_profile" == "custom" ]]; then
         log_info "Rebuilding custom blocklist..."
         blocklist_switch custom

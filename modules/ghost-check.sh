@@ -7,10 +7,11 @@
 GHOST_ALLOWED_PORTS=(22 53 5353 9153)
 
 ghost_check() {
-    log_section "👻 GHOST-CHECK - Port Exposure Audit"
+    log_section "👻 GHOST-CHECK: Port Exposure Audit"
     
     local warnings=0
-    local iface=$(discover_active_interface)
+    local iface
+    iface=$(discover_active_interface)
     
     log_info "Scanning listening sockets..."
     echo ""
@@ -76,7 +77,8 @@ ghost_check() {
     echo ""
     echo "=== NFTABLES STATUS ==="
     if command -v nft &>/dev/null; then
-        local tables=$(nft list tables 2>/dev/null | wc -l)
+        local tables
+        tables=$(nft list tables 2>/dev/null | wc -l)
         echo "Active tables: $tables"
         if nft list tables 2>/dev/null | grep -q "citadel"; then
             log_success "Citadel firewall rules loaded"

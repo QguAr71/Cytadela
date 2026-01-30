@@ -85,7 +85,8 @@ EOF
     fi
 
     if [[ $(grep -cE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf 2>/dev/null || echo 0) -gt 1 ]]; then
-        local tmp_nftconf=$(mktemp)
+        local tmp_nftconf
+        tmp_nftconf=$(mktemp)
         awk 'BEGIN{seen=0}
             /^[[:space:]]*include[[:space:]]+"\/etc\/nftables\.d\/citadel-dns\.nft"[[:space:]]*$/ { if (seen==0) { print; seen=1 } ; next }
             { print }

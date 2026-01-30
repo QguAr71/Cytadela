@@ -36,8 +36,10 @@ location_get_firewall_mode() {
 location_status() {
     log_section "📍 LOCATION STATUS"
     
-    local ssid=$(location_get_ssid)
-    local fw_mode=$(location_get_firewall_mode)
+    local ssid
+    ssid=$(location_get_ssid)
+    local fw_mode
+    fw_mode=$(location_get_firewall_mode)
     
     echo "=== NETWORK ==="
     if [[ -n "$ssid" ]]; then
@@ -61,7 +63,8 @@ location_status() {
     echo ""
     echo "=== TRUSTED SSIDS ==="
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
-        local count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
+        local count
+        count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
         echo "File: $TRUSTED_SSIDS_FILE"
         echo "Count: $count"
         if [[ $count -gt 0 ]]; then
@@ -77,8 +80,10 @@ location_status() {
 location_check() {
     log_section "📍 LOCATION CHECK"
     
-    local ssid=$(location_get_ssid)
-    local fw_mode=$(location_get_firewall_mode)
+    local ssid
+    ssid=$(location_get_ssid)
+    local fw_mode
+    fw_mode=$(location_get_firewall_mode)
     local is_trusted=0
     
     if [[ -n "$ssid" ]]; then
@@ -177,13 +182,15 @@ location_list_trusted() {
     log_section "📍 TRUSTED SSIDS"
     
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
-        local count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
+        local count
+        count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)
         echo "Count: $count"
         if [[ $count -gt 0 ]]; then
             echo ""
             grep -v '^#' "$TRUSTED_SSIDS_FILE" | while read -r ssid; do
                 [[ -z "$ssid" ]] && continue
-                local current_ssid=$(location_get_ssid)
+                local current_ssid
+                current_ssid=$(location_get_ssid)
                 if [[ "$ssid" == "$current_ssid" ]]; then
                     printf "  ${GREEN}● %s${NC} (current)\n" "$ssid"
                 else

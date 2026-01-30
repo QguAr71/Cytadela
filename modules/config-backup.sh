@@ -13,7 +13,8 @@ config_backup() {
     mkdir -p "$BACKUP_DIR"
     
     local backup_file="${BACKUP_DIR}/cytadela-backup-${BACKUP_DATE}.tar.gz"
-    local tmp_dir=$(mktemp -d)
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
     
     log_info "Creating backup: $backup_file"
     
@@ -129,8 +130,9 @@ config_restore() {
     log_info "Backing up current config..."
     config_backup
     
-    # Extract to temp dir
-    local tmp_dir=$(mktemp -d)
+    log_info "Creating backup archive..."
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
     log_info "Extracting backup..."
     tar -xzf "$backup_file" -C "$tmp_dir"
     
@@ -210,11 +212,13 @@ config_list() {
     echo "Backups in $BACKUP_DIR:"
     echo ""
     
-    for backup in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
-        [[ ! -f "$backup" ]] && continue
-        
-        local size=$(du -h "$backup" | cut -f1)
-        local date=$(stat -c %y "$backup" | cut -d'.' -f1)
+    for file in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
+        [[ ! -f "$file" ]] && continue
+        local backup="$BACKUP_DIR/$file"
+        local size
+        size=$(du -h "$backup" | cut -f1)
+        local date
+        date=$(stat -c %y "$backup" | cut -d'.' -f1)
         
         printf "  ${GREEN}%s${NC}\n" "$(basename "$backup")"
         printf "    Date: %s\n" "$date"

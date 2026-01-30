@@ -21,11 +21,14 @@ notify_send() {
     fi
     
     # Get user who should receive notification
-    local notify_user=$(cat "$NOTIFY_ENABLED_FILE" 2>/dev/null)
+    local notify_user
+    notify_user=$(cat "$NOTIFY_ENABLED_FILE" 2>/dev/null)
     [[ -z "$notify_user" ]] && return 0
     
     # Send notification as user
-    sudo -u "$notify_user" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u "$notify_user")/bus \
+    local user_id
+    user_id=$(id -u "$notify_user")
+    sudo -u "$notify_user" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${user_id}/bus \
         notify-send -u "$urgency" -i "$icon" "$title" "$message" 2>/dev/null || true
 }
 
@@ -72,7 +75,8 @@ notify_status() {
     log_section "📊 NOTIFICATION STATUS"
     
     if [[ -f "$NOTIFY_ENABLED_FILE" ]]; then
-        local notify_user=$(cat "$NOTIFY_ENABLED_FILE")
+        local notify_user
+        notify_user=$(cat "$NOTIFY_ENABLED_FILE")
         echo -e "${GREEN}Status: ENABLED${NC}"
         echo "User: $notify_user"
         

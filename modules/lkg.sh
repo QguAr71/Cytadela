@@ -11,9 +11,10 @@ lkg_validate_blocklist() {
     local file="$1"
     local min_lines=1000
     
-    [[ ! -s "$file" ]] && { log_warning "LKG: File empty or missing: $file"; return 1; }
+    [[ ! -f "$file" ]] && return 1
     
-    local lines=$(wc -l < "$file")
+    local lines
+    lines=$(wc -l < "$file")
     [[ $lines -lt $min_lines ]] && { log_warning "LKG: File too small ($lines lines, min $min_lines): $file"; return 1; }
     
     if grep -qiE '<html|<!DOCTYPE|AccessDenied|404 Not Found|403 Forbidden' "$file" 2>/dev/null; then
@@ -84,10 +85,11 @@ lists_update() {
     log_section "📥 LISTS UPDATE (with LKG fallback)"
     
     local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
-    local staging_file=$(mktemp)
+    local staging_file
+    staging_file=$(mktemp)
     local target="/etc/coredns/zones/blocklist.hosts"
     
-    log_info "Downloading blocklist..."
+    log_info "Downloading fresh blocklist..."
     
     if curl -sSL --connect-timeout 10 --max-time 60 "$blocklist_url" -o "$staging_file" 2>/dev/null; then
         log_info "Download complete. Validating..."

@@ -12,7 +12,8 @@ supply_chain_verify_file() {
     
     [[ ! -f "$file" ]] && { log_error "File not found: $file"; return 2; }
     
-    local actual_hash=$(sha256sum "$file" | awk '{print $1}')
+    local actual_hash
+    actual_hash=$(sha256sum "$file" | awk '{print $1}')
     
     if [[ "$actual_hash" == "$expected_hash" ]]; then
         return 0
@@ -31,7 +32,8 @@ supply_chain_download() {
     
     log_info "Downloading: $url"
     
-    local staging=$(mktemp)
+    local staging
+    staging=$(mktemp)
     
     if ! curl -sSL --connect-timeout 10 --max-time 120 "$url" -o "$staging" 2>/dev/null; then
         log_error "Download failed: $url"
@@ -40,7 +42,8 @@ supply_chain_download() {
     fi
     
     if [[ -n "$expected_hash" ]]; then
-        local actual_hash=$(sha256sum "$staging" | awk '{print $1}')
+        local actual_hash
+        actual_hash=$(sha256sum "$staging" | awk '{print $1}')
         
         if [[ "$actual_hash" != "$expected_hash" ]]; then
             log_error "Hash verification FAILED for $url"
@@ -81,7 +84,8 @@ supply_chain_init() {
     
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
     
-    local tmp=$(mktemp)
+    local tmp
+    tmp=$(mktemp)
     
     echo "# Cytadela Supply-Chain Checksums" > "$tmp"
     echo "# Generated: $(date -Iseconds)" >> "$tmp"
@@ -90,7 +94,8 @@ supply_chain_init() {
     
     log_info "Fetching current blocklist hash..."
     local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
-    local blocklist_hash=$(curl -sSL --connect-timeout 10 "$blocklist_url" 2>/dev/null | sha256sum | awk '{print $1}')
+    local blocklist_hash
+    blocklist_hash=$(curl -sSL --connect-timeout 10 "$blocklist_url" 2>/dev/null | sha256sum | awk '{print $1}')
     
     if [[ -n "$blocklist_hash" && "$blocklist_hash" != "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" ]]; then
         echo "$blocklist_hash  $blocklist_url  # Hagezi Pro blocklist" >> "$tmp"
