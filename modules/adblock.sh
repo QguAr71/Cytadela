@@ -100,14 +100,23 @@ adblock_query() {
 
 adblock_add() {
     local domain="$1"
+    
     if [[ -z "$domain" ]]; then
-        log_error "Użycie: adblock-add domena"
+        log_error "Usage: adblock-add <domain>"
         return 1
     fi
-    if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
-        log_error "Nieprawidłowa domena: $domain"
-        return 1
-    fi
+    
+    # Add to custom.hosts
+    echo "0.0.0.0 $domain" >> "/etc/coredns/zones/custom.hosts"
+    
+    # Fix permissions for ZFS compatibility (Issue #25)
+    chmod 644 "/etc/coredns/zones/custom.hosts"
+    chown root:root "/etc/coredns/zones/custom.hosts"
+    
+    log_success "Added: $domain"
+    
+    # Rebuild
+    adblock_rebuild
     
     mkdir -p /etc/coredns/zones
     touch /etc/coredns/zones/custom.hosts

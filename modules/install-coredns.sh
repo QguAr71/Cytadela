@@ -130,9 +130,26 @@ ${COREDNS_METRICS_ADDR} {
 }
 EOF
 
-    cp /etc/coredns/Corefile /etc/coredns/Corefile.citadel
+    log_info "CoreDNS Corefile created: /etc/coredns/Corefile"
 
-    log_info "Konfiguracja automatycznej aktualizacji blocklist..."
+    # Fix permissions for ZFS compatibility (Issue #25)
+    log_info "Setting permissions for ZFS compatibility..."
+    chown -R root:root /etc/coredns
+    chmod 755 /etc/coredns
+    chmod 755 /etc/coredns/zones
+    chmod 644 /etc/coredns/Corefile
+    chmod 644 /etc/coredns/Corefile.citadel 2>/dev/null || true
+    chmod 644 /etc/coredns/zones/*.hosts 2>/dev/null || true
+
+    # Grant network capabilities to CoreDNS (bind to port 53)
+    if command -v setcap &>/dev/null; then
+        setcap 'cap_net_bind_service=+ep' /usr/bin/coredns 2>/dev/null || {
+            log_warning "Could not set capabilities on CoreDNS binary"
+            log_warning "CoreDNS may need to run as root or with systemd CapabilityBoundingSet"
+        }
+    fi
+
+    # Create auto-update blocklist service
     tee /etc/systemd/system/citadel-update-blocklist.service >/dev/null <<'EOF'
 [Unit]
 Description=Citadel++ Blocklist Auto-Update
@@ -159,6 +176,16 @@ EOF
 
     systemctl daemon-reload
     systemctl enable --now citadel-update-blocklist.timer
+
+    # Start CoreDNS
+    log_info "Starting CoreDNS..."
+    systemctl daemon-reload
+    
+    # Final permission check before starting (ZFS compatibility)
+    chmod 644 /etc/coredns/Corefile /etc/coredns/zones/*.hosts 2>/dev/null || true
+    
+    systemctl enable coredns
+    systemctl restart coredns-blocklist.timer
 
     systemctl enable --now coredns 2>/dev/null || true
     systemctl restart coredns
