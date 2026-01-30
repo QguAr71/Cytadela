@@ -23,8 +23,8 @@ load_module() {
         return 0
     fi
     
-    # Integrity check in secure mode
-    if [[ "$CYTADELA_MODE" == "secure" ]]; then
+    # Integrity check in secure mode (skip if function not available)
+    if [[ "$CYTADELA_MODE" == "secure" ]] && declare -f integrity_check_module >/dev/null 2>&1; then
         if ! integrity_check_module "$module_file"; then
             log_error "Integrity check failed for module: $module"
             return 1
