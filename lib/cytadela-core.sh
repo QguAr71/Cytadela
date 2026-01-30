@@ -56,6 +56,42 @@ trap_err_handler() {
 trap 'trap_err_handler' ERR
 
 # ==============================================================================
+# INTERNATIONALIZATION (i18n)
+# ==============================================================================
+
+# Detect system language
+detect_language() {
+    case "${LANG}" in
+        pl*) echo "pl" ;;
+        de*) echo "de" ;;
+        fr*) echo "fr" ;;
+        es*) echo "es" ;;
+        it*) echo "it" ;;
+        ru*) echo "ru" ;;
+        *)   echo "en" ;;
+    esac
+}
+
+# Set global language (can be overridden by CYTADELA_LANG env var)
+export CYTADELA_LANG="${CYTADELA_LANG:-$(detect_language)}"
+
+# Load i18n strings for a module
+load_i18n_module() {
+    local module="$1"
+    local lang="${CYTADELA_LANG:-en}"
+    
+    # Always load common strings first
+    if [[ -f "${CYTADELA_LIB}/i18n/common/${lang}.sh" ]]; then
+        source "${CYTADELA_LIB}/i18n/common/${lang}.sh"
+    fi
+    
+    # Load module-specific strings
+    if [[ -n "$module" && -f "${CYTADELA_LIB}/i18n/${module}/${lang}.sh" ]]; then
+        source "${CYTADELA_LIB}/i18n/${module}/${lang}.sh"
+    fi
+}
+
+# ==============================================================================
 # UTILITY FUNCTIONS
 # ==============================================================================
 require_cmd() {
