@@ -60,10 +60,13 @@ graph TD
     D -->|Encrypted DoH/DoT| E[Internet]
     F[NFTables] -.->|Blocks| G[Direct DNS :53 ✗]
     
-    style B fill:#90EE90
-    style D fill:#87CEEB
-    style F fill:#FFB6C1
-    style G fill:#FF6B6B
+    style B fill:#2d5016,stroke:#4a7c2c,stroke-width:2px,color:#fff
+    style D fill:#1a4d6d,stroke:#2980b9,stroke-width:2px,color:#fff
+    style F fill:#6d1a4d,stroke:#9b4d7c,stroke-width:2px,color:#fff
+    style G fill:#6d1a1a,stroke:#c0392b,stroke-width:2px,color:#fff
+    style A fill:#333,stroke:#666,stroke-width:2px,color:#fff
+    style C fill:#333,stroke:#666,stroke-width:2px,color:#fff
+    style E fill:#333,stroke:#666,stroke-width:2px,color:#fff
 ```
 
 **Why it's better:**
