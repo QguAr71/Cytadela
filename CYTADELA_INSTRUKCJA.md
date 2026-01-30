@@ -942,6 +942,146 @@ test-all              verify
 
 ---
 
+# TESTOWANIE I WALIDACJA
+
+## Framework testowania (3 poziomy)
+
+### Poziom 1: Analiza statyczna
+**Czas:** ~5 sekund  
+**Wymaga sudo:** ❌  
+**CI/CD:** ✅ Automatyczne
+
+```bash
+# ShellCheck - walidacja składni i best practices
+shellcheck -S warning -e SC2034 cytadela++.sh lib/*.sh modules/*.sh
+```
+
+**GitHub Actions:** Automatyczne przy każdym push do `main`
+
+---
+
+### Poziom 2: Smoke Tests
+**Czas:** ~2-3 minuty  
+**Wymaga sudo:** ❌  
+**CI/CD:** ✅ Automatyczne  
+**Skrypt:** `tests/smoke-test.sh`
+
+**Co testuje:**
+1. Walidacja składni (bash -n)
+2. ShellCheck na wszystkich skryptach
+3. Ładowanie modułów
+4. Struktura plików
+5. Uprawnienia wykonywalne
+6. Komendy help/version
+7. Walidacja modułów (73 testy)
+
+**Użycie:**
+```bash
+cd /home/qguar/Cytadela
+./tests/smoke-test.sh
+```
+
+**Oczekiwany wynik:**
+```
+✓ All tests passed!
+Passed:  73
+Failed:  0
+Skipped: 2
+```
+
+---
+
+### Poziom 3: Integration Tests
+**Czas:** ~10-15 minut  
+**Wymaga sudo:** ✅  
+**CI/CD:** ❌ Tylko manualnie  
+**Skrypt:** `tests/integration-test.sh`
+
+**Co testuje (14 kategorii):**
+1. Diagnostics command
+2. Verify command
+3. Discover command
+4. Cache stats (jeśli CoreDNS zainstalowany)
+5. Blocklist status
+6. Location status
+7. Config list (backupy)
+8. Integrity check
+9. IPv6 privacy status
+10. Ghost check (audyt portów)
+11. Supply chain status
+12. Notify status
+13. Status serwisów (dnscrypt-proxy, coredns, nftables)
+14. Sprawdzanie uprawnień plików
+
+**Użycie:**
+```bash
+cd /home/qguar/Cytadela
+sudo ./tests/integration-test.sh
+```
+
+**Oczekiwany wynik (częściowa instalacja):**
+```
+✓ All integration tests passed!
+Passed:  4-10
+Failed:  0
+Skipped: 9-15 (brakujące komponenty)
+```
+
+**Oczekiwany wynik (pełna instalacja):**
+```
+✓ All integration tests passed!
+Passed:  15-19
+Failed:  0
+Skipped: 0-4
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions Workflows
+
+**1. ShellCheck Workflow**
+- Uruchamia się przy każdym push do `main`
+- Waliduje wszystkie skrypty
+- Czas: ~25 sekund
+
+**2. Smoke Tests Workflow**
+- Uruchamia się przy każdym push do `main`
+- Wykonuje `tests/smoke-test.sh`
+- Czas: ~23 sekundy
+- Upload artifacts przy błędach
+
+**Status:** ![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg) ![Smoke Tests](https://github.com/QguAr71/Cytadela/actions/workflows/smoke-tests.yml/badge.svg)
+
+---
+
+## Workflow deweloperski
+
+### Przed commitem
+```bash
+./tests/smoke-test.sh  # Szybka walidacja (3 min)
+```
+
+### Przed release
+```bash
+sudo ./tests/integration-test.sh  # Pełna walidacja (15 min)
+```
+
+### Na CI/CD
+- Automatycznie przy każdym push
+- ShellCheck + Smoke Tests równolegle
+- Zielony ✓ = gotowe do merge
+- Czerwony ✗ = przejrzyj błędy
+
+---
+
+## Dokumentacja testów
+
+Pełna dokumentacja: `tests/README.md`
+
+---
+
 # POMYSŁY NA PRZYSZŁOŚĆ (v3.1+)
 
 ## Optymalizacje kodu
@@ -1045,6 +1185,6 @@ Dostępne: Hagezi Pro/Light/Ultimate, OISD, Steven Black
 
 ---
 
-*Dokumentacja wygenerowana: 2026-01-25*
+*Dokumentacja zaktualizowana: 2026-01-30 (v3.1 + Testing Framework)*
 *Autor: QguAr71*
 *Projekt: https://github.com/QguAr71/Cytadela*
