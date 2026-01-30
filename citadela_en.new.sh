@@ -117,6 +117,11 @@ case "$ACTION" in
         ;;
     
     # Installation
+    install-wizard)
+        load_module "install-wizard"
+        install_wizard
+        ;;
+    
     install-dnscrypt)
         load_module "install-dnscrypt"
         install_dnscrypt

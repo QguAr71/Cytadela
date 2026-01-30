@@ -12,10 +12,11 @@ ${BLUE}║                  CITADEL++ v3.1 - Instrukcja                         
 ${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}
 
 ${CYAN}Komendy instalacyjne (BEZPIECZNE):${NC}
+  install-wizard        🎯 Interaktywny instalator z checklistą (ZALECANE)
+  install-all           Instaluj wszystkie moduły DNS (NIE wyłącza systemd-resolved)
   install-dnscrypt      Instaluj tylko DNSCrypt-Proxy
   install-coredns       Instaluj tylko CoreDNS
   install-nftables      Instaluj tylko reguły NFTables
-  install-all           Instaluj wszystkie moduły DNS (NIE wyłącza systemd-resolved)
 
 ${CYAN}DNSSEC (opcjonalnie):${NC}
   CITADEL_DNSSEC=1       Wygeneruj DNSCrypt z require_dnssec = true
