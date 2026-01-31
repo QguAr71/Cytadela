@@ -12,16 +12,25 @@ git clone https://github.com/yourusername/Citadel.git
 cd Citadel
 ```
 
-### Step 2: Run Installation Wizard
+### Step 2: Choose Installation Mode
+
+**Option A: Graphical Wizard (Recommended)**
 ```bash
 sudo ./citadel.sh install-wizard
 ```
+- Interactive GUI with whiptail
+- 7 languages support
+- Step-by-step guidance
 
-The wizard will guide you through:
-- ✅ Dependency checking
-- ✅ Component selection
-- ✅ Configuration
-- ✅ System integration
+**Option B: CLI for Hardcore Users**
+```bash
+sudo ./citadel.sh install-all
+```
+- No GUI - pure CLI
+- Fast, automatic installation
+- Full control via logs
+
+> **Note:** For legacy version (v3.0), see `legacy/` directory
 
 ### Step 3: Verify Installation
 ```bash
@@ -88,10 +97,19 @@ sudo ./citadel.sh panic-bypass
 
 ## 📚 Next Steps
 
-- [Full Installation Guide](installation.md)
-- [Configuration Guide](configuration.md)
-- [Commands Reference](commands.md)
+- [Full Manual (PL)](MANUAL_PL.md) - Complete Polish guide
+- [Full Manual (EN)](MANUAL_EN.md) - Complete English guide
+- [Commands Reference](commands.md) - All 101 commands
 - [Troubleshooting](troubleshooting.md)
+
+### Legacy Version
+
+If you need the legacy monolithic version (v3.0):
+```bash
+cd legacy/
+sudo ./cytadela++.sh install-all
+```
+See `legacy/README.md` for details.
 
 ---
 
