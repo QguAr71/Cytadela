@@ -12,7 +12,12 @@ git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 ```
 
-### Step 2: Choose Installation Mode
+### Step 2: Check Dependencies
+```bash
+sudo ./citadel.sh check-deps
+```
+
+### Step 3: Choose Installation Mode
 
 **Option A: Graphical Wizard (Recommended)**
 ```bash
@@ -34,7 +39,7 @@ sudo ./citadel.sh install-all
 
 > **Note:** For legacy version (v3.0), see `legacy/` directory
 
-### Step 3: Verify Installation
+### Step 4: Verify Installation
 ```bash
 sudo ./citadel.sh verify
 ```

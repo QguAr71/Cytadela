@@ -62,7 +62,8 @@ Citadel is a comprehensive DNS privacy and security solution for Linux that comb
 ```bash
 git clone https://github.com/QguAr71/Cytadela.git
 cd Cytadela
-sudo ./citadel.sh install-wizard  # GUI mode
+sudo ./citadel.sh check-deps       # Check dependencies
+sudo ./citadel.sh install-wizard   # GUI mode
 # OR
 sudo ./citadel.sh install-all      # CLI mode
 ```
