@@ -73,6 +73,38 @@ Based on user observations about interface chaos and function duplication:
 ### Credits
 - User observations about interface chaos and function duplication inspired v3.2 refactoring plans
 
+### Latest Updates (2026-01-31 Evening)
+
+#### Code Quality Improvements
+- **Refactored citadel.sh:** Added `call_fn()` helper for DRY dynamic function calls
+- **Safe source:** Added `source_lib()` with file existence validation
+- **Portability:** Added realpath fallback for systems without realpath
+- **Bug fixes:** Fixed check-deps parameter bug (${2:-} → ${1:-} after shift)
+- **Defensive coding:** Added defensive expansions (${EUID:-}, ${CYTADELA_MODE:-})
+- **Exit codes:** Documented exit codes (0-4+)
+- **ShellCheck:** 0 errors, improved compliance
+
+#### CI/CD & Testing
+- **GitHub Actions:** Added comprehensive lint-and-test workflow
+  - ShellCheck (citadel.sh, lib/, modules/)
+  - shfmt format checking
+  - BATS tests (when available)
+  - Security checks (hardcoded secrets, strict mode)
+- **ShellCheckRC:** Improved configuration with inline annotation examples
+- **Removed CodeQL:** Bash not supported, using ShellCheck instead
+
+#### Documentation
+- **Fixed placeholders:** Corrected 15 occurrences of yourusername → QguAr71/Cytadela
+- **Refactoring plans:**
+  - v3.2: Bash 5.0+ features, associative arrays, --silent flag
+  - v3.3: Honeypot feature added
+  - v3.4: Web Dashboard plan (2-3 weeks, htmx+Bash, HTTPS)
+- **Aurora Mystica:** Marked as IS-ONLY-A-CONCEPT
+
+#### Future Branding
+- **Note:** Project may be rebranded to "Heimdall-SysQ" in future releases
+- **Rationale:** Better metaphor (guardian of gateway), unique, tech-friendly
+
 ---
 
 ## Unreleased
