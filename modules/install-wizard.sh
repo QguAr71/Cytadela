@@ -100,14 +100,22 @@ fullscale=brightgreen,black
     WIZARD_LANG=$(select_language "${1:-}")
     
     # Load i18n translations for selected language
-    local i18n_file="${CYTADELA_ROOT}/lib/i18n/${WIZARD_LANG}.sh"
+    # Determine script directory (same as citadel.sh bootstrap)
+    local module_dir
+    if command -v realpath >/dev/null 2>&1; then
+        module_dir="$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"
+    else
+        module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
+    fi
+    
+    local i18n_file="${module_dir}/lib/i18n/${WIZARD_LANG}.sh"
     if [[ -f "$i18n_file" ]]; then
         # shellcheck source=/dev/null
         source "$i18n_file"
     else
         log_warning "Translation file not found: $i18n_file, falling back to English"
         # shellcheck source=/dev/null
-        source "${CYTADELA_ROOT}/lib/i18n/en.sh"
+        source "${module_dir}/lib/i18n/en.sh"
     fi
     
     # Display wizard title in selected language
