@@ -6,11 +6,11 @@ This guide provides real-world deployment scenarios for Citadel.
 
 ## 📋 Table of Contents
 
-1. [Home User Setup](#home-user-setup)
-2. [Small Office Setup](#small-office-setup)
-3. [Gateway Mode Setup](#gateway-mode-setup)
-4. [Raspberry Pi Setup](#raspberry-pi-setup)
-5. [Multi-Device Setup](#multi-device-setup)
+1. [Home User Setup](#-home-user-setup)
+2. [Small Office Setup](#️-small-office-setup)
+3. [Gateway Mode Setup](#-gateway-mode-setup)
+4. [Raspberry Pi Setup](#-raspberry-pi-setup)
+5. [Multi-Device Setup](#️-multi-device-setup)
 
 ---
 
