@@ -30,6 +30,7 @@
 - **Reduce code:** ~8,000 → ~4,800 lines (-40%)
 - **Improve maintainability:** Single source of truth
 - **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
+- **Modernize codebase:** Bash 5.0+ features (associative arrays, --silent flag)
 
 ### Benefits
 
@@ -38,6 +39,8 @@
 - ✅ Easier to test (unified interface)
 - ✅ Easier to extend (consistent patterns)
 - ✅ Better user experience (simpler commands)
+- ✅ Automation-friendly (--silent flag for CI/CD)
+- ✅ Modern Bash features (faster, cleaner code)
 
 ### Risks
 
@@ -48,10 +51,58 @@
 
 ### Mitigation
 
-- ✅ Backward compatibility layer
+- ✅ Backward compatibility layer (associative array mapping)
 - ✅ Comprehensive testing
 - ✅ Phased rollout
 - ✅ Clear migration guide
+- ✅ Bash version check (require 5.0+)
+
+---
+
+## 🔧 Technical Requirements
+
+### System Requirements
+
+- **Bash:** >=5.0 (for associative arrays)
+- **OS:** Linux (Arch-based, Debian 11+, Ubuntu 20.04+)
+- **Check:** Version validation in install script
+
+### Modern Bash Features
+
+**1. Associative Arrays (Backward Compatibility)**
+```bash
+# Old command → New command mapping
+declare -A COMMAND_MAP=(
+    ["tools-update"]="update blocklists"
+    ["adblock-rebuild"]="adblock rebuild"
+    ["tools-install"]="install all"
+    # ... all legacy commands
+)
+
+# Usage
+legacy_cmd="tools-update"
+new_cmd="${COMMAND_MAP[$legacy_cmd]}"
+citadel $new_cmd
+```
+
+**2. --silent Flag (Automation)**
+```bash
+# Skip all confirmations
+citadel install all --silent
+citadel update blocklists --silent
+
+# Safeguard: disabled for destructive operations
+citadel uninstall --silent  # ERROR: --silent not allowed
+```
+
+**3. Version Check**
+```bash
+# In install script
+if (( BASH_VERSINFO[0] < 5 )); then
+    echo "ERROR: Bash 5.0+ required (current: ${BASH_VERSION})"
+    exit 1
+fi
+```
 
 ---
 
@@ -360,21 +411,26 @@ citadel restore-system
 **Goal:** Create unified module structure and core libraries
 
 **Tasks:**
-1. Create `modules/unified-install.sh` skeleton
-2. Create `modules/unified-adblock.sh` skeleton
-3. Create `modules/unified-backup.sh` skeleton
-4. Create `modules/unified-monitor.sh` skeleton
-5. Create `modules/unified-security.sh` skeleton
-6. Create `modules/unified-network.sh` skeleton
-7. Create `lib/unified-core.sh` (shared functions)
-8. Update `lib/module-loader.sh` for unified modules
+1. Create `lib/cytadela-core.sh` (shared functions)
+2. Add bash version check (require 5.0+)
+3. Implement associative array for command mapping
+4. Implement --silent flag parser
+5. Create `lib/module-loader.sh` (lazy loading)
+6. Update main scripts to use new loader
+7. Create test framework
+8. Set up CI/CD for new structure
+9. Implement backward compatibility layer
 
 **Deliverables:**
-- 6 unified module skeletons
 - Core library with shared functions
-- Updated module loader
+- Bash 5.0+ version check
+- Backward compatibility layer (associative array)
+- --silent flag support
+- Module loader with lazy loading
+- Updated main scripts
+- Test framework
 
-**Time:** 8-10 hours
+**Time:** 10-12 hours
 
 ---
 
