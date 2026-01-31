@@ -8,18 +8,18 @@
 
 ## 📑 TABLE OF CONTENTS
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Installation](#installation)
-4. [Configuration](#configuration)
-5. [Basic Usage](#basic-usage)
-6. [Advanced Features](#advanced-features)
-7. [Ad Blocking](#ad-blocking)
-8. [Security](#security)
-9. [Monitoring](#monitoring)
-10. [Troubleshooting](#troubleshooting)
-11. [Usage Examples](#usage-examples)
-12. [FAQ](#faq)
+1. [Introduction](#-introduction)
+2. [System Requirements](#-system-requirements)
+3. [Installation](#-installation)
+4. [Configuration](#️-configuration)
+5. [Basic Usage](#-basic-usage)
+6. [Advanced Features](#-advanced-features)
+7. [Ad Blocking](#-ad-blocking)
+8. [Security](#-security)
+9. [Monitoring](#-monitoring)
+10. [Troubleshooting](#-troubleshooting)
+11. [Usage Examples](#-usage-examples)
+12. [FAQ](#-faq)
 
 ---
 

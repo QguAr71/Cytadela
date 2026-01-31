@@ -8,18 +8,18 @@
 
 ## 📑 SPIS TREŚCI
 
-1. [Wprowadzenie](#wprowadzenie)
-2. [Wymagania systemowe](#wymagania-systemowe)
-3. [Instalacja](#instalacja)
-4. [Konfiguracja](#konfiguracja)
-5. [Podstawowe użycie](#podstawowe-użycie)
-6. [Zaawansowane funkcje](#zaawansowane-funkcje)
-7. [Blokowanie reklam](#blokowanie-reklam)
-8. [Bezpieczeństwo](#bezpieczeństwo)
-9. [Monitorowanie](#monitorowanie)
-10. [Rozwiązywanie problemów](#rozwiązywanie-problemów)
-11. [Przykłady użycia](#przykłady-użycia)
-12. [FAQ](#faq)
+1. [Wprowadzenie](#-wprowadzenie)
+2. [Wymagania systemowe](#-wymagania-systemowe)
+3. [Instalacja](#-instalacja)
+4. [Konfiguracja](#️-konfiguracja)
+5. [Podstawowe użycie](#-podstawowe-użycie)
+6. [Zaawansowane funkcje](#-zaawansowane-funkcje)
+7. [Blokowanie reklam](#-blokowanie-reklam)
+8. [Bezpieczeństwo](#-bezpieczeństwo)
+9. [Monitorowanie](#-monitorowanie)
+10. [Rozwiązywanie problemów](#-rozwiązywanie-problemów)
+11. [Przykłady użycia](#-przykłady-użycia)
+12. [FAQ](#-faq)
 
 ---
 
