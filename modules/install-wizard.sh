@@ -51,6 +51,28 @@ select_language() {
 }
 
 install_wizard() {
+    # Set whiptail colors (256-color palette for better contrast)
+    # Format: root=,window=,border=,textbox=,button=
+    export NEWT_COLORS='
+root=,black
+window=brightmagenta,black
+border=brightgreen,black
+textbox=brightmagenta,black
+button=black,brightgreen
+actbutton=black,brightmagenta
+checkbox=brightgreen,black
+actcheckbox=black,brightgreen
+entry=brightmagenta,black
+label=brightmagenta,black
+listbox=brightmagenta,black
+actlistbox=black,brightgreen
+sellistbox=black,brightgreen
+title=brightgreen,black
+roottext=brightmagenta,black
+emptyscale=black
+fullscale=brightgreen,black
+'
+    
     # Language selection
     local WIZARD_LANG
     WIZARD_LANG=$(select_language "${1:-}")
