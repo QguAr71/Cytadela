@@ -13,18 +13,35 @@ detect_language() {
     # Check $LANG environment variable
     if [[ "${LANG}" =~ ^pl ]]; then
         echo "pl"
+    elif [[ "${LANG}" =~ ^de ]]; then
+        echo "de"
+    elif [[ "${LANG}" =~ ^es ]]; then
+        echo "es"
+    elif [[ "${LANG}" =~ ^it ]]; then
+        echo "it"
+    elif [[ "${LANG}" =~ ^fr ]]; then
+        echo "fr"
+    elif [[ "${LANG}" =~ ^ru ]]; then
+        echo "ru"
     else
-        echo "en"
+        echo "en"  # Default to English
     fi
 }
 
 select_language() {
     local lang="${1:-}"
     
-    # If language specified via parameter, use it
-    if [[ "$lang" == "en" || "$lang" == "pl" ]]; then
-        echo "$lang"
-        return 0
+    # Valid languages
+    local valid_langs=("en" "pl" "de" "es" "it" "fr" "ru")
+    
+    # If language specified via parameter, validate and use it
+    if [[ -n "$lang" ]]; then
+        for valid in "${valid_langs[@]}"; do
+            if [[ "$lang" == "$valid" ]]; then
+                echo "$lang"
+                return 0
+            fi
+        done
     fi
     
     # Auto-detect from $LANG
@@ -34,10 +51,15 @@ select_language() {
     # Ask user to confirm or change
     if command -v whiptail &>/dev/null; then
         local choice
-        choice=$(whiptail --title "Language / Język" \
-            --menu "Select language / Wybierz język:" 12 50 2 \
-            "en" "English" \
-            "pl" "Polski" \
+        choice=$(whiptail --title "Language / Język / Sprache / Idioma / Lingua / Langue / Язык" \
+            --menu "Select language / Wybierz język / Sprache wählen / Seleccionar idioma / Seleziona lingua / Sélectionner la langue / Выберите язык:" 20 78 7 \
+            "en" "🇬🇧 English" \
+            "pl" "🇵🇱 Polski" \
+            "de" "🇩🇪 Deutsch" \
+            "es" "🇪🇸 Español" \
+            "it" "🇮🇹 Italiano" \
+            "fr" "🇫🇷 Français" \
+            "ru" "🇷🇺 Русский" \
             3>&1 1>&2 2>&3)
         
         if [[ -n "$choice" ]]; then
@@ -77,11 +99,19 @@ fullscale=brightgreen,black
     local WIZARD_LANG
     WIZARD_LANG=$(select_language "${1:-}")
     
-    if [[ "$WIZARD_LANG" == "pl" ]]; then
-        log_section "🎯 INTERAKTYWNY KREATOR INSTALACJI"
+    # Load i18n translations for selected language
+    local i18n_file="${CYTADELA_ROOT}/lib/i18n/${WIZARD_LANG}.sh"
+    if [[ -f "$i18n_file" ]]; then
+        # shellcheck source=/dev/null
+        source "$i18n_file"
     else
-        log_section "🎯 INTERACTIVE INSTALLER WIZARD"
+        log_warning "Translation file not found: $i18n_file, falling back to English"
+        # shellcheck source=/dev/null
+        source "${CYTADELA_ROOT}/lib/i18n/en.sh"
     fi
+    
+    # Display wizard title in selected language
+    log_section "🎯 ${T_WIZARD_TITLE}"
     
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
