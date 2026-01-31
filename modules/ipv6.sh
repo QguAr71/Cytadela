@@ -179,3 +179,8 @@ smart_ipv6_detection() {
         ipv6_deep_reset
     fi
 }
+
+# Alias for compatibility with cytadela++.new.sh
+smart_ipv6() {
+    smart_ipv6_detection
+}

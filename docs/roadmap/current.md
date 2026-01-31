@@ -35,7 +35,7 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 
 ---
 
-## ✅ Completed (v3.1 - 2026-01-30)
+## ✅ Completed (v3.1 - 2026-01-31) - STABLE
 
 ### Code optimization
 
@@ -81,11 +81,40 @@ This file tracks planned changes and feature ideas. It is intentionally short an
   - Komendy: `blocklist-list/switch/status/add-url/remove-url`
   - Automatyczny backup przed zmianą
 
-- ⏳ **Web Dashboard** (Issue #18)
-  - Prosty lokalny dashboard (localhost:9154)
-  - Status serwisów, metrics, blocked domains
+- ✅ **Terminal Dashboard** (Issue #18)
+  - Terminal dashboard `citadel-top` z real-time monitoring
+  - Status serwisów, metryki Prometheus, wydajność systemu
+  - Komenda: `install-dashboard`
   - Opcjonalny (nie wymagany do działania)
-  - **Status:** Odłożone na v3.4+
+
+### Internationalization (i18n)
+
+- ✅ **7 języków** - Pełne wsparcie wielojęzyczne
+  - Polski (pl), English (en), Deutsch (de)
+  - Español (es), Italiano (it), Français (fr), Русский (ru)
+  - Pełne tłumaczenia: installer, moduły, komunikaty, logi
+  - Automatyczna detekcja języka z $LANG
+  - System i18n w `/lib/i18n/`
+
+### Bug Fixes & Legacy Migration (2026-01-31)
+
+- ✅ **Naprawa smart-ipv6** - dodano alias funkcji w module ipv6.sh
+- ✅ **Naprawa killswitch** - dodano aliasy funkcji w module emergency.sh
+- ✅ **Migracja z legacy** - przeniesiono 18 brakujących funkcji:
+  - `fix-ports` - rozwiązywanie konfliktów portów
+  - `blocklist`, `combined`, `custom` - aliasy adblock-show
+  - `edit`, `edit-dnscrypt`, `logs` - edycja i logi
+  - `install-dashboard` - terminal dashboard
+  - `optimize-kernel` - optymalizacja priorytetów
+  - `install-doh-parallel` - DoH parallel racing
+  - `install-editor` - integracja edytora
+  - `safe-test`, `test` - narzędzia testowe
+- ✅ **Reorganizacja repozytorium** - profesjonalna struktura:
+  - `docs/` - uporządkowana dokumentacja (user/developer/roadmap)
+  - `legacy/` - legacy v3.0 oddzielone z dokumentacją
+  - Nowa nazwa: `citadel.sh` (było: cytadela++.new.sh)
+  - Usunięto 9 niepotrzebnych plików
+  - Utworzono 5 nowych modułów
 
 ---
 
@@ -138,34 +167,74 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 
 ---
 
-## 🚀 Advanced Features (v3.5+ - Future)
+## 🔄 Planned (v3.3 - Automation & Control)
 
-### Enterprise-grade (opcjonalnie)
+### Parental Control (Issue #26)
 
-- **Grafana / Prometheus Integration** (Issue #19)
+- **Kontrola rodzicielska** (v3.3)
+  - Profile dla dzieci (Kids, Teens)
+  - Time schedules (internet 8-20, weekends)
+  - Category blocking (adult, gambling, social media, gaming)
+  - Activity reports (daily/weekly)
+  - Komendy: `parental-add`, `parental-set`, `parental-block`, `parental-report`
+  - **Effort:** ~10-15h
+
+### Full Auto-update (Issue #27)
+
+- **Pełna automatyczna aktualizacja** (v3.3)
+  - Auto-update wszystkiego: blocklist, resolvers, CoreDNS, skrypty
+  - Automatyczny backup przed każdą aktualizacją
+  - Auto-rollback przy błędzie
+  - Powiadomienia o aktualizacjach
+  - Komendy: `full-update-enable`, `full-update-status`, `full-update-rollback`
+  - **Effort:** ~8-12h
+
+### Full Backup/Restore (Issue #28)
+
+- **Pełny backup/restore systemu** (v3.3)
+  - 1 komenda = pełny backup (config + blocklists + state)
+  - Łatwa migracja na nowy komputer
+  - Cloud backup (opcjonalnie - Nextcloud, rsync)
+  - Scheduled backups (daily/weekly)
+  - Komendy: `full-backup`, `full-restore`, `full-backup-schedule`
+  - **Effort:** ~6-10h
+
+---
+
+## 🚀 Advanced Features (v3.5+ - Daleka przyszłość)
+
+### Enterprise-grade (opcjonalnie, niska priorytet)
+
+- **Grafana / Prometheus Integration** (Issue #19) - **v3.5+**
   - Historyczne dane, dashboardy
   - Dla zaawansowanych użytkowników
+  - **Status:** Daleka przyszłość
 
-- **IDS DNS** (Issue #20)
+- **IDS DNS** (Issue #20) - **v3.5+**
   - DNS traffic analysis
   - DGA detection, C2 domains
   - Suricata/Zeek integration
+  - **Status:** Daleka przyszłość
 
-- **Per-device Policy** (Issue #21)
+- **Per-device Policy** (Issue #21) - **v3.5+**
   - Różne polityki per MAC/IP
   - Kids/Work/IoT modes
+  - **Status:** Daleka przyszłość
 
-- **DNS Sinkhole** (Issue #22)
+- **DNS Sinkhole** (Issue #22) - **v3.5+**
   - Internal sinkhole
   - Threat intelligence feeds
+  - **Status:** Daleka przyszłość
 
-- **Immutable OS Integration** (Issue #23)
+- **Immutable OS Integration** (Issue #23) - **v3.5+**
   - Fedora Silverblue, NixOS
   - Docker/Podman support
+  - **Status:** Daleka przyszłość
 
-- **Geo/ASN Firewall** (Issue #24)
+- **Geo/ASN Firewall** (Issue #24) - **v3.5+**
   - Geograficzne blokowanie
   - Dynamiczne ASN updates
+  - **Status:** Daleka przyszłość
 
 ---
 
@@ -189,13 +258,15 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 3. Bug fixes
 
 **v3.3 (Q2 2026):**
-1. Parental Control
-2. Full Auto-update
-3. Full Backup/Restore
+1. Parental Control (Issue #26)
+2. Full Auto-update (Issue #27)
+3. Full Backup/Restore (Issue #28)
 
 **v3.4+ (Q3+ 2026):**
 1. Web UI (opcjonalnie)
-2. Advanced features (IDS, Per-device Policy, etc.)
+
+**v3.5+ (Daleka przyszłość):**
+1. Advanced features (Issues #19-24) - Enterprise-grade, niska priorytet
 
 ---
 

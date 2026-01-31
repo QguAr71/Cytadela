@@ -141,3 +141,12 @@ emergency_killswitch_off() {
     
     log_success "Kill-switch deactivated"
 }
+
+# Aliases for compatibility with cytadela++.new.sh
+killswitch_on() {
+    emergency_killswitch_on
+}
+
+killswitch_off() {
+    emergency_killswitch_off
+}

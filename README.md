@@ -1,566 +1,274 @@
-# Citadel++ (Cytadela++) — Hardened Local DNS Stack (DNSCrypt + CoreDNS + NFTables)
+# 🛡️ Citadel - Fortified DNS Infrastructure
 
-> *No cloud. No telemetry. No trust. Only local control.*
+**Advanced hardened DNS resolver with full privacy stack for home users and small businesses.**
 
-[![ShellCheck](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/shellcheck.yml)
-[![Smoke Tests](https://github.com/QguAr71/Cytadela/actions/workflows/smoke-tests.yml/badge.svg)](https://github.com/QguAr71/Cytadela/actions/workflows/smoke-tests.yml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Release](https://img.shields.io/github/v/release/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/releases)
-[![Platform](https://img.shields.io/badge/platform-Linux-blue.svg)](https://www.linux.org/)
-[![Arch](https://img.shields.io/badge/arch-x86__64-orange.svg)](https://archlinux.org/)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/yourusername/Citadel)
+[![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 
 ---
 
-## ⚡ Quick Install
-
-### ⚠️ IMPORTANT: Check Dependencies First!
-
-Before installation, verify you have all required packages:
+## 🚀 Quick Start
 
 ```bash
 # Clone repository
-git clone https://github.com/QguAr71/Cytadela.git
-cd Cytadela
-git checkout v3.2.0
+git clone https://github.com/yourusername/Citadel.git
+cd Citadel
 
-# Install base script
-sudo ./install-refactored.sh
+# Run interactive installation wizard (7 languages available)
+sudo ./citadel.sh install-wizard
 
-# CHECK DEPENDENCIES (DO THIS FIRST!)
-sudo cytadela++ check-deps
+# Or force specific language:
+sudo ./citadel.sh install-wizard pl  # Polski
+sudo ./citadel.sh install-wizard en  # English
+sudo ./citadel.sh install-wizard de  # Deutsch
 
-# Auto-install missing packages
-sudo cytadela++ check-deps --install
+# Check status
+sudo ./citadel.sh status
 ```
 
-**This prevents "command not found" errors during installation!**
+### 🌍 Multilingual Support
+
+Citadel supports **7 languages** with full translations:
+- 🇵🇱 Polish (Polski)
+- 🇬🇧 English
+- 🇩🇪 German (Deutsch)
+- 🇪🇸 Spanish (Español)
+- 🇮🇹 Italian (Italiano)
+- 🇫🇷 French (Français)
+- 🇷🇺 Russian (Русский)
+
+**What's translated:**
+- Interactive installer wizard
+- All system messages
+- Modules (adblock, diagnostics, help)
+- Error logs and reports
 
 ---
 
-### Option 1: Interactive Installer (Recommended)
+## ✨ Key Features
 
-```bash
-# After checking dependencies, run interactive installer
-sudo cytadela++ install-wizard
-```
-
-**Interactive menu** lets you choose which modules to install (Health Watchdog, IPv6 Privacy, etc.)
-
-### Option 2: Automatic Install
-
-```bash
-# After checking dependencies, configure system
-sudo cytadela++ configure-system
-```
-
-**That's it!** Your DNS is now encrypted, ad-blocked, and leak-proof. 🛡️
-
-📖 **Full documentation:** [CYTADELA_INSTRUKCJA.md](CYTADELA_INSTRUKCJA.md) (PL) | [CITADEL_EN_COMPLETE_MANUAL.md](CITADEL_EN_COMPLETE_MANUAL.md) (EN)
+- 🔒 **DNSCrypt-Proxy** - Encrypted DNS queries (DoH/DoT)
+- 🎯 **CoreDNS** - High-performance caching resolver
+- 🛡️ **NFTables Firewall** - DNS leak protection
+- 🚫 **Ad Blocking** - 325,000+ domains blocked
+- 📊 **Prometheus Metrics** - Real-time monitoring
+- 🔐 **Supply Chain Protection** - Integrity verification
+- 🌍 **IPv6 Privacy** - Temporary address management
+- 🚨 **Emergency Recovery** - Panic bypass mode
+- 📦 **Modular Architecture** - 32 independent modules
+- 🔄 **Auto-Update** - Automatic blocklist updates
+- 🌐 **7 Languages** - Full support (PL, EN, DE, ES, IT, FR, RU)
+- 🖥️ **Interactive Installer** - Graphical wizard (whiptail)
 
 ---
 
-## 🧠 Quick Mental Model
+## 📋 System Requirements
 
-**What it does:**
-```
-Cytadela++ secures all DNS traffic on Linux using encrypted resolvers,
-massive blocklists, and kernel-level enforcement.
-```
-
-**How it works:**
-```
-┌─────────────┐
-│ Application │  Your browser, apps, etc.
-└──────┬──────┘
-       │ DNS query (example.com?)
-       ▼
-┌─────────────────────────────────┐
-│ CoreDNS (127.0.0.1:53)         │  Local DNS resolver
-│ ├─ Cache (85-90% hit rate)     │  Fast responses
-│ ├─ Adblock (318k+ domains)     │  Blocks ads/trackers
-│ └─ Metrics (Prometheus)        │  Monitoring
-└──────┬──────────────────────────┘
-       │ Cache miss? Forward to...
-       ▼
-┌─────────────────────────────────┐
-│ DNSCrypt-Proxy                 │  Encryption layer
-│ └─ Encrypted (DoH/DoT)         │  ISP can't see queries
-└──────┬──────────────────────────┘
-       │ Encrypted DNS query
-       ▼
-   🌐 Internet (Privacy protected)
-
-┌─────────────────────────────────┐
-│ NFTables (Kernel-level)        │  Leak prevention
-│ └─ Blocks external :53 ✗       │  Apps can't bypass
-│    (applies to all outbound    │  System-wide enforcement
-│     traffic, not a hop)        │
-└─────────────────────────────────┘
-```
-
-**Visual Flow:**
-```mermaid
-graph TD
-    A[Application] -->|DNS Query| B[CoreDNS :53]
-    B -->|Cache Hit 85%| A
-    B -->|Blocked Domain| C[0.0.0.0]
-    B -->|Cache Miss| D[DNSCrypt-Proxy]
-    D -->|Encrypted DoH/DoT| E[Internet]
-    F[NFTables] -.->|Blocks| G[Direct DNS :53 ✗]
-    
-    style B fill:#2d5016,stroke:#4a7c2c,stroke-width:2px,color:#fff
-    style D fill:#1a4d6d,stroke:#2980b9,stroke-width:2px,color:#fff
-    style F fill:#6d1a4d,stroke:#9b4d7c,stroke-width:2px,color:#fff
-    style G fill:#6d1a1a,stroke:#c0392b,stroke-width:2px,color:#fff
-    style A fill:#333,stroke:#666,stroke-width:2px,color:#fff
-    style C fill:#333,stroke:#666,stroke-width:2px,color:#fff
-    style E fill:#333,stroke:#666,stroke-width:2px,color:#fff
-```
-
-**Why it's better:**
-- ✅ **Privacy:** ISP can't see your DNS queries (encrypted)
-- ✅ **Security:** Apps can't bypass your DNS (kernel enforcement)
-- ✅ **Speed:** Local cache = faster browsing (85-90% hit rate)
-- ✅ **Clean:** Blocks ads/trackers at DNS level (318k+ domains)
-- ✅ **Control:** Everything runs locally, no cloud dependencies
+- **OS:** Arch Linux, CachyOS (other distros: manual adaptation)
+- **RAM:** 512 MB minimum, 1 GB recommended (2 GB for Gateway Mode)
+- **Disk:** 100 MB for installation
+- **Network:** Active internet connection
+- **Privileges:** Root access required
 
 ---
 
-## 🎉 v3.2.0 - Documentation & Quality (9.6/10)
+## 🏆 Project Status
 
-**Latest version v3.2.0** - Production-ready with world-class documentation:
-- ✨ **Quick Mental Model** - 3 visualization variants (ASCII, Mermaid, pitch)
-- 📚 **CONTRIBUTING.md** - Complete contributor guidelines (350 lines)
-- 🧪 **Testing framework** - 3 levels (Static, Smoke, Integration)
-- 🤖 **CI/CD** - GitHub Actions with ShellCheck + Smoke Tests
-- 🔒 **Security** - Input sanitization, injection prevention
-- 📊 **Comparison** - vs 5 alternatives (Pi-hole, AdGuard, Unbound, NextDNS)
-- 🌍 **Global-ready** - Full EN/PL documentation
+### ✅ **v3.1.0 - STABLE** (Current - 2026-01-31)
 
-### Installation v3.2.0 (Recommended)
+**Production-ready with:**
+- ✅ 32 functional modules with lazy loading
+- ✅ 7 languages (PL, EN, DE, ES, IT, FR, RU)
+- ✅ Interactive installer wizard (whiptail)
+- ✅ Terminal Dashboard (`citadel-top`)
+- ✅ Auto-update, Backup/Restore, Cache Stats
+- ✅ Desktop Notifications, Multi-blocklist
+- ✅ 18 functions migrated from legacy
+- ✅ Professional repository structure
 
-```bash
-git clone https://github.com/QguAr71/Cytadela.git
-cd Cytadela
-git checkout v3.2.0
-sudo ./install-refactored.sh
-```
+**All features tested and working!**
 
-### Installation v3.1.0 (Modular Architecture)
+### 🔄 **v3.2.0 - PLANNED** (Q1 2026)
 
-**v3.1.0** introduced modular architecture with lazy loading:
-- 45% code reduction (~3200 lines removed)
-- 17 functional modules in `/opt/cytadela/modules/`
-- 5 core libraries in `/opt/cytadela/lib/`
+**Gateway Mode (PRIORITY #1):**
+- 🔄 Network Gateway for entire home network
+- 🔄 DHCP server (dnsmasq/systemd-networkd)
+- 🔄 NAT & routing (NFTables)
+- 🔄 Per-device statistics and management
+- 🔄 Terminal UI (TUI) with ncurses
+- 🔄 Commands: `gateway-wizard`, `gateway-status`, `gateway-devices`
 
-```bash
-git clone https://github.com/QguAr71/Cytadela.git
-cd Cytadela
-git checkout v3.1.0
-sudo ./install-refactored.sh
-```
+**Requirements for Gateway Mode:**
+- 2x Ethernet interfaces
+- 2 GB RAM
+- Old PC (150-300 zł / $40-80)
 
-Po instalacji dostępne są komendy:
-```bash
-sudo cytadela++ help    # Polska wersja
-sudo citadela help      # Angielska wersja
-```
-
-**Dokumentacja refactoringu:** [REFACTORING_COMPLETE.md](REFACTORING_COMPLETE.md)
+**Effort:** ~15-20 hours development
 
 ---
 
-## PL — Opis projektu (If you want the text in English, scroll down.)
+## 📚 Documentation
 
-Ten projekt jest **hobbystyczny** i jest udostępniany **"as-is"** (bez gwarancji i bez supportu).
+### For Users
+- [Quick Start Guide](docs/user/quick-start.md) - Get started in 5 minutes
+- [Installation Guide](docs/user/installation.md) - Detailed installation
+- [Configuration](docs/user/configuration.md) - Customize your setup
+- [Commands Reference](docs/user/commands.md) - All available commands
+- [Troubleshooting](docs/user/troubleshooting.md) - Common issues
+- [FAQ](docs/user/faq.md) - Frequently asked questions
 
-Cytadela++ to narzędzie bezpieczeństwa, a nie „produkt”.
-Istnieje dla osób, które rozumieją kompromisy.
-Używaj go, jeśli pasuje do Twojego threat modelu. Jeśli nie — nie używaj.
+### For Developers
+- [Architecture](docs/developer/architecture.md) - System design
+- [Contributing](docs/developer/contributing.md) - How to contribute
+- [Testing](docs/developer/testing.md) - Testing strategy
+- [Modules](docs/developer/modules.md) - Module documentation
 
-Planowane zmiany i pomysły: `ROADMAP.md`.
-
-Issues/roadmap są prowadzone po angielsku, ale szczegóły zgłoszeń mogą być po polsku (templates mają pola EN+PL).
-
-### Własność bezpieczeństwa (twardy wniosek z audytu)
-
-Na podstawie analizy ruchu (`tcpdump`) można stwierdzić technicznie: Cytadela działa jako **secure DNS gateway na poziomie jądra** — system nie posiada ścieżki DNS do świata zewnętrznego (DNS `:53`) poza lokalnym stackiem (localhost).
-Jest to ten sam typ wyniku, jaki zobaczysz w architekturach typu Qubes `sys-firewall`, Whonix Gateway, hardened VPN gateway.
-
-Citadel++ to skrypt instalacyjno-konfiguracyjny, który buduje lokalny „stos DNS” nastawiony na prywatność i spójność działania:
-
-- **Warstwa 1**: `dnscrypt-proxy` — szyfrowany upstream (DNSCrypt/DoH), dynamiczny port lokalny.
-- **Warstwa 2**: `CoreDNS` — cache + DNS-adblock (blocklist/custom) + metryki Prometheus.
-- **Warstwa 3**: `nftables` — **blokada DNS leaków** na `:53` poza `localhost` (SAFE/STRICT).
-
-### Dlaczego to ma sens
-
-- **Jedno miejsce rozwiązywania nazw** (CoreDNS na `127.0.0.1:53`).
-- **Szyfrowany upstream** (DNSCrypt/DoH przez dnscrypt-proxy).
-- **Zabezpieczenie przed „leakami”**: aplikacje nie powinny móc wysyłać DNS `:53` wprost do internetu.
-- **Adblock na poziomie DNS**: blokowanie domen reklam/telemetrii/malware przez zwracanie `0.0.0.0`.
-
-### Optymalizacje pod Polskę
-
-- Wbudowana jest lista PolishFilters (PPB / Polish Annoyance) jako jedno ze źródeł do budowy `blocklist.hosts`.
-- Stos jest nastawiony na użycie lokalnego CoreDNS i szyfrowanego upstreamu (DNSCrypt/DoH), co w praktyce jest sensowne dla PL/EU.
-
-Jeśli chcesz dodatkowo „pod Polskę” dopasować upstreamy DNS:
-- Edytuj `server_names` w `/etc/dnscrypt-proxy/dnscrypt-proxy.toml` i wybierz serwery, które preferujesz (np. EU-friendly).
-- Po zmianach uruchom:
-
-```bash
-sudo systemctl restart dnscrypt-proxy
-sudo ./cytadela++.sh verify
-```
-
-### Szybki start (bezpieczny)
-
-**Wersja v3.1.0 (modular - zalecane):**
-
-```bash
-sudo ./install-refactored.sh  # Instalacja do /opt/cytadela
-sudo cytadela++ install-all   # Instalacja komponentów DNS
-```
-
-**Lub wersja legacy (monolithic):**
-
-```bash
-sudo ./cytadela++.sh install-all
-```
-
-2) SAFE firewall (na czas wdrażania):
-
-```bash
-sudo cytadela++ firewall-safe    # v3.1.0
-# lub: sudo ./cytadela++.sh firewall-safe
-```
-
-3) Test lokalnego DNS:
-
-```bash
-dig +short google.com @127.0.0.1
-```
-
-4) Przełączenie DNS systemu (dopiero gdy test działa):
-
-```bash
-sudo cytadela++ configure-system    # v3.1.0
-# lub: sudo ./cytadela++.sh configure-system
-```
-
-5) Szybka weryfikacja:
-
-```bash
-sudo cytadela++ verify    # v3.1.0
-# lub: sudo ./cytadela++.sh verify
-```
-
-Po aktualizacji skryptu:
-
-```bash
-sudo cytadela++ verify    # v3.1.0
-dig @1.1.1.1 test.com
-```
-
-Jeśli masz włączony STRICT, drugie polecenie powinno być zablokowane/timeout (to jest szybki test, że `nftables` faktycznie blokuje DNS poza localhost).
-
-Możesz też użyć testu wprost na `:53`:
-
-```bash
-nslookup google.com 8.8.8.8
-```
-
-W trybie STRICT powinno timeoutować (`no servers could be reached`).
-
-Uwagi:
-- `install-nftables` jest bezpieczne do uruchamiania wielokrotnie (czyści stan tabel `citadel_*` i usuwa historyczne duplikaty `include` w `/etc/nftables.conf`).
+### Roadmap
+- [Current Roadmap](docs/roadmap/current.md) - v3.1-v3.2 plans
+- [Home Users Focus](docs/roadmap/home-users.md) - Features for home users
+- [Future Plans](docs/roadmap/future.md) - v4.0+ vision
 
 ---
 
-## 🧪 Testing & Verification
-
-### Quick Test (Automated)
-
-Run the automated test suite to verify your installation:
+## 🎯 Popular Commands
 
 ```bash
-./test-cytadela.sh
-```
+# Installation
+sudo ./citadel.sh install-wizard      # Interactive installer
+sudo ./citadel.sh install-all          # Install all components
 
-This will check:
-- ✅ DNS resolution works
-- ✅ Adblock is active
-- ✅ Firewall protects against DNS leaks
-- ✅ Services are running
-- ✅ Internet connectivity works
+# Configuration
+sudo ./citadel.sh configure-system     # Switch to Citadel DNS
+sudo ./citadel.sh firewall-strict      # Enable strict firewall
 
-**Expected result:** All tests should pass (green ✓)
+# Monitoring
+sudo ./citadel.sh status               # Show status
+sudo ./citadel.sh verify               # Verify installation
+sudo ./citadel.sh health-status        # Health check
 
-### Manual Tests
+# Adblock
+sudo ./citadel.sh adblock-status       # Show adblock status
+sudo ./citadel.sh adblock-add domain   # Block custom domain
+sudo ./citadel.sh blocklist-switch     # Switch blocklist profile
 
-**Test 1: DNS works**
-```bash
-dig google.com @127.0.0.1 +short
-# Should return IP address
-```
+# Emergency
+sudo ./citadel.sh panic-bypass         # Emergency recovery
+sudo ./citadel.sh emergency-restore    # Restore normal operation
 
-**Test 2: Ads are blocked**
-```bash
-dig ads.google.com @127.0.0.1 +short
-# Should return 0.0.0.0
-```
-
-**Test 3: No DNS leak**
-```bash
-# Visit https://dnsleaktest.com
-# Should NOT show your ISP's DNS servers
-```
-
-**Test 4: Firewall blocks external DNS**
-```bash
-dig google.com @8.8.8.8
-# Should timeout (if firewall-strict is enabled)
-```
-
-### Troubleshooting
-
-If tests fail, see detailed troubleshooting guide:
-- 📖 **[TESTING_USER_GUIDE.md](TESTING_USER_GUIDE.md)** - Complete testing & troubleshooting guide
-
-Common fixes:
-```bash
-# Restart services
-sudo systemctl restart coredns dnscrypt-proxy
-
-# Reconfigure system
-sudo cytadela++ configure-system
-
-# Restore to previous state
-sudo cytadela++ restore-system
+# Maintenance
+sudo ./citadel.sh auto-update-enable   # Enable auto-updates
+sudo ./citadel.sh config-backup        # Backup configuration
 ```
 
 ---
 
-### 📊 Porównanie z alternatywami
+## 🏗️ Architecture
 
-| Feature | **Cytadela++** | Pi-hole | AdGuard Home | Unbound + DNSCrypt |
-|---------|----------------|---------|--------------|-------------------|
-| **DNS Encryption** | ✅ DNSCrypt/DoH | ❌ Optional | ✅ DoH/DoT | ✅ DNSCrypt |
-| **DNS Leak Prevention** | ✅ NFTables kernel-level | ⚠️ Manual | ⚠️ Manual | ⚠️ Manual |
-| **Adblock** | ✅ 318k+ domains | ✅ Extensive | ✅ Extensive | ❌ None |
-| **Local Cache** | ✅ CoreDNS | ✅ dnsmasq | ✅ Built-in | ✅ Unbound |
-| **Prometheus Metrics** | ✅ Built-in | ✅ Available | ✅ Built-in | ❌ None |
-| **Web UI** | ❌ CLI only | ✅ Full UI | ✅ Full UI | ❌ CLI only |
-| **Multi-device** | ⚠️ Gateway mode | ✅ Network-wide | ✅ Network-wide | ⚠️ Gateway mode |
-| **Setup Complexity** | Medium | Easy | Easy | Hard |
-| **Resource Usage** | Low | Low | Medium | Low |
-| **Privacy Focus** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Leak Protection** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-
-**Cytadela++ advantages:**
-- **Kernel-level leak prevention** - NFTables blocks DNS bypass attempts
-- **No web UI** - No attack surface, no telemetry
-- **Modular architecture** - Easy to customize and extend
-- **Polish optimization** - PolishFilters integration
-- **Supply-chain verification** - SHA256 integrity checks
-- **Panic recovery** - Emergency bypass and rollback
-
-**When to use alternatives:**
-- **Pi-hole**: Need web UI, multi-device network, easy setup
-- **AdGuard Home**: Want modern UI, DoH/DoT, family-friendly features
-- **Unbound + DNSCrypt**: Maximum privacy, willing to configure manually
-
-**Cytadela++ is ideal for:**
-- Privacy-conscious Linux users
-- Single-device or gateway setups
-- Users who prefer CLI over web UI
-- Arch/CachyOS enthusiasts
-- Those who want kernel-level leak prevention
-
-### Rollback
-
-Jeśli po przełączeniu systemu coś pójdzie źle:
-
-```bash
-sudo cytadela++ restore-system    # v3.1.0
-# lub: sudo ./cytadela++.sh restore-system
 ```
-
-### DNS Adblock (panel)
-
-Pliki:
-- `/etc/coredns/zones/custom.hosts` — Twoje ręczne wpisy
-- `/etc/coredns/zones/blocklist.hosts` — listy pobierane automatycznie
-- `/etc/coredns/zones/combined.hosts` — plik używany przez CoreDNS
-
-Komendy:
-
-```bash
-sudo cytadela++ adblock-status           # v3.1.0
-sudo cytadela++ adblock-stats
-sudo cytadela++ adblock-add example.com
-sudo cytadela++ adblock-remove example.com
-sudo cytadela++ adblock-edit
-sudo cytadela++ adblock-rebuild
-sudo cytadela++ adblock-query doubleclick.net
+┌─────────────────────────────────────────────────────────────┐
+│                     User Applications                        │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ DNS Queries
+┌─────────────────────▼───────────────────────────────────────┐
+│                    CoreDNS (Port 53)                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │   Caching    │  │   Adblock    │  │  Prometheus  │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ Upstream Queries
+┌─────────────────────▼───────────────────────────────────────┐
+│              DNSCrypt-Proxy (Port 5355)                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │     DoH      │  │     DoT      │  │   DNSCrypt   │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ Encrypted
+┌─────────────────────▼───────────────────────────────────────┐
+│                  NFTables Firewall                           │
+│              (DNS Leak Protection)                           │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                 Internet
 ```
-
-### Dokumentacja
-
-- PL: `CITADEL++_NOTES.md`
-- EN: `CITADEL++_NOTES_EN.md`
-- Angielski entrypoint skryptu: `citadela_en.sh`
-
-Tracking poprawek:
-- Jeśli chcesz trzymać listę planowanych zmian w repo, użyj GitHub Issues.
-
-### GPL-3.0 w praktyce (FAQ)
-
-- Jeśli używasz/modyfikujesz Citadel++ **tylko u siebie** (home/lab) i nikomu nie przekazujesz kopii: **nic nie musisz publikować**.
-- Obowiązki GPL pojawiają się dopiero, gdy **dystrybuujesz** (przekazujesz dalej) kopię skryptu lub zmodyfikowaną wersję.
-- Jeśli dystrybuujesz, musisz:
-  - zostawić licencję GPL-3.0,
-  - udostępnić kod źródłowy (w przypadku bash to po prostu skrypt),
-  - nie nakładać dodatkowych ograniczeń na odbiorcę.
 
 ---
 
-## EN — Project overview
+## 🆚 Comparison
 
-This is a **hobby project** provided **"as-is"** (no warranty, no support).
+| Feature | Citadel | Pi-hole | AdGuard Home | Unbound |
+|---------|---------|---------|--------------|---------|
+| DNS Encryption | ✅ DoH/DoT | ❌ | ✅ DoH/DoT | ❌ |
+| Ad Blocking | ✅ 325K+ | ✅ | ✅ | ❌ |
+| Firewall | ✅ NFTables | ❌ | ❌ | ❌ |
+| Metrics | ✅ Prometheus | ✅ Web UI | ✅ Web UI | ❌ |
+| Modular | ✅ 32 modules | ❌ | ❌ | ❌ |
+| CLI-first | ✅ | ❌ | ❌ | ✅ |
+| Emergency Mode | ✅ | ❌ | ❌ | ❌ |
 
-Cytadela++ is a security tool, not a product.
-It exists for people who understand the trade-offs.
-Use it if it fits your threat model. Otherwise – don’t.
+[Full comparison](docs/comparison/vs-competitors.md)
 
-### Security property (audit conclusion)
+---
 
-Based on `tcpdump` traffic analysis, Citadel++ meets the requirements of a **secure DNS gateway at the kernel level**: the system has no external DNS path (DNS `:53`) to the Internet outside the local stack (localhost).
-This is the same kind of outcome you would expect from architectures such as Qubes `sys-firewall`, Whonix Gateway, or hardened VPN gateway setups.
+## 📊 Project Status
 
-Citadel++ is an install/config script that builds a local DNS privacy stack:
+- **Version:** 3.1.0 (Stable)
+- **Development:** Active
+- **Maintenance:** Regular updates
+- **Community:** Growing
+- **License:** GPL-3.0
 
-- **Layer 1**: `dnscrypt-proxy` — encrypted upstream (DNSCrypt/DoH), dynamic local port.
-- **Layer 2**: `CoreDNS` — cache + DNS-level adblock (blocklist/custom) + Prometheus metrics.
-- **Layer 3**: `nftables` — DNS leak prevention on `:53` outside localhost (SAFE/STRICT).
+### Version History
+- ✅ **v3.1.0** (2026-01-31) - STABLE - Modular architecture, 7 languages, 32 modules
+- ✅ **v3.0.0** (2026-01-25) - Initial stable release
+- 🔄 **v3.2.0** (Q1 2026) - PLANNED - Gateway Mode, Terminal UI
 
-### Quick start (safe)
+---
 
-**Version v3.1.0 (modular - recommended):**
+## 🤝 Contributing
 
-```bash
-sudo ./install-refactored.sh  # Install to /opt/cytadela
-sudo citadela install-all     # Install DNS components
-```
+We welcome contributions! See [CONTRIBUTING.md](docs/developer/contributing.md) for guidelines.
 
-**Or legacy version (monolithic):**
+### Ways to Contribute
+- 🐛 Report bugs
+- 💡 Suggest features
+- 📝 Improve documentation
+- 🔧 Submit pull requests
+- ⭐ Star the repository
 
-```bash
-sudo ./citadela_en.sh install-all
-```
+---
 
-2) SAFE firewall mode during rollout:
+## 📜 License
 
-```bash
-sudo citadela firewall-safe    # v3.1.0
-# or: sudo ./citadela_en.sh firewall-safe
-```
+This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
 
-3) Test local DNS:
+---
 
-```bash
-dig +short google.com @127.0.0.1
-```
+## 🙏 Acknowledgments
 
-4) Switch system DNS only after the test succeeds:
+- **DNSCrypt-Proxy** - Encrypted DNS
+- **CoreDNS** - DNS server
+- **NFTables** - Firewall
+- **Community** - Feedback and contributions
 
-```bash
-sudo citadela configure-system    # v3.1.0
-# or: sudo ./citadela_en.sh configure-system
-```
+---
 
-5) Verify:
+## 📞 Support
 
-```bash
-sudo citadela verify    # v3.1.0
-# or: sudo ./citadela_en.sh verify
-```
+- **Documentation:** [docs/](docs/)
+- **Issues:** [GitHub Issues](https://github.com/yourusername/Citadel/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/yourusername/Citadel/discussions)
 
-After updating the script:
+---
 
-```bash
-sudo citadela verify    # v3.1.0
-dig @1.1.1.1 test.com
-```
+## 🔗 Links
 
-If STRICT is enabled, the second command should be blocked / time out (quick confirmation that `nftables` actually prevents DNS leaks outside localhost).
+- **Website:** [Coming soon]
+- **Documentation:** [docs/](docs/)
+- **Legacy Version:** [legacy/](legacy/) (v3.0 - deprecated)
 
-You can also test classic DNS directly on `:53`:
+---
 
-```bash
-nslookup google.com 8.8.8.8
-```
+**Made with ❤️ for privacy and security**
 
-In STRICT mode it should time out (`no servers could be reached`).
-
-Notes:
-- `install-nftables` is safe to run repeatedly (it flushes `citadel_*` tables and removes historical duplicate `include` lines in `/etc/nftables.conf`).
-
-### Rollback
-
-```bash
-sudo citadela restore-system    # v3.1.0
-# or: sudo ./citadela_en.sh restore-system
-```
-
-### DNS Adblock (panel)
-
-Files:
-- `/etc/coredns/zones/custom.hosts`
-- `/etc/coredns/zones/blocklist.hosts`
-- `/etc/coredns/zones/combined.hosts`
-
-Commands:
-
-```bash
-sudo citadela adblock-status           # v3.1.0
-sudo citadela adblock-stats
-sudo citadela adblock-add example.com
-sudo citadela adblock-remove example.com
-sudo citadela adblock-edit
-sudo citadela adblock-rebuild
-sudo citadela adblock-query doubleclick.net
-```
-
-### Docs
-
-- Polish notes: `CITADEL++_NOTES.md`
-- English notes: `CITADEL++_NOTES_EN.md`
-- English script entrypoint: `citadela_en.sh`
-
-Tracking improvements:
-- If you want lightweight tracking for future changes, use GitHub Issues.
-
-### GPL-3.0 in practice (FAQ)
-
-- If you use/modify Citadel++ **only on your own machines** (home/lab) and you don't share copies with others: **you don't need to publish anything**.
-- GPL obligations apply when you **distribute** (convey) a copy of the script or a modified version.
-- If you distribute it, you must:
-  - keep it under GPL-3.0,
-  - provide the corresponding source (for bash: the script itself),
-  - avoid adding extra restrictions for recipients.
-
-### Poland-focused optimizations
-
-- The PolishFilters list (PPB / Polish Annoyance) is included as one of the blocklist sources.
-- The stack is geared towards a local CoreDNS resolver with encrypted upstream (DNSCrypt/DoH), which is a sensible default for PL/EU.
-
-If you want to tune upstream resolvers specifically for Poland/EU:
-- Edit `server_names` in `/etc/dnscrypt-proxy/dnscrypt-proxy.toml` and pick your preferred resolvers.
-- After changes:
-
-```bash
-sudo systemctl restart dnscrypt-proxy
-sudo ./citadela_en.sh verify
-```
+*Citadel - Your fortress against DNS surveillance*

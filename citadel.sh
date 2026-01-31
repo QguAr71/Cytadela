@@ -86,6 +86,22 @@ case "$ACTION" in
         ${ACTION//-/_} "$@"
         ;;
     
+    # Adblock aliases (legacy compatibility)
+    blocklist)
+        load_module "adblock"
+        adblock_show blocklist
+        ;;
+    
+    combined)
+        load_module "adblock"
+        adblock_show combined
+        ;;
+    
+    custom)
+        load_module "adblock"
+        adblock_show custom
+        ;;
+    
     # Blocklist Manager
     blocklist-list|blocklist-switch|blocklist-status|blocklist-add-url|blocklist-remove-url|blocklist-show-urls)
         load_module "blocklist-manager"
@@ -131,7 +147,7 @@ case "$ACTION" in
     # Dependency checker
     check-deps|check-dependencies)
         load_module "check-dependencies"
-        if [[ "$2" == "--install" ]]; then
+        if [[ "${2:-}" == "--install" ]]; then
             check_dependencies_install
         else
             check_dependencies
@@ -180,6 +196,61 @@ case "$ACTION" in
     notify-enable|notify-disable|notify-status|notify-test)
         load_module "notify"
         ${ACTION//-/_}
+        ;;
+    
+    # Advanced Install
+    optimize-kernel)
+        load_module "advanced-install"
+        optimize_kernel_priority
+        ;;
+    
+    install-doh-parallel)
+        load_module "advanced-install"
+        install_doh_parallel
+        ;;
+    
+    install-editor)
+        load_module "advanced-install"
+        install_editor_integration
+        ;;
+    
+    # Install Dashboard
+    install-dashboard)
+        load_module "install-dashboard"
+        install_citadel_top
+        ;;
+    
+    # Edit Tools
+    edit)
+        load_module "edit-tools"
+        edit_config
+        ;;
+    
+    edit-dnscrypt)
+        load_module "edit-tools"
+        edit_dnscrypt
+        ;;
+    
+    logs)
+        load_module "edit-tools"
+        show_logs
+        ;;
+    
+    # Test Tools
+    safe-test)
+        load_module "test-tools"
+        safe_test_mode
+        ;;
+    
+    test)
+        load_module "test-tools"
+        test_dns
+        ;;
+    
+    # Fix Ports
+    fix-ports)
+        load_module "fix-ports"
+        fix_port_conflicts
         ;;
     
     # Diagnostics
