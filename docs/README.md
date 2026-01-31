@@ -8,10 +8,10 @@ Welcome to the Citadel documentation!
 
 ### 👥 For Users
 - [Quick Start Guide](user/quick-start.md) - Get started in 5 minutes
-- [Configuration Guide](user/configuration.md) - Customize your setup
 - [Commands Reference](user/commands.md) - Complete command list
-- [Troubleshooting](user/troubleshooting.md) - Common issues and solutions
-- [FAQ](user/faq.md) - Frequently asked questions
+- [FAQ](user/FAQ.md) - Frequently asked questions
+- [Manual (PL)](user/MANUAL_PL.md) - Complete Polish guide
+- [Manual (EN)](user/MANUAL_EN.md) - Complete English guide
 
 ### 👨‍💻 For Developers
 - [Architecture](developer/architecture.md) - System design and components

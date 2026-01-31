@@ -118,10 +118,10 @@ Citadel supports **7 languages** with full translations:
 
 ### For Users
 - [Quick Start Guide](docs/user/quick-start.md) - Get started in 5 minutes
-- [Configuration](docs/user/configuration.md) - Customize your setup
 - [Commands Reference](docs/user/commands.md) - All available commands
-- [Troubleshooting](docs/user/troubleshooting.md) - Common issues
-- [FAQ](docs/user/faq.md) - Frequently asked questions
+- [FAQ](docs/user/FAQ.md) - Frequently asked questions
+- [Manual (PL)](docs/user/MANUAL_PL.md) - Complete Polish guide
+- [Manual (EN)](docs/user/MANUAL_EN.md) - Complete English guide
 
 ### For Developers
 - [Architecture](docs/developer/architecture.md) - System design
