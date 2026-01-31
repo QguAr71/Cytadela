@@ -216,7 +216,11 @@ sudo ./citadel.sh check-deps --install
 - `jq` - parsowanie JSON
 - `dig` - testy DNS
 
-### Krok 3: Instalacja (Kreator)
+### Krok 3: Instalacja
+
+**Citadel oferuje DWA TRYBY instalacji:**
+
+#### Opcja A: Graficzny kreator (ZALECANE dla początkujących)
 
 ```bash
 # Uruchom interaktywny kreator instalacji
@@ -237,7 +241,7 @@ sudo ./citadel.sh install-wizard
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║              CITADEL INSTALLATION WIZARD                      ║
+║              CITADEL KREATOR INSTALACJI                       ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 [1/7] Sprawdzanie zależności...
@@ -248,7 +252,7 @@ sudo ./citadel.sh install-wizard
 [2/7] Wybór komponentów:
   [x] DNSCrypt-Proxy
   [x] CoreDNS
-  [x] NFTables Firewall
+  [x] NFTables
   [x] Blokowanie reklam
   [ ] Terminal Dashboard (opcjonalnie)
 
@@ -259,21 +263,80 @@ sudo ./citadel.sh install-wizard
 ✓ Utworzono /etc/coredns/Corefile
 
 [5/7] Konfiguracja firewall...
-✓ Reguły NFTables załadowane
+✓ Załadowano reguły NFTables
 
 [6/7] Konfiguracja systemu...
 ✓ System przełączony na Citadel DNS
 
 [7/7] Weryfikacja...
-✓ DNSCrypt-Proxy: RUNNING
-✓ CoreDNS: RUNNING
-✓ NFTables: RUNNING
-✓ DNS Resolution: OK
+✓ DNSCrypt-Proxy: DZIAŁA
+✓ CoreDNS: DZIAŁA
+✓ NFTables: DZIAŁA
+✓ Rozwiązywanie DNS: OK
 
 ╔═══════════════════════════════════════════════════════════════╗
-║              INSTALACJA ZAKOŃCZONA SUKCESEM!                  ║
+║         INSTALACJA ZAKOŃCZONA POMYŚLNIE!                      ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
+
+---
+
+#### Opcja B: CLI dla hardcorów (szybka instalacja)
+
+```bash
+# Instalacja wszystkiego bez GUI - jedna komenda!
+sudo ./citadel.sh install-all
+```
+
+**Charakterystyka:**
+- ✅ **Bez GUI** - czysty CLI
+- ✅ **Szybkie** - instaluje wszystko automatycznie
+- ✅ **Bez pytań** - pełna instalacja od razu
+- ✅ **Dla zaawansowanych** - pełna kontrola przez logi
+
+**Co robi `install-all`:**
+1. Instaluje DNSCrypt-Proxy
+2. Instaluje CoreDNS
+3. Instaluje NFTables
+4. Przebudowuje blocklists
+5. Uruchamia wszystkie usługi
+6. Wykonuje testy (DNS + adblock)
+7. Pokazuje status
+
+**Workflow dla hardcorów:**
+```bash
+# 1. Instalacja (bez GUI)
+sudo ./citadel.sh install-all
+
+# 2. Firewall (safe mode)
+sudo ./citadel.sh firewall-safe
+
+# 3. Test DNS
+dig +short google.com @127.0.0.1
+
+# 4. Przełącz system
+sudo ./citadel.sh configure-system
+
+# 5. Weryfikacja
+sudo ./citadel.sh verify
+```
+
+**5 komend, 0 GUI, pełna kontrola!** 💪
+
+---
+
+#### Porównanie trybów instalacji
+
+| Funkcja | install-wizard | install-all |
+|---------|----------------|-------------|
+| **GUI** | ✅ whiptail | ❌ CLI only |
+| **Interaktywny** | ✅ Tak | ❌ Nie |
+| **Języki** | ✅ 7 | ❌ EN/PL |
+| **Wybór komponentów** | ✅ Checklist | ❌ Wszystko |
+| **Szybkość** | Wolniejsze | ⚡ Szybsze |
+| **Dla kogo** | Początkujący | 💪 Hardcorzy |
+
+---
 
 ### Krok 4: Weryfikacja instalacji
 
@@ -284,7 +347,7 @@ sudo ./citadel.sh status
 # Uruchom pełną weryfikację
 sudo ./citadel.sh verify
 
-# Przetestuj DNS
+# Test DNS
 sudo ./citadel.sh test
 ```
 

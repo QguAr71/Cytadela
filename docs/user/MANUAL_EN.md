@@ -216,7 +216,11 @@ sudo ./citadel.sh check-deps --install
 - `jq` - JSON parsing
 - `dig` - DNS tests
 
-### Step 3: Installation (Wizard)
+### Step 3: Installation
+
+**Citadel offers TWO INSTALLATION MODES:**
+
+#### Option A: Graphical wizard (RECOMMENDED for beginners)
 
 ```bash
 # Run interactive installation wizard
@@ -248,7 +252,7 @@ sudo ./citadel.sh install-wizard
 [2/7] Select components:
   [x] DNSCrypt-Proxy
   [x] CoreDNS
-  [x] NFTables Firewall
+  [x] NFTables
   [x] Ad blocking
   [ ] Terminal Dashboard (optional)
 
@@ -275,6 +279,65 @@ sudo ./citadel.sh install-wizard
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
+---
+
+#### Option B: CLI for hardcore users (fast installation)
+
+```bash
+# Install everything without GUI - one command!
+sudo ./citadel.sh install-all
+```
+
+**Characteristics:**
+- ✅ **No GUI** - pure CLI
+- ✅ **Fast** - installs everything automatically
+- ✅ **No questions** - full installation immediately
+- ✅ **For advanced users** - full control via logs
+
+**What `install-all` does:**
+1. Installs DNSCrypt-Proxy
+2. Installs CoreDNS
+3. Installs NFTables
+4. Rebuilds blocklists
+5. Starts all services
+6. Runs tests (DNS + adblock)
+7. Shows status
+
+**Workflow for hardcore users:**
+```bash
+# 1. Installation (no GUI)
+sudo ./citadel.sh install-all
+
+# 2. Firewall (safe mode)
+sudo ./citadel.sh firewall-safe
+
+# 3. Test DNS
+dig +short google.com @127.0.0.1
+
+# 4. Switch system
+sudo ./citadel.sh configure-system
+
+# 5. Verification
+sudo ./citadel.sh verify
+```
+
+**5 commands, 0 GUI, full control!** 💪
+
+---
+
+#### Installation modes comparison
+
+| Feature | install-wizard | install-all |
+|---------|----------------|-------------|
+| **GUI** | ✅ whiptail | ❌ CLI only |
+| **Interactive** | ✅ Yes | ❌ No |
+| **Languages** | ✅ 7 | ❌ EN/PL |
+| **Component selection** | ✅ Checklist | ❌ Everything |
+| **Speed** | Slower | ⚡ Faster |
+| **For whom** | Beginners | 💪 Hardcore |
+
+---
+
 ### Step 4: Verify installation
 
 ```bash
@@ -294,7 +357,7 @@ sudo ./citadel.sh test
 
 ### System configuration
 
-#### Switch to Citadel DNS:
+#### Switch to Citadel DNS
 
 ```bash
 sudo ./citadel.sh configure-system
