@@ -2,9 +2,11 @@
 
 **Version:** 3.4.0 PLANNED  
 **Created:** 2026-01-31  
+**Updated:** 2026-01-31 (merged with user plan)  
 **Status:** Planning Phase  
-**Estimated Time:** 3-4 weeks (with AI assistance)  
-**Prerequisites:** v3.3.0 (Reputation, ASN, Event Logging, Honeypot)
+**Estimated Time:** 2-3 weeks (with AI assistance)  
+**Prerequisites:** v3.3.0 (Reputation, ASN, Event Logging, Honeypot)  
+**Approach:** PoC-first (start with minimal /stats endpoint)
 
 ---
 
@@ -70,8 +72,9 @@
 
 **Server:**
 - Localhost-only: `127.0.0.1:9154`
-- HTTP (no HTTPS needed for localhost)
+- HTTPS (self-signed cert via openssl)
 - Systemd service: `cytadela-web.service`
+- Alternative: Apache CGI or socat/netcat
 
 ### Architecture Diagram
 
@@ -285,80 +288,105 @@ esac
 
 ## 📅 Implementation Plan
 
-### Phase 1: Backend Foundation (Week 1)
+### Phase 1: PoC + Backend Foundation (Week 1)
 
 **Tasks:**
-1. Create HTTP server (netcat/socat)
-2. Implement CGI handler (Bash)
-3. Create API endpoints structure
-4. Add systemd service
-5. Test basic routing
+1. **PoC:** Simple `/stats` endpoint (Bash CGI + curl test)
+2. Install deps (htmx.js via CDN, openssl for cert)
+3. Create `modules/web-ui.sh` (web_start/stop functions)
+4. Generate self-signed HTTPS cert
+5. Create HTTPS server (socat/netcat with SSL)
+6. Implement CGI handler (Bash)
+7. Create API endpoints structure
+8. Add systemd service
+9. Test basic routing
 
 **Deliverables:**
-- `lib/web-server.sh` - HTTP server
+- **PoC:** Working `/stats` endpoint
+- `modules/web-ui.sh` - Web UI module
+- `lib/web-server.sh` - HTTPS server
 - `web/cgi-bin/` - CGI scripts
+- Self-signed cert: `/etc/cytadela/ssl/`
 - `systemd/cytadela-web.service`
 - Basic API working
 
-**Time:** 5-7 days
+**Time:** 4-6 days (PoC: 1 day, rest: 3-5 days)
 
 ---
 
 ### Phase 2: API Endpoints (Week 1-2)
 
 **Tasks:**
-1. Dashboard API (`/api/dashboard`)
-2. Query log API (`/api/queries`)
-3. Blocklist API (`/api/blocklists`)
-4. Metrics API (`/api/metrics`)
-5. Settings API (`/api/settings`)
+1. Dashboard API (`/api/dashboard`) - integrate with cache-stats.sh
+2. Query log API (`/api/queries`) - parse CoreDNS logs
+3. Blocklist API (`/api/blocklists`) - integrate with blocklist-manager.sh
+4. Metrics API (`/api/metrics`) - Prometheus integration
+5. Settings API (`/api/settings`) - config management
 6. JSON response formatting
+7. Input sanitization (from adblock.sh patterns)
 
 **Deliverables:**
 - 5 working API endpoints
 - JSON responses
 - Error handling
+- Input validation
+
+**Time:** 4-5 days
+
+---
+
+### Phase 3: Frontend (Week 2)
+
+**Tasks:**
+1. Static files in `docs/web-ui/` (index.html, css)
+2. Dashboard sections (stats, adblock, diagnostics)
+3. htmx integration:
+   - `<div hx-get="/stats" hx-trigger="every 5s">` - auto-refresh
+   - Forms with hx-post for actions
+4. CSS styling (responsive, dark mode)
+5. Chart.js for metrics (optional)
+6. Multi-language support (i18n via ?lang=pl)
+
+**Deliverables:**
+- `docs/web-ui/` - HTML/CSS/JS
+- htmx dynamic updates (5s refresh)
+- Responsive UI
+- Dark mode
+- Multi-lang (PL/EN)
 
 **Time:** 5-7 days
 
 ---
 
-### Phase 3: Frontend (Week 2-3)
+### Phase 4: Integration & Testing (Week 3)
 
 **Tasks:**
-1. HTML templates (dashboard, queries, settings)
-2. CSS styling (responsive, dark mode)
-3. htmx integration (auto-refresh, forms)
-4. Chart.js for metrics
-5. Multi-language support (PL/EN)
-
-**Deliverables:**
-- `web/public/` - HTML/CSS/JS
-- Responsive UI
-- Dark mode
-- Multi-lang
-
-**Time:** 7-10 days
-
----
-
-### Phase 4: Integration & Testing (Week 3-4)
-
-**Tasks:**
-1. Integrate with existing modules
+1. Integrate with module-loader (lazy load web-ui.sh)
 2. Add `citadel web start|stop|status` commands
-3. Security hardening (localhost-only, input validation)
-4. Performance testing (load, memory)
-5. Browser testing (Chrome, Firefox)
-6. Documentation
+3. Optional flag `--web` in install-wizard
+4. Security hardening:
+   - HTTPS enforcement
+   - CSRF tokens
+   - Rate limiting
+   - Input validation
+5. Testing:
+   - `tests/test-web-ui.sh` (curl endpoints, check JSON)
+   - CI integration (shellcheck.yml)
+   - Browser testing (Chrome, Firefox)
+6. Performance testing (load, memory)
+7. Documentation:
+   - Update MANUAL_EN.md (Web UI section)
+   - Update ROADMAP.md
+   - Issue #18 update
 
 **Deliverables:**
-- Full integration
-- Security audit
-- Performance tests
-- User documentation
+- Full integration with core
+- Security audit passed
+- Test suite (unit + integration)
+- Performance benchmarks
+- Complete documentation
 
-**Time:** 7-10 days
+**Time:** 5-7 days
 
 ---
 
@@ -422,28 +450,26 @@ fi
 
 ## ⏰ Timeline & Milestones
 
-### Week 1: Backend
-- **Day 1-2:** HTTP server + CGI handler
-- **Day 3-4:** API endpoints (dashboard, queries)
-- **Day 5:** Testing + systemd service
-- **Milestone:** Backend working
+### Week 1: PoC + Backend
+- **Day 1:** PoC - Simple /stats endpoint
+- **Day 2-3:** HTTPS server + CGI handler + self-signed cert
+- **Day 4-5:** API endpoints (dashboard, queries, blocklists)
+- **Day 6:** Testing + systemd service
+- **Milestone:** Backend working with HTTPS
 
-### Week 2: API + Frontend Start
+### Week 2: Frontend
 - **Day 1-2:** Metrics + Settings API
-- **Day 3-4:** HTML templates
-- **Day 5:** CSS styling
-- **Milestone:** API complete, UI skeleton
-
-### Week 3: Frontend Finish
-- **Day 1-2:** htmx integration
-- **Day 3-4:** Charts + multi-lang
-- **Day 5:** Polish + dark mode
+- **Day 3-4:** HTML templates + htmx integration
+- **Day 5-6:** CSS styling + dark mode
+- **Day 7:** Multi-lang (i18n)
 - **Milestone:** UI complete
 
-### Week 4: Integration + Release
-- **Day 1-2:** Integration testing
-- **Day 3-4:** Security audit + docs
-- **Day 5:** Release v3.4.0
+### Week 3: Integration + Release
+- **Day 1-2:** Integration with module-loader
+- **Day 3-4:** Security audit (HTTPS, CSRF, rate limit)
+- **Day 5:** Testing (unit, integration, browser)
+- **Day 6:** Documentation (MANUAL, ROADMAP)
+- **Day 7:** Release v3.4.0
 - **Milestone:** Web UI released
 
 ---
