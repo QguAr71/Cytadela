@@ -1628,9 +1628,9 @@ A: `sudo ./citadel.sh restore-system` przywraca oryginalną konfigurację DNS.
 ### Dokumentacja
 
 - **Szybki start:** [docs/user/quick-start.md](quick-start.md)
-- **Konfiguracja:** [docs/user/configuration.md](configuration.md)
 - **Komendy:** [docs/user/commands.md](commands.md)
-- **Troubleshooting:** [docs/user/troubleshooting.md](troubleshooting.md)
+- **FAQ:** [docs/user/FAQ.md](FAQ.md)
+- **Manuał EN:** [docs/user/MANUAL_EN.md](MANUAL_EN.md)
 
 ### Społeczność
 

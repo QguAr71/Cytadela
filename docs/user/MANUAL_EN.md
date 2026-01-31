@@ -565,9 +565,9 @@ sudo ./citadel.sh diagnostics
 ### Documentation
 
 - **Quick start:** [docs/user/quick-start.md](quick-start.md)
-- **Configuration:** [docs/user/configuration.md](configuration.md)
 - **Commands:** [docs/user/commands.md](commands.md)
-- **Troubleshooting:** [docs/user/troubleshooting.md](troubleshooting.md)
+- **FAQ:** [docs/user/FAQ.md](FAQ.md)
+- **Manual PL:** [docs/user/MANUAL_PL.md](MANUAL_PL.md)
 
 ### Community
 
