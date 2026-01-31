@@ -9,15 +9,34 @@ set -euo pipefail
 # ==============================================================================
 # BOOTSTRAP - Load Core Libraries
 # ==============================================================================
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+
+# Determine script directory (with fallback for systems without realpath)
+if command -v realpath &>/dev/null; then
+    SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+else
+    # Fallback: use readlink or BASH_SOURCE
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
 export CYTADELA_LIB="${SCRIPT_DIR}/lib"
 export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
 
-# Load core library
-source "${CYTADELA_LIB}/cytadela-core.sh"
-source "${CYTADELA_LIB}/network-utils.sh"
-source "${CYTADELA_LIB}/module-loader.sh"
-source "${CYTADELA_LIB}/i18n-pl.sh"
+# Safe source function - checks file existence before sourcing
+source_lib() {
+    local lib_file="$1"
+    if [[ ! -f "$lib_file" ]]; then
+        echo "ERROR: Required library not found: $lib_file" >&2
+        exit 1
+    fi
+    # shellcheck source=/dev/null
+    source "$lib_file"
+}
+
+# Load core libraries
+source_lib "${CYTADELA_LIB}/cytadela-core.sh"
+source_lib "${CYTADELA_LIB}/network-utils.sh"
+source_lib "${CYTADELA_LIB}/module-loader.sh"
+source_lib "${CYTADELA_LIB}/i18n-pl.sh"
 
 # ==============================================================================
 # ROOT CHECK
@@ -27,9 +46,9 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Developer mode banner
-if [[ "$CYTADELA_MODE" == "developer" ]]; then
-    echo -e "${YELLOW}[!] Cytadela running in DEVELOPER MODE - integrity checks relaxed${NC}"
+# Developer mode banner (defensive expansion)
+if [[ "${CYTADELA_MODE:-}" == "developer" ]]; then
+    echo -e "${YELLOW:-}[!] Cytadela running in DEVELOPER MODE - integrity checks relaxed${NC:-}"
 fi
 
 # ==============================================================================
@@ -47,7 +66,13 @@ case "$ACTION" in
     # Integrity
     integrity-init|integrity-check|integrity-status)
         load_module "integrity"
-        ${ACTION//-/_}
+        fn="${ACTION//-/_}"
+        if declare -f "$fn" &>/dev/null; then
+            "$fn"
+        else
+            log_error "Function $fn not found"
+            exit 1
+        fi
         ;;
     
     # Discovery
@@ -145,9 +170,10 @@ case "$ACTION" in
         ;;
     
     # Dependency checker
-    check-deps|check-dependencies)
+    check-deps)
         load_module "check-dependencies"
-        if [[ "${2:-}" == "--install" ]]; then
+        # Fix: after shift, --install is in $1, not $2
+        if [[ "${1:-}" == "--install" ]]; then
             check_dependencies_install
         else
             check_dependencies

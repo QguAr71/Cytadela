@@ -1,15 +1,20 @@
 # ShellCheck configuration for Cytadela
 # https://www.shellcheck.net/wiki/
 
-# Disable SC1090 (Can't follow non-constant source)
-# Reason: We use dynamic sourcing for modules
-disable=SC1090
+# IMPORTANT: Do NOT disable rules globally unless absolutely necessary.
+# Instead, use inline annotations where needed:
+#
+# For dynamic sourcing:
+#   # shellcheck source=lib/specific-file.sh
+#   source "$DYNAMIC_PATH"
+#
+# For unused variables (exports):
+#   # shellcheck disable=SC2034
+#   export VARIABLE_FOR_MODULE="value"
+#
+# For specific line/block:
+#   # shellcheck disable=SC1090,SC1091
+#   source "$DYNAMIC_SOURCE"
 
-# Disable SC1091 (Not following sourced file)
-# Reason: Some sourced files are generated at runtime
-disable=SC1091
-
-# Disable SC2034 (Variable appears unused)
-# Reason: Many variables are exported for modules
-# Use sparingly - prefer explicit exports
-# disable=SC2034
+# Global settings (minimal)
+# None - prefer inline annotations
