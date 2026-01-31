@@ -56,7 +56,7 @@ All notable changes to this repository will be documented in this file.
 ### Refactoring Plans (v3.2)
 
 Based on user observations about interface chaos and function duplication:
-- **Unified module interface:** 32 → 6 modules (-81%)
+- **Unified module interface:** 29 → 6 modules (-79%)
 - **Function deduplication:** 17 duplications → 0 (-100%)
 - **Total code reduction:** ~8,000 → ~4,800 lines (-40%)
 - **Commands reduction:** 101 → ~30 (-70%)

@@ -202,7 +202,7 @@ sudo ./citadel.sh config-backup        # Backup configuration
 | Ad Blocking | ✅ 325K+ | ✅ | ✅ | ❌ |
 | Firewall | ✅ NFTables | ❌ | ❌ | ❌ |
 | Metrics | ✅ Prometheus | ✅ Web UI | ✅ Web UI | ❌ |
-| Modular | ✅ 32 modules | ❌ | ❌ | ❌ |
+| Modular | ✅ 29 modules | ❌ | ❌ | ❌ |
 | CLI-first | ✅ | ❌ | ❌ | ✅ |
 | Emergency Mode | ✅ | ❌ | ❌ | ❌ |
 
@@ -219,7 +219,7 @@ sudo ./citadel.sh config-backup        # Backup configuration
 - **License:** GPL-3.0
 
 ### Version History
-- ✅ **v3.1.0** (2026-01-31) - STABLE - Modular architecture, 7 languages, 32 modules
+- ✅ **v3.1.0** (2026-01-31) - STABLE - Modular architecture, 7 languages, 29 modules
 - ✅ **v3.0.0** (2026-01-25) - Initial stable release
 - 🔄 **v3.2.0** (Q1 2026) - PLANNED - Gateway Mode, Terminal UI
 

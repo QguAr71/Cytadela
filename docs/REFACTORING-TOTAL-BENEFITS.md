@@ -31,9 +31,9 @@ Refaktoryzacja v3.2 składa się z **dwóch głównych inicjatyw**:
 
 | Przed | Po | Redukcja |
 |-------|-----|----------|
-| 32 moduły funkcjonalne | 6 zunifikowanych | **-81%** |
+| 29 modułów funkcjonalnych | 6 zunifikowanych | **-79%** |
 | 4 moduły core support | 4 (bez zmian) | 0% |
-| **36 modułów łącznie** | **10 modułów** | **-72%** |
+| **33 moduły łącznie** | **10 modułów** | **-70%** |
 
 **Zunifikowane moduły:**
 1. `unified-install.sh` - zastępuje 6 modułów
@@ -196,7 +196,7 @@ sudo citadel.sh install dnscrypt --all
 #### Łatwiejsze testowanie
 
 **PRZED:**
-- 32 moduły do przetestowania
+- 29 modułów do przetestowania
 - 17 duplikacji funkcji do zsynchronizowania
 - Testy rozproszone po modułach
 - Trudne do utrzymania
@@ -306,7 +306,7 @@ sudo citadel.sh install dnscrypt --all
 
 ```
 Struktura:
-├── 32 moduły funkcjonalne
+├── 29 modułów funkcjonalnych
 ├── 4 moduły core support
 ├── 101 komend
 ├── ~8,000 linii kodu w modułach
@@ -320,7 +320,7 @@ Użycie:
 └── Różne wzorce dla każdego modułu
 
 Utrzymanie:
-├── 32 moduły do utrzymania
+├── 29 modułów do utrzymania
 ├── 17 duplikacji do synchronizacji
 ├── ~50 testów jednostkowych
 └── Wysoka złożoność

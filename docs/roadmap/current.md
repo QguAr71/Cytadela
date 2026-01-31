@@ -45,7 +45,7 @@ This file tracks planned changes and feature ideas. It is intentionally short an
   - Zysk: ~3200 linii mniej (45% redukcja)
 
 - ✅ **Modularyzacja** (Issue #12)
-  - 23 moduły funkcjonalne w `/opt/cytadela/modules/`
+  - 29 modułów funkcjonalnych w `/modules/`
   - Lazy loading — moduły ładowane tylko gdy potrzebne
   - Auto-discovery komend
 

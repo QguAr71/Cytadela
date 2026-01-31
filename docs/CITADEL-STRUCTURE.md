@@ -356,7 +356,7 @@ sequenceDiagram
 - **i18n-*.sh** - system wielojęzyczny
 
 ### 3. Functional Modules (modules/)
-- **32 moduły** - każdy odpowiedzialny za konkretną funkcjonalność
+- **29 modułów** - każdy odpowiedzialny za konkretną funkcjonalność
 - **Lazy loading** - ładowane tylko gdy potrzebne
 - **Niezależne** - mogą działać osobno
 

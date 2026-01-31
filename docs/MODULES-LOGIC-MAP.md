@@ -18,7 +18,7 @@
 
 ## 📊 PRZEGLĄD MODUŁÓW
 
-### Kategorie modułów (32 moduły)
+### Kategorie modułów (29 modułów)
 
 | Kategoria | Moduły | Funkcje | Linie kodu |
 |-----------|--------|---------|------------|
