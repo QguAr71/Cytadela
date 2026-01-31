@@ -54,10 +54,10 @@ test_syntax_validation() {
     log_section "TEST 1: Syntax Validation"
     
     local files=(
-        "cytadela++.sh"
-        "citadela_en.sh"
-        "cytadela++.new.sh"
-        "citadela_en.new.sh"
+        "citadel.sh"
+        "citadel_en.sh"
+        "legacy/cytadela++.sh"
+        "legacy/citadela_en.sh"
     )
     
     for file in "${files[@]}"; do
@@ -105,10 +105,8 @@ test_shellcheck() {
     
     local shellcheck_output
     if shellcheck_output=$(shellcheck -S warning -e SC2034 \
-        "$PROJECT_ROOT"/cytadela++.sh \
-        "$PROJECT_ROOT"/citadela_en.sh \
-        "$PROJECT_ROOT"/cytadela++.new.sh \
-        "$PROJECT_ROOT"/citadela_en.new.sh \
+        "$PROJECT_ROOT"/citadel.sh \
+        "$PROJECT_ROOT"/citadel_en.sh \
         "$PROJECT_ROOT"/lib/*.sh \
         "$PROJECT_ROOT"/modules/*.sh 2>&1); then
         log_pass "ShellCheck - no warnings"
@@ -177,8 +175,8 @@ test_file_structure() {
     log_section "TEST 4: File Structure"
     
     local required_files=(
-        "cytadela++.new.sh"
-        "citadela_en.new.sh"
+        "citadel.sh"
+        "citadel_en.sh"
         "lib/cytadela-core.sh"
         "lib/module-loader.sh"
         "lib/i18n-pl.sh"
@@ -207,10 +205,8 @@ test_permissions() {
     log_section "TEST 5: Executable Permissions"
     
     local executables=(
-        "cytadela++.sh"
-        "citadela_en.sh"
-        "cytadela++.new.sh"
-        "citadela_en.new.sh"
+        "citadel.sh"
+        "citadel_en.sh"
     )
     
     for file in "${executables[@]}"; do
@@ -230,14 +226,14 @@ test_help_commands() {
     log_section "TEST 6: Help/Version Commands"
     
     log_test "Testing --help command..."
-    if "$PROJECT_ROOT/cytadela++.new.sh" --help &>/dev/null; then
+    if "$PROJECT_ROOT/citadel.sh" --help &>/dev/null; then
         log_pass "--help works"
     else
         log_skip "--help (may require specific environment)"
     fi
     
     log_test "Testing --version command..."
-    if "$PROJECT_ROOT/cytadela++.new.sh" --version &>/dev/null; then
+    if "$PROJECT_ROOT/citadel.sh" --version &>/dev/null; then
         log_pass "--version works"
     else
         log_skip "--version (may require specific environment)"
