@@ -4,13 +4,13 @@
 
 ## 📋 Table of Contents
 
-1. [General Questions](#general-questions)
-2. [Installation](#installation)
-3. [Configuration](#configuration)
-4. [Troubleshooting](#troubleshooting)
-5. [Performance](#performance)
-6. [Security & Privacy](#security--privacy)
-7. [Advanced Usage](#advanced-usage)
+1. [General Questions](#-general-questions)
+2. [Installation](#-installation)
+3. [Configuration](#️-configuration)
+4. [Troubleshooting](#-troubleshooting)
+5. [Performance](#-performance)
+6. [Security & Privacy](#-security--privacy)
+7. [Advanced Usage](#-advanced-usage)
 
 ---
 
