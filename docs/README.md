@@ -62,4 +62,4 @@ See [Contributing Guide](developer/contributing.md) for details.
 
 ---
 
-**Need help?** Open an [issue](https://github.com/yourusername/Citadel/issues) or start a [discussion](https://github.com/yourusername/Citadel/discussions).
+**Need help?** Open an [issue](https://github.com/QguAr71/Cytadela/issues) or start a [discussion](https://github.com/QguAr71/Cytadela/discussions).

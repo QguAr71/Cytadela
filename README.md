@@ -2,7 +2,7 @@
 
 **Advanced hardened DNS resolver with full privacy stack for home users and small businesses.**
 
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/yourusername/Citadel)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/QguAr71/Cytadela)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 
@@ -12,8 +12,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/Citadel.git
-cd Citadel
+git clone https://github.com/QguAr71/Cytadela.git
+cd Cytadela
 
 # Run interactive installation wizard (7 languages available)
 sudo ./citadel.sh install-wizard
@@ -256,8 +256,8 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 ## 📞 Support
 
 - **Documentation:** [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/yourusername/Citadel/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/Citadel/discussions)
+- **Issues:** [GitHub Issues](https://github.com/QguAr71/Cytadela/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/QguAr71/Cytadela/discussions)
 
 ---
 

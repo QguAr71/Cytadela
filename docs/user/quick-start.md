@@ -8,7 +8,7 @@ Get Citadel up and running in 5 minutes!
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/Citadel.git
+git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 ```
 
@@ -113,4 +113,4 @@ See `legacy/README.md` for details.
 
 ---
 
-**Need help?** Check the [FAQ](faq.md) or [open an issue](https://github.com/yourusername/Citadel/issues).
+**Need help?** Check the [FAQ](faq.md) or [open an issue](https://github.com/QguAr71/Cytadela/issues).

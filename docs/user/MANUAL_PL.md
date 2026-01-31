@@ -191,7 +191,7 @@ ping -c 3 1.1.1.1
 
 ```bash
 # Sklonuj repozytorium
-git clone https://github.com/yourusername/Citadel.git
+git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 
 # Sprawdź wersję
@@ -1383,7 +1383,7 @@ sudo systemctl restart dnscrypt-proxy coredns
 
 ```bash
 # 1. Sklonuj repozytorium
-git clone https://github.com/yourusername/Citadel.git
+git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 
 # 2. Sprawdź zależności
@@ -1634,8 +1634,8 @@ A: `sudo ./citadel.sh restore-system` przywraca oryginalną konfigurację DNS.
 
 ### Społeczność
 
-- **GitHub Issues:** [github.com/yourusername/Citadel/issues](https://github.com/yourusername/Citadel/issues)
-- **GitHub Discussions:** [github.com/yourusername/Citadel/discussions](https://github.com/yourusername/Citadel/discussions)
+- **GitHub Issues:** [github.com/QguAr71/Cytadela/issues](https://github.com/QguAr71/Cytadela/issues)
+- **GitHub Discussions:** [github.com/QguAr71/Cytadela/discussions](https://github.com/QguAr71/Cytadela/discussions)
 
 ### Zgłaszanie błędów
 

@@ -191,7 +191,7 @@ ping -c 3 1.1.1.1
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/Citadel.git
+git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 
 # Check version
@@ -571,8 +571,8 @@ sudo ./citadel.sh diagnostics
 
 ### Community
 
-- **GitHub Issues:** [github.com/yourusername/Citadel/issues](https://github.com/yourusername/Citadel/issues)
-- **GitHub Discussions:** [github.com/yourusername/Citadel/discussions](https://github.com/yourusername/Citadel/discussions)
+- **GitHub Issues:** [github.com/QguAr71/Cytadela/issues](https://github.com/QguAr71/Cytadela/issues)
+- **GitHub Discussions:** [github.com/QguAr71/Cytadela/discussions](https://github.com/QguAr71/Cytadela/discussions)
 
 ### Reporting bugs
 

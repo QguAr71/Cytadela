@@ -217,7 +217,7 @@ scp /tmp/citadel-migration.tar.gz user@new-computer:/tmp/
 ```bash
 # Na nowym komputerze
 # 1. Zainstaluj Citadel
-git clone https://github.com/yourusername/Citadel.git
+git clone https://github.com/QguAr71/Cytadela.git
 cd Citadel
 sudo ./citadel.sh install-wizard
 
