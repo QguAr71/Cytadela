@@ -106,8 +106,8 @@ sudo ./citadel.sh panic-bypass
 
 - [Full Manual (PL)](MANUAL_PL.md) - Complete Polish guide
 - [Full Manual (EN)](MANUAL_EN.md) - Complete English guide
-- [Commands Reference](commands.md) - All 101 commands
-- [Troubleshooting](troubleshooting.md)
+- [Commands Reference](commands.md) - All available commands
+- [FAQ](FAQ.md) - Frequently asked questions
 
 ### Legacy Version
 
@@ -120,4 +120,4 @@ See `legacy/README.md` for details.
 
 ---
 
-**Need help?** Check the [FAQ](faq.md) or [open an issue](https://github.com/QguAr71/Cytadela/issues).
+**Need help?** Check the [FAQ](FAQ.md) or [open an issue](https://github.com/QguAr71/Cytadela/issues).
