@@ -28,6 +28,7 @@
 - **Add Reputation System:** Track and score IP addresses based on behavior
 - **Add ASN Blocking:** Block entire networks (Autonomous Systems)
 - **Add Event Logging:** Structured JSON logs for analysis and auditing
+- **Add Honeypot:** Fake services to detect and auto-block scanners
 - **Improve Security:** Proactive threat detection and blocking
 - **Maintain Simplicity:** Keep Bash implementation, no over-engineering
 
@@ -99,6 +100,21 @@ citadel asn-block AS12345
   "score": 0.12,
   "reason": "low_reputation"
 }
+```
+
+---
+
+### 4. Honeypot
+
+**What:** Fake services to detect scanners  
+**Why:** Zero false positives, auto-detection  
+**How:** Bash + netcat + systemd
+
+**Example:**
+```bash
+# Fake SSH on port 2222
+# Anyone connecting = scanner → auto-block
+citadel honeypot install --port=2222 --service=ssh
 ```
 
 ---
@@ -692,13 +708,14 @@ citadel events rotate
 1. Create `lib/reputation.sh`
 2. Create `lib/asn-blocking.sh`
 3. Create `lib/event-logger.sh`
-4. Add to `lib/module-loader.sh`
+4. Create `lib/honeypot.sh`
+5. Add to `lib/module-loader.sh`
 
 **Deliverables:**
-- 3 new library files
+- 4 new library files
 - Unit tests for each
 
-**Time:** 3-4 days
+**Time:** 4-5 days
 
 ---
 
@@ -707,14 +724,15 @@ citadel events rotate
 **Tasks:**
 1. Integrate reputation tracking into `unified-security.sh`
 2. Integrate ASN blocking into `unified-security.sh`
-3. Integrate event logging into all modules
-4. Add new commands to main scripts
+3. Integrate honeypot into `unified-security.sh`
+4. Integrate event logging into all modules
+5. Add new commands to main scripts
 
 **Deliverables:**
 - Updated `unified-security.sh`
 - New commands available
 
-**Time:** 3-4 days
+**Time:** 4-5 days
 
 ---
 
@@ -723,14 +741,16 @@ citadel events rotate
 **Tasks:**
 1. Create systemd timer for reputation cleanup
 2. Create systemd timer for ASN updates
-3. Add hooks for automatic reputation tracking
-4. Configure log rotation
+3. Create systemd service for honeypot
+4. Add hooks for automatic reputation tracking
+5. Configure log rotation
 
 **Deliverables:**
 - Systemd timers
+- Honeypot service
 - Automatic tracking hooks
 
-**Time:** 2-3 days
+**Time:** 3-4 days
 
 ---
 
@@ -758,7 +778,7 @@ citadel events rotate
 
 - **Day 1-2:** Reputation system
 - **Day 3-4:** ASN blocking
-- **Day 5:** Event logging
+- **Day 5:** Event logging + Honeypot
 - **Milestone:** All libraries complete
 
 ### Week 2: Integration & Automation
