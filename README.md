@@ -126,8 +126,8 @@ Citadel supports **7 languages** with full translations:
 ### For Developers
 - [Architecture](docs/developer/architecture.md) - System design
 - [Contributing](docs/developer/contributing.md) - How to contribute
-- [Testing](docs/developer/testing.md) - Testing strategy
-- [Modules](docs/developer/modules.md) - Module documentation
+- [Testing Strategy](docs/developer/testing-strategy.md) - Testing approach
+- [Testing Guide](docs/developer/testing-guide.md) - How to run tests
 
 ### Roadmap
 - [Current Roadmap](docs/roadmap/current.md) - v3.1-v3.2 plans
