@@ -39,11 +39,13 @@ Citadel supports **7 languages** with full translations:
 - 🇷🇺 Russian (Русский)
 
 **What's translated:**
-- **Interactive installer wizard** - All 7 languages (auto-detect from $LANG)
-- **CLI commands** - All 7 languages (`citadel.sh help [lang]`)
-- **System messages** - All 7 languages
-- **Modules** - adblock, diagnostics, help (7 languages)
-- **Error logs and reports** - All 7 languages
+- **Interactive installer wizard** - All 7 languages (auto-detect from $LANG) ✅
+- **CLI commands** - Planned for v3.2 (`citadel.sh help [lang]`)
+- **System messages** - Planned for v3.2
+- **Modules** - Planned for v3.2 (adblock, diagnostics, help)
+- **Error logs and reports** - Planned for v3.2
+
+> **Note:** Currently, only the install-wizard has full 7-language support. Complete i18n for all modules and CLI commands is planned for v3.2 (Q2 2026).
 
 ---
 
