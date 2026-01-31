@@ -8,7 +8,6 @@ Welcome to the Citadel documentation!
 
 ### 👥 For Users
 - [Quick Start Guide](user/quick-start.md) - Get started in 5 minutes
-- [Installation Guide](user/installation.md) - Detailed installation steps
 - [Configuration Guide](user/configuration.md) - Customize your setup
 - [Commands Reference](user/commands.md) - Complete command list
 - [Troubleshooting](user/troubleshooting.md) - Common issues and solutions
