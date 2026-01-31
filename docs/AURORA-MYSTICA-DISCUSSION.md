@@ -1,8 +1,9 @@
-# 🌌 Aurora Mystica - Transkrypt Rozmowy
+# 🌌 Aurora Mystica - IS-ONLY-A-CONCEPT - Transkrypt Rozmowy
 
 **Data:** 2026-01-31  
 **Temat:** Koncepcja Aurora Mystica i podział na Cytadela vs Aurora  
-**Status:** Dokumentacja dyskusji projektowej
+**Status:** Dokumentacja dyskusji projektowej  
+**UWAGA:** Aurora Mystica to TYLKO KONCEPCJA - nie implementacja
 
 ---
 
