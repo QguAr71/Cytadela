@@ -15,16 +15,16 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          # Check legacy monolithic scripts
-          shellcheck -S warning cytadela++.sh || true
-          shellcheck -S warning citadela_en.sh || true
-          
-          # Check new modular wrappers (v3.1.0)
-          shellcheck -S warning -e SC2034 cytadela++.new.sh
-          shellcheck -S warning -e SC2034 citadela_en.new.sh
+          # Check main scripts (v3.1.0)
+          shellcheck -S warning -e SC2034 citadel.sh
+          shellcheck -S warning -e SC2034 citadel_en.sh
           
           # Check core libraries
           shellcheck -S warning -e SC2034 lib/*.sh
           
           # Check modules (allow unused variables for module exports)
           shellcheck -S warning -e SC2034 modules/*.sh
+          
+          # Check legacy scripts (optional, allow failures)
+          shellcheck -S warning legacy/cytadela++.sh || true
+          shellcheck -S warning legacy/citadela_en.sh || true

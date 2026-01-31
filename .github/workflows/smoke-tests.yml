@@ -23,7 +23,7 @@ jobs:
       run: chmod +x tests/smoke-test.sh
     
     - name: Run Smoke Tests
-      run: ./tests/smoke-test.sh
+      run: bash tests/smoke-test.sh
     
     - name: Upload test results on failure
       if: failure()
