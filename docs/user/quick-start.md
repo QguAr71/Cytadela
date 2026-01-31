@@ -19,7 +19,7 @@ cd Citadel
 sudo ./citadel.sh install-wizard
 ```
 - Interactive GUI with whiptail
-- 7 languages support
+- Bilingual support (Polish/English)
 - Step-by-step guidance
 
 **Option B: CLI for Hardcore Users**
