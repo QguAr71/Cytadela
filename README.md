@@ -15,6 +15,9 @@
 git clone https://github.com/QguAr71/Cytadela.git
 cd Cytadela
 
+# Check dependencies
+sudo ./citadel.sh check-deps
+
 # Run interactive installation wizard (7 languages available)
 sudo ./citadel.sh install-wizard
 
