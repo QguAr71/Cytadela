@@ -29,6 +29,7 @@
 - **Eliminate duplication:** 17 duplications → 0 (-100%)
 - **Reduce code:** ~8,000 → ~4,800 lines (-40%)
 - **Improve maintainability:** Single source of truth
+- **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
 
 ### Benefits
 
@@ -229,6 +230,8 @@ citadel supply-chain init|verify
 citadel location check|add-trusted
 citadel nft-debug on|off|status
 citadel firewall-safe|strict
+citadel firewall-silent-drop <ip>
+citadel firewall-mode [reject|drop]
 ```
 
 **Functions:**
@@ -236,6 +239,7 @@ citadel firewall-safe|strict
 - `security_audit()` - Ghost check, integrity
 - `supply_chain()` - Supply chain verification
 - `firewall_manage()` - Firewall management
+- `firewall_silent_drop()` - Silent DROP for stealth mode
 
 ---
 
