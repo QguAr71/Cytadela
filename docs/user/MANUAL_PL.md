@@ -19,7 +19,7 @@
 9. [Monitorowanie](#-monitorowanie)
 10. [Rozwiązywanie problemów](#-rozwiązywanie-problemów)
 11. [Przykłady użycia](#-przykłady-użycia)
-12. [FAQ](#-faq)
+12. [FAQ](#-faq-najczęściej-zadawane-pytania)
 
 ---
 
