@@ -1,0 +1,15 @@
+# ShellCheck configuration for Cytadela
+# https://www.shellcheck.net/wiki/
+
+# Disable SC1090 (Can't follow non-constant source)
+# Reason: We use dynamic sourcing for modules
+disable=SC1090
+
+# Disable SC1091 (Not following sourced file)
+# Reason: Some sourced files are generated at runtime
+disable=SC1091
+
+# Disable SC2034 (Variable appears unused)
+# Reason: Many variables are exported for modules
+# Use sparingly - prefer explicit exports
+# disable=SC2034
