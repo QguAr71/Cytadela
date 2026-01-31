@@ -25,7 +25,7 @@ graph TB
 
     subgraph "🔧 FUNCTIONAL MODULES (32)"
         subgraph "Installation"
-            M1[install-wizard.sh<br/>Interactive Installer<br/>Bilingual PL/EN]
+            M1[install-wizard.sh<br/>Interactive Installer<br/>7 languages]
             M2[install-all.sh<br/>Full Installation]
             M3[install-dnscrypt.sh<br/>DNSCrypt-Proxy]
             M4[install-coredns.sh<br/>CoreDNS]
@@ -198,7 +198,7 @@ Citadel/
 │       └── help/                 # Help system translations
 │
 ├── modules/                      # 🔧 FUNCTIONAL MODULES (32)
-│   ├── install-wizard.sh         # Interactive installer (bilingual PL/EN)
+│   ├── install-wizard.sh         # Interactive installer (7 languages)
 │   ├── install-all.sh            # Full installation
 │   ├── install-dnscrypt.sh       # DNSCrypt-Proxy installation
 │   ├── install-coredns.sh        # CoreDNS installation

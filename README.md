@@ -29,17 +29,17 @@ sudo ./citadel.sh status
 
 ### 🌍 Multilingual Support
 
-Citadel supports **7 languages** for CLI commands and help:
+Citadel supports **7 languages** with full translations:
 - 🇵🇱 Polish (Polski)
 - 🇬🇧 English
 - 🇩🇪 German (Deutsch)
 - 🇪🇸 Spanish (Español)
 - 🇮🇹 Italian (Italiano)
 - 🇫🇷 French (Français)
-- 🇷🇺 Russian (Русský)
+- 🇷🇺 Russian (Русский)
 
 **What's translated:**
-- **Interactive installer wizard** - Polish/English (bilingual TUI)
+- **Interactive installer wizard** - All 7 languages (auto-detect from $LANG)
 - **CLI commands** - All 7 languages (`citadel.sh help [lang]`)
 - **System messages** - All 7 languages
 - **Modules** - adblock, diagnostics, help (7 languages)
