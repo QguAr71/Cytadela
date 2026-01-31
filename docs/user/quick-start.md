@@ -19,8 +19,10 @@ cd Citadel
 sudo ./citadel.sh install-wizard
 ```
 - Interactive GUI with whiptail
-- 7 languages support (auto-detect from $LANG)
+- 7 languages support (auto-detect from $LANG) ✅
 - Step-by-step guidance
+
+> **Note:** Full 7-language support is currently available only in install-wizard. Complete i18n for all CLI commands and modules is planned for v3.2 (Q2 2026).
 
 **Option B: CLI for Hardcore Users**
 ```bash
