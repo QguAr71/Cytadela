@@ -15,13 +15,18 @@ CYTADELA_OPT_BIN="/opt/cytadela/bin"
 CYTADELA_MODE="${CYTADELA_MODE:-secure}"
 CYTADELA_SCRIPT_PATH="$(realpath "$0")"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+# Colors (256-color palette for better contrast)
+EMR='\e[38;5;43m'    # Emerald - success/active
+VIO='\e[38;5;99m'    # Violet - info/sections
+RED='\e[38;5;160m'   # Crimson - errors/warnings
+RST='\e[0m'          # Reset
+
+# Legacy color aliases (for compatibility)
+GREEN="$EMR"
+YELLOW="$VIO"
+BLUE="$VIO"
+CYAN="$EMR"
+NC="$RST"
 
 # Loaded modules tracking
 declare -gA CYTADELA_LOADED_MODULES
@@ -29,17 +34,17 @@ declare -gA CYTADELA_LOADED_MODULES
 # ==============================================================================
 # LOGGING FUNCTIONS
 # ==============================================================================
-log_info() { echo -e "${CYAN}ℹ${NC} $1"; }
-log_success() { echo -e "${GREEN}✓${NC} $1"; }
-log_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
-log_error() { echo -e "${RED}✗${NC} $1" >&2; }
+log_info() { echo -e "${EMR}⬥${RST} ${VIO}$1${RST}"; }
+log_success() { echo -e "${EMR}✔${RST} $1"; }
+log_warning() { echo -e "${RED}⚠${RST} $1"; }
+log_error() { echo -e "${RED}✖${RST} $1" >&2; }
 log_section() { 
-    echo -e "\n${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}"
-    echo -e "${BLUE}║${NC} $1"
-    echo -e "${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}\n"
+    echo -e "\n${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
+    echo -e "${VIO}║${RST} $1"
+    echo -e "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}\n"
 }
 log_debug() {
-    [[ "${CYTADELA_DEBUG:-0}" == "1" ]] && echo -e "${BLUE}[DEBUG]${NC} $1" >&2
+    [[ "${CYTADELA_DEBUG:-0}" == "1" ]] && echo -e "${VIO}[DEBUG]${RST} $1" >&2
     return 0
 }
 
