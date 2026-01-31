@@ -142,33 +142,19 @@ fullscale=brightgreen,black
     fi
     
     # Module definitions: key|Name|Description|Default|Required
+    # Use T_MOD_* variables from i18n translations
     declare -A MODULES
-    
-    if [[ "$WIZARD_LANG" == "pl" ]]; then
-        MODULES=(
-            [dnscrypt]="DNSCrypt-Proxy|Szyfrowany resolver DNS (DNSCrypt/DoH)|1|1"
-            [coredns]="CoreDNS|Lokalny serwer DNS z adblockiem i cache|1|1"
-            [nftables]="NFTables|Reguły firewall (ochrona przed DNS leak)|1|1"
-            [health]="Health Watchdog|Auto-restart usług przy awarii|0|0"
-            [supply-chain]="Supply-chain|Weryfikacja binariów (sumy kontrolne)|0|0"
-            [lkg]="LKG Cache|Cache Last Known Good dla blocklist|1|0"
-            [ipv6]="IPv6 Privacy|Zarządzanie rozszerzeniami prywatności IPv6|0|0"
-            [location]="Location-aware|Firewall zależny od SSID|0|0"
-            [nft-debug]="NFT Debug|Łańcuch debug NFTables z logowaniem|0|0"
-        )
-    else
-        MODULES=(
-            [dnscrypt]="DNSCrypt-Proxy|Encrypted DNS resolver (DNSCrypt/DoH)|1|1"
-            [coredns]="CoreDNS|Local DNS server with adblock + cache|1|1"
-            [nftables]="NFTables|Firewall rules (DNS leak prevention)|1|1"
-            [health]="Health Watchdog|Auto-restart services on failure|0|0"
-            [supply-chain]="Supply-chain|Binary verification (checksums)|0|0"
-            [lkg]="LKG Cache|Last Known Good blocklist cache|1|0"
-            [ipv6]="IPv6 Privacy|IPv6 privacy extensions management|0|0"
-            [location]="Location-aware|SSID-based firewall advisory|0|0"
-            [nft-debug]="NFT Debug|NFTables debug chain with logging|0|0"
-        )
-    fi
+    MODULES=(
+        [dnscrypt]="DNSCrypt-Proxy|${T_MOD_DNSCRYPT}|1|1"
+        [coredns]="CoreDNS|${T_MOD_COREDNS}|1|1"
+        [nftables]="NFTables|${T_MOD_NFTABLES}|1|1"
+        [health]="Health Watchdog|${T_MOD_HEALTH}|0|0"
+        [supply-chain]="Supply-chain|${T_MOD_SUPPLY}|0|0"
+        [lkg]="LKG Cache|${T_MOD_LKG}|1|0"
+        [ipv6]="IPv6 Privacy|${T_MOD_IPV6}|0|0"
+        [location]="Location-aware|${T_MOD_LOCATION}|0|0"
+        [nft-debug]="NFT Debug|${T_MOD_DEBUG}|0|0"
+    )
     
     # Build checklist options for whiptail
     local options=()
@@ -195,15 +181,9 @@ fullscale=brightgreen,black
     
     # Show checklist
     local selected
-    local dialog_title dialog_text
-    
-    if [[ "$WIZARD_LANG" == "pl" ]]; then
-        dialog_title="Cytadela++ v3.1 - Kreator Instalacji"
-        dialog_text="\nWybierz moduły do instalacji:\n(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)\n\nModuły wymagane są wstępnie zaznaczone i nie można ich wyłączyć."
-    else
-        dialog_title="Cytadela++ v3.1 - Installation Wizard"
-        dialog_text="\nSelect modules to install:\n(SPACE to toggle, TAB to navigate, ENTER to confirm)\n\nRequired modules are pre-selected and cannot be disabled."
-    fi
+    # Use T_* variables from i18n translations
+    local dialog_title="${T_DIALOG_TITLE}"
+    local dialog_text="\n${T_SELECT_MODULES}\n${T_DIALOG_HELP}\n\n${T_REQUIRED_NOTE}"
     
     selected=$(whiptail --title "$dialog_title" \
         --checklist "$dialog_text" \
