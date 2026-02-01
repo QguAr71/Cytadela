@@ -289,7 +289,65 @@ We welcome contributions! See [CONTRIBUTING.md](docs/developer/contributing.md) 
 
 ---
 
-## 📜 License
+## � Monitoring & Benchmarks
+
+Citadel includes built-in monitoring and performance benchmarking tools.
+
+### Prometheus Metrics
+
+Export metrics for monitoring:
+
+```bash
+# Export metrics to file
+sudo citadel prometheus-export
+
+# Start HTTP metrics server (port 9100)
+sudo citadel prometheus-serve-start
+
+# Check metrics status
+sudo citadel prometheus-status
+```
+
+Metrics include:
+- Service status (dnscrypt, coredns)
+- DNS cache hits/misses
+- DNS requests by type
+- Blocklist entries
+- Firewall status
+- System load
+
+### Grafana Dashboard
+
+Import the included dashboard:
+
+```bash
+# Dashboard location
+cat docs/grafana-dashboard.json
+```
+
+Features 8 panels: service status, cache hit rate, DNS requests, blocklist, firewall, load, version.
+
+### Performance Benchmarks
+
+Run comprehensive benchmarks:
+
+```bash
+# All benchmarks
+sudo citadel benchmark-all
+
+# Specific tests
+sudo citadel benchmark-dns
+sudo citadel benchmark-cache
+sudo citadel benchmark-blocklist
+
+# View reports
+sudo citadel benchmark-show-report
+sudo citadel benchmark-compare
+```
+
+---
+
+## �📜 License
 
 This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
 
