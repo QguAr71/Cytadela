@@ -338,6 +338,25 @@ For detailed acknowledgments, licenses, and how to support these projects, see [
 
 ---
 
+## 📋 Version Management
+
+Citadel uses [Semantic Versioning](https://semver.org/): **MAJOR.MINOR.PATCH**
+
+- **v3.1.0** - Current stable release
+- **v3.1.1** - Next patch release (bug fixes)
+- **v3.2.0** - Next minor release (new features)
+
+### Release Process
+See [RELEASE-INSTRUCTIONS.md](docs/RELEASE-INSTRUCTIONS.md) for detailed release guidelines.
+
+### Version Sources
+- `VERSION` - Single source of truth
+- `lib/cytadela-core.sh` - Runtime version variable
+- `CHANGELOG.md` - Release history
+- GitHub Releases - Automated releases
+
+---
+
 ## 🧪 Testing
 
 ### Local Testing

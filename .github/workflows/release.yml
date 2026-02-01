@@ -1,0 +1,152 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get previous tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          # Generate changelog
+          if [[ -n "$PREVIOUS_TAG" ]]; then
+            echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+            echo "## Changes since $PREVIOUS_TAG" >> $GITHUB_OUTPUT
+            git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+            echo "## Initial Release" >> $GITHUB_OUTPUT
+            echo "First stable release of Citadel v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "### Features" >> $GITHUB_OUTPUT
+            echo "- Advanced DNS infrastructure with DNSCrypt-Proxy + CoreDNS" >> $GITHUB_OUTPUT
+            echo "- NFTables firewall integration" >> $GITHUB_OUTPUT
+            echo "- Ad blocking with multiple blocklists" >> $GITHUB_OUTPUT
+            echo "- IPv6 privacy and auto-reconfiguration" >> $GITHUB_OUTPUT
+            echo "- Health monitoring and diagnostics" >> $GITHUB_OUTPUT
+            echo "- Multi-language support (7 languages)" >> $GITHUB_OUTPUT
+            echo "- Comprehensive testing suite (BATS + smoke tests)" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          release_name: Citadel v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            # 🛡️ Citadel v${{ steps.get_version.outputs.VERSION }}
+            
+            Advanced hardened DNS resolver with full privacy stack for home users and small businesses.
+            
+            ${{ steps.changelog.outputs.CHANGELOG }}
+            
+            ## 📦 Installation
+            
+            ### Quick Install (Arch/CachyOS)
+            ```bash
+            git clone https://github.com/QguAr71/Cytadela.git
+            cd Cytadela
+            sudo ./citadel.sh install-all
+            ```
+            
+            ### Manual Install
+            See [MANUAL_PL.md](MANUAL_PL.md) or [MANUAL_EN.md](MANUAL_EN.md) for detailed instructions.
+            
+            ## 🔧 System Requirements
+            
+            - Linux (Arch/CachyOS recommended)
+            - systemd
+            - Root privileges
+            - 512MB RAM minimum
+            
+            ## 📚 Documentation
+            
+            - [User Manual](docs/user/)
+            - [Developer Guide](docs/developer/)
+            - [Architecture](docs/developer/architecture.md)
+            - [Roadmap](docs/roadmap/)
+            
+            ## 🐛 Reporting Issues
+            
+            Please report bugs at [GitHub Issues](https://github.com/QguAr71/Cytadela/issues)
+            
+            ---
+            **Made with ❤️ for privacy and security**
+          draft: false
+          prerelease: false
+
+  build-artifacts:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    needs: create-release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create source archive
+        run: |
+          # Create archive without .git directory
+          mkdir -p dist
+          tar --exclude='.git' \
+              --exclude='.github' \
+              --exclude='legacy' \
+              --exclude='*.log' \
+              --exclude='tests/reports' \
+              -czf "dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz" \
+              .
+
+      - name: Create checksum
+        run: |
+          cd dist
+          sha256sum "cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz" > "cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256"
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_name: cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
+          asset_name: cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
+          asset_content_type: text/plain
