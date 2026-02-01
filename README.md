@@ -117,6 +117,13 @@ Citadel supports **7 languages** with full translations:
 - **Network:** Active internet connection
 - **Privileges:** Root access required
 
+### Optional Dependencies
+
+- **dnsperf** - Performance benchmarking (for `citadel benchmark-dns`)
+- **bats** - Testing framework (for developers)
+- **shfmt** - Shell script formatting
+- **shellcheck** - Shell script analysis
+
 ---
 
 ## 🏆 Project Status
