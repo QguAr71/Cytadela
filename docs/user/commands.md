@@ -24,7 +24,8 @@ Complete list of all Citadel commands.
 | Command | Description |
 |---------|-------------|
 | `configure-system` | Switch system to Citadel DNS |
-| `restore-system` | Restore original DNS configuration |
+| `restore-system` | Restore original DNS configuration (from backup) |
+| `restore-system-default` | Restore factory DNS configuration (safe fallback) |
 | `firewall-safe` | Enable safe firewall mode |
 | `firewall-strict` | Enable strict firewall mode |
 | `fix-ports` | Resolve port conflicts |

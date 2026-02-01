@@ -123,7 +123,11 @@ This will:
 ### How do I restore original DNS?
 
 ```bash
+# Restore backup from before Citadel
 sudo ./citadel.sh restore-system
+
+# Restore factory defaults (if backup was broken)
+sudo ./citadel.sh restore-system-default
 ```
 
 ### Can I use custom DNS resolvers?
