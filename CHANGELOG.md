@@ -57,6 +57,69 @@ All notable changes to this repository will be documented in this file.
 
 ---
 
+## [3.1.2] - 2026-02-01 - MAINTENANCE RELEASE
+
+### Critical Bug Fixes
+- Fixed `coredns-blocklist.timer` non-existent unit causing install-all failure
+- Fixed `install-wizard` module key mismatch (supply-chain, nft-debug with spaces)
+- Fixed module count in documentation (32 → 29 actual modules)
+
+### Code Quality (Copilot Review)
+- Added `set -o errtrace` for ERR trap propagation in functions
+- Added early-fail checks for lib/modules directories existence
+- Enhanced `call_fn` with empty argument validation
+- Replaced raw `source` with `source_lib` in module-loader
+- Improved `load_module_for_command` with exact match before prefix
+- Added TTY detection to disable colors when not TTY (CI/logs)
+- Converted log functions to use `printf` instead of `echo -e`
+- Added file locking (flock) to rate_limit_check for thread safety
+
+### CI/CD Infrastructure
+- **NEW:** Comprehensive CI workflow (`ci-improved.yml`)
+  - Separate jobs: shellcheck, smoke-tests, bats-tests, integration
+  - Arch Linux container for integration tests
+  - Proper fail-fast behavior (removed excessive || true)
+  - Concurrency with cancel-in-progress
+  - Caching for apt packages, shfmt binary
+- **NEW:** Format check workflow (`format-check.yml`)
+  - shfmt binary caching
+  - Code formatting validation
+- **NEW:** Release workflow (`release.yml`)
+  - Automated GitHub releases on tag push
+  - Auto-generated changelog from git history
+  - Release artifacts (.tar.gz + SHA256 checksums)
+- **NEW:** Package lists for cache keys
+
+### Documentation
+- **NEW:** Release instructions (`docs/RELEASE-INSTRUCTIONS.md`)
+- **NEW:** Version management section in README
+- **NEW:** Testing section with local testing instructions
+- **UPDATED:** Fixed CITADEL-STRUCTURE.md module count and diagrams
+- **UPDATED:** Added ShellCheck CI badge to README
+
+### Metrics & Monitoring
+- **NEW:** Prometheus metrics export module (`modules/prometheus.sh`)
+  - Service status, DNS resolution, cache metrics
+  - Blocklist statistics, firewall status, system load
+  - HTTP metrics server on port 9100
+- **NEW:** Grafana dashboard template (`docs/grafana-dashboard.json`)
+  - 8 panels: services, cache, DNS requests, blocklist, firewall, load, version
+- **NEW:** Performance benchmarks module (`modules/benchmark.sh`)
+  - DNS performance testing (dnsperf)
+  - Cache hit/miss ratio tests
+  - Blocklist lookup performance
+  - Comprehensive benchmark suite
+  - Historical tracking and comparison
+
+### Statistics
+- **Commits:** 13 in this release
+- **Files Changed:** 75
+- **Lines Added:** +4,500
+- **Lines Removed:** -1,200
+- **Net Change:** +3,300 lines
+
+---
+
 ## [3.1.0] - 2026-01-31 - STABLE
 
 ### Major Changes
