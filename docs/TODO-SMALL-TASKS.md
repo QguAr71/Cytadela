@@ -81,9 +81,9 @@
 - [x] Add test for `citadel.sh check-deps` (dependency check)
 
 ### BATS Tests (Future)
-- [ ] Create `tests/unit/test-module-loader.bats` - Module loader tests
-- [ ] Create `tests/unit/test-network-utils.bats` - Network utilities tests
-- [ ] Create `tests/integration/test-install.bats` - Installation tests
+- [x] Create `tests/unit/test-module-loader.bats` - Module loader tests
+- [x] Create `tests/unit/test-network-utils.bats` - Network utilities tests
+- [x] Create `tests/integration/test-install.bats` - Installation tests
 
 ---
 
