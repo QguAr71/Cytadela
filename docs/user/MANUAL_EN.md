@@ -373,8 +373,16 @@ sudo ./citadel.sh configure-system
 #### Restore original configuration:
 
 ```bash
+# Restore backup from before Citadel installation
 sudo ./citadel.sh restore-system
+
+# Restore factory systemd-resolved configuration (safe fallback)
+sudo ./citadel.sh restore-system-default
 ```
+
+**Difference:**
+- `restore-system` - restores exact configuration from before Citadel (from backup)
+- `restore-system-default` - restores factory systemd-resolved settings (ignores backup)
 
 ### Firewall configuration
 
@@ -1421,7 +1429,7 @@ A: Run `sudo ./citadel.sh diagnostics` or use `sudo ./citadel.sh panic-bypass 30
 A: Use `sudo ./citadel.sh diagnostics` - it checks DNS encryption.
 
 **Q: How do I reset configuration?**  
-A: `sudo ./citadel.sh restore-system` restores original DNS configuration.
+A: `sudo ./citadel.sh restore-system` restores backup from before Citadel. If backup was broken, use `sudo ./citadel.sh restore-system-default` to restore factory settings.
 
 ---
 

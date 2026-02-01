@@ -373,8 +373,16 @@ sudo ./citadel.sh configure-system
 #### Przywrócenie oryginalnej konfiguracji:
 
 ```bash
+# Przywróć backup sprzed instalacji Cytadeli
 sudo ./citadel.sh restore-system
+
+# Przywróć fabryczną konfigurację systemd-resolved (bezpieczny fallback)
+sudo ./citadel.sh restore-system-default
 ```
+
+**Różnica:**
+- `restore-system` - przywraca dokładną konfigurację sprzed Cytadeli (z backupu)
+- `restore-system-default` - przywraca fabryczne ustawienia systemd-resolved (ignoruje backup)
 
 ### Konfiguracja firewall
 
@@ -1620,7 +1628,7 @@ A: Użyj `panic-bypass 300` dla szybkiego przywrócenia internetu.
 A: `sudo ./citadel.sh logs` lub `sudo journalctl -u coredns -u dnscrypt-proxy`.
 
 **Q: Jak zresetować konfigurację?**  
-A: `sudo ./citadel.sh restore-system` przywraca oryginalną konfigurację DNS.
+A: `sudo ./citadel.sh restore-system` przywraca backup sprzed Cytadeli. Jeśli backup był zły, użyj `sudo ./citadel.sh restore-system-default` aby przywrócić fabryczne ustawienia.
 
 ---
 
