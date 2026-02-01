@@ -121,8 +121,15 @@ integrity_init() {
     local script_dir
     script_dir=$(dirname "$CYTADELA_SCRIPT_PATH")
     
-    for script in "$CYTADELA_SCRIPT_PATH" "${script_dir}/cytadela++.sh" "${script_dir}/citadela_en.sh"; do
-        if [[ -f "$script" ]]; then
+    # Add current script
+    if [[ -f "$CYTADELA_SCRIPT_PATH" ]]; then
+        sha256sum "$CYTADELA_SCRIPT_PATH" >> "$manifest_tmp"
+        log_info "Added: $CYTADELA_SCRIPT_PATH"
+    fi
+    
+    # Add any other .sh scripts in script directory (auto-discover)
+    for script in "${script_dir}"/*.sh; do
+        if [[ -f "$script" && "$script" != "$CYTADELA_SCRIPT_PATH" ]]; then
             sha256sum "$script" >> "$manifest_tmp"
             log_info "Added: $script"
         fi
