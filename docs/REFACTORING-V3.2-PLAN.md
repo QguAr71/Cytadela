@@ -31,6 +31,7 @@
 - **Improve maintainability:** Single source of truth
 - **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
 - **Modernize codebase:** Bash 5.0+ features (associative arrays, --silent flag)
+- **Simplify installation:** Auto-configure system after install (4 steps → 2 steps)
 
 ### Benefits
 
