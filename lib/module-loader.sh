@@ -47,16 +47,10 @@ load_module() {
 load_module_for_command() {
     local cmd="$1"
 
-    # Try exact match first (e.g., "install-all" -> "install-all.sh")
-    if [[ -f "${CYTADELA_MODULES}/${cmd}.sh" ]]; then
-        load_module "$cmd"
-        return 0
-    fi
-
     # Extract module name from command (first segment before "-")
     local module="${cmd%%-*}"
 
-    # Try to load module by prefix
+    # Try to load module
     if [[ -f "${CYTADELA_MODULES}/${module}.sh" ]]; then
         load_module "$module"
         return 0
@@ -76,6 +70,12 @@ load_module_for_command() {
         help | --help | -h)
             # No module needed for help
             return 0
+            ;;
+        prometheus-export | prometheus-serve-start | prometheus-status)
+            load_module "prometheus"
+            ;;
+        benchmark-dns | benchmark-cache | benchmark-blocklist | benchmark-all | benchmark-show-report | benchmark-compare)
+            load_module "benchmark"
             ;;
         *)
             log_error "Unknown command: $cmd"
