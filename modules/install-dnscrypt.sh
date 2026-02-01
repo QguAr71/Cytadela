@@ -32,7 +32,7 @@ install_dnscrypt() {
     if dnssec_enabled; then
         dnssec_value="true"
     fi
-    
+
     tee /etc/dnscrypt-proxy/dnscrypt-proxy.toml >/dev/null <<EOF
 listen_addresses = ['127.0.0.1:${dnscrypt_port}']
 max_clients = 250

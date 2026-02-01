@@ -6,13 +6,13 @@
 
 optimize_kernel_priority() {
     log_section "⚡ KERNEL PRIORITY OPTIMIZATION"
-    
+
     # Check if running on CachyOS/Arch
     if [[ ! -f /etc/arch-release ]]; then
         log_warning "Ta funkcja jest zoptymalizowana dla CachyOS/Arch Linux"
         return 1
     fi
-    
+
     # Create priority tuning script
     sudo tee /usr/local/bin/citadel-dns-priority.sh >/dev/null <<'EOF'
 #!/bin/bash
@@ -23,7 +23,7 @@ ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true
 logger "Citadel++: Applied priority tuning to DNS processes"
 EOF
     sudo chmod +x /usr/local/bin/citadel-dns-priority.sh
-    
+
     # Create systemd service for DNS priority optimization
     sudo tee /etc/systemd/system/citadel-dns-priority.service >/dev/null <<'EOF'
 [Unit]
@@ -50,16 +50,16 @@ EOF
 
     sudo systemctl daemon-reload
     sudo systemctl enable --now citadel-dns-priority.timer
-    
+
     # Apply immediately
     sudo systemctl start citadel-dns-priority.service
-    
+
     log_success "Kernel priority optimization aktywny"
 }
 
 install_doh_parallel() {
     log_section "🚀 DNS-OVER-HTTPS PARALLEL RACING"
-    
+
     # Create advanced DNSCrypt config with DoH parallel racing
     sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
 # Citadel++ DNSCrypt with DoH Parallel Racing
@@ -106,13 +106,13 @@ install_editor_integration() {
         log_warning "Brak yay - nie mogę automatycznie zainstalować micro"
         return 1
     fi
-    
+
     # Install micro editor
     if ! command -v micro >/dev/null; then
         log_info "Instalowanie edytora micro..."
         yay -S micro --noconfirm
     fi
-    
+
     # Create citadel edit command
     sudo tee /usr/local/bin/citadel >/dev/null <<'EOF'
 #!/bin/bash
@@ -172,7 +172,7 @@ HELP
         ;;
 esac
 EOF
-    
+
     sudo chmod +x /usr/local/bin/citadel
     log_success "Editor integration zainstalowany: użyj 'citadel edit'"
 }

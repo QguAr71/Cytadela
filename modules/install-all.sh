@@ -6,9 +6,9 @@
 
 install_all() {
     log_section "🚀 CITADEL++ FULL INSTALLATION"
-    
+
     log_info "Instalacja wszystkich modułów DNS..."
-    
+
     if ! declare -f install_dnscrypt >/dev/null 2>&1; then
         load_module "install-dnscrypt"
     fi
@@ -18,7 +18,7 @@ install_all() {
     if ! declare -f install_nftables >/dev/null 2>&1; then
         load_module "install-nftables"
     fi
-    
+
     install_dnscrypt
     install_coredns
     install_nftables
@@ -36,11 +36,11 @@ install_all() {
 
     echo ""
     log_section "🧪 HEALTHCHECK: DNS + ADBLOCK"
-    
+
     if ! declare -f adblock_rebuild >/dev/null 2>&1; then
         load_module "adblock"
     fi
-    
+
     adblock_rebuild 2>/dev/null || true
     systemctl restart coredns 2>/dev/null || true
     sleep 1

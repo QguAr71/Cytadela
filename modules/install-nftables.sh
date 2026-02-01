@@ -81,7 +81,7 @@ EOF
     fi
 
     if [[ ! -f /etc/nftables.conf ]]; then
-        printf '%s\n' '#!/usr/bin/nft -f' > /etc/nftables.conf
+        printf '%s\n' '#!/usr/bin/nft -f' >/etc/nftables.conf
     fi
 
     if [[ $(grep -cE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf 2>/dev/null || echo 0) -gt 1 ]]; then
@@ -90,18 +90,23 @@ EOF
         awk 'BEGIN{seen=0}
             /^[[:space:]]*include[[:space:]]+"\/etc\/nftables\.d\/citadel-dns\.nft"[[:space:]]*$/ { if (seen==0) { print; seen=1 } ; next }
             { print }
-        ' /etc/nftables.conf > "$tmp_nftconf"
+        ' /etc/nftables.conf >"$tmp_nftconf"
         mv "$tmp_nftconf" /etc/nftables.conf
     fi
 
     if ! grep -qE '^[[:space:]]*include[[:space:]]+"/etc/nftables\.d/citadel-dns\.nft"[[:space:]]*$' /etc/nftables.conf; then
-        printf '\ninclude "/etc/nftables.d/citadel-dns.nft"\n' >> /etc/nftables.conf
+        printf '\ninclude "/etc/nftables.d/citadel-dns.nft"\n' >>/etc/nftables.conf
     fi
 
     log_info "Walidacja składni nftables..."
-    if nft -c -f <(printf '%s\n' 'flush ruleset'; cat /etc/nftables.d/citadel-dns-safe.nft) \
-        && nft -c -f <(printf '%s\n' 'flush ruleset'; cat /etc/nftables.d/citadel-dns-strict.nft);
-    then
+    if nft -c -f <(
+        printf '%s\n' 'flush ruleset'
+        cat /etc/nftables.d/citadel-dns-safe.nft
+    ) &&
+        nft -c -f <(
+            printf '%s\n' 'flush ruleset'
+            cat /etc/nftables.d/citadel-dns-strict.nft
+        ); then
         log_success "Składnia nftables poprawna"
     else
         log_error "Błąd w składni nftables"
@@ -153,23 +158,23 @@ configure_system() {
 
     # Create backup directory
     mkdir -p "${CYTADELA_STATE_DIR}/backups"
-    
+
     # Backup original configuration
     log_info "Zapisywanie oryginalnej konfiguracji..."
-    
+
     # Backup resolv.conf
     if [[ -f /etc/resolv.conf ]]; then
         cp /etc/resolv.conf "${CYTADELA_STATE_DIR}/backups/resolv.conf.pre-citadel" 2>/dev/null || true
     fi
-    
+
     # Backup NetworkManager config if exists
     if [[ -f /etc/NetworkManager/conf.d/citadel-dns.conf ]]; then
         cp /etc/NetworkManager/conf.d/citadel-dns.conf "${CYTADELA_STATE_DIR}/backups/nm-citadel-dns.conf.backup" 2>/dev/null || true
     fi
-    
+
     # Save systemd-resolved state
-    systemctl is-enabled systemd-resolved 2>/dev/null > "${CYTADELA_STATE_DIR}/backups/systemd-resolved.state" || echo "disabled" > "${CYTADELA_STATE_DIR}/backups/systemd-resolved.state"
-    
+    systemctl is-enabled systemd-resolved 2>/dev/null >"${CYTADELA_STATE_DIR}/backups/systemd-resolved.state" || echo "disabled" >"${CYTADELA_STATE_DIR}/backups/systemd-resolved.state"
+
     log_success "Backup zapisany w ${CYTADELA_STATE_DIR}/backups/"
 
     if command -v nft >/dev/null 2>&1 && [[ -f /etc/nftables.conf ]]; then
@@ -216,26 +221,26 @@ EOF
 
 restore_system() {
     log_section "MODULE 4: System Restore"
-    
+
     local backup_dir="${CYTADELA_STATE_DIR}/backups"
-    
+
     # Check if backup exists
     if [[ -d "$backup_dir" && -f "${backup_dir}/resolv.conf.pre-citadel" ]]; then
         log_info "Znaleziono backup oryginalnej konfiguracji - przywracanie..."
-        
+
         # Restore resolv.conf from backup
         log_info "Przywracanie /etc/resolv.conf z backupu..."
         chattr -i /etc/resolv.conf 2>/dev/null || true
         cp "${backup_dir}/resolv.conf.pre-citadel" /etc/resolv.conf 2>/dev/null || true
-        
+
         # Restore systemd-resolved state
         if [[ -f "${backup_dir}/systemd-resolved.state" ]]; then
             local resolved_state
             resolved_state=$(cat "${backup_dir}/systemd-resolved.state")
-            
+
             log_info "Przywracanie systemd-resolved (stan: ${resolved_state})..."
             systemctl unmask systemd-resolved 2>/dev/null || true
-            
+
             if [[ "$resolved_state" == "enabled" ]]; then
                 systemctl enable systemd-resolved 2>/dev/null || true
                 systemctl start systemd-resolved 2>/dev/null || true
@@ -244,16 +249,16 @@ restore_system() {
                 systemctl stop systemd-resolved 2>/dev/null || true
             fi
         fi
-        
+
         log_success "Przywrócono oryginalną konfigurację z backupu"
     else
         log_warning "Brak backupu - przywracanie domyślnej konfiguracji systemd-resolved..."
-        
+
         log_info "Przywracanie systemd-resolved..."
         systemctl unmask systemd-resolved 2>/dev/null || true
         systemctl enable systemd-resolved 2>/dev/null || true
         systemctl start systemd-resolved 2>/dev/null || true
-        
+
         log_info "Przywracanie /etc/resolv.conf..."
         chattr -i /etc/resolv.conf 2>/dev/null || true
         rm -f /etc/resolv.conf
@@ -269,30 +274,33 @@ restore_system() {
 
 restore_system_default() {
     log_section "MODULE 4: System Restore (Default)"
-    
+
     log_warning "Ta opcja przywraca FABRYCZNĄ konfigurację systemd-resolved"
     log_warning "Ignoruje backup użytkownika - użyj 'restore-system' aby przywrócić backup"
-    
+
     if [[ -t 0 && -t 1 ]]; then
         echo -n "Kontynuować przywracanie domyślnej konfiguracji? [y/N]: "
         read -r answer
-        [[ ! "$answer" =~ ^[Yy]$ ]] && { log_info "Anulowano"; return 0; }
+        [[ ! "$answer" =~ ^[Yy]$ ]] && {
+            log_info "Anulowano"
+            return 0
+        }
     fi
-    
+
     log_info "Przywracanie systemd-resolved (domyślna konfiguracja)..."
     systemctl unmask systemd-resolved 2>/dev/null || true
     systemctl enable systemd-resolved 2>/dev/null || true
     systemctl start systemd-resolved 2>/dev/null || true
-    
+
     log_info "Usuwanie konfiguracji NetworkManager..."
     rm -f /etc/NetworkManager/conf.d/citadel-dns.conf
     systemctl restart NetworkManager 2>/dev/null || true
-    
+
     log_info "Przywracanie /etc/resolv.conf (domyślny symlink)..."
     chattr -i /etc/resolv.conf 2>/dev/null || true
     rm -f /etc/resolv.conf
     ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf 2>/dev/null || true
-    
+
     log_success "System przywrócony do DOMYŚLNEJ konfiguracji systemd-resolved"
     log_info "Backup użytkownika (jeśli istnieje) pozostał w ${CYTADELA_STATE_DIR}/backups/"
 }

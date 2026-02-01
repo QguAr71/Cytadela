@@ -17,10 +17,10 @@ location_get_ssid() {
 
 location_is_trusted() {
     local ssid="$1"
-    
+
     [[ -z "$ssid" ]] && return 1
     [[ ! -f "$TRUSTED_SSIDS_FILE" ]] && return 1
-    
+
     grep -qxF "$ssid" "$TRUSTED_SSIDS_FILE" 2>/dev/null && return 0 || return 1
 }
 
@@ -36,12 +36,12 @@ location_get_firewall_mode() {
 
 location_status() {
     log_section "📍 LOCATION STATUS"
-    
+
     local ssid
     ssid=$(location_get_ssid)
     local fw_mode
     fw_mode=$(location_get_firewall_mode)
-    
+
     echo "=== NETWORK ==="
     if [[ -n "$ssid" ]]; then
         echo "Connection: WiFi"
@@ -56,11 +56,11 @@ location_status() {
         echo "SSID: (none)"
         echo "Trusted: N/A (wired networks not tracked)"
     fi
-    
+
     echo ""
     echo "=== FIREWALL ==="
     echo "Mode: $fw_mode"
-    
+
     echo ""
     echo "=== TRUSTED SSIDS ==="
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
@@ -80,13 +80,13 @@ location_status() {
 
 location_check() {
     log_section "📍 LOCATION CHECK"
-    
+
     local ssid
     ssid=$(location_get_ssid)
     local fw_mode
     fw_mode=$(location_get_firewall_mode)
     local is_trusted=0
-    
+
     if [[ -n "$ssid" ]]; then
         echo "Current SSID: \"$ssid\""
         if location_is_trusted "$ssid"; then
@@ -99,14 +99,14 @@ location_check() {
         echo "Current SSID: (wired/none)"
         is_trusted=1
     fi
-    
+
     echo "Firewall mode: $fw_mode"
     echo ""
-    
+
     if [[ $is_trusted -eq 0 && "$fw_mode" == "SAFE" ]]; then
         log_warning "You are on an UNTRUSTED network with SAFE firewall!"
         log_info "Recommendation: Switch to STRICT mode for better protection"
-        
+
         if [[ -t 0 && -t 1 ]]; then
             echo -n "Switch to STRICT mode? [y/N]: "
             read -r answer
@@ -135,7 +135,7 @@ location_check() {
 
 location_add_trusted() {
     local ssid="$1"
-    
+
     if [[ -z "$ssid" ]]; then
         ssid=$(location_get_ssid)
         if [[ -z "$ssid" ]]; then
@@ -145,33 +145,33 @@ location_add_trusted() {
         fi
         log_info "Using current SSID: \"$ssid\""
     fi
-    
+
     mkdir -p "$(dirname "$TRUSTED_SSIDS_FILE")"
     touch "$TRUSTED_SSIDS_FILE"
-    
+
     if grep -qxF "$ssid" "$TRUSTED_SSIDS_FILE" 2>/dev/null; then
         log_info "Already in trusted list: \"$ssid\""
     else
-        echo "$ssid" >> "$TRUSTED_SSIDS_FILE"
+        echo "$ssid" >>"$TRUSTED_SSIDS_FILE"
         log_success "Added to trusted list: \"$ssid\""
     fi
 }
 
 location_remove_trusted() {
     local ssid="$1"
-    
+
     if [[ -z "$ssid" ]]; then
         log_error "Usage: location-remove-trusted <SSID>"
         return 1
     fi
-    
+
     if [[ ! -f "$TRUSTED_SSIDS_FILE" ]]; then
         log_warning "No trusted SSID list found"
         return 0
     fi
-    
+
     if grep -qxF "$ssid" "$TRUSTED_SSIDS_FILE" 2>/dev/null; then
-        grep -vxF "$ssid" "$TRUSTED_SSIDS_FILE" > "${TRUSTED_SSIDS_FILE}.tmp"
+        grep -vxF "$ssid" "$TRUSTED_SSIDS_FILE" >"${TRUSTED_SSIDS_FILE}.tmp"
         mv "${TRUSTED_SSIDS_FILE}.tmp" "$TRUSTED_SSIDS_FILE"
         log_success "Removed from trusted list: \"$ssid\""
     else
@@ -181,7 +181,7 @@ location_remove_trusted() {
 
 location_list_trusted() {
     log_section "📍 TRUSTED SSIDS"
-    
+
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
         local count
         count=$(grep -c -v '^#' "$TRUSTED_SSIDS_FILE" 2>/dev/null || echo 0)

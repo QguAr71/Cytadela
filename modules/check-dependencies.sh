@@ -6,53 +6,53 @@
 
 check_dependencies() {
     log_section "🔍 CHECKING DEPENDENCIES"
-    
+
     local missing=0
     local optional_missing=0
-    
+
     echo ""
     echo "=== REQUIRED DEPENDENCIES ==="
     echo ""
-    
+
     # Core system tools
     check_dep "bash" "required" "Shell interpreter" || ((missing++))
     check_dep "systemctl" "required" "Systemd service manager" || ((missing++))
     check_dep "nft" "required" "NFTables firewall" "sudo pacman -S nftables" || ((missing++))
-    
+
     # DNS tools
     check_dep "dig" "required" "DNS lookup utility" "sudo pacman -S bind-tools" || ((missing++))
     check_dep "coredns" "required" "CoreDNS server" "sudo pacman -S coredns" || ((missing++))
     check_dep "dnscrypt-proxy" "required" "DNSCrypt proxy" "sudo pacman -S dnscrypt-proxy" || ((missing++))
-    
+
     # Network tools
     check_dep "ip" "required" "Network configuration" "sudo pacman -S iproute2" || ((missing++))
     check_dep "ss" "required" "Socket statistics" "sudo pacman -S iproute2" || ((missing++))
-    
+
     echo ""
     echo "=== OPTIONAL DEPENDENCIES ==="
     echo ""
-    
+
     # Optional but recommended
     check_dep "whiptail" "optional" "Interactive installer GUI" "sudo pacman -S libnewt" || ((optional_missing++))
     check_dep "curl" "optional" "HTTP client for metrics" "sudo pacman -S curl" || ((optional_missing++))
     check_dep "jq" "optional" "JSON processor" "sudo pacman -S jq" || ((optional_missing++))
-    
+
     # Network management
     check_dep "nmcli" "optional" "NetworkManager CLI" "sudo pacman -S networkmanager" || ((optional_missing++))
     check_dep "networkctl" "optional" "systemd-networkd CLI" "(built-in)" || ((optional_missing++))
-    
+
     # Monitoring tools
     check_dep "notify-send" "optional" "Desktop notifications" "sudo pacman -S libnotify" || ((optional_missing++))
     check_dep "ping6" "optional" "IPv6 connectivity test" "sudo pacman -S iputils" || ((optional_missing++))
-    
+
     # Development tools
     check_dep "shellcheck" "optional" "Shell script linter" "sudo pacman -S shellcheck" || ((optional_missing++))
     check_dep "git" "optional" "Version control" "sudo pacman -S git" || ((optional_missing++))
-    
+
     echo ""
     echo "=== SUMMARY ==="
     echo ""
-    
+
     if [[ $missing -eq 0 ]]; then
         log_success "All required dependencies are installed! ✓"
     else
@@ -61,7 +61,7 @@ check_dependencies() {
         echo "Install missing dependencies and run this check again."
         return 1
     fi
-    
+
     if [[ $optional_missing -eq 0 ]]; then
         log_success "All optional dependencies are installed! ✓"
     else
@@ -70,10 +70,10 @@ check_dependencies() {
         echo "Optional dependencies enhance functionality but are not required."
         echo "Install them for full feature support."
     fi
-    
+
     echo ""
     log_info "Run 'sudo cytadela++ check-deps --install' to auto-install missing packages"
-    
+
     return 0
 }
 
@@ -82,7 +82,7 @@ check_dep() {
     local type="$2"
     local desc="$3"
     local install_hint="${4:-}"
-    
+
     if command -v "$cmd" &>/dev/null; then
         local version=""
         case "$cmd" in
@@ -94,7 +94,7 @@ check_dep() {
             git) version=$(git --version | awk '{print $3}') ;;
             *) version="" ;;
         esac
-        
+
         if [[ -n "$version" ]]; then
             printf "  ${GREEN}✓${NC} %-20s %s (v%s)\n" "$cmd" "$desc" "$version"
         else
@@ -115,7 +115,7 @@ check_dep() {
 
 check_dependencies_install() {
     log_section "📦 AUTO-INSTALLING MISSING DEPENDENCIES"
-    
+
     # Detect package manager
     local pkg_manager=""
     if command -v pacman &>/dev/null; then
@@ -128,13 +128,13 @@ check_dependencies_install() {
         log_error "No supported package manager found (pacman/apt/dnf)"
         return 1
     fi
-    
+
     log_info "Detected package manager: $pkg_manager"
     echo ""
-    
+
     # Define packages per manager
     local packages=()
-    
+
     case "$pkg_manager" in
         pacman)
             # Check and add missing packages
@@ -171,25 +171,25 @@ check_dependencies_install() {
             command -v shellcheck &>/dev/null || packages+=("ShellCheck")
             ;;
     esac
-    
+
     if [[ ${#packages[@]} -eq 0 ]]; then
         log_success "All dependencies are already installed!"
         return 0
     fi
-    
+
     log_info "Missing packages: ${packages[*]}"
     echo ""
     echo -n "Install missing packages? [y/N]: "
     read -r answer
-    
+
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
         log_warning "Installation cancelled"
         return 1
     fi
-    
+
     echo ""
     log_info "Installing packages..."
-    
+
     case "$pkg_manager" in
         pacman)
             sudo pacman -S --needed --noconfirm "${packages[@]}"
@@ -202,9 +202,9 @@ check_dependencies_install() {
             sudo dnf install -y "${packages[@]}"
             ;;
     esac
-    
+
     local exit_code=$?
-    
+
     if [[ $exit_code -eq 0 ]]; then
         log_success "Dependencies installed successfully!"
         echo ""

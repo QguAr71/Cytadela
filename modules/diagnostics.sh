@@ -112,7 +112,7 @@ test_all() {
 
 show_status() {
     log_section "📊 CITADEL++ STATUS"
-    
+
     echo "Services:"
     for svc in dnscrypt-proxy coredns; do
         if systemctl is-active --quiet "$svc" 2>/dev/null; then
@@ -121,7 +121,7 @@ show_status() {
             printf "  ${RED}✗${NC} %-20s INACTIVE\n" "$svc"
         fi
     done
-    
+
     echo ""
     echo "Firewall:"
     if nft list tables 2>/dev/null | grep -q "citadel"; then
@@ -129,7 +129,7 @@ show_status() {
     else
         printf "  ${YELLOW}⚠${NC} NFTables rules NOT loaded\n"
     fi
-    
+
     echo ""
     echo "DNS Test:"
     if command -v dig >/dev/null 2>&1 && dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then

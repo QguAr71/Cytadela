@@ -20,9 +20,9 @@ set -euo pipefail
 # ==============================================================================
 # Determinacja katalogu skryptu: użyj realpath jeśli jest, inaczej fallback
 if command -v realpath >/dev/null 2>&1; then
-  SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+    SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 else
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
 export CYTADELA_LIB="${SCRIPT_DIR}/lib"
@@ -30,16 +30,16 @@ export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
 
 # Bezpieczne "source" z walidacją pliku i wskazówką dla ShellCheck
 source_lib() {
-  local libfile="$1"
-  if [[ -f "$libfile" ]]; then
-    # poinformuj shellcheck o ścieżce jeśli jest statyczna:
-    # shellcheck source=/dev/null
-    # shellcheck disable=SC1090
-    source "$libfile"
-  else
-    printf 'ERROR: brak pliku biblioteki: %s\n' "$libfile" >&2
-    exit 2
-  fi
+    local libfile="$1"
+    if [[ -f "$libfile" ]]; then
+        # poinformuj shellcheck o ścieżce jeśli jest statyczna:
+        # shellcheck source=/dev/null
+        # shellcheck disable=SC1090
+        source "$libfile"
+    else
+        printf 'ERROR: brak pliku biblioteki: %s\n' "$libfile" >&2
+        exit 2
+    fi
 }
 
 # Load core library (bezpiecznie)
@@ -52,14 +52,15 @@ source_lib "${CYTADELA_LIB}/i18n-pl.sh"
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
 call_fn() {
-  local act="$1"; shift || true
-  local fn="${act//-/_}"
-  if declare -f "$fn" >/dev/null 2>&1; then
-    "$fn" "$@"
-  else
-    log_error "Funkcja $fn nieznaleziona po załadowaniu modułu"
-    exit 3
-  fi
+    local act="$1"
+    shift || true
+    local fn="${act//-/_}"
+    if declare -f "$fn" >/dev/null 2>&1; then
+        "$fn" "$@"
+    else
+        log_error "Funkcja $fn nieznaleziona po załadowaniu modułu"
+        exit 3
+    fi
 }
 
 # ==============================================================================
@@ -83,12 +84,12 @@ shift || true
 
 case "$ACTION" in
     # Help
-    help|--help|-h)
+    help | --help | -h)
         show_help_pl
         ;;
 
     # Integrity
-    integrity-init|integrity-check|integrity-status)
+    integrity-init | integrity-check | integrity-status)
         load_module "integrity"
         call_fn "$ACTION"
         ;;
@@ -100,31 +101,31 @@ case "$ACTION" in
         ;;
 
     # IPv6
-    ipv6-privacy-on|ipv6-privacy-off|ipv6-privacy-status|ipv6-privacy-auto|ipv6-deep-reset|smart-ipv6)
+    ipv6-privacy-on | ipv6-privacy-off | ipv6-privacy-status | ipv6-privacy-auto | ipv6-deep-reset | smart-ipv6)
         load_module "ipv6"
         call_fn "$ACTION"
         ;;
 
     # LKG
-    lkg-save|lkg-restore|lkg-status|lists-update)
+    lkg-save | lkg-restore | lkg-status | lists-update)
         load_module "lkg"
         call_fn "$ACTION"
         ;;
 
     # Auto-update
-    auto-update-enable|auto-update-disable|auto-update-status|auto-update-now|auto-update-configure)
+    auto-update-enable | auto-update-disable | auto-update-status | auto-update-now | auto-update-configure)
         load_module "auto-update"
         call_fn "$ACTION"
         ;;
 
     # Emergency
-    panic-bypass|panic-restore|panic-status|emergency-refuse|emergency-restore|killswitch-on|killswitch-off)
+    panic-bypass | panic-restore | panic-status | emergency-refuse | emergency-restore | killswitch-on | killswitch-off)
         load_module "emergency"
         call_fn "$ACTION" "$@"
         ;;
 
     # Adblock
-    adblock-status|adblock-stats|adblock-show|adblock-query|adblock-add|adblock-remove|adblock-edit|adblock-rebuild)
+    adblock-status | adblock-stats | adblock-show | adblock-query | adblock-add | adblock-remove | adblock-edit | adblock-rebuild)
         load_module "adblock"
         call_fn "$ACTION" "$@"
         ;;
@@ -146,13 +147,13 @@ case "$ACTION" in
         ;;
 
     # Blocklist Manager
-    blocklist-list|blocklist-switch|blocklist-status|blocklist-add-url|blocklist-remove-url|blocklist-show-urls)
+    blocklist-list | blocklist-switch | blocklist-status | blocklist-add-url | blocklist-remove-url | blocklist-show-urls)
         load_module "blocklist-manager"
         call_fn "$ACTION" "$@"
         ;;
 
     # Allowlist
-    allowlist-list|allowlist-add|allowlist-remove)
+    allowlist-list | allowlist-add | allowlist-remove)
         load_module "adblock"
         call_fn "$ACTION" "$@"
         ;;
@@ -164,31 +165,31 @@ case "$ACTION" in
         ;;
 
     # Health
-    health-status|health-install|health-uninstall)
+    health-status | health-install | health-uninstall)
         load_module "health"
         call_fn "$ACTION"
         ;;
 
     # Supply Chain
-    supply-chain-status|supply-chain-init|supply-chain-verify)
+    supply-chain-status | supply-chain-init | supply-chain-verify)
         load_module "supply-chain"
         call_fn "$ACTION"
         ;;
 
     # Location
-    location-status|location-check|location-add-trusted|location-remove-trusted|location-list-trusted)
+    location-status | location-check | location-add-trusted | location-remove-trusted | location-list-trusted)
         load_module "location"
         call_fn "$ACTION" "$@"
         ;;
 
     # NFT Debug
-    nft-debug-on|nft-debug-off|nft-debug-status|nft-debug-logs)
+    nft-debug-on | nft-debug-off | nft-debug-status | nft-debug-logs)
         load_module "nft-debug"
         call_fn "$ACTION"
         ;;
 
     # Dependency checker
-    check-deps|check-dependencies)
+    check-deps | check-dependencies)
         load_module "check-dependencies"
         # po wcześniejszym shift, argument --install znajduje się w $1
         if [[ "${1:-}" == "--install" ]]; then
@@ -214,7 +215,7 @@ case "$ACTION" in
         install_coredns
         ;;
 
-    install-nftables|firewall-safe|firewall-strict|configure-system|restore-system|restore-system-default)
+    install-nftables | firewall-safe | firewall-strict | configure-system | restore-system | restore-system-default)
         load_module "install-nftables"
         call_fn "$ACTION"
         ;;
@@ -225,19 +226,19 @@ case "$ACTION" in
         ;;
 
     # Config Backup/Restore
-    config-backup|config-restore|config-list|config-delete)
+    config-backup | config-restore | config-list | config-delete)
         load_module "config-backup"
         call_fn "$ACTION" "$@"
         ;;
 
     # Cache Stats
-    cache-stats|cache-stats-top|cache-stats-reset|cache-stats-watch)
+    cache-stats | cache-stats-top | cache-stats-reset | cache-stats-watch)
         load_module "cache-stats"
         call_fn "$ACTION" "$@"
         ;;
 
     # Notifications
-    notify-enable|notify-disable|notify-status|notify-test)
+    notify-enable | notify-disable | notify-status | notify-test)
         load_module "notify"
         call_fn "$ACTION"
         ;;
@@ -298,7 +299,7 @@ case "$ACTION" in
         ;;
 
     # Diagnostics
-    diagnostics|verify|test-all|status)
+    diagnostics | verify | test-all | status)
         load_module "diagnostics"
         case "$ACTION" in
             diagnostics) run_diagnostics ;;

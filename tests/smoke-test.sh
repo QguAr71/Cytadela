@@ -222,19 +222,46 @@ test_permissions() {
 # ==============================================================================
 test_help_commands() {
     log_section "TEST 6: Help/Version Commands"
-    
+
     log_test "Testing --help command..."
     if "$PROJECT_ROOT/citadel.sh" --help &>/dev/null; then
-        log_pass "--help works"
+        log_pass "--help works (exit 0)"
     else
-        log_skip "--help (may require specific environment)"
+        log_fail "--help failed or returned non-zero"
     fi
-    
+
     log_test "Testing --version command..."
-    if "$PROJECT_ROOT/citadel.sh" --version &>/dev/null; then
-        log_pass "--version works"
+    local version_output
+    version_output=$("$PROJECT_ROOT/citadel.sh" --version 2>&1 || true)
+    if [[ -n "$version_output" ]] && echo "$version_output" | grep -qE '[0-9]+\.[0-9]+'; then
+        log_pass "--version works: $version_output"
     else
-        log_skip "--version (may require specific environment)"
+        log_fail "--version missing or invalid: $version_output"
+    fi
+}
+
+# ==============================================================================
+# TEST 6b: Root Check
+# ==============================================================================
+test_root_check() {
+    log_section "TEST 6b: Root Check"
+
+    log_test "Testing that citadel.sh fails without root..."
+
+    # Check if we're not root
+    if [[ "$EUID" -eq 0 ]]; then
+        log_skip "Already running as root - cannot test non-root behavior"
+        return
+    fi
+
+    # Run without sudo - should fail with exit code 1
+    local exit_code=0
+    "$PROJECT_ROOT/citadel.sh" status &>/dev/null || exit_code=$?
+
+    if [[ "$exit_code" -eq 1 ]]; then
+        log_pass "Non-root execution correctly fails (exit 1)"
+    else
+        log_fail "Non-root execution should fail with exit 1, got: $exit_code"
     fi
 }
 
@@ -327,6 +354,34 @@ test_adblock_false_positives() {
 }
 
 # ==============================================================================
+# TEST 9: Status Command
+# ==============================================================================
+test_status_command() {
+    log_section "TEST 9: Status Command"
+
+    log_test "Testing status command..."
+    if "$PROJECT_ROOT/citadel.sh" status &>/dev/null; then
+        log_pass "status command works"
+    else
+        log_skip "status (requires root/Cytadela installed)"
+    fi
+}
+
+# ==============================================================================
+# TEST 10: Check-Deps Command
+# ==============================================================================
+test_check_deps_command() {
+    log_section "TEST 10: Check-Deps Command"
+
+    log_test "Testing check-deps command..."
+    if "$PROJECT_ROOT/citadel.sh" check-deps &>/dev/null; then
+        log_pass "check-deps command works"
+    else
+        log_skip "check-deps (requires root/Cytadela installed)"
+    fi
+}
+
+# ==============================================================================
 # MAIN
 # ==============================================================================
 main() {
@@ -345,8 +400,11 @@ main() {
     test_file_structure
     test_permissions
     test_help_commands
+    test_root_check
     test_module_files
     test_adblock_false_positives
+    test_status_command
+    test_check_deps_command
     
     # Summary
     log_section "TEST SUMMARY"

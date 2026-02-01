@@ -10,14 +10,14 @@
 integrity_verify_file() {
     local file="$1"
     local expected_hash="$2"
-    
+
     # File missing
     [[ ! -f "$file" ]] && return 2
-    
+
     # Calculate hash
     local actual_hash
     actual_hash=$(sha256sum "$file" | awk '{print $1}')
-    
+
     # Compare
     [[ "$actual_hash" == "$expected_hash" ]] && return 0 || return 1
 }
@@ -45,7 +45,7 @@ integrity_check() {
     while IFS='  ' read -r hash filepath; do
         # Skip comments and empty lines
         [[ -z "$hash" || "$hash" == "#"* ]] && continue
-        
+
         # Determine file type for policy
         local is_binary=0
         [[ "$filepath" == "$CYTADELA_OPT_BIN"/* ]] && is_binary=1
@@ -67,7 +67,7 @@ integrity_check() {
                 # Module/script: warn and prompt
                 log_warning "INTEGRITY MISMATCH (module): $filepath"
                 has_warnings=1
-                
+
                 # Non-interactive mode: fail
                 if [[ ! -t 0 && ! -t 1 ]]; then
                     log_error "Non-interactive mode: aborting due to integrity mismatch"
@@ -82,7 +82,7 @@ integrity_check() {
         else
             [[ -z "$silent" ]] && log_success "OK: $filepath"
         fi
-    done < "$CYTADELA_MANIFEST"
+    done <"$CYTADELA_MANIFEST"
 
     # Final verdict
     if [[ $has_errors -eq 1 ]]; then
@@ -95,7 +95,7 @@ integrity_check() {
     else
         [[ -z "$silent" ]] && log_success "Integrity check passed"
     fi
-    
+
     return 0
 }
 
@@ -114,23 +114,23 @@ integrity_init() {
     local manifest_tmp
     manifest_tmp=$(mktemp)
 
-    echo "# Cytadela integrity manifest - generated $(date -Iseconds)" > "$manifest_tmp"
-    echo "# Format: sha256  filepath" >> "$manifest_tmp"
+    echo "# Cytadela integrity manifest - generated $(date -Iseconds)" >"$manifest_tmp"
+    echo "# Format: sha256  filepath" >>"$manifest_tmp"
 
     # Add main scripts
     local script_dir
     script_dir=$(dirname "$CYTADELA_SCRIPT_PATH")
-    
+
     # Add current script
     if [[ -f "$CYTADELA_SCRIPT_PATH" ]]; then
-        sha256sum "$CYTADELA_SCRIPT_PATH" >> "$manifest_tmp"
+        sha256sum "$CYTADELA_SCRIPT_PATH" >>"$manifest_tmp"
         log_info "Added: $CYTADELA_SCRIPT_PATH"
     fi
-    
+
     # Add any other .sh scripts in script directory (auto-discover)
     for script in "${script_dir}"/*.sh; do
         if [[ -f "$script" && "$script" != "$CYTADELA_SCRIPT_PATH" ]]; then
-            sha256sum "$script" >> "$manifest_tmp"
+            sha256sum "$script" >>"$manifest_tmp"
             log_info "Added: $script"
         fi
     done
@@ -139,7 +139,7 @@ integrity_init() {
     if [[ -d "/opt/cytadela/lib" ]]; then
         for lib in /opt/cytadela/lib/*.sh; do
             if [[ -f "$lib" ]]; then
-                sha256sum "$lib" >> "$manifest_tmp"
+                sha256sum "$lib" >>"$manifest_tmp"
                 log_info "Added: $lib"
             fi
         done
@@ -149,7 +149,7 @@ integrity_init() {
     if [[ -d "/opt/cytadela/modules" ]]; then
         for mod in /opt/cytadela/modules/*.sh; do
             if [[ -f "$mod" ]]; then
-                sha256sum "$mod" >> "$manifest_tmp"
+                sha256sum "$mod" >>"$manifest_tmp"
                 log_info "Added: $mod"
             fi
         done
@@ -159,7 +159,7 @@ integrity_init() {
     if [[ -d "$CYTADELA_OPT_BIN" ]]; then
         for bin in "$CYTADELA_OPT_BIN"/*; do
             if [[ -f "$bin" && -x "$bin" ]]; then
-                sha256sum "$bin" >> "$manifest_tmp"
+                sha256sum "$bin" >>"$manifest_tmp"
                 log_info "Added: $bin"
             fi
         done
@@ -178,10 +178,10 @@ integrity_init() {
 # ==============================================================================
 integrity_status() {
     log_section "🔐 INTEGRITY STATUS"
-    
+
     echo "Mode: $CYTADELA_MODE"
     echo "Manifest: $CYTADELA_MANIFEST"
-    
+
     if [[ -f "$CYTADELA_MANIFEST" ]]; then
         echo "Manifest exists: YES"
         local entries
@@ -191,7 +191,7 @@ integrity_status() {
     else
         echo "Manifest exists: NO (run integrity-init to create)"
     fi
-    
+
     echo ""
     echo "LKG directory: $CYTADELA_LKG_DIR"
     if [[ -d "$CYTADELA_LKG_DIR" ]]; then
@@ -201,7 +201,7 @@ integrity_status() {
     else
         echo "LKG directory: NOT CREATED"
     fi
-    
+
     echo ""
     echo "Binaries directory: $CYTADELA_OPT_BIN"
     if [[ -d "$CYTADELA_OPT_BIN" ]]; then

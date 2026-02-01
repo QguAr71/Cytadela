@@ -6,9 +6,9 @@
 
 safe_test_mode() {
     log_section "🧪 SAFE TEST MODE"
-    
+
     log_info "Uruchamiam testy bez przerywania internetu..."
-    
+
     # Test 1: Check dependencies
     log_info "Sprawdzanie zależności..."
     for cmd in dnscrypt-proxy coredns nftables; do
@@ -18,7 +18,7 @@ safe_test_mode() {
             echo "✗ $cmd nieznaleziony"
         fi
     done
-    
+
     # Test 2: Validate configurations
     log_info "Walidacja konfiguracji..."
     if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
@@ -28,7 +28,7 @@ safe_test_mode() {
             echo "✗ DNSCrypt config błędny"
         fi
     fi
-    
+
     # Test 3: Check ports
     log_info "Sprawdzanie portów..."
     if ss -ln | grep -q ":53"; then
@@ -36,16 +36,16 @@ safe_test_mode() {
     else
         echo "✓ Port 53 wolny"
     fi
-    
+
     echo ""
     log_info "Tryb bezpieczny zakończony. Użyj 'install-all' dla pełnej instalacji"
 }
 
 test_dns() {
     log_section "🧪 DNS TEST"
-    
+
     log_info "Testing DNS resolution..."
-    
+
     # Detect CoreDNS port
     COREDNS_PORT=53
     if [[ -f /etc/coredns/Corefile ]]; then
@@ -54,7 +54,7 @@ test_dns() {
             COREDNS_PORT="$p"
         fi
     fi
-    
+
     if dig +short whoami.cloudflare @127.0.0.1 -p ${COREDNS_PORT} >/dev/null 2>&1; then
         log_success "DNS resolution: OK"
         dig +short whoami.cloudflare @127.0.0.1 -p ${COREDNS_PORT}

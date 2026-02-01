@@ -42,10 +42,10 @@ EOF
         tmp_block="$(mktemp)"
         tmp_combined="$(mktemp)"
 
-        curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"
-        curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"
-        curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"
-        curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >> "$tmp_raw"
+        curl -fsSL https://big.oisd.nl | grep -v "^#" >"$tmp_raw"
+        curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >>"$tmp_raw"
+        curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >>"$tmp_raw"
+        curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >>"$tmp_raw"
 
         awk '
             function emit(d) {
@@ -82,24 +82,24 @@ EOF
                     next
                 }
             }
-        ' "$tmp_raw" | sort -u > "$tmp_block"
+        ' "$tmp_raw" | sort -u >"$tmp_block"
 
-        if [[ $(wc -l < "$tmp_block") -lt 1000 ]]; then
-            log_warning "Blocklist wygląda na pustą/uszkodzoną ($(wc -l < "$tmp_block") wpisów) - zostawiam poprzednią"
+        if [[ $(wc -l <"$tmp_block") -lt 1000 ]]; then
+            log_warning "Blocklist wygląda na pustą/uszkodzoną ($(wc -l <"$tmp_block") wpisów) - zostawiam poprzednią"
             rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"
             tmp_combined="$(mktemp)"
-            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"
+            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u >"$tmp_combined"
             mv "$tmp_combined" /etc/coredns/zones/combined.hosts
             chown root:coredns /etc/coredns/zones/combined.hosts 2>/dev/null || true
             chmod 0640 /etc/coredns/zones/combined.hosts 2>/dev/null || true
         else
             mv "$tmp_block" /etc/coredns/zones/blocklist.hosts
-            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u > "$tmp_combined"
+            cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u >"$tmp_combined"
             mv "$tmp_combined" /etc/coredns/zones/combined.hosts
             rm -f "$tmp_raw"
             chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
             chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts 2>/dev/null || true
-            log_success "Blocklist pobrana ($(wc -l < /etc/coredns/zones/blocklist.hosts) wpisów)"
+            log_success "Blocklist pobrana ($(wc -l </etc/coredns/zones/blocklist.hosts) wpisów)"
         fi
     } || {
         log_warning "Nie udało się pobrać blocklist - tworzę pusty plik"
@@ -180,10 +180,10 @@ EOF
     # Start CoreDNS
     log_info "Starting CoreDNS..."
     systemctl daemon-reload
-    
+
     # Final permission check before starting (ZFS compatibility)
     chmod 644 /etc/coredns/Corefile /etc/coredns/zones/*.hosts 2>/dev/null || true
-    
+
     systemctl enable coredns
     systemctl restart coredns-blocklist.timer
 

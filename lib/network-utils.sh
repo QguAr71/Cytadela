@@ -1,15 +1,15 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  CYTADELA++ NETWORK UTILITIES v3.1                                        ║
-# ║  Network discovery and port management functions                          ║
+# ║  CYTADELA++ NETWORK UTILITIES                                             ║
+# ║  Shared network functions for all modules                                 ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 # ==============================================================================
 # PORT CONFIGURATION
 # ==============================================================================
-DNSCRYPT_PORT_DEFAULT=5353
-COREDNS_PORT_DEFAULT=53
-COREDNS_METRICS_ADDR="127.0.0.1:9153"
+export DNSCRYPT_PORT_DEFAULT=5353
+export COREDNS_PORT_DEFAULT=53
+export COREDNS_METRICS_ADDR="127.0.0.1:9153"
 
 # ==============================================================================
 # INTERFACE DISCOVERY
@@ -43,7 +43,7 @@ discover_nftables_status() {
     # Check nftables version and Citadel tables
     local nft_version=""
     local citadel_tables=""
-    
+
     if command -v nft &>/dev/null; then
         nft_version=$(nft --version 2>/dev/null | head -1 || echo "unknown")
         citadel_tables=$(nft list tables 2>/dev/null | grep -c "citadel" || echo "0")
@@ -51,7 +51,7 @@ discover_nftables_status() {
         nft_version="not installed"
         citadel_tables="0"
     fi
-    
+
     echo "version:${nft_version}|citadel_tables:${citadel_tables}"
 }
 

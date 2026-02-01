@@ -12,11 +12,11 @@ install_citadel_top() {
         log_warning "Brak pacman - pomijam instalację zależności dla dashboard"
         return 1
     fi
-    
+
     # Install dependencies
     log_info "Instalowanie zależności dla dashboard..."
     pacman -Q curl jq >/dev/null || sudo pacman -S curl jq --noconfirm
-    
+
     # Create citadel-top script
     sudo tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
 #!/bin/bash
@@ -87,7 +87,7 @@ while true; do
     sleep 5
 done
 EOF
-    
+
     sudo chmod +x /usr/local/bin/citadel-top
     log_success "Dashboard zainstalowany: uruchom 'citadel-top'"
 }
