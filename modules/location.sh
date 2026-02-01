@@ -9,8 +9,8 @@ TRUSTED_SSIDS_FILE="/etc/cytadela/trusted-ssids.txt"
 location_get_ssid() {
     local ssid=""
     if command -v nmcli &>/dev/null; then
-        # Support multiple locales: yes/tak/ja/si/oui/да (EN/PL/DE/ES/FR/RU)
-        ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep -E '^(yes|tak|ja|si|oui|да):' | cut -d: -f2 | head -1)
+        # Support multiple locales: yes/tak/ja/si/sì/oui/да (EN/PL/DE/ES/IT/FR/RU)
+        ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep -E '^(yes|tak|ja|si|sì|oui|да):' | cut -d: -f2 | head -1)
     fi
     echo "$ssid"
 }
