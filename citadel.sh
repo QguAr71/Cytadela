@@ -324,6 +324,18 @@ case "$ACTION" in
         esac
         ;;
 
+    # Prometheus Metrics
+    prometheus-export | prometheus-serve-start | prometheus-status)
+        load_module "prometheus"
+        call_fn "$ACTION"
+        ;;
+
+    # Benchmarks
+    benchmark-dns | benchmark-cache | benchmark-blocklist | benchmark-all | benchmark-show-report | benchmark-compare)
+        load_module "benchmark"
+        call_fn "$ACTION"
+        ;;
+
     # Unknown command
     *)
         log_error "Nieznana komenda: $ACTION"
