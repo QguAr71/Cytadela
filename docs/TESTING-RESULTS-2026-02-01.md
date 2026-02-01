@@ -440,6 +440,68 @@ Cytadela v3.1.0 passes **ALL** security, reliability, and performance tests. The
 
 ---
 
+## 💻 Hardware Specifications
+
+**Test System:**
+- **CPU:** AMD Ryzen (12 cores, CachyOS optimized)
+- **RAM:** 32GB DDR4
+- **Storage:** NVMe SSD
+- **Network:** Gigabit Ethernet
+- **OS:** CachyOS (Arch Linux)
+- **Kernel:** 6.12.1-1-cachyos
+- **Systemd:** 257.2
+
+**Software Versions:**
+- **Cytadela:** v3.1.0
+- **CoreDNS:** v1.11.1
+- **DNSCrypt-Proxy:** v2.1.5
+- **NFTables:** v1.0.9
+- **dnsperf:** v2.14.0 (benchmark tool)
+
+---
+
+## ⚠️ Known Limitations
+
+**Tests Not Performed (Future Work):**
+
+1. **High Load / DDoS Simulation**
+   - Current tests: Normal load (76K QPS sustained)
+   - Missing: Flood attacks, rate limiting under extreme load
+   - Recommendation: Add stress testing with hping3/mz
+
+2. **DNSSEC + Adblock Interference**
+   - Current tests: DNSSEC and adblock tested separately
+   - Missing: Interaction testing (e.g., blocked domains with DNSSEC)
+   - Recommendation: Test DNSSEC-signed domains on blocklists
+
+3. **Long-term Stability**
+   - Current tests: Short-term (30s-60s benchmarks)
+   - Missing: 24h memory leak test, sustained load over days
+   - Recommendation: Add continuous monitoring tests
+
+4. **IPv6 Privacy Extensions**
+   - Current tests: IPv6 leak protection verified
+   - Missing: Temporary addresses, privacy extensions validation
+   - Recommendation: Test `ip -6 addr show` for temporary addresses
+
+5. **Adblock False Positives**
+   - Current tests: Known malware domains (doubleclick.net)
+   - Missing: Legitimate sites verification (no false blocks)
+   - Recommendation: Test popular sites (amazon, microsoft, github)
+
+6. **Additional DNSSEC Domains**
+   - Current tests: cloudflare-dns.com, dnssec-failed.org
+   - Missing: More signed domains (icann.org, ietf.org, ripe.net)
+   - Recommendation: Expand DNSSEC test coverage
+
+**Mitigation:**
+- These limitations are documented for transparency
+- Advanced testing suite planned for v3.2
+- Current tests cover critical security and performance aspects
+- System is production-ready for typical use cases
+
+---
+
 **Next Steps (Optional):**
 1. ✅ DNSSEC validation - COMPLETED
 2. ✅ IPv6 dual-stack - COMPLETED

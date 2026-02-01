@@ -270,6 +270,65 @@ test_module_files() {
 }
 
 # ==============================================================================
+# TEST 8: Adblock False Positive Check
+# ==============================================================================
+test_adblock_false_positives() {
+    log_section "TEST 8: Adblock False Positive Check"
+    
+    # Check if DNS is accessible
+    if ! command -v dig &>/dev/null; then
+        log_skip "dig not installed - cannot test DNS"
+        return
+    fi
+    
+    # Check if local DNS is running
+    if ! dig @127.0.0.1 google.com +short +time=1 &>/dev/null; then
+        log_skip "Local DNS not running - cannot test adblock"
+        return
+    fi
+    
+    log_test "Testing legitimate sites (should NOT be blocked)..."
+    
+    # List of legitimate sites that should never be blocked
+    local legit_sites=(
+        "google.com"
+        "github.com"
+        "stackoverflow.com"
+        "amazon.com"
+        "microsoft.com"
+        "wikipedia.org"
+        "cloudflare.com"
+        "reddit.com"
+    )
+    
+    local blocked_count=0
+    
+    for site in "${legit_sites[@]}"; do
+        log_test "Checking: $site"
+        
+        # Query the site
+        local result=$(dig @127.0.0.1 "$site" +short +time=2 2>/dev/null | head -1)
+        
+        if [[ -z "$result" ]]; then
+            log_fail "$site - no response (possible timeout)"
+            ((blocked_count++))
+        elif [[ "$result" == "0.0.0.0" ]] || [[ "$result" == "127.0.0.1" ]]; then
+            log_fail "$site - BLOCKED (false positive!)"
+            ((blocked_count++))
+        else
+            log_pass "$site - resolved to $result"
+        fi
+    done
+    
+    echo ""
+    if [[ $blocked_count -eq 0 ]]; then
+        log_pass "No false positives detected"
+    else
+        log_fail "$blocked_count legitimate sites blocked (false positives)"
+    fi
+}
+
+# ==============================================================================
 # MAIN
 # ==============================================================================
 main() {
@@ -289,6 +348,7 @@ main() {
     test_permissions
     test_help_commands
     test_module_files
+    test_adblock_false_positives
     
     # Summary
     log_section "TEST SUMMARY"
