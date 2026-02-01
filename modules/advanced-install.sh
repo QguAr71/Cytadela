@@ -13,6 +13,17 @@ optimize_kernel_priority() {
         return 1
     fi
     
+    # Create priority tuning script
+    sudo tee /usr/local/bin/citadel-dns-priority.sh >/dev/null <<'EOF'
+#!/bin/bash
+renice -10 $(pgrep dnscrypt-proxy) 2>/dev/null || true
+renice -10 $(pgrep coredns) 2>/dev/null || true
+ionice -c 2 -n 0 $(pgrep dnscrypt-proxy) 2>/dev/null || true
+ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true
+logger "Citadel++: Applied priority tuning to DNS processes"
+EOF
+    sudo chmod +x /usr/local/bin/citadel-dns-priority.sh
+    
     # Create systemd service for DNS priority optimization
     sudo tee /etc/systemd/system/citadel-dns-priority.service >/dev/null <<'EOF'
 [Unit]
@@ -21,13 +32,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c '
-renice -10 $(pgrep dnscrypt-proxy) 2>/dev/null || true
-renice -10 $(pgrep coredns) 2>/dev/null || true
-ionice -c 2 -n 0 $(pgrep dnscrypt-proxy) 2>/dev/null || true
-ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true
-logger "Citadel++: Applied priority tuning to DNS processes"
-'
+ExecStart=/usr/local/bin/citadel-dns-priority.sh
 EOF
 
     sudo tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
