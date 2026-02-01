@@ -149,11 +149,11 @@ fullscale=brightgreen,black
         [coredns]="CoreDNS|${T_MOD_COREDNS}|1|1"
         [nftables]="NFTables|${T_MOD_NFTABLES}|1|1"
         [health]="Health Watchdog|${T_MOD_HEALTH}|0|0"
-        [supply - chain]="Supply-chain|${T_MOD_SUPPLY}|0|0"
+        [supply-chain]="Supply-chain|${T_MOD_SUPPLY}|0|0"
         [lkg]="LKG Cache|${T_MOD_LKG}|1|0"
         [ipv6]="IPv6 Privacy|${T_MOD_IPV6}|0|0"
         [location]="Location-aware|${T_MOD_LOCATION}|0|0"
-        [nft - debug]="NFT Debug|${T_MOD_DEBUG}|0|0"
+        [nft-debug]="NFT Debug|${T_MOD_DEBUG}|0|0"
     )
 
     # Build checklist options for whiptail
