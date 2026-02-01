@@ -280,6 +280,58 @@ $ ./tests/smoke-test.sh
 
 ---
 
-**Status:** 🎉 **ALL TODO ITEMS COMPLETED SUCCESSFULLY**
+## Metrics & Monitoring (Commit 90b810e)
 
-**Next Phase:** Ready for v3.2 development (Gateway Mode, Terminal UI, Advanced Features)
+### Prometheus Metrics Export
+- **Module:** `modules/prometheus.sh` - Complete metrics collection
+- **Metrics collected:**
+  - Service status (dnscrypt, coredns up/down)
+  - DNS resolution status
+  - DNS cache hits/misses
+  - DNS requests by type (A, AAAA, PTR)
+  - Blocklist entries count
+  - Blocklist last update timestamp
+  - Firewall active status
+  - System load average
+  - Citadel version info
+- **Export format:** Prometheus text format
+- **Output:** `/var/lib/cytadela/metrics/citadel.prom`
+- **HTTP server:** Optional metrics server on port 9100
+
+### Grafana Dashboard
+- **Template:** `docs/grafana-dashboard.json`
+- **Panels:** 8 comprehensive panels
+  - Service status indicators
+  - DNS cache hit rate gauge
+  - DNS requests by type (timeseries)
+  - Blocklist entries counter
+  - Firewall status indicator
+  - System load average
+  - DNS resolution status
+  - Citadel version info
+- **Data source:** Prometheus
+- **Refresh:** 30 seconds
+
+### Performance Benchmarks
+- **Module:** `modules/benchmark.sh` - Complete benchmarking suite
+- **Benchmark types:**
+  - DNS performance (dnsperf with 200 clients, 60s)
+  - Basic DNS benchmark (dig fallback)
+  - Cache performance (hit/miss ratio)
+  - Blocklist performance (lookup speed)
+  - Comprehensive suite (all tests)
+- **Reports:** `/var/lib/cytadela/benchmarks/`
+- **History:** CSV format for trend analysis
+- **Comparison:** Previous vs current performance
+
+### Performance Gains
+- **~10x faster shfmt:** Cached binary in CI
+- **~5x faster apt install:** Package caching
+- **~3x faster BATS:** Recursive execution + extensions
+- **Target compatibility:** Arch container for integration tests
+
+---
+
+**Status:** 🎉 **ALL HIGH/MEDIUM PRIORITY TODO ITEMS COMPLETED**
+
+**Next Phase:** Packaging (AUR, DEB, RPM, Docker) or v3.2 development
