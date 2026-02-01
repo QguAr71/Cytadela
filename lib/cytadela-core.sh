@@ -20,10 +20,18 @@ CYTADELA_MODE="${CYTADELA_MODE:-secure}"
 CYTADELA_SCRIPT_PATH="$(realpath "$0")"
 
 # Colors (256-color palette for better contrast)
-EMR='\e[38;5;43m'  # Emerald - success/active
-VIO='\e[38;5;99m'  # Violet - info/sections
-RED='\e[38;5;160m' # Crimson - errors/warnings
-RST='\e[0m'        # Reset
+# Auto-disable colors if stdout is not a TTY (for CI/logs)
+if [[ -t 1 ]]; then
+    EMR='\e[38;5;43m'  # Emerald - success/active
+    VIO='\e[38;5;99m'  # Violet - info/sections
+    RED='\e[38;5;160m' # Crimson - errors/warnings
+    RST='\e[0m'        # Reset
+else
+    EMR=''
+    VIO=''
+    RED=''
+    RST=''
+fi
 
 # Legacy color aliases (for compatibility)
 # shellcheck disable=SC2034
@@ -41,19 +49,19 @@ NC="$RST"
 declare -gA CYTADELA_LOADED_MODULES
 
 # ==============================================================================
-# LOGGING FUNCTIONS
+# LOGGING FUNCTIONS (using printf for safety)
 # ==============================================================================
-log_info() { echo -e "${EMR}⬥${RST} ${VIO}$1${RST}"; }
-log_success() { echo -e "${EMR}✔${RST} $1"; }
-log_warning() { echo -e "${RED}⚠${RST} $1"; }
-log_error() { echo -e "${RED}✖${RST} $1" >&2; }
+log_info() { printf '%b\n' "${EMR}⬥${RST} ${VIO}$1${RST}"; }
+log_success() { printf '%b\n' "${EMR}✔${RST} $1"; }
+log_warning() { printf '%b\n' "${RED}⚠${RST} $1"; }
+log_error() { printf '%b\n' "${RED}✖${RST} $1" >&2; }
 log_section() {
-    echo -e "\n${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
-    echo -e "${VIO}║${RST} $1"
-    echo -e "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}\n"
+    printf '\n%b\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
+    printf '%b\n' "${VIO}║${RST} $1"
+    printf '%b\n\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
 }
 log_debug() {
-    [[ "${CYTADELA_DEBUG:-0}" == "1" ]] && echo -e "${VIO}[DEBUG]${RST} $1" >&2
+    [[ "${CYTADELA_DEBUG:-0}" == "1" ]] && printf '%b\n' "${VIO}[DEBUG]${RST} $1" >&2
     return 0
 }
 
@@ -65,7 +73,7 @@ trap_err_handler() {
     local line_no=${BASH_LINENO[0]}
     local func_name=${FUNCNAME[1]:-main}
     local command="$BASH_COMMAND"
-    echo -e "${RED}✗ ERROR in ${func_name}() at line ${line_no}: '${command}' exited with code ${exit_code}${NC}" >&2
+    printf '%b\n' "${RED}✗ ERROR in ${func_name}() at line ${line_no}: '${command}' exited with code ${exit_code}${NC}" >&2
 }
 trap 'trap_err_handler' ERR
 
@@ -186,31 +194,43 @@ rate_limit_check() {
     mkdir -p "$RATE_LIMIT_DIR"
 
     local limit_file="${RATE_LIMIT_DIR}/${operation}"
+    local lock_file="${limit_file}.lock"
     local now
     now=$(date +%s)
 
-    # Clean old entries and count recent ones
+    # Use flock for atomic operations (prevent race conditions)
     local count=0
-    if [[ -f "$limit_file" ]]; then
-        local temp_file
-        temp_file=$(mktemp)
-        while IFS= read -r timestamp; do
-            if [[ $((now - timestamp)) -lt $window_seconds ]]; then
-                echo "$timestamp" >> "$temp_file"
-                ((count++))
-            fi
-        done < "$limit_file"
-        mv "$temp_file" "$limit_file"
-    fi
+    (
+        # Try to acquire exclusive lock with timeout
+        if ! flock -w 2 9; then
+            log_error "Rate limit: could not acquire lock"
+            exit 1
+        fi
 
-    # Check if limit exceeded
-    if [[ $count -ge $max_attempts ]]; then
-        log_error "Rate limit exceeded for: $operation"
-        log_info "Maximum $max_attempts attempts per ${window_seconds}s"
-        return 1
-    fi
+        # Clean old entries and count recent ones
+        if [[ -f "$limit_file" ]]; then
+            local temp_file
+            temp_file=$(mktemp)
+            while IFS= read -r timestamp; do
+                if [[ $((now - timestamp)) -lt $window_seconds ]]; then
+                    echo "$timestamp" >> "$temp_file"
+                    ((count++))
+                fi
+            done < "$limit_file"
+            mv "$temp_file" "$limit_file"
+        fi
 
-    # Record this attempt
-    echo "$now" >> "$limit_file"
-    return 0
+        # Check if limit exceeded
+        if [[ $count -ge $max_attempts ]]; then
+            log_error "Rate limit exceeded for: $operation"
+            log_info "Maximum $max_attempts attempts per ${window_seconds}s"
+            exit 1
+        fi
+
+        # Record this attempt
+        echo "$now" >> "$limit_file"
+        exit 0
+    ) 9>"$lock_file"
+
+    return $?
 }
