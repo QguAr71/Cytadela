@@ -251,10 +251,17 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 
 ## 🙏 Acknowledgments
 
-- **DNSCrypt-Proxy** - Encrypted DNS
-- **CoreDNS** - DNS server
-- **NFTables** - Firewall
-- **Community** - Feedback and contributions
+Cytadela is built on top of exceptional open-source projects. We are deeply grateful to:
+
+- **DNSCrypt-Proxy** - Encrypted DNS foundation
+- **CoreDNS** - High-performance DNS server
+- **NFTables** - Modern packet filtering
+- **Prometheus** - Monitoring and metrics
+- **StevenBlack & OISD** - Comprehensive blocklists
+- **CachyOS & Arch Linux** - Distribution foundation
+- **Open Source Community** - Inspiration and support
+
+For detailed acknowledgments, licenses, and how to support these projects, see [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
 
 ---
 
