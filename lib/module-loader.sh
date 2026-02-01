@@ -33,8 +33,7 @@ load_module() {
 
     # Load module
     log_debug "Loading module: $module"
-    # shellcheck source=/dev/null
-    source "$module_file"
+    source_lib "$module_file"
 
     # Mark as loaded
     CYTADELA_LOADED_MODULES[$module]=1
@@ -48,10 +47,16 @@ load_module() {
 load_module_for_command() {
     local cmd="$1"
 
+    # Try exact match first (e.g., "install-all" -> "install-all.sh")
+    if [[ -f "${CYTADELA_MODULES}/${cmd}.sh" ]]; then
+        load_module "$cmd"
+        return 0
+    fi
+
     # Extract module name from command (first segment before "-")
     local module="${cmd%%-*}"
 
-    # Try to load module
+    # Try to load module by prefix
     if [[ -f "${CYTADELA_MODULES}/${module}.sh" ]]; then
         load_module "$module"
         return 0

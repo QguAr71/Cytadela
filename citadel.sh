@@ -5,6 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 set -euo pipefail
+set -o errtrace  # Enable ERR trap propagation in functions
 
 # ==============================================================================
 # EXIT CODES
@@ -27,6 +28,16 @@ fi
 
 export CYTADELA_LIB="${SCRIPT_DIR}/lib"
 export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
+
+# Early-fail: verify lib/modules directories exist
+if [[ ! -d "${CYTADELA_LIB}" ]]; then
+    printf 'ERROR: brak katalogu biblioteki: %s\n' "${CYTADELA_LIB}" >&2
+    exit 2
+fi
+if [[ ! -d "${CYTADELA_MODULES}" ]]; then
+    printf 'ERROR: brak katalogu modułów: %s\n' "${CYTADELA_MODULES}" >&2
+    exit 2
+fi
 
 # Bezpieczne "source" z walidacją pliku i wskazówką dla ShellCheck
 source_lib() {
@@ -52,7 +63,11 @@ source_lib "${CYTADELA_LIB}/i18n-pl.sh"
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
 call_fn() {
-    local act="$1"
+    local act="${1:-}"
+    if [[ -z "$act" ]]; then
+        log_error "Brak nazwy akcji w call_fn"
+        return 2
+    fi
     shift || true
     local fn="${act//-/_}"
     if declare -f "$fn" >/dev/null 2>&1; then
