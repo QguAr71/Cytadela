@@ -14,15 +14,18 @@ This release marks a major milestone for **Citadel** (formerly Cytadela++). We h
 
 ## 🚀 What's New in v3.1.0
 
-### ⚡ Performance Boost
+### ⚡ Performance Optimization
 - **76,323 QPS sustained throughput** with sub-1.5ms average latency
+- Single-node localhost benchmark using dnsperf v2.14.0 (30s sustained load, 20 domain rotation)
 - Optimized CoreDNS & DNSCrypt-Proxy configuration
 - 99.99% cache hit rate for frequently accessed domains
-- 0% packet loss under sustained load (30s dnsperf test)
+- 0% packet loss under sustained load
 - Minimum latency: 0.01ms for cache hits
+- **Detailed benchmark:** [TESTING-RESULTS-2026-02-01.md](docs/TESTING-RESULTS-2026-02-01.md)
 
 ### 🛡️ Strict Firewall Protection
 - Enhanced nftables ruleset with mandatory redirection to local DNS stack
+- **All outbound :53 traffic is forcibly redirected to the local resolver stack**
 - **Zero DNS leaks** - all external DNS queries blocked (IPv4 + IPv6)
 - Rate limiting: 10 queries/second with burst of 5 packets
 - Comprehensive logging: "CITADEL DNS LEAK" prefix for monitoring
@@ -34,7 +37,7 @@ This release marks a major milestone for **Citadel** (formerly Cytadela++). We h
 - Systemd integration with `Restart=always` and `RestartSec=5s`
 - Verified crash recovery with manual kill tests
 
-### 💾 Safety First
+### 💾 Operational Safety
 - **Automated pre-install backup** of original DNS configuration
 - Backup location: `/var/lib/cytadela/backups/`
 - New `restore-system-default` command for factory reset
@@ -82,6 +85,7 @@ All tests performed on CachyOS (Arch Linux) with STRICT firewall mode and adbloc
 | **Malware Blocking** | ✅ PASSED | 325,979 domains blocked (OISD/StevenBlack) |
 | **Performance Benchmark** | ✅ PASSED | 76,323 QPS, 1.29ms avg latency, 0% packet loss |
 
+**Test environment:** CachyOS (Linux kernel 6.12.1, systemd 257.2)  
 **Detailed test results:** [TESTING-RESULTS-2026-02-01.md](docs/TESTING-RESULTS-2026-02-01.md)
 
 ---
