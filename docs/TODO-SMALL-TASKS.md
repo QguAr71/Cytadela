@@ -59,10 +59,10 @@
 - [x] Add docstring to `supply_chain_verify()` in `modules/supply-chain.sh`
 
 ### README Updates
-- [ ] Update badges in README.md (version, build status)
-- [ ] Add screenshot of `citadel-top` dashboard
-- [ ] Update comparison table with latest features
-- [ ] Add "Quick Links" section to README
+- [x] Update badges in README.md (version, build status)
+- [x] Add screenshot of `citadel-top` dashboard
+- [x] Update comparison table with latest features
+- [x] Add "Quick Links" section to README
 
 ### Examples
 - [x] Create `examples/basic-setup.sh` - Simple installation example

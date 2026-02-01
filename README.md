@@ -2,9 +2,12 @@
 
 **Advanced hardened DNS resolver with full privacy stack for home users and small businesses.**
 
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/QguAr71/Cytadela)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/QguAr71/Cytadela/releases)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela?label=build)](https://github.com/QguAr71/Cytadela/actions)
+[![Last Commit](https://img.shields.io/github/last-commit/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/commits/main)
+[![Issues](https://img.shields.io/github/issues-raw/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/issues)
 
 ---
 
@@ -32,6 +35,39 @@ sudo ./citadel.sh configure-system
 # Check status
 sudo ./citadel.sh status
 ```
+
+---
+
+## 🖥️ Dashboard Preview
+
+**Real-time monitoring with `citadel-top`:**
+
+```
+┌─ CYTADELA++ TERMINAL DASHBOARD v3.1 ───────────────────────┐
+│                                                         │
+│ 📊 SYSTEM STATUS                                          │
+│ ├─ DNSCrypt Proxy:     ● ACTIVE (127.0.0.1:5353)        │
+│ ├─ CoreDNS:            ● ACTIVE (127.0.0.1:53)          │
+│ ├─ NFTables:           ● ACTIVE (DNS leak protection)   │
+│ └─ Blocklist:          325,847 domains                 │
+│                                                         │
+│ 📈 PERFORMANCE METRICS                                   │
+│ ├─ DNS Queries:        1,247/min                       │
+│ ├─ Cache Hit Rate:      94.2%                          │
+│ ├─ Blocked Queries:    187/min (15.0%)                │
+│ └─ Response Time:      12ms avg                       │
+│                                                         │
+│ 🛡️ SECURITY STATUS                                       │
+│ ├─ Firewall Mode:      STRICT                          │
+│ ├─ DNS Encryption:     DoH + DoT                        │
+│ ├─ Last Update:        2 hours ago                     │
+│ └─ Emergency Mode:     INACTIVE                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+*Run `sudo ./citadel.sh install-dashboard` to install*
+
+---
 
 ### 🌍 Multilingual Support
 
@@ -206,13 +242,19 @@ sudo ./citadel.sh config-backup        # Backup configuration
 
 | Feature | Citadel | Pi-hole | AdGuard Home | Unbound |
 |---------|---------|---------|--------------|---------|
-| DNS Encryption | ✅ DoH/DoT | ❌ | ✅ DoH/DoT | ❌ |
-| Ad Blocking | ✅ 325K+ | ✅ | ✅ | ❌ |
-| Firewall | ✅ NFTables | ❌ | ❌ | ❌ |
-| Metrics | ✅ Prometheus | ✅ Web UI | ✅ Web UI | ❌ |
-| Modular | ✅ 29 modules | ❌ | ❌ | ❌ |
-| CLI-first | ✅ | ❌ | ❌ | ✅ |
-| Emergency Mode | ✅ | ❌ | ❌ | ❌ |
+| **DNS Encryption** | ✅ DoH/DoT/DNSCrypt | ❌ | ✅ DoH/DoT | ❌ |
+| **Ad Blocking** | ✅ 325K+ domains | ✅ | ✅ | ❌ |
+| **Firewall** | ✅ NFTables + DNS leak protection | ❌ | ❌ | ❌ |
+| **Metrics** | ✅ Prometheus + citadel-top | ✅ Web UI | ✅ Web UI | ❌ |
+| **Modular** | ✅ 32 independent modules | ❌ | ❌ | ❌ |
+| **CLI-first** | ✅ Full CLI interface | ❌ | ❌ | ✅ |
+| **Emergency Mode** | ✅ Panic bypass + kill-switch | ❌ | ❌ | ❌ |
+| **Multi-language** | ✅ 7 languages (PL, EN, DE, ES, IT, FR, RU) | ❌ | ❌ | ❌ |
+| **Auto-update** | ✅ Systemd timer + LKG fallback | ❌ | ✅ | ❌ |
+| **IPv6 Support** | ✅ Privacy extensions + smart detection | ❌ | ✅ | ✅ |
+| **Supply Chain** | ✅ Integrity verification | ❌ | ❌ | ❌ |
+| **Terminal UI** | ✅ citadel-top dashboard | ❌ | ❌ | ❌ |
+| **Rate Limiting** | ✅ Built-in protection | ❌ | ✅ | ❌ |
 
 [Full comparison](docs/comparison/vs-competitors.md)
 
@@ -268,7 +310,34 @@ For detailed acknowledgments, licenses, and how to support these projects, see [
 
 ---
 
-## 📞 Support
+## � Quick Links
+
+### 📚 Documentation
+- [📖 Quick Start Guide](docs/user/quick-start.md) - Get started in 5 minutes
+- [🔧 Commands Reference](docs/user/commands.md) - All available commands
+- [❓ FAQ](docs/user/FAQ.md) - Frequently asked questions
+- [📋 Manual (PL)](docs/user/MANUAL_PL.md) - Complete Polish guide
+- [📋 Manual (EN)](docs/user/MANUAL_EN.md) - Complete English guide
+
+### 🛠️ Development
+- [🏗️ Architecture](docs/developer/architecture.md) - System design
+- [🤝 Contributing](docs/developer/contributing.md) - How to contribute
+- [🧪 Testing Strategy](docs/developer/testing-strategy.md) - Testing approach
+- [📝 Testing Guide](docs/developer/testing-guide.md) - How to run tests
+
+### 🗺️ Roadmap
+- [📍 Current Roadmap](docs/roadmap/current.md) - v3.1-v3.2 plans
+- [🏠 Home Users Focus](docs/roadmap/home-users.md) - Features for home users
+- [🔮 Future Plans](docs/roadmap/future.md) - v4.0+ vision
+
+### 💾 Examples & Scripts
+- [🚀 Basic Setup](examples/basic-setup.sh) - Simple installation
+- [⚡ Advanced Setup](examples/advanced-setup.sh) - Full configuration
+- [🆘 Emergency Recovery](examples/emergency-recovery.sh) - Crisis procedures
+
+---
+
+## �📞 Support
 
 - **Documentation:** [docs/](docs/)
 - **Issues:** [GitHub Issues](https://github.com/QguAr71/Cytadela/issues)
@@ -278,9 +347,14 @@ For detailed acknowledgments, licenses, and how to support these projects, see [
 
 ## 🔗 Links
 
-- **Website:** [Coming soon]
-- **Documentation:** [docs/](docs/)
-- **Legacy Version:** [legacy/](legacy/) (v3.0 - deprecated)
+- **📦 Repository:** [github.com/QguAr71/Cytadela](https://github.com/QguAr71/Cytadela)
+- **📖 Documentation:** [docs/](docs/)
+- **🚀 Releases:** [Releases page](https://github.com/QguAr71/Cytadela/releases)
+- **🐛 Issues:** [GitHub Issues](https://github.com/QguAr71/Cytadela/issues)
+- **💬 Discussions:** [GitHub Discussions](https://github.com/QguAr71/Cytadela/discussions)
+- **📄 License:** [GPL-3.0](LICENSE)
+- **🏆 Acknowledgments:** [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md)
+- **🔧 Legacy:** [legacy/](legacy/) (v3.0 - deprecated)
 
 ---
 
