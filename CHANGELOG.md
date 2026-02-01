@@ -111,12 +111,31 @@ All notable changes to this repository will be documented in this file.
   - Comprehensive benchmark suite
   - Historical tracking and comparison
 
+### Packaging & Distribution
+- **NEW:** Docker image (`Dockerfile`)
+  - Based on Arch Linux for maximum compatibility
+  - Multi-service compose with optional Prometheus/Grafana
+  - Health checks and persistent volumes
+  - Host networking for optimal DNS performance
+- **NEW:** Docker Compose (`docker-compose.yml`)
+  - Basic DNS service profile
+  - Monitoring profile with Prometheus + Grafana
+  - Persistent volumes for config and data
+- **NEW:** AUR Package (`PKGBUILD`)
+  - Arch Linux package support
+  - Automatic dependency resolution
+  - systemd integration ready
+- **NEW:** Docker documentation (`docs/DOCKER.md`)
+  - Quick start guide
+  - Deployment instructions
+  - Volume and port reference
+
 ### Statistics
-- **Commits:** 13 in this release
-- **Files Changed:** 75
-- **Lines Added:** +4,500
+- **Commits:** 14 in this release
+- **Files Changed:** 80
+- **Lines Added:** +4,800
 - **Lines Removed:** -1,200
-- **Net Change:** +3,300 lines
+- **Net Change:** +3,600 lines
 
 ---
 

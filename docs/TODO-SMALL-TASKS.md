@@ -158,10 +158,10 @@
 
 ## 📦 Packaging (Priority: Future)
 
-- [ ] Create AUR package (PKGBUILD)
+- [x] Create AUR package (PKGBUILD)
 - [ ] Create Debian package (.deb)
 - [ ] Create RPM package (.rpm)
-- [ ] Create Docker image
+- [x] Create Docker image
 
 ---
 
