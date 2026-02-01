@@ -6,7 +6,58 @@
 
 ---
 
-## 📊 SCHEMAT BLOKOWY STRUKTURY
+## � AKTUALNA LISTA MODUŁÓW
+
+### 🔧 Installation (6)
+- `install-wizard.sh` - Interactive installer (7 languages)
+- `install-all.sh` - Full installation
+- `install-dnscrypt.sh` - DNSCrypt-Proxy
+- `install-coredns.sh` - CoreDNS
+- `install-nftables.sh` - NFTables Firewall
+- `install-dashboard.sh` - Terminal Dashboard
+
+### ⚙️ Configuration (3)
+- `configure.sh` - System configuration
+- `fix-ports.sh` - Port conflict resolution
+- `edit-tools.sh` - Config editing
+
+### 🛡️ Security (4)
+- `emergency.sh` - Killswitch & Panic mode
+- `supply-chain.sh` - Binary verification
+- `integrity.sh` - Integrity check
+- `ghost-check.sh` - Port audit
+
+### 🚫 Ad Blocking (2)
+- `adblock.sh` - Ad blocking core
+- `blocklist-manager.sh` - Multi-blocklist (6 profiles)
+
+### 🌐 IPv6 & Network (2)
+- `ipv6.sh` - IPv6 privacy & deep reset
+- `location.sh` - Location-aware (SSID-based)
+
+### 📊 Monitoring (4)
+- `health.sh` - Health watchdog
+- `diagnostics.sh` - Full diagnostics
+- `discover.sh` - Network discovery
+- `cache-stats.sh` - Cache statistics
+
+### 🔄 Automation (3)
+- `auto-update.sh` - Auto-update blocklist
+- `config-backup.sh` - Backup/Restore
+- `lkg.sh` - Last-Known-Good cache
+
+### 🔧 Advanced (2)
+- `test-tools.sh` - Safe DNS test
+- `nft-debug.sh` - NFTables debug
+
+### 🔔 Testing (1)
+- `test-module.sh` - Module testing helper
+
+---
+
+## �📊 SCHEMAT BLOKOWY STRUKTURY
+
+**Aktualna liczba modułów:** 29
 
 ```mermaid
 graph TB
@@ -23,7 +74,7 @@ graph TB
         I18N_EN[i18n-en.sh<br/>English Messages]
     end
 
-    subgraph "🔧 FUNCTIONAL MODULES (32)"
+    subgraph "🔧 FUNCTIONAL MODULES (29)"
         subgraph "Installation"
             M1[install-wizard.sh<br/>Interactive Installer<br/>7 languages]
             M2[install-all.sh<br/>Full Installation]
@@ -70,10 +121,8 @@ graph TB
         end
 
         subgraph "Advanced"
-            M25[advanced-install.sh<br/>Kernel Optimization<br/>DoH Parallel]
-            M26[test-tools.sh<br/>Safe Test<br/>DNS Test]
-            M27[notify.sh<br/>Desktop Notifications]
-            M28[nft-debug.sh<br/>NFTables Debug]
+            M25[test-tools.sh<br/>Safe Test<br/>DNS Test]
+            M26[nft-debug.sh<br/>NFTables Debug]
         end
     end
 
