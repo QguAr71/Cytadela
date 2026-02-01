@@ -152,25 +152,25 @@ configure_system() {
     fi
 
     # Create backup directory
-    mkdir -p "${CYTADELA_STATE_DIR}/backup"
+    mkdir -p "${CYTADELA_STATE_DIR}/backups"
     
     # Backup original configuration
     log_info "Zapisywanie oryginalnej konfiguracji..."
     
     # Backup resolv.conf
     if [[ -f /etc/resolv.conf ]]; then
-        cp /etc/resolv.conf "${CYTADELA_STATE_DIR}/backup/resolv.conf.pre-citadel" 2>/dev/null || true
+        cp /etc/resolv.conf "${CYTADELA_STATE_DIR}/backups/resolv.conf.pre-citadel" 2>/dev/null || true
     fi
     
     # Backup NetworkManager config if exists
     if [[ -f /etc/NetworkManager/conf.d/citadel-dns.conf ]]; then
-        cp /etc/NetworkManager/conf.d/citadel-dns.conf "${CYTADELA_STATE_DIR}/backup/nm-citadel-dns.conf.backup" 2>/dev/null || true
+        cp /etc/NetworkManager/conf.d/citadel-dns.conf "${CYTADELA_STATE_DIR}/backups/nm-citadel-dns.conf.backup" 2>/dev/null || true
     fi
     
     # Save systemd-resolved state
-    systemctl is-enabled systemd-resolved 2>/dev/null > "${CYTADELA_STATE_DIR}/backup/systemd-resolved.state" || echo "disabled" > "${CYTADELA_STATE_DIR}/backup/systemd-resolved.state"
+    systemctl is-enabled systemd-resolved 2>/dev/null > "${CYTADELA_STATE_DIR}/backups/systemd-resolved.state" || echo "disabled" > "${CYTADELA_STATE_DIR}/backups/systemd-resolved.state"
     
-    log_success "Backup zapisany w ${CYTADELA_STATE_DIR}/backup/"
+    log_success "Backup zapisany w ${CYTADELA_STATE_DIR}/backups/"
 
     if command -v nft >/dev/null 2>&1 && [[ -f /etc/nftables.conf ]]; then
         firewall_safe 2>/dev/null || true
@@ -217,7 +217,7 @@ EOF
 restore_system() {
     log_section "MODULE 4: System Restore"
     
-    local backup_dir="${CYTADELA_STATE_DIR}/backup"
+    local backup_dir="${CYTADELA_STATE_DIR}/backups"
     
     # Check if backup exists
     if [[ -d "$backup_dir" && -f "${backup_dir}/resolv.conf.pre-citadel" ]]; then
@@ -294,5 +294,5 @@ restore_system_default() {
     ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf 2>/dev/null || true
     
     log_success "System przywrócony do DOMYŚLNEJ konfiguracji systemd-resolved"
-    log_info "Backup użytkownika (jeśli istnieje) pozostał w ${CYTADELA_STATE_DIR}/backup/"
+    log_info "Backup użytkownika (jeśli istnieje) pozostał w ${CYTADELA_STATE_DIR}/backups/"
 }
