@@ -1,9 +1,9 @@
 # Fix Report - 2026-02-01
 
 **Date:** 2026-02-01  
-**Commits:** 7 (687950c, 6ef6e60, 8cedb25, 6133a81, 2fc8905, 47d1107, 90a30b9, 51c6303)  
-**Files Changed:** 60  
-**Lines Changed:** +3125/-849
+**Commits:** 12 (687950c, 6ef6e60, 8cedb25, 6133a81, 2fc8905, 47d1107, 90a30b9, 51c6303, 5a6b828, f11c744, 9086b2a, fb705b5, adc3773, c54d9fa, a462ae8, 587f2a2, 145a1f1, 371bf37)  
+**Files Changed:** 75  
+**Lines Changed:** +4,500/-1,200
 
 ---
 
@@ -234,6 +234,49 @@ $ ./tests/smoke-test.sh
 - **Script startup:** <2s for full load
 - **Test execution:** <5s for complete suite
 - **DNS Performance:** 89,127 QPS (existing benchmark)
+
+---
+
+## Version Management & Release Automation (Commit 371bf37)
+
+### Semantic Versioning
+- **Standardized format:** MAJOR.MINOR.PATCH (3.1.0)
+- **Single source of truth:** VERSION file
+- **Consistent version:** lib/cytadela-core.sh + README
+
+### Automated Release Workflow
+- **GitHub Actions:** .github/workflows/release.yml
+- **Auto-changelog:** Generated from git history
+- **Release artifacts:** .tar.gz + SHA256 checksum
+- **Release documentation:** RELEASE-INSTRUCTIONS.md
+
+### Release Process
+- **Automated:** Tag push triggers release creation
+- **Manual fallback:** Step-by-step instructions
+- **Pre-release checklist:** Quality assurance
+- **Post-release tasks:** Documentation and updates
+
+---
+
+## Infrastructure & CI Improvements (Commits 587f2a2, 145a1f1)
+
+### Enhanced CI Workflows
+- **New workflows:** ci-improved.yml, format-check.yml
+- **Fail-fast:** Removed excessive || true usage
+- **Concurrency:** Cancel previous runs for same branch
+- **Caching:** apt packages, shfmt binary, dependencies
+
+### Testing Infrastructure
+- **BATS recursive execution:** bats tests/ --tap
+- **Arch container:** Integration tests in target environment
+- **Artifact upload:** Test reports for debugging
+- **Extensions:** bats-assert, bats-file, bats-support
+
+### Performance Optimizations
+- **~10x faster shfmt:** Cached binary
+- **~5x faster apt install:** Package caching
+- **~3x faster BATS:** Recursive + extensions
+- **Target compatibility:** Arch container matches production
 
 ---
 
