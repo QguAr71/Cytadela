@@ -185,7 +185,6 @@ EOF
     chmod 644 /etc/coredns/Corefile /etc/coredns/zones/*.hosts 2>/dev/null || true
 
     systemctl enable coredns
-    systemctl restart coredns-blocklist.timer
 
     systemctl enable --now coredns 2>/dev/null || true
     systemctl restart coredns
