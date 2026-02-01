@@ -17,6 +17,7 @@
 | 4. DNSSEC Validation | ✅ PASSED | AD flag verified, SERVFAIL for invalid |
 | 5. IPv6 Dual-Stack | ✅ PASSED | IPv6 DNS leak protection working |
 | 6. Malware Blocking | ✅ PASSED | 325,979 domains blocked |
+| 7. Performance Benchmark | ✅ PASSED | 76K QPS, 1.29ms latency, 0% loss |
 
 ---
 
@@ -336,9 +337,77 @@ dig doubleclick.net @127.0.0.1 +short
 
 ---
 
+## ✅ TEST 7: Performance Benchmark
+
+**Objective:** Measure DNS query performance under sustained load using dnsperf.
+
+**Commands:**
+```bash
+# Create test queries file
+cat > /tmp/queries.txt << 'EOF'
+google.com A
+github.com A
+cloudflare.com A
+wikipedia.org A
+reddit.com A
+stackoverflow.com A
+youtube.com A
+amazon.com A
+facebook.com A
+twitter.com A
+linkedin.com A
+netflix.com A
+microsoft.com A
+apple.com A
+debian.org A
+archlinux.org A
+ubuntu.com A
+mozilla.org A
+kernel.org A
+gnu.org A
+EOF
+
+# Run 30-second performance test
+dnsperf -s 127.0.0.1 -d /tmp/queries.txt -l 30
+```
+
+**Results:**
+```
+Statistics:
+
+  Queries sent:         2,289,780
+  Queries completed:    2,289,780 (100.00%)
+  Queries lost:         0 (0.00%)
+
+  Response codes:       NOERROR 2,289,780 (100.00%)
+  Average packet size:  request 29, response 77
+  Run time (s):         30.000972
+  Queries per second:   76,323.527118
+
+  Average Latency (s):  0.001294 (min 0.000012, max 0.202060)
+  Latency StdDev (s):   0.001936
+```
+
+**Analysis:**
+- ✅ **76,323 QPS** - Excellent throughput under sustained load
+- ✅ **100% completion rate** - No packet loss
+- ✅ **1.29ms average latency** - Very fast response times
+- ✅ **0.01ms minimum latency** - Cache hits are instant
+- ✅ **202ms maximum latency** - Acceptable for cache misses
+- ✅ All queries returned NOERROR (100% success rate)
+
+**Comparison with Cache Stats:**
+- Cache stats showed: 89-96K QPS
+- dnsperf test: 76K QPS
+- Consistent performance under different test conditions
+
+**Verdict:** ✅ **PASSED**
+
+---
+
 ## 🎯 Overall Assessment
 
-**Tests Completed:** 6/6 (100%) ✅
+**Tests Completed:** 7/7 (100%) ✅
 
 **Passed Tests:**
 1. ✅ **DNS Leak Protection** - STRICT mode blocks IPv4 bypass
@@ -347,17 +416,18 @@ dig doubleclick.net @127.0.0.1 +short
 4. ✅ **DNSSEC Validation** - AD flag verified, invalid signatures blocked
 5. ✅ **IPv6 Dual-Stack** - IPv6 DNS leak protection working
 6. ✅ **Malware Blocking** - 325,979 domains blocked (OISD/StevenBlack)
+7. ✅ **Performance Benchmark** - 76K QPS, 1.29ms latency, 0% packet loss
 
 **System Status:** **PRODUCTION READY** ✅
 
-Cytadela v3.1.0 passes **ALL** security and reliability tests. The system is fully functional with:
+Cytadela v3.1.0 passes **ALL** security, reliability, and performance tests. The system is fully functional with:
 - DNS encryption (DoH/DoT via DNSCrypt-Proxy)
 - DNSSEC validation with AD flag
 - DNS leak protection (strict firewall, IPv4 + IPv6)
 - Automatic crash recovery
 - Complete backup/restore functionality
 - Adblock/malware blocking (325K+ domains)
-- High performance (89-96K QPS, 99.99% cache hit rate)
+- High performance (76K QPS sustained, 1.29ms avg latency, 0% packet loss)
 
 ---
 
@@ -374,11 +444,11 @@ Cytadela v3.1.0 passes **ALL** security and reliability tests. The system is ful
 1. ✅ DNSSEC validation - COMPLETED
 2. ✅ IPv6 dual-stack - COMPLETED
 3. ✅ Malware blocking - COMPLETED
-4. Long-term stability tests (24h memory leak test) - Optional
-5. Performance benchmarks under load - Optional
+4. ✅ Performance benchmark - COMPLETED (76K QPS)
+5. Long-term stability tests (24h memory leak test) - Optional
 
 ---
 
-**Document Version:** 3.0  
-**Last Updated:** 2026-02-01 16:32 CET  
-**Status:** All Tests PASSED (6/6) ✅
+**Document Version:** 4.0  
+**Last Updated:** 2026-02-01 16:40 CET  
+**Status:** All Tests PASSED (7/7) ✅
