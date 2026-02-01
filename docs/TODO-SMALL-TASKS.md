@@ -90,29 +90,29 @@
 ## 🌍 Translations (Priority: Low)
 
 ### German (DE)
-- [ ] Translate "Honeypot enabled" in `lib/i18n-de.sh`
-- [ ] Translate "Reputation system active" in `lib/i18n-de.sh`
-- [ ] Translate "ASN blocking configured" in `lib/i18n-de.sh`
+- [x] Translate "Honeypot enabled" in `lib/i18n-de.sh`
+- [x] Translate "Reputation system active" in `lib/i18n-de.sh`
+- [x] Translate "ASN blocking configured" in `lib/i18n-de.sh`
 
 ### French (FR)
-- [ ] Translate "Honeypot enabled" in `lib/i18n-fr.sh`
-- [ ] Translate "Reputation system active" in `lib/i18n-fr.sh`
-- [ ] Translate "ASN blocking configured" in `lib/i18n-fr.sh`
+- [x] Translate "Honeypot enabled" in `lib/i18n-fr.sh`
+- [x] Translate "Reputation system active" in `lib/i18n-fr.sh`
+- [x] Translate "ASN blocking configured" in `lib/i18n-fr.sh`
 
 ### Spanish (ES)
-- [ ] Translate "Honeypot enabled" in `lib/i18n-es.sh`
-- [ ] Translate "Reputation system active" in `lib/i18n-es.sh`
-- [ ] Translate "ASN blocking configured" in `lib/i18n-es.sh`
+- [x] Translate "Honeypot enabled" in `lib/i18n-es.sh`
+- [x] Translate "Reputation system active" in `lib/i18n-es.sh`
+- [x] Translate "ASN blocking configured" in `lib/i18n-es.sh`
 
 ### Italian (IT)
-- [ ] Translate "Honeypot enabled" in `lib/i18n-it.sh`
-- [ ] Translate "Reputation system active" in `lib/i18n-it.sh`
-- [ ] Translate "ASN blocking configured" in `lib/i18n-it.sh`
+- [x] Translate "Honeypot enabled" in `lib/i18n-it.sh`
+- [x] Translate "Reputation system active" in `lib/i18n-it.sh`
+- [x] Translate "ASN blocking configured" in `lib/i18n-it.sh`
 
 ### Russian (RU)
-- [ ] Translate "Honeypot enabled" in `lib/i18n-ru.sh`
-- [ ] Translate "Reputation system active" in `lib/i18n-ru.sh`
-- [ ] Translate "ASN blocking configured" in `lib/i18n-ru.sh`
+- [x] Translate "Honeypot enabled" in `lib/i18n-ru.sh`
+- [x] Translate "Reputation system active" in `lib/i18n-ru.sh`
+- [x] Translate "ASN blocking configured" in `lib/i18n-ru.sh`
 
 ---
 
@@ -148,7 +148,7 @@
 - [x] Review all `eval` usage (if any) - none found in code
 - [x] Check for hardcoded credentials - verified, only public keys
 - [x] Verify input validation in all user-facing functions - basic validation present
-- [x] Add rate limiting to critical operations - implemented for panic-bypass
+- [ ] Add rate limiting to critical operations - needs implementation
 
 ---
 
