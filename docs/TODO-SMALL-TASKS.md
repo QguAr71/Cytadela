@@ -47,14 +47,14 @@
 ## 🔧 Infrastructure & CI (Priority: High)
 
 ### Documentation Standardization
-- [ ] Unify documentation: fix module count and key diagrams in `docs/CITADEL-STRUCTURE.md`
-- [ ] Add CI status badge to README.md
-- [ ] Add local testing instructions (if not already present)
+- [x] Unify documentation: fix module count and key diagrams in `docs/CITADEL-STRUCTURE.md`
+- [x] Add CI status badge to README.md
+- [x] Add local testing instructions (if not already present)
 
 ### CI/CD Pipeline Enhancement
-- [ ] Run smoke tests on every PR
-- [ ] Add optional integration tests job (manual or on-demand)
-- [ ] Review and fix ShellCheck warnings in workflow (ensure rules match code style)
+- [x] Run smoke tests on every PR
+- [x] Add optional integration tests job (manual or on-demand)
+- [x] Review and fix ShellCheck warnings in workflow (ensure rules match code style)
 
 ### Version Management
 - [ ] Standardize versioning format
@@ -170,7 +170,7 @@
 - [x] Review all `eval` usage (if any) - none found in code
 - [x] Check for hardcoded credentials - verified, only public keys
 - [x] Verify input validation in all user-facing functions - basic validation present
-- [ ] Add rate limiting to critical operations - needs implementation
+- [x] Add rate limiting to critical operations - implemented with flock
 
 ---
 
