@@ -127,10 +127,10 @@
 
 ## 🎨 UI/UX Improvements (Priority: Low)
 
-- [ ] Add color coding to `citadel.sh status` output
-- [ ] Improve error messages (more descriptive)
-- [ ] Add progress indicators for long operations
-- [ ] Improve help text formatting
+- [x] Add color coding to `citadel.sh status` output - enhanced with more sections
+- [x] Improve error messages (more descriptive) - added examples to adblock commands
+- [x] Add progress indicators for long operations - added to lists_update
+- [x] Improve help text formatting - restructured with emojis and better colors
 
 ---
 

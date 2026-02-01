@@ -83,7 +83,7 @@ adblock_show() {
             sed -n '1,200p' /etc/coredns/zones/combined.hosts 2>/dev/null || true
             ;;
         *)
-            log_error "Użycie: adblock-show custom|blocklist|combined"
+            log_error "Użycie: adblock-show custom|blocklist|combined\n  Przykład: citadel.sh adblock-show blocklist"
             return 1
             ;;
     esac
@@ -92,7 +92,7 @@ adblock_show() {
 adblock_query() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
-        log_error "Użycie: adblock-query domena"
+        log_error "Użycie: adblock-query <domena>\n  Przykład: citadel.sh adblock-query google.com"
         return 1
     fi
 
@@ -109,7 +109,7 @@ adblock_add() {
     local domain="$1"
 
     if [[ -z "$domain" ]]; then
-        log_error "Usage: adblock-add <domain>"
+        log_error "Użycie: adblock-add <domena>\n  Przykład: citadel.sh adblock-add ads.example.com"
         return 1
     fi
 
@@ -148,7 +148,7 @@ adblock_add() {
 adblock_remove() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
-        log_error "Użycie: adblock-remove domena"
+        log_error "Użycie: adblock-remove <domena>\n  Przykład: citadel.sh adblock-remove ads.example.com"
         return 1
     fi
 
@@ -195,7 +195,7 @@ allowlist_list() {
 allowlist_add() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
-        log_error "Użycie: allowlist-add domena"
+        log_error "Użycie: allowlist-add <domena>\n  Przykład: citadel.sh allowlist-add trusted.example.com"
         return 1
     fi
     if [[ ! "$domain" =~ ^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
@@ -221,7 +221,7 @@ allowlist_add() {
 allowlist_remove() {
     local domain="$1"
     if [[ -z "$domain" ]]; then
-        log_error "Użycie: allowlist-remove domena"
+        log_error "Użycie: allowlist-remove <domena>\n  Przykład: citadel.sh allowlist-remove trusted.example.com"
         return 1
     fi
 

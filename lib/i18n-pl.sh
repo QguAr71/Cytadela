@@ -7,162 +7,65 @@
 show_help_pl() {
     echo -e "
 ${BLUE}╔═══════════════════════════════════════════════════════════════════════════╗${NC}
-${BLUE}║                  CITADEL++ v3.1 - Instrukcja                              ║${NC}
+${BLUE}║                  CYTADELA++ v3.1 - Instrukcja                              ║${NC}
 ${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}
 
-${CYAN}Komendy instalacyjne (BEZPIECZNE):${NC}
-  install-wizard        🎯 Interaktywny instalator z checklistą (ZALECANE)
-  install-all           Instaluj wszystkie moduły DNS (NIE wyłącza systemd-resolved)
-  install-dnscrypt      Instaluj tylko DNSCrypt-Proxy
-  install-coredns       Instaluj tylko CoreDNS
-  install-nftables      Instaluj tylko reguły NFTables
+${GREEN}🚀 Instalacja (ZALECANE):${NC}
+  ${CYAN}install-wizard${NC}        🎯 Interaktywny instalator z checklistą
+  ${CYAN}install-all${NC}           Instaluj wszystkie moduły DNS
+  ${CYAN}install-dnscrypt${NC}      Instaluj tylko DNSCrypt-Proxy
+  ${CYAN}install-coredns${NC}       Instaluj tylko CoreDNS
+  ${CYAN}install-nftables${NC}      Instaluj tylko reguły NFTables
 
-${CYAN}DNSSEC (opcjonalnie):${NC}
-  CITADEL_DNSSEC=1       Wygeneruj DNSCrypt z require_dnssec = true
-  --dnssec               Alternatywnie: dodaj flagę przy install-dnscrypt/install-all
+${YELLOW}⚙️  Konfiguracja systemu:${NC}
+  ${CYAN}configure-system${NC}      Przełącz system na Citadel++ DNS
+  ${CYAN}restore-system${NC}        Przywróć systemd-resolved
+  ${CYAN}firewall-safe${NC}         Tryb bezpieczny (nie zrywa internetu)
+  ${CYAN}firewall-strict${NC}       Tryb ścisły (pełna blokada DNS-leak)
 
-${YELLOW}NOWE FUNKCJE v3.1:${NC}
-  smart-ipv6           Smart IPv6 detection & auto-reconfiguration
-  ipv6-privacy-on      Włącz IPv6 Privacy Extensions (prefer temporary)
-  ipv6-privacy-off     Wyłącz IPv6 Privacy Extensions
-  ipv6-privacy-status  Pokaż status IPv6 Privacy Extensions
-  ipv6-privacy-auto    Auto-ensure IPv6 privacy (detect + fix if needed)
-  discover             Network & firewall sanity snapshot
-  install-dashboard    Instaluj terminal dashboard (citadel-top)
-  install-editor       Instaluj integrację edytora (citadel edit)
-  optimize-kernel      Zastosuj real-time priority dla procesów DNS
-  install-doh-parallel Instaluj DNS-over-HTTPS parallel racing
-  fix-ports            Rozwiąż konflikty portów z avahi/chromium
+${RED}🚨 Awaryjne:${NC}
+  ${CYAN}panic-bypass [s]${NC}      Wyłącz ochronę + auto-rollback
+  ${CYAN}panic-restore${NC}         Przywróć tryb chroniony
+  ${CYAN}emergency-refuse${NC}      Odrzuć wszystkie zapytania DNS
+  ${CYAN}killswitch-on${NC}         Aktywuj DNS kill-switch
+  ${CYAN}killswitch-off${NC}        Dezaktywuj kill-switch
 
-${YELLOW}Konfiguracja systemu (UWAGA - wyłącza systemd-resolved):${NC}
-  configure-system      Przełącz system na Citadel++ DNS (z potwierdzeniem)
-  restore-system        Przywróć systemd-resolved + DNS (rollback)
+${GREEN}📊 Status i diagnostyka:${NC}
+  ${CYAN}status${NC}                Pokaż status usług
+  ${CYAN}diagnostics${NC}          Pełna diagnostyka systemu
+  ${CYAN}verify${NC}                Weryfikuj cały stack
+  ${CYAN}test-all${NC}              Smoke test + leak test
+  ${CYAN}ghost-check${NC}           Audyt otwartych portów
 
-${CYAN}Komendy awaryjne:${NC}
-  emergency-refuse      Refuse all DNS queries (tryb awaryjny)
-  emergency-restore     Przywróć normalną pracę
-  killswitch-on         Aktywuj DNS kill-switch (blokuj wszystko poza localhost)
-  killswitch-off        Dezaktywuj kill-switch
+${BLUE}🔧 Zarządzanie blocklist:${NC}
+  ${CYAN}blocklist-list${NC}        Pokaż dostępne profile
+  ${CYAN}blocklist-switch <p>${NC}  Przełącz profil
+  ${CYAN}lists-update${NC}          Aktualizuj z LKG fallback
+  ${CYAN}lkg-save${NC}              Zapisz blocklist do cache
+  ${CYAN}lkg-restore${NC}           Przywróć z cache
 
-${RED}Panic Bypass (odzyskiwanie SPOF):${NC}
-  panic-bypass [secs]   Wyłącz ochronę + auto-rollback (domyślnie 300s)
-  panic-restore         Ręcznie przywróć tryb chroniony
-  panic-status          Pokaż status trybu panic
+${PURPLE}🛡️  Adblock:${NC}
+  ${CYAN}adblock-status${NC}        Status adblock
+  ${CYAN}adblock-add <dom>${NC}     Dodaj domenę
+  ${CYAN}adblock-remove <dom>${NC}  Usuń domenę
+  ${CYAN}adblock-query <dom>${NC}   Sprawdź domenę
+  ${CYAN}allowlist-add <dom>${NC}   Dodaj do allowlist
 
-${YELLOW}LKG (Last Known Good):${NC}
-  lkg-save              Zapisz obecną blocklist do cache
-  lkg-restore           Przywróć blocklist z cache
-  lkg-status            Pokaż status cache LKG
-  lists-update          Aktualizuj blocklist z LKG fallback
+${CYAN}🔍 Nowe funkcje v3.1:${NC}
+  ${CYAN}smart-ipv6${NC}            Smart IPv6 detection
+  ${CYAN}discover${NC}              Network sanity snapshot
+  ${CYAN}install-dashboard${NC}     Terminal dashboard
+  ${CYAN}cache-stats${NC}           Statystyki DNS cache
+  ${CYAN}notify-enable${NC}         Powiadomienia systemowe
 
-${YELLOW}Auto-update (Issue #13):${NC}
-  auto-update-enable    Włącz automatyczne aktualizacje blocklist (daily)
-  auto-update-disable   Wyłącz automatyczne aktualizacje
-  auto-update-status    Pokaż status auto-update
-  auto-update-now       Uruchom aktualizację teraz (ręcznie)
-  auto-update-configure Konfiguruj częstotliwość (daily/weekly/custom)
+${GREEN}📋 Przykładowy workflow:${NC}
+  ${YELLOW}1.${NC} sudo cytadela.sh install-all
+  ${YELLOW}2.${NC} sudo cytadela.sh firewall-safe
+  ${YELLOW}3.${NC} dig +short google.com @127.0.0.1
+  ${YELLOW}4.${NC} sudo cytadela.sh configure-system
+  ${YELLOW}5.${NC} sudo cytadela.sh firewall-strict
 
-${YELLOW}Config Backup/Restore (Issue #14):${NC}
-  config-backup         Utwórz backup konfiguracji (tar.gz)
-  config-restore <file> Przywróć konfigurację z backupu
-  config-list           Pokaż dostępne backupy
-  config-delete <file>  Usuń backup
-
-${YELLOW}Cache Stats (Issue #15):${NC}
-  cache-stats [N]       Pokaż statystyki cache DNS (hit rate, latency)
-  cache-stats-top [N]   Top N najczęstszych domen (domyślnie 20)
-  cache-stats-reset     Reset statystyk (restart CoreDNS)
-  cache-stats-watch     Live monitoring statystyk (2s refresh)
-
-${YELLOW}Desktop Notifications (Issue #16):${NC}
-  notify-enable         Włącz powiadomienia systemowe
-  notify-disable        Wyłącz powiadomienia
-  notify-status         Pokaż status powiadomień
-  notify-test           Wyślij testowe powiadomienie
-
-${CYAN}Komendy diagnostyczne:${NC}
-  diagnostics           Uruchom pełną diagnostykę systemu
-  status                Pokaż status usług
-  verify                Weryfikuj pełny stack (porty/usługi/DNS/NFT/metryki)
-  ghost-check           Audyt ekspozycji portów (ostrzeż o 0.0.0.0/::)
-  ipv6-deep-reset       Flush IPv6 + neighbor cache + reconnect
-  test-all              Smoke test (verify + leak test + IPv6)
-
-${GREEN}Health Watchdog:${NC}
-  health-status         Pokaż status zdrowia (usługi, DNS probe, firewall)
-  health-install        Instaluj auto-restart + health check timer
-  health-uninstall      Usuń health watchdog
-
-${GREEN}Weryfikacja Supply-Chain:${NC}
-  supply-chain-status   Pokaż status pliku checksums
-  supply-chain-init     Inicjalizuj checksumy dla znanych zasobów
-  supply-chain-verify   Weryfikuj lokalne pliki względem manifestu
-
-${CYAN}Location-Aware Advisory:${NC}
-  location-status       Pokaż obecny SSID, status zaufania, tryb firewall
-  location-check        Sprawdź i doradź tryb firewall
-  location-add-trusted  Dodaj SSID do listy zaufanych (lub obecny jeśli brak arg)
-  location-remove-trusted Usuń SSID z listy zaufanych
-  location-list-trusted Lista wszystkich zaufanych SSID
-
-${CYAN}NFT Debug Chain:${NC}
-  nft-debug-on          Włącz debug chain z rate-limited logging
-  nft-debug-off         Wyłącz debug chain
-  nft-debug-status      Pokaż status debug chain i liczniki
-  nft-debug-logs        Pokaż ostatnie wpisy CITADEL log
-
-${YELLOW}Integrity (Local-First):${NC}
-  integrity-init        Utwórz manifest integrity dla skryptów/binariów
-  integrity-check       Weryfikuj integrity względem manifestu
-  integrity-status      Pokaż tryb integrity i info manifestu
-  --dev                 Uruchom w trybie developer (relaxed integrity checks)
-
-${CYAN}Tryby Firewall:${NC}
-  firewall-safe         Ustaw reguły SAFE (nie zrywa internetu)
-  firewall-strict       Ustaw reguły STRICT (blokuje DNS-leaks)
-
-${GREEN}Rekomendowany workflow:${NC}
-  ${CYAN}1.${NC} sudo ./cytadela++.sh install-all
-  ${CYAN}2.${NC} sudo ./cytadela++.sh firewall-safe         ${YELLOW}# SAFE: nie zrywa internetu${NC}
-  ${CYAN}3.${NC} dig +short google.com @127.0.0.1          ${YELLOW}# Test lokalnego DNS${NC}
-  ${CYAN}4.${NC} sudo ./cytadela++.sh configure-system       ${YELLOW}# Przełączenie systemu${NC}
-  ${CYAN}5.${NC} ping -c 3 google.com                      ${YELLOW}# Test internetu${NC}
-  ${CYAN}6.${NC} sudo ./cytadela++.sh firewall-strict        ${YELLOW}# STRICT: pełna blokada DNS-leak${NC}
-
-${GREEN}Nowe narzędzia v3.1:${NC}
-  cytadela-top          Real-time terminal dashboard
-  cytadela edit         Editor z auto-restart
-  cytadela status       Szybki check statusu
-
-${CYAN}Panel ${YELLOW}Blocklist Manager (Issue #17):${NC}
-  blocklist-list        Pokaż dostępne profile blocklist
-  blocklist-switch <p>  Przełącz profil (light/balanced/aggressive/privacy/polish/custom)
-  blocklist-status      Pokaż aktywny profil i statystyki
-  blocklist-add-url <u> Dodaj URL do custom profile
-  blocklist-remove-url  Usuń URL z custom profile
-  blocklist-show-urls   Pokaż custom URLs
-
-${YELLOW}Adblock (DNS-level):${NC}
-  adblock-status        Pokaż status adblock (liczba domen)
-  adblock-stats         Statystyki (top blocked, query count)
-  adblock-show          Pokaż zawartość blocklist
-  adblock-query <dom>   Sprawdź czy domena jest zablokowana
-  adblock-add <dom>     Dodaj domenę do custom.hosts
-  adblock-remove <dom>  Usuń domenę z custom.hosts
-  adblock-edit          Edytuj custom.hosts (nano)
-  adblock-rebuild       Przebuduj combined.hosts (custom + blocklist - allowlist) przeładuj
-  adblock-query         Zapytaj domenę przez lokalny DNS (127.0.0.1)
-  allowlist-list        Pokaż allowlist (domeny wyłączone z blokady)
-  allowlist-add         Dodaj domenę do allowlist
-  allowlist-remove      Usuń domenę z allowlist
-
-${CYAN}Zaawansowana konfiguracja:${NC}
-  DNSCrypt config:      /etc/dnscrypt-proxy/dnscrypt-proxy.toml
-  DNSCrypt DoH config:  /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml
-  CoreDNS config:       /etc/coredns/Corefile
-  NFTables rules:       /etc/nftables.d/citadel-dns.nft
-
-${CYAN}Dokumentacja:${NC}
-  GitHub:              https://github.com/QguAr71/Cytadela
+${CYAN}📚 Dokumentacja:${NC}
+  GitHub: https://github.com/QguAr71/Cytadela
 "
 }

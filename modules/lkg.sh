@@ -132,9 +132,25 @@ lists_update() {
 
     log_info "Profile: $current_profile"
     log_info "Downloading: $blocklist_url..."
-
+    
+    # Progress indicator
+    local progress_chars="/-\\|"
+    local i=0
+    
+    # Start download with progress
+    (
+        while kill -0 $$ 2>/dev/null; do
+            printf "\r${CYAN}Downloading...${progress_chars:$((i%4)):1}${NC}"
+            sleep 0.5
+            ((i++))
+        done
+    ) &
+    local progress_pid=$!
+    
     if curl -sSL --connect-timeout 10 --max-time 60 "$blocklist_url" -o "$staging_file" 2>/dev/null; then
-        log_info "Download complete. Validating..."
+        kill "$progress_pid" 2>/dev/null || true
+        printf "\r${GREEN}Download complete${NC}\n"
+        log_info "Validating..."
 
         if lkg_validate_blocklist "$staging_file"; then
             mv "$staging_file" "$target"
@@ -154,11 +170,15 @@ lists_update() {
             adblock_reload
             log_success "Adblock rebuilt + CoreDNS reloaded"
         else
+            kill "$progress_pid" 2>/dev/null || true
+            printf "\r${YELLOW}Download failed${NC}\n"
             log_warning "Downloaded blocklist failed validation"
             rm -f "$staging_file"
             log_info "Keeping current blocklist"
         fi
     else
+        kill "$progress_pid" 2>/dev/null || true
+        printf "\r${RED}Download failed${NC}\n"
         log_warning "Download failed. Using LKG fallback..."
         rm -f "$staging_file"
 

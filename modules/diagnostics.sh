@@ -111,30 +111,48 @@ test_all() {
 }
 
 show_status() {
-    log_section "📊 CITADEL++ STATUS"
+    log_section "📊 CYTADELA++ STATUS"
 
-    echo "Services:"
+    echo -e "${CYAN}Services:${NC}"
     for svc in dnscrypt-proxy coredns; do
         if systemctl is-active --quiet "$svc" 2>/dev/null; then
-            printf "  ${GREEN}✓${NC} %-20s ACTIVE\n" "$svc"
+            printf "  ${GREEN}●${NC} %-20s ${GREEN}ACTIVE${NC}\n" "$svc"
         else
-            printf "  ${RED}✗${NC} %-20s INACTIVE\n" "$svc"
+            printf "  ${RED}●${NC} %-20s ${RED}INACTIVE${NC}\n" "$svc"
         fi
     done
 
     echo ""
-    echo "Firewall:"
+    echo -e "${CYAN}Firewall:${NC}"
     if nft list tables 2>/dev/null | grep -q "citadel"; then
-        printf "  ${GREEN}✓${NC} NFTables rules loaded\n"
+        printf "  ${GREEN}●${NC} NFTables rules ${GREEN}LOADED${NC}\n"
     else
-        printf "  ${YELLOW}⚠${NC} NFTables rules NOT loaded\n"
+        printf "  ${YELLOW}●${NC} NFTables rules ${YELLOW}NOT LOADED${NC}\n"
     fi
 
     echo ""
-    echo "DNS Test:"
+    echo -e "${CYAN}DNS Resolution:${NC}"
     if command -v dig >/dev/null 2>&1 && dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
-        printf "  ${GREEN}✓${NC} DNS resolution working\n"
+        printf "  ${GREEN}●${NC} DNS resolution ${GREEN}WORKING${NC}\n"
     else
-        printf "  ${RED}✗${NC} DNS resolution FAILED\n"
+        printf "  ${RED}●${NC} DNS resolution ${RED}FAILED${NC}\n"
+    fi
+
+    echo ""
+    echo -e "${CYAN}Blocklist:${NC}"
+    if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
+        local count
+        count=$(wc -l < /etc/coredns/zones/blocklist.hosts 2>/dev/null || echo "0")
+        printf "  ${GREEN}●${NC} Blocklist entries: ${GREEN}%s${NC}\n" "$count"
+    else
+        printf "  ${YELLOW}●${NC} Blocklist file ${YELLOW}NOT FOUND${NC}\n"
+    fi
+
+    echo ""
+    echo -e "${CYAN}Metrics:${NC}"
+    if curl -s http://127.0.0.1:9153/metrics >/dev/null 2>&1; then
+        printf "  ${GREEN}●${NC} Prometheus metrics ${GREEN}AVAILABLE${NC}\n"
+    else
+        printf "  ${YELLOW}●${NC} Prometheus metrics ${YELLOW}UNAVAILABLE${NC}\n"
     fi
 }
