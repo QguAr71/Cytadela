@@ -123,7 +123,7 @@ supply_chain_verify() {
     
     if [[ -f "$CYTADELA_MANIFEST" ]]; then
         log_info "Verifying integrity manifest..."
-        while IFS='  ' read -r hash filepath; do
+        while IFS=$'\t' read -r hash filepath; do
             [[ -z "$hash" || "$hash" == "#"* ]] && continue
             
             if [[ -f "$filepath" ]]; then

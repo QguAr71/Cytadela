@@ -125,29 +125,22 @@ adblock_add() {
         log_error "Domain contains invalid characters: $domain"
         return 1
     fi
-    
-    # Add to custom.hosts
-    echo "0.0.0.0 $domain" >> "/etc/coredns/zones/custom.hosts"
-    
-    # Fix permissions for ZFS compatibility (Issue #25)
-    chmod 644 "/etc/coredns/zones/custom.hosts"
-    chown root:root "/etc/coredns/zones/custom.hosts"
-    
-    log_success "Added: $domain"
-    
-    # Rebuild
-    adblock_rebuild
-    
+
+    # Add to custom.hosts (with duplicate check)
     mkdir -p /etc/coredns/zones
     touch /etc/coredns/zones/custom.hosts
-    
+
     if grep -qE "^[0-9.:]+[[:space:]]+${domain}$" /etc/coredns/zones/custom.hosts 2>/dev/null; then
         log_info "Już istnieje w custom.hosts: $domain"
     else
         printf '0.0.0.0 %s\n' "$domain" >> /etc/coredns/zones/custom.hosts
         log_success "Dodano do custom.hosts: $domain"
     fi
-    
+
+    # Fix permissions for ZFS compatibility (Issue #25)
+    chmod 644 "/etc/coredns/zones/custom.hosts"
+    chown root:root "/etc/coredns/zones/custom.hosts"
+
     adblock_rebuild
     adblock_reload
 }

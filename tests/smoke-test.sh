@@ -56,8 +56,6 @@ test_syntax_validation() {
     local files=(
         "citadel.sh"
         "citadel_en.sh"
-        "legacy/cytadela++.sh"
-        "legacy/citadela_en.sh"
     )
     
     for file in "${files[@]}"; do

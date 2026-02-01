@@ -4,6 +4,39 @@
 # ║  Network & Firewall Snapshot (Issue #10)                                  ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+discover_active_interface() {
+    local iface=""
+    # Try to get default route interface
+    iface=$(ip route show default 2>/dev/null | awk '/default/ {print $5; exit}')
+    # Fallback: get first active interface with IP
+    [[ -z "$iface" ]] && iface=$(ip -4 addr show 2>/dev/null | awk '/inet / {print $NF; exit}')
+    echo "$iface"
+}
+
+discover_network_stack() {
+    if systemctl is-active --quiet NetworkManager 2>/dev/null; then
+        echo "NetworkManager"
+    elif systemctl is-active --quiet systemd-networkd 2>/dev/null; then
+        echo "systemd-networkd"
+    else
+        echo "legacy"
+    fi
+}
+
+discover_nftables_status() {
+    if command -v nft &>/dev/null; then
+        local tables
+        tables=$(nft list tables 2>/dev/null | wc -l)
+        if [[ $tables -gt 0 ]]; then
+            echo "active ($tables tables)"
+        else
+            echo "installed (no tables)"
+        fi
+    else
+        echo "not installed"
+    fi
+}
+
 discover() {
     log_section "🔍 DISCOVER - Network & Firewall Snapshot"
     

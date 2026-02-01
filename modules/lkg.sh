@@ -83,14 +83,48 @@ lkg_status() {
 
 lists_update() {
     log_section "📥 LISTS UPDATE (with LKG fallback)"
-    
-    local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
+
     local staging_file
     staging_file=$(mktemp)
     local target="/etc/coredns/zones/blocklist.hosts"
-    
-    log_info "Downloading fresh blocklist..."
-    
+    local download_failed=1
+
+    # Get current profile (default: balanced)
+    local current_profile
+    current_profile=$(cat /var/lib/cytadela/blocklist-profile.txt 2>/dev/null || echo "balanced")
+
+    # Define URLs for each profile (must match blocklist-manager.sh)
+    local blocklist_url=""
+    case "$current_profile" in
+        light)
+            blocklist_url="https://small.oisd.nl"
+            ;;
+        balanced)
+            blocklist_url="https://big.oisd.nl"
+            ;;
+        aggressive)
+            blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.plus.txt"
+            ;;
+        privacy)
+            blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/tif.txt"
+            ;;
+        polish)
+            blocklist_url="https://hole.cert.pl/domains/domains_hosts.txt"
+            ;;
+        custom)
+            # Custom profile - use first custom URL or fallback
+            if [[ -f /var/lib/cytadela/blocklist-custom-urls.txt ]]; then
+                blocklist_url=$(grep -v '^#' /var/lib/cytadela/blocklist-custom-urls.txt 2>/dev/null | head -1)
+            fi
+            ;;
+    esac
+
+    # Fallback if no URL determined
+    [[ -z "$blocklist_url" ]] && blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
+
+    log_info "Profile: $current_profile"
+    log_info "Downloading: $blocklist_url..."
+
     if curl -sSL --connect-timeout 10 --max-time 60 "$blocklist_url" -o "$staging_file" 2>/dev/null; then
         log_info "Download complete. Validating..."
         

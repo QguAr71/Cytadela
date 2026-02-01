@@ -214,13 +214,12 @@ config_list() {
     
     for file in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
         [[ ! -f "$file" ]] && continue
-        local backup="$BACKUP_DIR/$file"
         local size
-        size=$(du -h "$backup" | cut -f1)
+        size=$(du -h "$file" | cut -f1)
         local date
-        date=$(stat -c %y "$backup" | cut -d'.' -f1)
-        
-        printf "  ${GREEN}%s${NC}\n" "$(basename "$backup")"
+        date=$(stat -c %y "$file" | cut -d'.' -f1)
+
+        printf "  ${GREEN}%s${NC}\n" "$(basename "$file")"
         printf "    Date: %s\n" "$date"
         printf "    Size: %s\n" "$size"
         echo ""

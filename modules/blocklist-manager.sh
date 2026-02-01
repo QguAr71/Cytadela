@@ -4,6 +4,10 @@
 # ║  Multi-blocklist support with profiles (Issue #17)                        ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Colors (fallback if not defined by core)
+GREEN='\e[38;5;43m'
+NC='\e[0m'
+
 BLOCKLIST_PROFILE_FILE="/var/lib/cytadela/blocklist-profile.txt"
 BLOCKLIST_CUSTOM_URLS="/var/lib/cytadela/blocklist-custom-urls.txt"
 
