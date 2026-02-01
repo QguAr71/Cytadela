@@ -30,7 +30,7 @@
 - **Reduce code:** ~8,000 → ~4,800 lines (-40%)
 - **Improve maintainability:** Single source of truth
 - **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
-- **Modernize codebase:** Bash 5.0+ features (associative arrays, --silent flag)
+- **Modernize codebase:** Bash 5.0+ features with Bash 4.x fallback
 - **Simplify installation:** Auto-configure system after install (4 steps → 2 steps)
 - **Fix CoreDNS RFC1035 warning:** Move prometheus to main DNS block
 
@@ -53,11 +53,11 @@
 
 ### Mitigation
 
-- ✅ Backward compatibility layer (associative array mapping)
-- ✅ Comprehensive testing
+- ✅ Backward compatibility layer (command mapping with Bash 4.x fallback)
+- ✅ Comprehensive testing (Bash 4.x and 5.x)
 - ✅ Phased rollout
 - ✅ Clear migration guide
-- ✅ Bash version check (require 5.0+)
+- ✅ Graceful degradation for older Bash versions
 
 ---
 
@@ -65,31 +65,69 @@
 
 ### System Requirements
 
-- **Bash:** >=5.0 (for associative arrays)
+- **Bash:** >=4.0 (minimum), >=5.0 (recommended)
 - **OS:** Linux (Arch-based, Debian 11+, Ubuntu 20.04+)
-- **Check:** Version validation in install script
+- **Check:** Automatic version detection with fallback
 
-### Modern Bash Features
+### Bash Compatibility Strategy
 
-**1. Associative Arrays (Backward Compatibility)**
+**Philosophy:** Optimize for Bash 5.0+, fallback to Bash 4.x
+
+**1. Command Mapping with Automatic Fallback**
 ```bash
-# Old command → New command mapping
-declare -A COMMAND_MAP=(
-    ["tools-update"]="update blocklists"
-    ["adblock-rebuild"]="adblock rebuild"
-    ["tools-install"]="install all"
-    # ... all legacy commands
-)
+# lib/unified-core.sh
 
-# Usage
-legacy_cmd="tools-update"
-new_cmd="${COMMAND_MAP[$legacy_cmd]}"
-citadel $new_cmd
+# Detect Bash version and choose implementation
+if [ "${BASH_VERSINFO[0]}" -ge 5 ]; then
+    # Bash 5.0+ - Use associative arrays (faster)
+    declare -A COMMAND_MAP=(
+        ["tools-update"]="update blocklists"
+        ["adblock-rebuild"]="adblock rebuild"
+        ["tools-install"]="install all"
+        ["check-dependencies"]="install check-deps"
+        ["install-dnscrypt"]="install dnscrypt"
+        ["install-coredns"]="install coredns"
+        ["emergency"]="security panic"
+        ["lkg"]="backup lkg"
+        # ... all legacy commands
+    )
+    
+    translate_cmd() {
+        echo "${COMMAND_MAP[$1]:-$1}"
+    }
+else
+    # Bash 4.x - Use case statement (compatible)
+    translate_cmd() {
+        case "$1" in
+            "tools-update")       echo "update blocklists" ;;
+            "adblock-rebuild")    echo "adblock rebuild" ;;
+            "tools-install")      echo "install all" ;;
+            "check-dependencies") echo "install check-deps" ;;
+            "install-dnscrypt")   echo "install dnscrypt" ;;
+            "install-coredns")    echo "install coredns" ;;
+            "emergency")          echo "security panic" ;;
+            "lkg")                echo "backup lkg" ;;
+            # ... all legacy commands
+            *) echo "$1" ;;  # Return original if not mapped
+        esac
+    }
+fi
+
+# Usage (same for both versions)
+CMD=$(translate_cmd "$1")
+shift
+./unified-modules.sh $CMD "$@"
 ```
+
+**Benefits:**
+- ✅ No syntax errors on Bash 4.x (NAS, embedded systems, older distros)
+- ✅ Optimal performance on Bash 5.x (associative arrays)
+- ✅ Single codebase - no separate legacy version
+- ✅ Automatic detection - zero user intervention
 
 **2. --silent Flag (Automation)**
 ```bash
-# Skip all confirmations
+# Skip all confirmations (Bash 4.0+ compatible)
 citadel install all --silent
 citadel update blocklists --silent
 
@@ -97,13 +135,35 @@ citadel update blocklists --silent
 citadel uninstall --silent  # ERROR: --silent not allowed
 ```
 
-**3. Version Check**
+**3. Version Detection (No Hard Requirement)**
 ```bash
-# In install script
-if (( BASH_VERSINFO[0] < 5 )); then
-    echo "ERROR: Bash 5.0+ required (current: ${BASH_VERSION})"
+# In install script - detect and inform, don't block
+if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo "ERROR: Bash 4.0+ required (current: ${BASH_VERSION})"
     exit 1
+elif [ "${BASH_VERSINFO[0]}" -lt 5 ]; then
+    echo "⚠️  Running on Bash ${BASH_VERSION} (compatibility mode)"
+    echo "ℹ️  For best performance, upgrade to Bash 5.0+"
+    echo ""
 fi
+```
+
+**4. Silent DROP (Bash-independent)**
+```bash
+# security/firewall.sh - works on any Bash version
+firewall_silent_drop() {
+    local target_port=${1:-53}
+    echo "🛡️ Activating Silent DROP on port $target_port..."
+    
+    # nftables command - independent of Bash version
+    sudo nft add rule inet filter input udp dport "$target_port" counter drop
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Success: Port $target_port is now in Stealth mode (no ICMP responses)"
+    else
+        echo "❌ Error: Kernel or nftables doesn't support this rule"
+    fi
+}
 ```
 
 ---
