@@ -32,6 +32,7 @@
 - **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
 - **Modernize codebase:** Bash 5.0+ features (associative arrays, --silent flag)
 - **Simplify installation:** Auto-configure system after install (4 steps → 2 steps)
+- **Fix CoreDNS RFC1035 warning:** Move prometheus to main DNS block
 
 ### Benefits
 
