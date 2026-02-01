@@ -39,7 +39,17 @@ sudo ./citadel.sh install-all
 
 > **Note:** For legacy version (v3.0), see `legacy/` directory
 
-### Step 4: Verify Installation
+### Step 4: Configure System (Critical!)
+```bash
+sudo ./citadel.sh configure-system
+```
+- Switches from systemd-resolved to Citadel DNS
+- Creates backup of original configuration
+- Enables DNS leak protection
+
+> **Important:** Without this step, Citadel is installed but not active. System still uses systemd-resolved.
+
+### Step 5: Verify Installation
 ```bash
 sudo ./citadel.sh verify
 ```

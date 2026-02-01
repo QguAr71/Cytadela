@@ -26,6 +26,9 @@ sudo ./citadel.sh install-wizard pl  # Polski
 sudo ./citadel.sh install-wizard en  # English
 sudo ./citadel.sh install-wizard de  # Deutsch
 
+# Configure system (switch from systemd-resolved to Citadel)
+sudo ./citadel.sh configure-system
+
 # Check status
 sudo ./citadel.sh status
 ```
