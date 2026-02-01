@@ -1,0 +1,112 @@
+# Docker Compose for Citadel DNS Infrastructure
+# 
+# Usage:
+#   docker-compose up -d          # Start in background
+#   docker-compose logs -f        # View logs
+#   docker-compose down           # Stop and remove
+#   docker-compose exec citadel bash  # Enter container
+
+version: '3.8'
+
+services:
+  citadel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cytadela/citadel:latest
+    container_name: citadel-dns
+    hostname: citadel
+    
+    # Privileges required for DNS and firewall
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    
+    # Network mode - use host for best DNS performance
+    # Or use bridge with port mapping
+    network_mode: host
+    # Alternative: port mapping (if not using host network)
+    # ports:
+    #   - "53:53/tcp"
+    #   - "53:53/udp"
+    #   - "853:853/tcp"
+    #   - "9153:9153/tcp"
+    
+    # Persistent volumes
+    volumes:
+      - citadel-config:/etc/cytadela
+      - citadel-data:/var/lib/cytadela
+      - /etc/localtime:/etc/localtime:ro
+    
+    # Environment
+    environment:
+      - CYTADELA_MODE=docker
+      - CYTADELA_DEBUG=0
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "dig", "@127.0.0.1", "-p", "53", "cloudflare.com", "+short", "+timeout=5"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # Optional: Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: citadel-prometheus
+    profiles:
+      - monitoring
+    volumes:
+      - ./docs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: citadel-grafana
+    profiles:
+      - monitoring
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docs/grafana-dashboard.json:/var/lib/grafana/dashboards/citadel.json:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+volumes:
+  citadel-config:
+    driver: local
+  citadel-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
