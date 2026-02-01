@@ -1,6 +1,6 @@
 # Maintainer: Citadel Project <citadel@example.com>
 pkgname=citadel-dns
-pkgver=3.1.2
+pkgver=3.1.2.r0.g0e6b673
 pkgrel=1
 pkgdesc="Fortified DNS Infrastructure with DNSCrypt-Proxy and CoreDNS"
 arch=('any')
@@ -27,11 +27,16 @@ optdepends=(
     'prometheus: Metrics collection'
     'grafana: Metrics visualization'
 )
-source=("$pkgname-$pkgver.tar.gz::https://github.com/QguAr71/Cytadela/archive/v$pkgver.tar.gz")
+source=("git+https://github.com/QguAr71/Cytadela.git#branch=main")
 sha256sums=('SKIP')
 
+pkgver() {
+    cd "$srcdir/Cytadela"
+    git describe --long --tags | sed 's/\\-/.r/;s/-/./g'
+}
+
 package() {
-    cd "$srcdir/Cytadela-$pkgver"
+    cd "$srcdir/Cytadela"
 
     # Install main files
     install -dm755 "$pkgdir/opt/cytadela"
