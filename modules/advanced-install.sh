@@ -33,11 +33,11 @@ EOF
     sudo tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
 [Unit]
 Description=Citadel++ DNS Priority Timer
-Requires=citadel-dns-priority.service
 
 [Timer]
 OnCalendar=minutely
 Persistent=true
+Unit=citadel-dns-priority.service
 
 [Install]
 WantedBy=timers.target
