@@ -1222,6 +1222,12 @@ server_names = ['cloudflare', 'google']  # Fast, global
 timeout = 2000  # Reduce from 3000
 ```
 
+**4. Enable parallel racing:**
+
+```bash
+sudo ./citadel.sh install-doh-parallel
+```
+
 ### Problem: False positives
 
 #### Symptoms:

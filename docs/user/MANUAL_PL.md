@@ -17,9 +17,10 @@
 7. [Blokowanie reklam](#-blokowanie-reklam)
 8. [Bezpieczeństwo](#-bezpieczeństwo)
 9. [Monitorowanie](#-monitorowanie)
-10. [Rozwiązywanie problemów](#-rozwiązywanie-problemów)
-11. [Przykłady użycia](#-przykłady-użycia)
-12. [FAQ](#-faq-najczęściej-zadawane-pytania)
+10. [Tryb awaryjny](#-tryb-awaryjny)
+11. [Rozwiązywanie problemów](#-rozwiązywanie-problemów)
+12. [Przykłady użycia](#-przykłady-użycia)
+13. [FAQ](#-faq-najczęściej-zadawane-pytania)
 
 ---
 
