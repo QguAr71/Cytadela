@@ -102,8 +102,12 @@ Based on user observations about interface chaos and function duplication:
 - **Aurora Mystica:** Marked as IS-ONLY-A-CONCEPT
 
 #### Future Branding
-- **Note:** Project may be rebranded to "Heimdall-SysQ" in future releases
-- **Rationale:** Better metaphor (guardian of gateway), unique, tech-friendly
+- **Note:** Project will be rebranded to "Weles-SysQ" in v3.2 release
+- **Rationale:** Weles - Slavic god of magic, oaths, and guardian of wealth/prosperity
+  - Perfect metaphor: DNS as guardian/protector of internet gateway
+  - Unique Slavic mythology (Polish roots)
+  - No conflicts with existing DNS software
+  - Easy pronunciation and memorable name
 
 ---
 
