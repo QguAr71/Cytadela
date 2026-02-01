@@ -44,7 +44,29 @@
 
 ---
 
-## 📝 Documentation (Priority: Medium)
+## 🔧 Infrastructure & CI (Priority: High)
+
+### Documentation Standardization
+- [ ] Unify documentation: fix module count and key diagrams in `docs/CITADEL-STRUCTURE.md`
+- [ ] Add CI status badge to README.md
+- [ ] Add local testing instructions (if not already present)
+
+### CI/CD Pipeline Enhancement
+- [ ] Run smoke tests on every PR
+- [ ] Add optional integration tests job (manual or on-demand)
+- [ ] Review and fix ShellCheck warnings in workflow (ensure rules match code style)
+
+### Version Management
+- [ ] Standardize versioning format
+- [ ] Add release instructions (changelog + GitHub Releases workflow)
+
+### Future Architecture Planning
+- [ ] If roadmap includes Rust rewrite, add separate project/monorepo or `cytadela-core/` folder
+- [ ] Add clear milestone and build/run examples for Rust version
+
+---
+
+## 📚 Documentation (Priority: Medium)
 
 ### Function Documentation
 - [x] Add docstring to `panic_bypass()` in `modules/emergency.sh`
@@ -174,4 +196,4 @@
 - Use existing patterns
 - Test changes locally
 
-**Last Updated:** 2026-01-31
+**Last Updated:** 2026-02-01
