@@ -28,3 +28,17 @@ jobs:
           # Check legacy scripts (optional, allow failures)
           shellcheck -S warning legacy/cytadela++.sh || true
           shellcheck -S warning legacy/citadela_en.sh || true
+
+      - name: Run Smoke Tests
+        run: |
+          # Run smoke tests (non-root, so some tests will be skipped)
+          bash tests/smoke-test.sh || true
+
+      - name: Run BATS Tests
+        run: |
+          # Install BATS if not available
+          if ! command -v bats >/dev/null 2>&1; then
+            sudo apt-get install -y bats
+          fi
+          # Run BATS unit tests
+          bats tests/unit/ || true

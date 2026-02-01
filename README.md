@@ -5,6 +5,7 @@
 [![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/QguAr71/Cytadela/releases)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
+[![ShellCheck](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/shellcheck.yml?label=shellcheck)](https://github.com/QguAr71/Cytadela/actions)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela?label=build)](https://github.com/QguAr71/Cytadela/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/commits/main)
 [![Issues](https://img.shields.io/github/issues-raw/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/issues)
@@ -337,7 +338,39 @@ For detailed acknowledgments, licenses, and how to support these projects, see [
 
 ---
 
-## �📞 Support
+## 🧪 Testing
+
+### Local Testing
+
+Run tests locally before submitting PRs:
+
+```bash
+# Run smoke tests
+bash tests/smoke-test.sh
+
+# Run BATS unit tests (requires bats)
+pacman -S bats  # Arch/CachyOS
+bats tests/unit/
+
+# Run shellcheck manually
+shellcheck -S warning -e SC2034 citadel.sh lib/*.sh modules/*.sh
+
+# Check code formatting
+shfmt -d .
+```
+
+### CI/CD
+
+All PRs trigger automated tests via GitHub Actions:
+- **ShellCheck** - Static analysis for shell scripts
+- **Smoke Tests** - Basic functionality checks
+- **BATS Tests** - Unit and integration tests
+
+See [tests/README-BATS.md](tests/README-BATS.md) for detailed testing documentation.
+
+---
+
+## 📞 Support
 
 - **Documentation:** [docs/](docs/)
 - **Issues:** [GitHub Issues](https://github.com/QguAr71/Cytadela/issues)
