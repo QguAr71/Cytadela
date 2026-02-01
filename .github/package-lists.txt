@@ -1,0 +1,15 @@
+# Package list for CI cache key
+# Update this file when package dependencies change
+
+# Ubuntu packages
+shellcheck
+bats
+bats-assert
+bats-file
+bats-support
+
+# Arch packages (for integration tests)
+bats
+bats-assert
+bats-file
+bats-support

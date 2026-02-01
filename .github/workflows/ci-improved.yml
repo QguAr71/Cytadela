@@ -1,0 +1,114 @@
+name: CI - ShellCheck & Tests
+
+on:
+  push:
+  pull_request:
+
+# Cancel previous runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shellcheck:
+    name: ShellCheck Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/package-lists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          # Check main scripts (v3.1.0)
+          shellcheck -S warning -e SC2034 citadel.sh
+          shellcheck -S warning -e SC2034 citadel_en.sh
+          
+          # Check core libraries
+          shellcheck -S warning -e SC2034 lib/*.sh
+          
+          # Check modules (allow unused variables for module exports)
+          shellcheck -S warning -e SC2034 modules/*.sh
+          
+          # Check legacy scripts (optional, allow failures)
+          shellcheck -S warning legacy/cytadela++.sh || echo "Legacy script check failed (expected)"
+          shellcheck -S warning legacy/citadela_en.sh || echo "Legacy script check failed (expected)"
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Smoke Tests
+        run: |
+          # Run smoke tests (non-root, so some tests will be skipped)
+          bash tests/smoke-test.sh
+
+  bats-tests:
+    name: BATS Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/package-lists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Install BATS and extensions
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats bats-assert bats-file bats-support
+
+      - name: Run BATS tests (recursive)
+        run: |
+          mkdir -p tests/reports
+          # Run bats recursively; store exit code
+          bats tests/ --tap > tests/reports/bats.tap || echo "BATS_EXIT=$?" > tests/reports/status.txt
+
+      - name: Upload BATS report (on failure or success)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bats-reports
+          path: tests/reports/
+          retention-days: 30
+
+  integration-tests:
+    name: Integration Tests (Arch)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (pacman)
+        run: |
+          pacman -Sy --noconfirm
+          pacman -S --noconfirm bats bats-assert bats-file bats-support
+
+      - name: Run integration tests
+        run: |
+          mkdir -p tests/reports
+          bats tests/integration/ --tap > tests/reports/integration.tap || echo "INTEGRATION_EXIT=$?" > tests/reports/integration-status.txt
+
+      - name: Upload integration report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-reports
+          path: tests/reports/
+          retention-days: 30

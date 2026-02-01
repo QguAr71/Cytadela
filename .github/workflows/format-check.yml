@@ -1,0 +1,47 @@
+name: CI - Code Formatting
+
+on:
+  push:
+  pull_request:
+
+# Cancel previous runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shfmt:
+    name: Shell Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache shfmt binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/bin/shfmt
+          key: ${{ runner.os }}-shfmt-v3.8.0
+          restore-keys: |
+            ${{ runner.os }}-shfmt-
+
+      - name: Install shfmt (if missing)
+        run: |
+          mkdir -p ~/.local/bin
+          if [ ! -x "$HOME/.local/bin/shfmt" ]; then
+            wget -qO /tmp/shfmt https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_amd64
+            chmod +x /tmp/shfmt
+            mv /tmp/shfmt ~/.local/bin/shfmt
+          fi
+        env:
+          PATH: ${{ env.PATH }}:$HOME/.local/bin
+
+      - name: Check code formatting
+        run: |
+          # Check formatting (will fail if files need formatting)
+          shfmt -d .
+
+      - name: Show formatting differences (if any)
+        if: failure()
+        run: |
+          echo "Files that need formatting:"
+          shfmt -d . || true
