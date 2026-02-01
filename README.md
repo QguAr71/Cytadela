@@ -48,7 +48,7 @@ Citadel supports **7 languages** with full translations:
 - **Modules** - Planned for v3.2 (adblock, diagnostics, help)
 - **Error logs and reports** - Planned for v3.2
 
-> **Note:** Currently, only the install-wizard has full 7-language support. Complete i18n for all modules and CLI commands is planned for v3.2 (Q2 2026).
+> **Note:** Currently, only **PL and EN** have full documentation. Other 5 languages (DE, ES, IT, FR, RU) are available only in install-wizard interface. Complete i18n for all modules, CLI commands, and documentation is planned for **v3.2 (Weles-SysQ release)**.
 
 ---
 
@@ -64,7 +64,7 @@ Citadel supports **7 languages** with full translations:
 - 🚨 **Emergency Recovery** - Panic bypass mode
 - 📦 **Modular Architecture** - 32 independent modules
 - 🔄 **Auto-Update** - Automatic blocklist updates
-- 🌐 **7 Languages** - Full support (PL, EN, DE, ES, IT, FR, RU)
+- 🌐 **Multi-Language** - Full docs (PL, EN) + 5 languages in wizard (DE, ES, IT, FR, RU)
 - 🖥️ **Interactive Installer** - Graphical wizard (whiptail)
 
 ---
