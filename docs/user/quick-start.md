@@ -24,10 +24,10 @@ sudo ./citadel.sh check-deps
 sudo ./citadel.sh install-wizard
 ```
 - Interactive GUI with whiptail
-- 7 languages support (auto-detect from $LANG) ✅
+- 7 languages support in wizard (auto-detect from $LANG): PL, EN, DE, ES, IT, FR, RU
 - Step-by-step guidance
 
-> **Note:** Full 7-language support is currently available only in install-wizard. Complete i18n for all CLI commands and modules is planned for v3.2 (Q2 2026).
+> **Note:** Currently only **PL and EN** have full documentation (MANUAL_PL.md, MANUAL_EN.md). Other 5 languages (DE, ES, IT, FR, RU) are available only in install-wizard interface. Complete i18n for all CLI commands, modules, and documentation is planned for **v3.2** (Weles-SysQ release).
 
 **Option B: CLI for Hardcore Users**
 ```bash
