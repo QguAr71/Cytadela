@@ -192,7 +192,7 @@ prometheus_export() {
 }
 
 prometheus_serve_start() {
-    prometheus_collect
+    prometheus_export
     prometheus_serve
 }
 
