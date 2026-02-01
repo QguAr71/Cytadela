@@ -266,3 +266,33 @@ restore_system() {
 
     log_success "System przywrócony do stanu przed Citadel++"
 }
+
+restore_system_default() {
+    log_section "MODULE 4: System Restore (Default)"
+    
+    log_warning "Ta opcja przywraca FABRYCZNĄ konfigurację systemd-resolved"
+    log_warning "Ignoruje backup użytkownika - użyj 'restore-system' aby przywrócić backup"
+    
+    if [[ -t 0 && -t 1 ]]; then
+        echo -n "Kontynuować przywracanie domyślnej konfiguracji? [y/N]: "
+        read -r answer
+        [[ ! "$answer" =~ ^[Yy]$ ]] && { log_info "Anulowano"; return 0; }
+    fi
+    
+    log_info "Przywracanie systemd-resolved (domyślna konfiguracja)..."
+    systemctl unmask systemd-resolved 2>/dev/null || true
+    systemctl enable systemd-resolved 2>/dev/null || true
+    systemctl start systemd-resolved 2>/dev/null || true
+    
+    log_info "Usuwanie konfiguracji NetworkManager..."
+    rm -f /etc/NetworkManager/conf.d/citadel-dns.conf
+    systemctl restart NetworkManager 2>/dev/null || true
+    
+    log_info "Przywracanie /etc/resolv.conf (domyślny symlink)..."
+    chattr -i /etc/resolv.conf 2>/dev/null || true
+    rm -f /etc/resolv.conf
+    ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf 2>/dev/null || true
+    
+    log_success "System przywrócony do DOMYŚLNEJ konfiguracji systemd-resolved"
+    log_info "Backup użytkownika (jeśli istnieje) pozostał w ${CYTADELA_STATE_DIR}/backup/"
+}

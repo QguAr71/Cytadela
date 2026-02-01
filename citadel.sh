@@ -214,7 +214,7 @@ case "$ACTION" in
         install_coredns
         ;;
 
-    install-nftables|firewall-safe|firewall-strict|configure-system|restore-system)
+    install-nftables|firewall-safe|firewall-strict|configure-system|restore-system|restore-system-default)
         load_module "install-nftables"
         call_fn "$ACTION"
         ;;
