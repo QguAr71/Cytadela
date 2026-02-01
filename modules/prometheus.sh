@@ -81,10 +81,10 @@ _collect_dns_metrics() {
     local core_metrics
 
     if core_metrics=$(curl -s "$metrics_url" 2>/dev/null); then
-        # Cache metrics
+        # Parse cache hits/misses
         local cache_hits cache_misses
-        cache_hits=$(echo "$core_metrics" | grep '^coredns_cache_hits_total' | awk '{sum+=$2} END {print sum+0}')
-        cache_misses=$(echo "$core_metrics" | grep '^coredns_cache_misses_total' | awk '{sum+=$2} END {print sum+0}')
+        cache_hits=$(echo "$core_metrics" | grep '^coredns_cache_hits_total' 2>/dev/null | awk '{sum+=$2} END {print sum+0}' || echo 0)
+        cache_misses=$(echo "$core_metrics" | grep '^coredns_cache_misses_total' 2>/dev/null | awk '{sum+=$2} END {print sum+0}' || echo 0)
 
         echo ""
         echo "# HELP citadel_dns_cache_hits_total Total DNS cache hits"
@@ -98,9 +98,9 @@ _collect_dns_metrics() {
 
         # Request types
         local req_a req_aaaa req_ptr
-        req_a=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="A"' | awk '{sum+=$2} END {print sum+0}')
-        req_aaaa=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="AAAA"' | awk '{sum+=$2} END {print sum+0}')
-        req_ptr=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="PTR"' | awk '{sum+=$2} END {print sum+0}')
+        req_a=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="A"' 2>/dev/null | awk '{sum+=$2} END {print sum+0}' || echo 0)
+        req_aaaa=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="AAAA"' 2>/dev/null | awk '{sum+=$2} END {print sum+0}' || echo 0)
+        req_ptr=$(echo "$core_metrics" | grep 'coredns_dns_requests_total.*type="PTR"' 2>/dev/null | awk '{sum+=$2} END {print sum+0}' || echo 0)
 
         echo ""
         echo "# HELP citadel_dns_requests_total Total DNS requests by type"
