@@ -4,6 +4,16 @@
 # ║  DNS-based adblocking with allowlist support                              ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Rebuild combined blocklist from custom + blocklist - allowlist
+# Usage: adblock_rebuild
+# Args: None
+# Returns:
+#   0: Success (blocklist rebuilt)
+#   1: Failed (file permissions or errors)
+# Side effects:
+#   - Creates /etc/coredns/zones/combined.hosts
+#   - Filters out allowlist entries
+#   - Sets proper permissions (root:coredns, 0640)
 adblock_rebuild() {
     local custom="/etc/coredns/zones/custom.hosts"
     local allowlist="/etc/coredns/zones/allowlist.txt"
@@ -105,6 +115,16 @@ adblock_query() {
     dig +short @127.0.0.1 "$domain" 2>/dev/null || true
 }
 
+# Add domain to custom blocklist
+# Usage: adblock_add <domain>
+# Args:
+#   domain: Domain to block (required)
+# Returns:
+#   0: Success (domain added)
+#   1: Failed (invalid domain, already exists, or file error)
+# Side effects:
+#   - Appends to /etc/coredns/zones/custom.hosts
+#   - Triggers adblock_rebuild and CoreDNS reload
 adblock_add() {
     local domain="$1"
 
@@ -145,6 +165,16 @@ adblock_add() {
     adblock_reload
 }
 
+# Remove domain from custom blocklist
+# Usage: adblock_remove <domain>
+# Args:
+#   domain: Domain to unblock (required)
+# Returns:
+#   0: Success (domain removed or not found)
+#   1: Failed (invalid domain)
+# Side effects:
+#   - Removes from /etc/coredns/zones/custom.hosts
+#   - Triggers adblock_rebuild and CoreDNS reload
 adblock_remove() {
     local domain="$1"
     if [[ -z "$domain" ]]; then

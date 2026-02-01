@@ -8,6 +8,18 @@ PANIC_STATE_FILE="${CYTADELA_STATE_DIR}/panic.state"
 PANIC_BACKUP_RESOLV="${CYTADELA_STATE_DIR}/resolv.conf.pre-panic"
 PANIC_ROLLBACK_TIMER=300
 
+# Disable DNS protection temporarily with auto-rollback
+# Usage: panic_bypass [seconds]
+# Args:
+#   seconds: Optional rollback time (default: 300)
+# Returns:
+#   0: Success (panic mode activated)
+#   1: Failed (already in panic, rate limited, or cancelled)
+# Side effects:
+#   - Creates panic.state file
+#   - Flushes nftables rules
+#   - Backup/restore resolv.conf
+#   - Starts rollback timer
 panic_bypass() {
     log_section "🚨 PANIC BYPASS - Emergency Recovery Mode"
 
@@ -74,6 +86,17 @@ EOF
     log_info "Background rollback timer started (PID: $!)"
 }
 
+# Restore DNS protection from panic mode
+# Usage: panic_restore
+# Args: None
+# Returns:
+#   0: Success (protection restored or not in panic)
+#   1: Failed (restore failed)
+# Side effects:
+#   - Removes panic.state file
+#   - Restores nftables rules
+#   - Restores original resolv.conf
+#   - Kills rollback timer
 panic_restore() {
     log_section "🔄 PANIC RESTORE"
 
@@ -142,6 +165,15 @@ emergency_restore() {
     log_success "Normal operation restored"
 }
 
+# Block all DNS except localhost (emergency kill-switch)
+# Usage: killswitch_on
+# Args: None
+# Returns:
+#   0: Success (kill-switch activated)
+#   1: Failed (nftables error)
+# Side effects:
+#   - Adds nftables rules to drop external DNS
+#   - Only allows 127.0.0.0/8 and ::1 DNS
 emergency_killswitch_on() {
     log_section "🔒 KILL-SWITCH ON"
     log_warning "This will block all DNS except localhost!"
@@ -152,6 +184,15 @@ emergency_killswitch_on() {
     log_success "Kill-switch activated"
 }
 
+# Disable emergency kill-switch (restore DNS access)
+# Usage: killswitch_off
+# Args: None
+# Returns:
+#   0: Success (kill-switch deactivated)
+#   1: Failed (nftables error)
+# Side effects:
+#   - Removes nftables DNS drop rules
+#   - Restores normal DNS access
 emergency_killswitch_off() {
     log_section "🔓 KILL-SWITCH OFF"
 

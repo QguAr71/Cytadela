@@ -195,7 +195,16 @@ smart_ipv6_detection() {
     fi
 }
 
-# Alias for compatibility with cytadela++.new.sh
+# Smart IPv6 detection and auto-reconfiguration
+# Usage: smart_ipv6
+# Args: None
+# Returns:
+#   0: Success (IPv6 working or fixed)
+#   1: Failed (no interface or IPv6 still broken)
+# Side effects:
+#   - Tests IPv6 connectivity
+#   - Runs ipv6_deep_reset if needed
+#   - Shows status after fixes
 smart_ipv6() {
     smart_ipv6_detection
 }

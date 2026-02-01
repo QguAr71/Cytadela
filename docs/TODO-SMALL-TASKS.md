@@ -47,16 +47,16 @@
 ## 📝 Documentation (Priority: Medium)
 
 ### Function Documentation
-- [ ] Add docstring to `panic_bypass()` in `modules/emergency.sh`
-- [ ] Add docstring to `panic_restore()` in `modules/emergency.sh`
-- [ ] Add docstring to `killswitch_on()` in `modules/emergency.sh`
-- [ ] Add docstring to `killswitch_off()` in `modules/emergency.sh`
-- [ ] Add docstring to `adblock_add()` in `modules/adblock.sh`
-- [ ] Add docstring to `adblock_remove()` in `modules/adblock.sh`
-- [ ] Add docstring to `adblock_rebuild()` in `modules/adblock.sh`
-- [ ] Add docstring to `ghost_check()` in `modules/ghost-check.sh`
-- [ ] Add docstring to `smart_ipv6()` in `modules/ipv6.sh`
-- [ ] Add docstring to `supply_chain_verify()` in `modules/supply-chain.sh`
+- [x] Add docstring to `panic_bypass()` in `modules/emergency.sh`
+- [x] Add docstring to `panic_restore()` in `modules/emergency.sh`
+- [x] Add docstring to `killswitch_on()` in `modules/emergency.sh`
+- [x] Add docstring to `killswitch_off()` in `modules/emergency.sh`
+- [x] Add docstring to `adblock_add()` in `modules/adblock.sh`
+- [x] Add docstring to `adblock_remove()` in `modules/adblock.sh`
+- [x] Add docstring to `adblock_rebuild()` in `modules/adblock.sh`
+- [x] Add docstring to `ghost_check()` in `modules/ghost-check.sh`
+- [x] Add docstring to `smart_ipv6()` in `modules/ipv6.sh`
+- [x] Add docstring to `supply_chain_verify()` in `modules/supply-chain.sh`
 
 ### README Updates
 - [ ] Update badges in README.md (version, build status)

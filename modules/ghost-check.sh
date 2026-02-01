@@ -6,6 +6,16 @@
 
 GHOST_ALLOWED_PORTS=(22 53 5353 9153)
 
+# Audit firewall and port exposure (ghost ports)
+# Usage: ghost_check
+# Args: None
+# Returns:
+#   0: Success (audit completed)
+#   1: Failed (ss command error)
+# Side effects:
+#   - Scans listening sockets
+#   - Warns about 0.0.0.0/:: bindings
+#   - Shows process information
 ghost_check() {
     log_section "👻 GHOST-CHECK: Port Exposure Audit"
 

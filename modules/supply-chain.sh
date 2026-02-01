@@ -114,6 +114,16 @@ supply_chain_init() {
     log_info "Note: Blocklist hashes change frequently - use for audit, not strict enforcement"
 }
 
+# Verify all files against checksums manifest
+# Usage: supply_chain_verify
+# Args: None
+# Returns:
+#   0: Success (all verified or no manifest)
+#   1: Failed (checksum mismatches found)
+# Side effects:
+#   - Reads /etc/cytadela/checksums.sha256
+#   - Reports OK/FAIL for each file
+#   - Counts and reports total errors
 supply_chain_verify() {
     log_section "🔐 SUPPLY-CHAIN VERIFY"
 
