@@ -65,9 +65,9 @@
 - [ ] Add "Quick Links" section to README
 
 ### Examples
-- [ ] Create `examples/basic-setup.sh` - Simple installation example
-- [ ] Create `examples/advanced-setup.sh` - Advanced configuration example
-- [ ] Create `examples/emergency-recovery.sh` - Emergency procedures example
+- [x] Create `examples/basic-setup.sh` - Simple installation example
+- [x] Create `examples/advanced-setup.sh` - Advanced configuration example
+- [x] Create `examples/emergency-recovery.sh` - Emergency procedures example
 
 ---
 
