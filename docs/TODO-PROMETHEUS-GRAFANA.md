@@ -25,11 +25,23 @@ Need to create comprehensive manual for:
 - Port configuration (9100)
 - Required dependencies (netcat)
 
-### Known Issues to Document
-- Port conflicts (9100 occupied)
-- "expected a valid start token" error
-- Connection refused errors
-- Docker vs native installation
+### Required Dependencies to Document
+
+**For Prometheus Metrics Server:**
+- `openbsd-netcat` (nc) - for HTTP server on port 9100
+- `python3` - fallback HTTP server option
+
+**For Benchmarks:**
+- `dnsperf` - performance testing (dnsperf package)
+- Alternative: `bind-tools` (for dig command)
+
+**For Grafana:**
+- `grafana` (AUR or pacman) OR Docker
+- `prometheus` - metrics collection and storage
+
+**Optional:**
+- `curl` - testing endpoints
+- `lsof` or `ss` - checking port usage
 
 ### Quick Start Options
 1. Docker Compose (easiest)
