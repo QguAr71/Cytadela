@@ -19,13 +19,19 @@ sudo ./citadel.sh check-deps
 
 ### Step 3: Choose Installation Mode
 
-**Option A: Graphical Wizard (Recommended)**
+**Option A: Graphical Setup Wizard (Recommended)**
 ```bash
-sudo ./citadel.sh install-wizard
+sudo ./citadel.sh setup-wizard
 ```
 - Interactive GUI with whiptail
-- 7 languages support in wizard (auto-detect from $LANG): PL, EN, DE, ES, IT, FR, RU
-- Step-by-step guidance
+- **Auto-detects** if Citadel is installed
+- **Install mode**: Full installation with checklist
+- **Manage mode**: Reinstall, uninstall, or modify (when installed)
+- 7 languages support (auto-detect from $LANG): PL, EN, DE, ES, IT, FR, RU
+
+> **Tip:** Use `setup-wizard` for both fresh install and uninstall - it automatically detects the system state!
+
+**Legacy:** `install-wizard` still works for fresh installs only.
 
 > **Note:** Currently only **PL and EN** have full documentation (MANUAL_PL.md, MANUAL_EN.md). Other 5 languages (DE, ES, IT, FR, RU) are available only in install-wizard interface. Complete i18n for all CLI commands, modules, and documentation is planned for **v3.2** (Weles-SysQ release).
 
