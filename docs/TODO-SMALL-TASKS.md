@@ -196,4 +196,44 @@
 - Use existing patterns
 - Test changes locally
 
-**Last Updated:** 2026-02-01
+---
+
+## 📋 Next Session Tasks (2026-02-02)
+
+### Documentation Review & Updates
+- [ ] Review all documentation for accuracy after recent changes
+- [ ] Update README.md with final feature list (29 modules not 32)
+- [ ] Update command references (new: prometheus-*, benchmark-*)
+- [ ] Create comprehensive Prometheus/Grafana setup manual
+- [ ] Document all required dependencies (netcat, dnsperf, python3)
+- [ ] Update Docker documentation with tested procedures
+- [ ] Review and fix CHANGELOG.md if needed
+- [ ] Update CITADEL-STRUCTURE.md with prometheus/benchmark modules
+
+### Testing New Features
+- [ ] Test prometheus-export command
+- [ ] Test prometheus-status command  
+- [ ] Test prometheus-serve-start (fix netcat issues)
+- [ ] Test benchmark-cache command
+- [ ] Test benchmark-blocklist command
+- [ ] Test benchmark-dns (with dnsperf installed)
+- [ ] Test benchmark-all comprehensive suite
+- [ ] Test benchmark-show-report after successful run
+
+### Packaging & Distribution
+- [ ] Test Docker build locally
+- [ ] Test docker-compose up with monitoring profile
+- [ ] Verify PKGBUILD works with git source
+- [ ] Update packaging documentation after testing
+
+### Known Issues to Fix
+- [ ] Fix prometheus-serve-start reliability (port conflicts)
+- [ ] Fix benchmark_all recursion issue properly
+- [ ] Ensure all new commands work in citadel.sh
+- [ ] Verify module-loader.sh has all new mappings
+
+---
+
+**Last Updated:** 2026-02-02
+
+**Priority:** High - Documentation and testing needed before v3.1.2 release
