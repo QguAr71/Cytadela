@@ -79,7 +79,7 @@ config_backup() {
 Cytadela++ Backup
 Created: $(date -Iseconds)
 Hostname: $(hostname)
-Version: v3.1.0
+Version: 3.1.1
 EOF
 
     # Create tarball
