@@ -29,9 +29,8 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          # Check main scripts (v3.1.0)
+          # Check main script
           shellcheck -S warning -e SC2034 citadel.sh
-          shellcheck -S warning -e SC2034 citadel_en.sh
           
           # Check core libraries
           shellcheck -S warning -e SC2034 lib/*.sh

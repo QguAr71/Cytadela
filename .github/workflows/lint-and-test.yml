@@ -20,7 +20,6 @@ jobs:
       - name: Run ShellCheck on main scripts
         run: |
           shellcheck -x -S warning citadel.sh || true
-          shellcheck -x -S warning citadel_en.sh || true
 
       - name: Run ShellCheck on libraries
         run: |
@@ -50,7 +49,7 @@ jobs:
 
       - name: Check formatting (dry-run)
         run: |
-          shfmt -d -i 4 -ci citadel.sh citadel_en.sh || true
+          shfmt -d -i 4 -ci citadel.sh || true
           shfmt -d -i 4 -ci lib/*.sh || true
           shfmt -d -i 4 -ci modules/*.sh || true
         continue-on-error: true
@@ -92,7 +91,7 @@ jobs:
       - name: Check for set -euo pipefail
         run: |
           echo "Checking for bash strict mode..."
-          for file in citadel.sh citadel_en.sh lib/*.sh modules/*.sh; do
+          for file in citadel.sh lib/*.sh modules/*.sh; do
             if [ -f "$file" ]; then
               if ! grep -q "set -euo pipefail\|set -e.*-u.*-o pipefail" "$file"; then
                 echo "Warning: $file missing 'set -euo pipefail'"
