@@ -43,7 +43,6 @@ check_dependencies() {
 
     # Monitoring tools
     check_dep "notify-send" "optional" "Desktop notifications" "sudo pacman -S libnotify" || ((optional_missing++))
-    check_dep "ping6" "optional" "IPv6 connectivity test" "sudo pacman -S iputils" || ((optional_missing++))
     check_dep "htop" "optional" "Interactive process viewer" "sudo pacman -S htop" || ((optional_missing++))
     check_dep "watch" "optional" "Periodic command execution" "sudo pacman -S procps-ng" || ((optional_missing++))
 
@@ -258,7 +257,6 @@ Optional:
   - lsof           List open files
   - fuser          Find processes using files
   - netstat        Network statistics
-  - ping6          IPv6 connectivity test
 
 EXAMPLES:
   sudo cytadela++ check-deps           # Check dependencies

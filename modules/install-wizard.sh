@@ -294,7 +294,7 @@ fullscale=brightgreen,black
     local optional_deps=()
     local dep_cmd
     
-    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck git htop watch lsof fuser netstat nmcli networkctl ping6; do
+    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck git htop watch lsof fuser netstat nmcli networkctl; do
         if ! command -v "$dep_cmd" &>/dev/null; then
             optional_deps+=("$dep_cmd")
         fi
@@ -320,7 +320,6 @@ fullscale=brightgreen,black
         log_info "  netstat - Network statistics"
         log_info "  nmcli - NetworkManager CLI"
         log_info "  networkctl - systemd-networkd CLI"
-        log_info "  ping6 - IPv6 connectivity test"
         echo ""
         read -rp "Install optional dependencies now? [y/N]: " deps_answer
         if [[ "$deps_answer" =~ ^[Yy]$ ]]; then

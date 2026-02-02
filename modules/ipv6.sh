@@ -191,7 +191,7 @@ smart_ipv6_detection() {
     }
 
     log_info "Testing IPv6 connectivity..."
-    if ping6 -c 3 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
+    if ping -6 -c 3 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
         log_success "IPv6 connectivity: OK"
     else
         log_warning "IPv6 connectivity: FAILED"
