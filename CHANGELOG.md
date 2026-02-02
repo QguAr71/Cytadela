@@ -59,6 +59,50 @@ All notable changes to this repository will be documented in this file.
 
 ## [3.1.2] - 2026-02-01 - MAINTENANCE RELEASE
 
+### Metrics & Monitoring
+- **NEW:** Prometheus metrics export module (`modules/prometheus.sh`)
+  - Service status, DNS resolution, cache metrics
+  - Blocklist statistics, firewall status, system load
+  - HTTP metrics server on port 9100
+- **NEW:** Grafana dashboard template (`docs/grafana-dashboard.json`)
+  - 8 panels: services, cache, DNS requests, blocklist, firewall, load, version
+- **NEW:** Performance benchmarks module (`modules/benchmark.sh`)
+  - DNS performance testing (dnsperf)
+  - Cache hit/miss ratio tests
+  - Blocklist lookup performance
+  - Comprehensive benchmark suite
+  - Historical tracking and comparison
+
+### Packaging & Distribution
+- **NEW:** Docker image (`Dockerfile`)
+  - Based on Arch Linux for maximum compatibility
+  - Multi-service compose with optional Prometheus/Grafana
+  - Health checks and persistent volumes
+  - Host networking for optimal DNS performance
+- **NEW:** Docker Compose (`docker-compose.yml`)
+  - Basic DNS service profile
+  - Monitoring profile with Prometheus + Grafana
+  - Persistent volumes for config and data
+- **NEW:** AUR Package (`PKGBUILD`)
+  - Arch Linux package support
+  - Automatic dependency resolution
+  - systemd integration ready
+- **NEW:** Docker documentation (`docs/DOCKER.md`)
+  - Quick start guide
+  - Deployment instructions
+  - Volume and port reference
+
+### Statistics
+- **Commits:** 7 in this release
+- **Files Changed:** 25
+- **Lines Added:** +2,000
+- **Lines Removed:** -400
+- **Net Change:** +1,600 lines
+
+---
+
+## [3.1.1] - 2026-02-01 - MAINTENANCE RELEASE
+
 ### Critical Bug Fixes
 - Fixed `coredns-blocklist.timer` non-existent unit causing install-all failure
 - Fixed `install-wizard` module key mismatch (supply-chain, nft-debug with spaces)
@@ -97,45 +141,12 @@ All notable changes to this repository will be documented in this file.
 - **UPDATED:** Fixed CITADEL-STRUCTURE.md module count and diagrams
 - **UPDATED:** Added ShellCheck CI badge to README
 
-### Metrics & Monitoring
-- **NEW:** Prometheus metrics export module (`modules/prometheus.sh`)
-  - Service status, DNS resolution, cache metrics
-  - Blocklist statistics, firewall status, system load
-  - HTTP metrics server on port 9100
-- **NEW:** Grafana dashboard template (`docs/grafana-dashboard.json`)
-  - 8 panels: services, cache, DNS requests, blocklist, firewall, load, version
-- **NEW:** Performance benchmarks module (`modules/benchmark.sh`)
-  - DNS performance testing (dnsperf)
-  - Cache hit/miss ratio tests
-  - Blocklist lookup performance
-  - Comprehensive benchmark suite
-  - Historical tracking and comparison
-
-### Packaging & Distribution
-- **NEW:** Docker image (`Dockerfile`)
-  - Based on Arch Linux for maximum compatibility
-  - Multi-service compose with optional Prometheus/Grafana
-  - Health checks and persistent volumes
-  - Host networking for optimal DNS performance
-- **NEW:** Docker Compose (`docker-compose.yml`)
-  - Basic DNS service profile
-  - Monitoring profile with Prometheus + Grafana
-  - Persistent volumes for config and data
-- **NEW:** AUR Package (`PKGBUILD`)
-  - Arch Linux package support
-  - Automatic dependency resolution
-  - systemd integration ready
-- **NEW:** Docker documentation (`docs/DOCKER.md`)
-  - Quick start guide
-  - Deployment instructions
-  - Volume and port reference
-
 ### Statistics
-- **Commits:** 14 in this release
-- **Files Changed:** 80
-- **Lines Added:** +4,800
-- **Lines Removed:** -1,200
-- **Net Change:** +3,600 lines
+- **Commits:** 13 in this release
+- **Files Changed:** 55
+- **Lines Added:** +2,800
+- **Lines Removed:** -900
+- **Net Change:** +1,900 lines
 
 ---
 
