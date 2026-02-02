@@ -66,12 +66,15 @@ load_module_for_command() {
     case "$cmd" in
         discover)
             load_module "discover"
+            return $?
             ;;
         verify | diagnostics | test-all)
             load_module "diagnostics"
+            return $?
             ;;
         install-all)
             load_module "install-all"
+            return $?
             ;;
         help | --help | -h)
             # No module needed for help

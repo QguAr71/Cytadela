@@ -190,20 +190,18 @@ check_dependencies_install() {
     echo ""
     log_info "Installing packages..."
 
+    local exit_code=0
     case "$pkg_manager" in
         pacman)
-            sudo pacman -S --needed --noconfirm "${packages[@]}"
+            sudo pacman -S --needed --noconfirm "${packages[@]}" || exit_code=$?
             ;;
         apt)
-            sudo apt update
-            sudo apt install -y "${packages[@]}"
+            sudo apt update && sudo apt install -y "${packages[@]}" || exit_code=$?
             ;;
         dnf)
-            sudo dnf install -y "${packages[@]}"
+            sudo dnf install -y "${packages[@]}" || exit_code=$?
             ;;
     esac
-
-    local exit_code=$?
 
     if [[ $exit_code -eq 0 ]]; then
         log_success "Dependencies installed successfully!"

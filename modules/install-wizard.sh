@@ -198,10 +198,16 @@ fullscale=brightgreen,black
         return 1
     fi
 
+    # Validate selection is not empty
+    if [[ -z "${selected// /}" ]]; then
+        log_warning "Nie wybrano żadnych modułów"
+        return 1
+    fi
+
     # Parse selection (remove quotes)
     local modules_to_install=()
     for module in $selected; do
-        modules_to_install+=("${module//\"/}")
+        [[ -n "$module" ]] && modules_to_install+=("${module//\"/}")
     done
 
     # Ensure required modules are included

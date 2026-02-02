@@ -45,7 +45,7 @@ panic_bypass() {
         read -r answer
         [[ ! "$answer" =~ ^[Yy]$ ]] && {
             log_info "Cancelled."
-            return 0
+            return 1
         }
     fi
 
