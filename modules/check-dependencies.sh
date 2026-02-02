@@ -10,13 +10,13 @@ if [[ -f "${CYTADELA_LIB}/dependencies.conf" ]]; then
 fi
 
 check_dependencies() {
-    log_section "🔍 CHECKING DEPENDENCIES"
+    log_section "🔍 ${T_CHECK_DEPS_TITLE:-CHECKING DEPENDENCIES}"
 
     local missing=0
     local optional_missing=0
 
     echo ""
-    echo "=== REQUIRED DEPENDENCIES ==="
+    echo "=== ${T_REQUIRED_DEPS:-REQUIRED DEPENDENCIES} ==="
     echo ""
 
     # Check all required dependencies from config
@@ -27,7 +27,7 @@ check_dependencies() {
     done
 
     echo ""
-    echo "=== OPTIONAL DEPENDENCIES ==="
+    echo "=== ${T_OPTIONAL_DEPS:-OPTIONAL DEPENDENCIES} ==="
     echo ""
 
     # Check all optional dependencies from config
@@ -37,29 +37,29 @@ check_dependencies() {
     done
 
     echo ""
-    echo "=== SUMMARY ==="
+    echo "=== ${T_SUMMARY:-SUMMARY} ==="
     echo ""
 
     if [[ $missing -eq 0 ]]; then
-        log_success "All required dependencies are installed! ✓"
+        log_success "${T_ALL_REQUIRED_OK:-All required dependencies are installed!} ✓"
     else
-        log_error "$missing required dependencies are missing!"
+        log_error "$missing ${T_REQUIRED_MISSING:-required dependencies are missing!}"
         echo ""
         echo "Install missing dependencies and run this check again."
         return 1
     fi
 
     if [[ $optional_missing -eq 0 ]]; then
-        log_success "All optional dependencies are installed! ✓"
+        log_success "${T_ALL_OPTIONAL_OK:-All optional dependencies are installed!} ✓"
     else
-        log_warning "$optional_missing optional dependencies are missing"
+        log_warning "$optional_missing ${T_OPTIONAL_MISSING:-optional dependencies are missing}"
         echo ""
-        echo "Optional dependencies enhance functionality but are not required."
+        echo "${T_OPTIONAL_INFO:-Optional dependencies enhance functionality but are not required.}"
         echo "Install them for full feature support."
     fi
 
     echo ""
-    log_info "Run 'sudo cytadela++ check-deps --install' to auto-install missing packages"
+    log_info "${T_INSTALL_HINT:-Run 'sudo cytadela++ check-deps --install' to auto-install missing packages}"
 
     return 0
 }
@@ -105,7 +105,7 @@ check_dep() {
 }
 
 check_dependencies_install() {
-    log_section "📦 AUTO-INSTALLING MISSING DEPENDENCIES"
+    log_section "📦 ${T_AUTO_INSTALL_TITLE:-AUTO-INSTALLING MISSING DEPENDENCIES}"
 
     # Detect package manager
     local pkg_manager=""
@@ -116,11 +116,11 @@ check_dependencies_install() {
     elif command -v dnf &>/dev/null; then
         pkg_manager="dnf"
     else
-        log_error "No supported package manager found (pacman/apt/dnf)"
+        log_error "${T_NO_PKG_MANAGER:-No supported package manager found (pacman/apt/dnf)}"
         return 1
     fi
 
-    log_info "Detected package manager: $pkg_manager"
+    log_info "${T_PKG_MANAGER_DETECTED:-Detected package manager:} $pkg_manager"
     echo ""
 
     # Build list of missing packages from config
@@ -153,22 +153,22 @@ check_dependencies_install() {
     done
 
     if [[ ${#packages[@]} -eq 0 ]]; then
-        log_success "All dependencies are already installed!"
+        log_success "${T_ALL_REQUIRED_OK:-All dependencies are already installed!}"
         return 0
     fi
 
-    log_info "Missing packages: ${packages[*]}"
+    log_info "${T_MISSING_PACKAGES:-Missing packages:} ${packages[*]}"
     echo ""
-    echo -n "Install missing packages? [y/N]: "
+    echo -n "${T_INSTALL_PROMPT:-Install missing packages? [y/N]: }"
     read -r answer
 
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-        log_warning "Installation cancelled"
+        log_warning "${T_INSTALL_CANCELLED:-Installation cancelled}"
         return 1
     fi
 
     echo ""
-    log_info "Installing packages..."
+    log_info "${T_INSTALLING_PACKAGES:-Installing packages...}"
 
     local exit_code=0
     case "$pkg_manager" in
@@ -184,11 +184,11 @@ check_dependencies_install() {
     esac
 
     if [[ $exit_code -eq 0 ]]; then
-        log_success "Dependencies installed successfully!"
+        log_success "${T_INSTALL_SUCCESS:-Dependencies installed successfully!}"
         echo ""
-        log_info "Run 'sudo cytadela++ check-deps' to verify installation"
+        log_info "${T_VERIFY_HINT:-Run 'sudo cytadela++ check-deps' to verify installation}"
     else
-        log_error "Installation failed with exit code $exit_code"
+        log_error "${T_INSTALL_FAILED:-Installation failed with exit code} $exit_code"
         return 1
     fi
 }
@@ -213,27 +213,27 @@ check_dependencies_help() {
     done
 
     cat <<EOF
-🔍 CHECK-DEPS - Dependency Checker
+🔍 ${T_CHECK_DEPS_TITLE:-CHECK-DEPS} - ${T_CHECK_DEPS_DESC:-Dependency Checker}
 
-USAGE:
+${T_USAGE:-USAGE}:
   sudo cytadela++ check-deps [--install]
 
-DESCRIPTION:
-  Checks if all required and optional dependencies are installed.
-  Shows version information where available.
+${T_DESCRIPTION:-DESCRIPTION}:
+  ${T_CHECK_DEPS_LONG_DESC:-Checks if all required and optional dependencies are installed.}
+  ${T_SHOWS_VERSION:-Shows version information where available.}
 
-OPTIONS:
-  --install    Auto-install missing dependencies
+${T_OPTIONS:-OPTIONS}:
+  --install    ${T_AUTO_INSTALL_DESC:-Auto-install missing dependencies}
 
-DEPENDENCIES CHECKED:
+${T_DEPS_CHECKED:-DEPENDENCIES CHECKED}:
 
-Required:
+${T_REQUIRED_DEPS:-Required}:
 ${req_list}
-Optional (most important):
+${T_OPTIONAL_DEPS:-Optional} (${T_MOST_IMPORTANT:-most important}):
 ${opt_list}
-EXAMPLES:
-  sudo cytadela++ check-deps           # Check dependencies
-  sudo cytadela++ check-deps --install # Auto-install missing
+${T_EXAMPLES:-EXAMPLES}:
+  sudo cytadela++ check-deps           # ${T_CHECK_ONLY:-Check dependencies}
+  sudo cytadela++ check-deps --install # ${T_AUTO_INSTALL_CMD:-Auto-install missing}
 
 EOF
 }
