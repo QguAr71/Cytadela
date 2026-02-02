@@ -103,3 +103,12 @@ export T_MANUAL_EDIT="Lub edytuj ręcznie"
 export T_ADD_NAMESERVER="i dodaj"
 export T_CONTINUE_ANYWAY="Kontynuować deinstalację pomimo problemów z DNS? (yes/no): "
 export T_UNINSTALL_CANCELLED_DNS="Deinstalacja anulowana. Napraw DNS najpierw, potem uruchom deinstalację ponownie."
+
+# Menu detekcji w install-wizard
+export T_WIZARD_SETUP_TITLE="Citadel++ Setup"
+export T_WIZARD_INSTALLED_MSG="Citadel jest już zainstalowany. Wybierz akcję:"
+export T_WIZARD_REINSTALL="Reinstaluj z backupem"
+export T_WIZARD_UNINSTALL="Usuń Citadel"
+export T_WIZARD_MODIFY="Modyfikuj komponenty (wkrótce w v3.2)"
+export T_WIZARD_CANCEL="Wyjście"
+export T_WIZARD_MODIFY_MSG="Modyfikacja komponentów dostępna w wersji v3.2"

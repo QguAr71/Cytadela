@@ -227,13 +227,6 @@ case "$ACTION" in
         ;;
 
     # Setup Wizard (unified install/uninstall)
-    setup-wizard)
-        load_module "setup-wizard"
-        load_module "uninstall"
-        setup_wizard
-        ;;
-
-
     install-dnscrypt)
         load_module "install-dnscrypt"
         install_dnscrypt

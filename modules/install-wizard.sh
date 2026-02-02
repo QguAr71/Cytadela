@@ -73,6 +73,15 @@ select_language() {
 }
 
 install_wizard() {
+    # Load i18n for detection menu
+    local wiz_lang="${LANG%%_*}"
+    wiz_lang="${wiz_lang:-en}"
+    local wiz_module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
+    if [[ -f "${wiz_module_dir}/lib/i18n/${wiz_lang}.sh" ]]; then
+        # shellcheck source=/dev/null
+        source "${wiz_module_dir}/lib/i18n/${wiz_lang}.sh"
+    fi
+
     # Check if Citadel is already installed - offer management options
     if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
         # Already installed - show management menu
@@ -87,12 +96,12 @@ checkbox=brightgreen,black
 actcheckbox=black,brightgreen
 '
         local choice
-        choice=$(whiptail --title "Citadel++ Setup" \
-            --menu "Citadel is already installed. Choose action:" 15 60 4 \
-            "reinstall" "Reinstall with backup" \
-            "uninstall" "Remove Citadel" \
-            "modify" "Modify components (coming in v3.2)" \
-            "cancel" "Exit" 3>&1 1>&2 2>&3)
+        choice=$(whiptail --title "${T_WIZARD_SETUP_TITLE:-Citadel++ Setup}" \
+            --menu "${T_WIZARD_INSTALLED_MSG:-Citadel is already installed. Choose action:}" 15 60 4 \
+            "reinstall" "${T_WIZARD_REINSTALL:-Reinstall with backup}" \
+            "uninstall" "${T_WIZARD_UNINSTALL:-Remove Citadel}" \
+            "modify" "${T_WIZARD_MODIFY:-Modify components (coming in v3.2)}" \
+            "cancel" "${T_WIZARD_CANCEL:-Exit}" 3>&1 1>&2 2>&3)
         
         case "$choice" in
             reinstall)
@@ -116,7 +125,7 @@ actcheckbox=black,brightgreen
                 return 0
                 ;;
             modify)
-                whiptail --msgbox "Component modification coming in v3.2" 10 40
+                whiptail --msgbox "${T_WIZARD_MODIFY_MSG:-Component modification coming in v3.2}" 10 40
                 return 0
                 ;;
             *)
