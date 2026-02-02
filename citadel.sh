@@ -104,7 +104,8 @@ shift || true
 case "$ACTION" in
     # Help
     help | --help | -h)
-        show_help_pl
+        load_module "help"
+        citadel_help
         ;;
 
     # Integrity
