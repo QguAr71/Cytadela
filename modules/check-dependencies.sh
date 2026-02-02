@@ -79,6 +79,10 @@ check_dep() {
             coredns) version=$(coredns -version 2>&1 | grep -oP 'CoreDNS-\K[0-9.]+' | head -1) ;;
             dnscrypt-proxy) version=$(dnscrypt-proxy -version 2>&1 | head -1 | awk '{print $2}') ;;
             git) version=$(git --version | awk '{print $3}') ;;
+            curl) version=$(curl --version | head -1 | awk '{print $2}') ;;
+            jq) version=$(jq --version 2>&1 | grep -oP '[0-9.]+' | head -1) ;;
+            systemctl) version=$(systemctl --version | head -1 | awk '{print $2}') ;;
+            openssl) version=$(openssl version | awk '{print $2}') ;;
             *) version="" ;;
         esac
 
