@@ -53,15 +53,12 @@ cache_stats() {
     echo ""
     echo -e "${CYAN}Request Types:${NC}"
 
-    # Parse request types
-    local type_a
-    type_a=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="A"' | awk '{sum+=$2} END {print sum+0}')
-    local type_aaaa
-    type_aaaa=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="AAAA"' | awk '{sum+=$2} END {print sum+0}')
-    local type_ptr
-    type_ptr=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="PTR"' | awk '{sum+=$2} END {print sum+0}')
-    local type_other
-    type_other=$(echo "$metrics" | grep 'coredns_dns_requests_total' | grep -v 'type="A"' | grep -v 'type="AAAA"' | grep -v 'type="PTR"' | awk '{sum+=$2} END {print sum+0}')
+    # Parse request types - handle empty results gracefully
+    local type_a type_aaaa type_ptr type_other
+    type_a=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="A"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
+    type_aaaa=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="AAAA"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
+    type_ptr=$(echo "$metrics" | grep 'coredns_dns_requests_total.*type="PTR"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
+    type_other=$(echo "$metrics" | grep 'coredns_dns_requests_total' | grep -v 'type="A"' | grep -v 'type="AAAA"' | grep -v 'type="PTR"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
 
     printf "  A (IPv4):       %'d\n" "$type_a"
     printf "  AAAA (IPv6):    %'d\n" "$type_aaaa"
@@ -71,13 +68,11 @@ cache_stats() {
     echo ""
     echo -e "${CYAN}Response Codes:${NC}"
 
-    # Parse response codes
-    local rcode_success
-    rcode_success=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="NOERROR"' | awk '{sum+=$2} END {print sum+0}')
-    local rcode_nxdomain
-    rcode_nxdomain=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="NXDOMAIN"' | awk '{sum+=$2} END {print sum+0}')
-    local rcode_servfail
-    rcode_servfail=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="SERVFAIL"' | awk '{sum+=$2} END {print sum+0}')
+    # Parse response codes - handle empty results gracefully
+    local rcode_success rcode_nxdomain rcode_servfail
+    rcode_success=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="NOERROR"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
+    rcode_nxdomain=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="NXDOMAIN"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
+    rcode_servfail=$(echo "$metrics" | grep 'coredns_dns_responses_total.*rcode="SERVFAIL"' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
 
     printf "  NOERROR:        %'d\n" "$rcode_success"
     printf "  NXDOMAIN:       %'d\n" "$rcode_nxdomain"
@@ -95,14 +90,13 @@ cache_stats() {
     # Query latency
     echo ""
     echo -e "${CYAN}Query Latency:${NC}"
-    local latency_sum
-    latency_sum=$(echo "$metrics" | grep 'coredns_dns_request_duration_seconds_sum' | awk '{sum+=$2} END {print sum}')
-    local latency_count
-    latency_count=$(echo "$metrics" | grep 'coredns_dns_request_duration_seconds_count' | awk '{sum+=$2} END {print sum+0}')
+    local latency_sum latency_count
+    latency_sum=$(echo "$metrics" | grep 'coredns_dns_request_duration_seconds_sum' | awk '{sum+=$2} END {print sum}' 2>/dev/null || echo 0)
+    latency_count=$(echo "$metrics" | grep 'coredns_dns_request_duration_seconds_count' | awk '{sum+=$2} END {print sum+0}' 2>/dev/null || echo 0)
 
     if [[ $latency_count -gt 0 ]]; then
         local avg_latency
-        avg_latency=$(awk "BEGIN {printf \"%.2f\", ($latency_sum / $latency_count) * 1000}")
+        avg_latency=$(awk "BEGIN {printf \"%.2f\", ($latency_sum / $latency_count) * 1000}" 2>/dev/null || echo 0)
         printf "  Average:        ${GREEN}%s ms${NC}\n" "$avg_latency"
     else
         printf "  Average:        N/A\n"
