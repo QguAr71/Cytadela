@@ -288,6 +288,43 @@ fullscale=brightgreen,black
         printf "  ${GREEN}✓${NC} %s\n" "$name"
     done
 
+    # Check and prompt for optional dependencies
+    echo ""
+    log_info "Checking optional dependencies..."
+    local optional_deps=()
+    local dep_cmd
+    
+    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck; do
+        if ! command -v "$dep_cmd" &>/dev/null; then
+            optional_deps+=("$dep_cmd")
+        fi
+    done
+    
+    if [[ ${#optional_deps[@]} -gt 0 ]]; then
+        echo ""
+        log_warning "Optional dependencies not installed:"
+        printf "  • %s\n" "${optional_deps[@]}"
+        echo ""
+        log_info "These packages enhance functionality but are not required:"
+        log_info "  dnsperf - DNS performance benchmarking"
+        log_info "  curl - HTTP client for metrics"
+        log_info "  jq - JSON processor"
+        log_info "  whiptail - Interactive GUI (already required for wizard)"
+        log_info "  notify-send - Desktop notifications"
+        log_info "  shellcheck - Script linting"
+        echo ""
+        read -rp "Install optional dependencies now? [y/N]: " deps_answer
+        if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
+            log_info "Installing optional dependencies..."
+            for dep in "${optional_deps[@]}"; do
+                log_info "Installing $dep..."
+                pacman -S --noconfirm "$dep" 2>/dev/null || log_warning "Failed to install $dep"
+            done
+        fi
+    else
+        log_success "All optional dependencies already installed"
+    fi
+
     echo ""
     log_warning "This will install and configure DNS services on your system."
     echo -n "Proceed with installation? [y/N]: "
