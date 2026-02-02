@@ -464,3 +464,33 @@ sudo ./citadel.sh uninstall health       # Remove only watchdog
 ```
 
 ---
+
+## 📊 SESSION REPORT: 2026-02-02 (Part 6) - Bug Fixes & Runtime Errors
+
+### Cache Statistics Fixes
+
+| Issue | File | Fix |
+|-------|------|-----|
+| Awk newlines in output | `modules/cache-stats.sh` | Added `tr -d '\n'` to all awk commands (lines 58-61, 73-75, 94-95) |
+| printf invalid number | `modules/cache-stats.sh` | Fixed `0\n0` output causing printf errors |
+| Watch loop crash | `modules/cache-stats.sh` | Added `set +e` for cache-stats-watch infinite loop |
+| Clear fallback | `modules/cache-stats.sh` | Added `clear 2>/dev/null || printf` fallback |
+
+### Diagnostics Fixes
+
+| Issue | File | Fix |
+|-------|------|-----|
+| Dig exit code 9 | `modules/diagnostics.sh` | Added `|| true` to DNS resolution test (line 19) |
+| Tail exit code 1 | `modules/diagnostics.sh` | Added `|| true` to upstream grep (line 28) |
+| Upstream regex | `modules/diagnostics.sh` | Changed to flexible pattern `Server.*lowest.*latency: *([a-z0-9-]+).*\(rtt: *([0-9]+)ms` |
+| Time window too short | `modules/diagnostics.sh` | Changed `--since "2 hours"` to `"24 hours"` |
+| Curl error | `modules/diagnostics.sh` | Added `2>/dev/null || true` to connectivity test |
+
+### Results
+
+- DNS diagnostics now work reliably with ISP blocking port 53
+- Cache stats handle empty metrics gracefully
+- Upstream detection works with 24h log window
+- All set -e conflicts resolved
+
+---
