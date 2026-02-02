@@ -44,7 +44,7 @@ sudo ./citadel.sh status
 **Real-time monitoring with `citadel-top`:**
 
 ```
-┌─ CYTADELA++ TERMINAL DASHBOARD v3.1 ────────────────────┐
+┌─────────── CITADEL TERMINAL DASHBOARD v3.1 ─────────────┐
 │                                                         │
 │ 📊 SYSTEM STATUS                                        │
 │ ├─ DNSCrypt Proxy:     ● ACTIVE (127.0.0.1:5353)        │
