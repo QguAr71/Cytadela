@@ -17,6 +17,43 @@ citadel_uninstall() {
         return 0
     fi
 
+    # Check for optional packages that might be removable
+    echo ""
+    log_info "Checking optional dependencies..."
+    local optional_packages=()
+    local pkg
+    for pkg in dnsperf curl jq whiptail notify-send shellcheck; do
+        if command -v "$pkg" >/dev/null 2>&1; then
+            # Check if it's a system package (not manually compiled)
+            if pacman -Qq "$pkg" 2>/dev/null | grep -q "^$pkg$"; then
+                optional_packages+=("$pkg")
+            fi
+        fi
+    done
+
+    if [[ ${#optional_packages[@]} -gt 0 ]]; then
+        log_warning "The following packages were possibly installed for Citadel:"
+        printf "  • %s\n" "${optional_packages[@]}"
+        log_info "You may want to remove them manually if no other app needs them:"
+        log_info "  sudo pacman -R ${optional_packages[*]}"
+        echo ""
+        read -rp "Remove these packages now? (y/N): " remove_pkgs
+        if [[ "$remove_pkgs" =~ ^[Yy]$ ]]; then
+            log_info "Removing packages..."
+            # Remove only if no other packages depend on them
+            for pkg in "${optional_packages[@]}"; do
+                if pacman -Qi "$pkg" 2>/dev/null | grep -q "^Required By.*None"; then
+                    log_info "Removing $pkg (no other package depends on it)"
+                    pacman -R --noconfirm "$pkg" 2>/dev/null || log_warning "Failed to remove $pkg"
+                else
+                    log_info "Skipping $pkg (required by other packages)"
+                fi
+            done
+        fi
+    fi
+
+    echo ""
+
     # Stop and disable services
     log_info "Stopping services..."
     systemctl stop coredns dnscrypt-proxy 2>/dev/null || true
