@@ -354,6 +354,39 @@ sudo ./citadel.sh test
 
 ---
 
+## 🗑️ UNINSTALLATION
+
+### Complete removal
+
+Removes Citadel completely including configuration and data:
+
+```bash
+sudo ./citadel.sh uninstall
+```
+
+**This will:**
+- Stop and disable services (coredns, dnscrypt-proxy)
+- Remove firewall rules
+- Delete configuration files (`/etc/coredns/`, `/etc/dnscrypt-proxy/`)
+- Remove data directories
+- Remove system user `dnscrypt`
+- Restore original DNS settings
+- Check for optional packages (dnsperf, curl, jq) and offer removal
+
+**Confirmation required:** Type `yes` to proceed.
+
+### Keep configuration
+
+Stops services but preserves all configuration files:
+
+```bash
+sudo ./citadel.sh uninstall-keep-config
+```
+
+**Use case:** Temporary shutdown, planned reinstallation.
+
+---
+
 ## ⚙️ CONFIGURATION
 
 ### System configuration

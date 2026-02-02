@@ -112,7 +112,21 @@ sudo ./citadel.sh panic-bypass
 
 ---
 
-## 📚 Next Steps
+## �️ Uninstall
+
+If you need to remove Citadel:
+
+```bash
+# Complete removal (config + data)
+sudo ./citadel.sh uninstall
+
+# Or keep configuration for later reinstallation
+sudo ./citadel.sh uninstall-keep-config
+```
+
+---
+
+## �📚 Next Steps
 
 - [Full Manual (PL)](MANUAL_PL.md) - Complete Polish guide
 - [Full Manual (EN)](MANUAL_EN.md) - Complete English guide

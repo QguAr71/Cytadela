@@ -1,7 +1,7 @@
 # 🛡️ CITADEL - KOMPLETNY PODRĘCZNIK UŻYTKOWNIKA
 
 **Wersja:** 3.1.1  
-**Data:** 2026-01-31  
+**Data:** 2026-02-02  
 **Język:** Polski
 
 ---
@@ -205,7 +205,7 @@ cat VERSION
 # Sprawdź brakujące zależności
 sudo ./citadel.sh check-deps
 
-# Zainstaluj brakujące zależności
+# Lub zainstaluj automatycznie
 sudo ./citadel.sh check-deps --install
 ```
 
@@ -351,6 +351,39 @@ sudo ./citadel.sh verify
 # Test DNS
 sudo ./citadel.sh test
 ```
+
+---
+
+## 🗑️ DEINSTALACJA
+
+### Całkowite usunięcie
+
+Usuwa Citadel całkowicie wraz z konfiguracją i danymi:
+
+```bash
+sudo ./citadel.sh uninstall
+```
+
+**To usunie:**
+- Zatrzyma i wyłączy usługi (coredns, dnscrypt-proxy)
+- Usunie reguły firewalla
+- Usunie pliki konfiguracyjne (`/etc/coredns/`, `/etc/dnscrypt-proxy/`)
+- Usunie katalogi z danymi
+- Usunie użytkownika systemowego `dnscrypt`
+- Przywróci oryginalne ustawienia DNS
+- Sprawdzi opcjonalne pakiety (dnsperf, curl, jq) i zaproponuje ich usunięcie
+
+**Wymagane potwierdzenie:** Wpisz `yes` aby kontynuować.
+
+### Zachowaj konfigurację
+
+Zatrzymuje usługi ale zachowuje wszystkie pliki konfiguracyjne:
+
+```bash
+sudo ./citadel.sh uninstall-keep-config
+```
+
+**Zastosowanie:** Tymczasowe wyłączenie, planowana ponowna instalacja.
 
 ---
 
