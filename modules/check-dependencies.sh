@@ -4,6 +4,11 @@
 # ║  Comprehensive dependency checker for all Cytadela components             ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load dependencies configuration
+if [[ -f "${CYTADELA_LIB}/dependencies.conf" ]]; then
+    source "${CYTADELA_LIB}/dependencies.conf"
+fi
+
 check_dependencies() {
     log_section "🔍 CHECKING DEPENDENCIES"
 
@@ -14,46 +19,22 @@ check_dependencies() {
     echo "=== REQUIRED DEPENDENCIES ==="
     echo ""
 
-    # Core system tools
-    check_dep "bash" "required" "Shell interpreter" || ((missing++))
-    check_dep "systemctl" "required" "Systemd service manager" || ((missing++))
-    check_dep "nft" "required" "NFTables firewall" "sudo pacman -S nftables" || ((missing++))
-
-    # DNS tools
-    check_dep "dig" "required" "DNS lookup utility" "sudo pacman -S bind-tools" || ((missing++))
-    check_dep "coredns" "required" "CoreDNS server" "sudo pacman -S coredns" || ((missing++))
-    check_dep "dnscrypt-proxy" "required" "DNSCrypt proxy" "sudo pacman -S dnscrypt-proxy" || ((missing++))
-
-    # Network tools
-    check_dep "ip" "required" "Network configuration" "sudo pacman -S iproute2" || ((missing++))
-    check_dep "ss" "required" "Socket statistics" "sudo pacman -S iproute2" || ((missing++))
+    # Check all required dependencies from config
+    local cmd desc pkg
+    for cmd in "${!CYTADELA_DEPS_REQUIRED[@]}"; do
+        IFS='|' read -r desc pkg _ <<< "${CYTADELA_DEPS_REQUIRED[$cmd]}"
+        check_dep "$cmd" "required" "$desc" "sudo pacman -S $pkg" || ((missing++))
+    done
 
     echo ""
     echo "=== OPTIONAL DEPENDENCIES ==="
     echo ""
 
-    # Optional but recommended
-    check_dep "whiptail" "optional" "Interactive installer GUI" "sudo pacman -S libnewt" || ((optional_missing++))
-    check_dep "curl" "optional" "HTTP client for metrics" "sudo pacman -S curl" || ((optional_missing++))
-    check_dep "jq" "optional" "JSON processor" "sudo pacman -S jq" || ((optional_missing++))
-
-    # Network management
-    check_dep "nmcli" "optional" "NetworkManager CLI" "sudo pacman -S networkmanager" || ((optional_missing++))
-    check_dep "networkctl" "optional" "systemd-networkd CLI" "(built-in)" || ((optional_missing++))
-
-    # Monitoring tools
-    check_dep "notify-send" "optional" "Desktop notifications" "sudo pacman -S libnotify" || ((optional_missing++))
-    check_dep "htop" "optional" "Interactive process viewer" "sudo pacman -S htop" || ((optional_missing++))
-    check_dep "watch" "optional" "Periodic command execution" "sudo pacman -S procps-ng" || ((optional_missing++))
-
-    # Development tools
-    check_dep "shellcheck" "optional" "Shell script linter" "sudo pacman -S shellcheck" || ((optional_missing++))
-    check_dep "git" "optional" "Version control" "sudo pacman -S git" || ((optional_missing++))
-
-    # Network diagnostics
-    check_dep "lsof" "optional" "List open files" "sudo pacman -S lsof" || ((optional_missing++))
-    check_dep "fuser" "optional" "Find processes using files" "sudo pacman -S psmisc" || ((optional_missing++))
-    check_dep "netstat" "optional" "Network statistics" "sudo pacman -S net-tools" || ((optional_missing++))
+    # Check all optional dependencies from config
+    for cmd in "${!CYTADELA_DEPS_OPTIONAL[@]}"; do
+        IFS='|' read -r desc pkg _ <<< "${CYTADELA_DEPS_OPTIONAL[$cmd]}"
+        check_dep "$cmd" "optional" "$desc" "sudo pacman -S $pkg" || ((optional_missing++))
+    done
 
     echo ""
     echo "=== SUMMARY ==="
@@ -138,45 +119,34 @@ check_dependencies_install() {
     log_info "Detected package manager: $pkg_manager"
     echo ""
 
-    # Define packages per manager
+    # Build list of missing packages from config
     local packages=()
+    local cmd pkg
 
-    case "$pkg_manager" in
-        pacman)
-            # Check and add missing packages
-            command -v nft &>/dev/null || packages+=("nftables")
-            command -v dig &>/dev/null || packages+=("bind-tools")
-            command -v coredns &>/dev/null || packages+=("coredns")
-            command -v dnscrypt-proxy &>/dev/null || packages+=("dnscrypt-proxy")
-            command -v whiptail &>/dev/null || packages+=("libnewt")
-            command -v curl &>/dev/null || packages+=("curl")
-            command -v jq &>/dev/null || packages+=("jq")
-            command -v notify-send &>/dev/null || packages+=("libnotify")
-            command -v shellcheck &>/dev/null || packages+=("shellcheck")
-            ;;
-        apt)
-            command -v nft &>/dev/null || packages+=("nftables")
-            command -v dig &>/dev/null || packages+=("dnsutils")
-            command -v coredns &>/dev/null || packages+=("coredns")
-            command -v dnscrypt-proxy &>/dev/null || packages+=("dnscrypt-proxy")
-            command -v whiptail &>/dev/null || packages+=("whiptail")
-            command -v curl &>/dev/null || packages+=("curl")
-            command -v jq &>/dev/null || packages+=("jq")
-            command -v notify-send &>/dev/null || packages+=("libnotify-bin")
-            command -v shellcheck &>/dev/null || packages+=("shellcheck")
-            ;;
-        dnf)
-            command -v nft &>/dev/null || packages+=("nftables")
-            command -v dig &>/dev/null || packages+=("bind-utils")
-            command -v coredns &>/dev/null || packages+=("coredns")
-            command -v dnscrypt-proxy &>/dev/null || packages+=("dnscrypt-proxy")
-            command -v whiptail &>/dev/null || packages+=("newt")
-            command -v curl &>/dev/null || packages+=("curl")
-            command -v jq &>/dev/null || packages+=("jq")
-            command -v notify-send &>/dev/null || packages+=("libnotify")
-            command -v shellcheck &>/dev/null || packages+=("ShellCheck")
-            ;;
-    esac
+    # Check required dependencies
+    for cmd in "${!CYTADELA_DEPS_REQUIRED[@]}"; do
+        if ! command -v "$cmd" &>/dev/null; then
+            IFS='|' read -r _ pkg _ <<< "${CYTADELA_DEPS_REQUIRED[$cmd]}"
+            # Map package names for different distros
+            case "$pkg_manager" in
+                apt)
+                    case "$pkg" in
+                        bind-tools) pkg="dnsutils" ;;
+                        libnewt) pkg="whiptail" ;;
+                        libnotify) pkg="libnotify-bin" ;;
+                    esac
+                    ;;
+                dnf)
+                    case "$pkg" in
+                        bind-tools) pkg="bind-utils" ;;
+                        libnewt) pkg="newt" ;;
+                        shellcheck) pkg="ShellCheck" ;;
+                    esac
+                    ;;
+            esac
+            packages+=("$pkg")
+        fi
+    done
 
     if [[ ${#packages[@]} -eq 0 ]]; then
         log_success "All dependencies are already installed!"
@@ -220,7 +190,25 @@ check_dependencies_install() {
 }
 
 check_dependencies_help() {
-    cat <<'EOF'
+    local req_list=""
+    local opt_list=""
+    local cmd desc
+
+    # Generate required dependencies list
+    for cmd in "${!CYTADELA_DEPS_REQUIRED[@]}"; do
+        IFS='|' read -r desc _ <<< "${CYTADELA_DEPS_REQUIRED[$cmd]}"
+        req_list+="  - ${cmd,-15} ${desc}\n"
+    done
+
+    # Generate optional dependencies list (limit to most important ones)
+    for cmd in whiptail curl jq nmcli notify-send shellcheck git htop watch lsof fuser netstat; do
+        if [[ -n "${CYTADELA_DEPS_OPTIONAL[$cmd]}" ]]; then
+            IFS='|' read -r desc _ <<< "${CYTADELA_DEPS_OPTIONAL[$cmd]}"
+            opt_list+="  - ${cmd,-15} ${desc}\n"
+        fi
+    done
+
+    cat <<EOF
 🔍 CHECK-DEPS - Dependency Checker
 
 USAGE:
@@ -236,28 +224,9 @@ OPTIONS:
 DEPENDENCIES CHECKED:
 
 Required:
-  - bash           Shell interpreter
-  - systemctl      Systemd service manager
-  - nft            NFTables firewall
-  - dig            DNS lookup utility
-  - coredns        CoreDNS server
-  - dnscrypt-proxy DNSCrypt proxy
-  - ip, ss         Network tools
-
-Optional:
-  - whiptail       Interactive installer GUI
-  - curl           HTTP client for metrics
-  - jq             JSON processor
-  - nmcli          NetworkManager CLI
-  - notify-send    Desktop notifications
-  - shellcheck     Shell script linter
-  - git            Version control
-  - htop           Interactive process viewer
-  - watch          Periodic command execution
-  - lsof           List open files
-  - fuser          Find processes using files
-  - netstat        Network statistics
-
+${req_list}
+Optional (most important):
+${opt_list}
 EXAMPLES:
   sudo cytadela++ check-deps           # Check dependencies
   sudo cytadela++ check-deps --install # Auto-install missing
