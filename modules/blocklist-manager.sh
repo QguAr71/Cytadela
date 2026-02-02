@@ -123,7 +123,7 @@ blocklist_switch() {
         done <"$BLOCKLIST_CUSTOM_URLS"
     else
         # Use predefined URLs
-        for url in $urls; do
+        for url in "$urls"; do
             log_info "Downloading: $url"
             curl -fsSL "$url" 2>/dev/null | grep -v "^#" >>"$tmp_raw" || {
                 log_warning "Failed to download: $url"
