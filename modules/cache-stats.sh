@@ -145,9 +145,12 @@ cache_stats_watch() {
     log_info "Updating every 2 seconds (Ctrl+C to stop)"
     echo ""
 
+    # Disable exit on error for watch mode
+    set +e
     while true; do
-        clear
+        clear 2>/dev/null || printf '\033[2J\033[H'
         cache_stats
         sleep 2
     done
+    # Re-enable if needed (but this line never reached due to infinite loop)
 }
