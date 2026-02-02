@@ -58,8 +58,3 @@ export T_STEP_VERIFY="Verifica: sudo cytadela++ verify"
 export T_CANCELLED="Installazione annullata dall'utente"
 export T_CANCELLED_SHORT="Installazione annullata"
 export T_UNKNOWN_MODULE="Modulo sconosciuto"
-
-# Advanced features (v3.2+)
-export T_HONEYPOT_ENABLED="Honeypot attivato"
-export T_REPUTATION_ACTIVE="Sistema di reputazione attivo"
-export T_ASN_BLOCKING_CONFIGURED="Blocco ASN configurato"

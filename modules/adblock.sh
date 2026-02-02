@@ -4,16 +4,6 @@
 # ║  DNS-based adblocking with allowlist support                              ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-# Rebuild combined blocklist from custom + blocklist - allowlist
-# Usage: adblock_rebuild
-# Args: None
-# Returns:
-#   0: Success (blocklist rebuilt)
-#   1: Failed (file permissions or errors)
-# Side effects:
-#   - Creates /etc/coredns/zones/combined.hosts
-#   - Filters out allowlist entries
-#   - Sets proper permissions (root:coredns, 0640)
 adblock_rebuild() {
     local custom="/etc/coredns/zones/custom.hosts"
     local allowlist="/etc/coredns/zones/allowlist.txt"

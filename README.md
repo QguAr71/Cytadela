@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![ShellCheck](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/shellcheck.yml?label=shellcheck)](https://github.com/QguAr71/Cytadela/actions)
-[![Tests](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/shellcheck.yml?label=tests&logo=gnu-bash&logoColor=white)](https://github.com/QguAr71/Cytadela/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/ci-improved.yml?label=build)](https://github.com/QguAr71/Cytadela/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/commits/main)
 [![Issues](https://img.shields.io/github/issues-raw/QguAr71/Cytadela)](https://github.com/QguAr71/Cytadela/issues)
 
