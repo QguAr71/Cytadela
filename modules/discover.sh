@@ -4,24 +4,8 @@
 # ║  Network & Firewall Snapshot (Issue #10)                                  ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-discover_active_interface() {
-    local iface=""
-    # Try to get default route interface
-    iface=$(ip route show default 2>/dev/null | awk '/default/ {print $5; exit}')
-    # Fallback: get first active interface with IP
-    [[ -z "$iface" ]] && iface=$(ip -4 addr show 2>/dev/null | awk '/inet / {print $NF; exit}')
-    echo "$iface"
-}
-
-discover_network_stack() {
-    if systemctl is-active --quiet NetworkManager 2>/dev/null; then
-        echo "NetworkManager"
-    elif systemctl is-active --quiet systemd-networkd 2>/dev/null; then
-        echo "systemd-networkd"
-    else
-        echo "legacy"
-    fi
-}
+# Note: discover_active_interface() and discover_network_stack() 
+# are defined in lib/network-utils.sh - use those instead
 
 discover_nftables_status() {
     if command -v nft &>/dev/null; then
@@ -40,7 +24,7 @@ discover_nftables_status() {
 discover() {
     log_section "🔍 DISCOVER - Network & Firewall Snapshot"
 
-    # Get network info
+    # Get network info from lib/network-utils.sh
     local iface
     iface=$(discover_active_interface)
     local stack

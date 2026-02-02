@@ -7,6 +7,11 @@
 ipv6_privacy_auto_ensure() {
     log_section "🔒 IPv6 PRIVACY AUTO-ENSURE"
 
+    # Ensure network-utils functions are available
+    if ! declare -f discover_active_interface >/dev/null 2>&1; then
+        source_lib "${CYTADELA_LIB}/network-utils.sh"
+    fi
+
     local iface
     iface=$(discover_active_interface)
     if [[ -z "$iface" ]]; then
@@ -195,16 +200,7 @@ smart_ipv6_detection() {
     fi
 }
 
-# Smart IPv6 detection and auto-reconfiguration
-# Usage: smart_ipv6
-# Args: None
-# Returns:
-#   0: Success (IPv6 working or fixed)
-#   1: Failed (no interface or IPv6 still broken)
-# Side effects:
-#   - Tests IPv6 connectivity
-#   - Runs ipv6_deep_reset if needed
-#   - Shows status after fixes
+# Alias for compatibility with cytadela++.new.sh
 smart_ipv6() {
     smart_ipv6_detection
 }
