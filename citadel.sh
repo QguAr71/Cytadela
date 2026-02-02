@@ -185,18 +185,11 @@ case "$ACTION" in
         call_fn "$ACTION"
         ;;
 
-    # Uninstall (with i18n support)
+    # Uninstall
     uninstall | uninstall-keep-config)
-        # Detect language and load appropriate module
-        if [[ "${LANG}" =~ ^pl ]]; then
-            load_module "uninstall_pl"
-            call_fn "citadel_${ACTION}_pl"
-        else
-            load_module "uninstall"
-            call_fn "citadel_$ACTION"
-        fi
+        load_module "uninstall"
+        call_fn "citadel_$ACTION"
         ;;
-
 
     # Supply Chain
     supply-chain-status | supply-chain-init | supply-chain-verify)

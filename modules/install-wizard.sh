@@ -73,6 +73,58 @@ select_language() {
 }
 
 install_wizard() {
+    # Check if Citadel is already installed - offer management options
+    if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
+        # Already installed - show management menu
+        export NEWT_COLORS='
+root=,black
+window=brightmagenta,black
+border=brightgreen,black
+textbox=brightmagenta,black
+button=black,brightgreen
+actbutton=black,brightmagenta
+checkbox=brightgreen,black
+actcheckbox=black,brightgreen
+'
+        local choice
+        choice=$(whiptail --title "Citadel++ Setup" \
+            --menu "Citadel is already installed. Choose action:" 15 60 4 \
+            "reinstall" "Reinstall with backup" \
+            "uninstall" "Remove Citadel" \
+            "modify" "Modify components (coming in v3.2)" \
+            "cancel" "Exit" 3>&1 1>&2 2>&3)
+        
+        case "$choice" in
+            reinstall)
+                if declare -f config_backup_create >/dev/null 2>&1; then
+                    config_backup_create
+                fi
+                if declare -f citadel_uninstall >/dev/null 2>&1; then
+                    citadel_uninstall
+                else
+                    load_module "uninstall"
+                    citadel_uninstall
+                fi
+                ;;
+            uninstall)
+                if declare -f citadel_uninstall >/dev/null 2>&1; then
+                    citadel_uninstall
+                else
+                    load_module "uninstall"
+                    citadel_uninstall
+                fi
+                return 0
+                ;;
+            modify)
+                whiptail --msgbox "Component modification coming in v3.2" 10 40
+                return 0
+                ;;
+            *)
+                return 0
+                ;;
+        esac
+    fi
+
     # Set whiptail colors (256-color palette for better contrast)
     # Format: root=,window=,border=,textbox=,button=
     export NEWT_COLORS='
