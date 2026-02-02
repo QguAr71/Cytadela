@@ -205,7 +205,7 @@ cat VERSION
 # Check missing dependencies
 sudo ./citadel.sh check-deps
 
-# Install missing dependencies
+# Or install automatically
 sudo ./citadel.sh check-deps --install
 ```
 
@@ -699,6 +699,32 @@ citadel-top
 **Refresh:** every 5 seconds  
 **Exit:** Ctrl+C
 
+### DNS Performance Benchmark
+
+Test DNS server performance with dnsperf:
+
+```bash
+sudo ./citadel.sh benchmark
+```
+
+**Parameters:**
+- Queries: 10,000
+- Concurrent clients: 50
+- Duration: 60 seconds
+- Target: 127.0.0.1:53
+
+**Results:**
+- QPS (Queries Per Second)
+- Average latency
+- Success rate
+- Cache hit rate
+
+**Interpretation:**
+- >50,000 QPS: Excellent
+- 20,000-50,000 QPS: Good
+- 10,000-20,000 QPS: Acceptable
+- <10,000 QPS: Needs optimization
+
 ---
 
 ## 🚫 AD BLOCKING
@@ -757,6 +783,33 @@ sudo ./citadel.sh blocklist-switch aggressive
 # Switch to minimal
 sudo ./citadel.sh blocklist-switch minimal
 ```
+
+#### Blocklist status:
+
+```bash
+sudo ./citadel.sh blocklist-status
+```
+
+#### Manage custom blocklist URLs:
+
+```bash
+# Add custom blocklist URL
+sudo ./citadel.sh blocklist-add-url https://example.com/blocklist.txt
+
+# Remove URL
+sudo ./citadel.sh blocklist-remove-url https://example.com/blocklist.txt
+
+# Show all configured URLs
+sudo ./citadel.sh blocklist-show-urls
+```
+
+#### Update blocklists with LKG fallback:
+
+```bash
+sudo ./citadel.sh lists-update
+```
+
+Uses Last Known Good (LKG) cache if update fails.
 
 ### Blocking custom domains
 
@@ -970,10 +1023,34 @@ sudo ./citadel.sh health-status
 - Log errors
 - Anomalies
 
+#### Install Health Watchdog
+
+```bash
+sudo ./citadel.sh health-install
+```
+
+Automatically monitors services and restarts if needed.
+
+#### Uninstall Health Watchdog
+
+```bash
+sudo ./citadel.sh health-uninstall
+```
+
 ### Cache Statistics
 
 ```bash
+# Basic statistics
 sudo ./citadel.sh cache-stats
+
+# Top queried domains
+sudo ./citadel.sh cache-stats-top 20
+
+# Reset statistics
+sudo ./citadel.sh cache-stats-reset
+
+# Watch live statistics
+sudo ./citadel.sh cache-stats-watch
 ```
 
 **Shows:**
