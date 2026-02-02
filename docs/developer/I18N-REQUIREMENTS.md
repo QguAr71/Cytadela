@@ -26,11 +26,16 @@ whiptail --title "${T_SETUP_TITLE:-Citadel Setup}"
 - Nazwa: opisowa, wielkie litery, underscore
 - Przykłady: `T_CHECK_DEPS_TITLE`, `T_INSTALL_SUCCESS`, `T_DNS_FAILED`
 
-### 3. Tłumaczenia w obu plikach
+### 3. Tłumaczenia we wszystkich 7 językach
 
 Każda zmienna T_* musi być zdefiniowana w:
 - `lib/i18n/en.sh` - angielski (fallback)
 - `lib/i18n/pl.sh` - polski
+- `lib/i18n/de.sh` - niemiecki
+- `lib/i18n/es.sh` - hiszpański
+- `lib/i18n/fr.sh` - francuski
+- `lib/i18n/it.sh` - włoski
+- `lib/i18n/ru.sh` - rosyjski
 
 ### 4. Format plików i18n
 
@@ -49,8 +54,13 @@ export T_MODULE_ACTION_DESC="Polski opis"
 - [ ] Wszystkie `log_*` używają `T_*`
 - [ ] Wszystkie `whiptail` używają `T_*`
 - [ ] Help/dokumentacja modułu używa `T_*`
-- [ ] Dodano tłumaczenia do `lib/i18n/en.sh`
-- [ ] Dodano tłumaczenia do `lib/i18n/pl.sh`
+- [ ] Dodano tłumaczenia do `lib/i18n/en.sh` (angielski - fallback)
+- [ ] Dodano tłumaczenia do `lib/i18n/pl.sh` (polski)
+- [ ] Dodano tłumaczenia do `lib/i18n/de.sh` (niemiecki)
+- [ ] Dodano tłumaczenia do `lib/i18n/es.sh` (hiszpański)
+- [ ] Dodano tłumaczenia do `lib/i18n/fr.sh` (francuski)
+- [ ] Dodano tłumaczenia do `lib/i18n/it.sh` (włoski)
+- [ ] Dodano tłumaczenia do `lib/i18n/ru.sh` (rosyjski)
 - [ ] Nazwy zmiennych są unikalne i opisowe
 
 ## Przykład kompletnego modułu z i18n
@@ -85,7 +95,20 @@ EOF
 }
 ```
 
-Odpowiednie tłumaczenia w `lib/i18n/en.sh` i `lib/i18n/pl.sh`.
+Odpowiednie tłumaczenia w `lib/i18n/*.sh` dla wszystkich 7 języków.
+
+## Workflow dla nowych modułów
+
+Użyj workflow dostępnego w:
+```bash
+.windsurf/workflows/add-new-module.md
+```
+
+Lub szybka ściągawka:
+1. Utwórz moduł używając `T_*` zmiennych
+2. Dodaj tłumaczenia do wszystkich 7 plików w `lib/i18n/`
+3. Przetestuj w co najmniej 2 językach
+4. Upewnij się, że wszystkie stringi mają fallback `${T_VAR:-domyślny}`
 
 ---
 

@@ -66,6 +66,7 @@ Feature requests are welcome! Please:
 - [ ] All tests pass (`./tests/smoke-test.sh`)
 - [ ] ShellCheck passes (no warnings)
 - [ ] Documentation updated
+- [ ] **i18n complete** (if adding/modifying modules - see i18n section below)
 - [ ] Commit messages are clear
 - [ ] No breaking changes (or clearly documented)
 
@@ -194,16 +195,54 @@ All security-related PRs will be:
 3. Documented in release notes
 4. Credited appropriately
 
-## 🌍 Internationalization
+## 🌍 Internationalization (i18n)
 
-Cytadela++ supports Polish and English:
-- Polish: `cytadela++.sh`, `CYTADELA_INSTRUKCJA.md`
-- English: `citadela_en.sh`, `CITADEL_EN_COMPLETE_MANUAL.md`
+Cytadela++ supports **7 languages** with full translations:
+- 🇵🇱 Polish (pl)
+- 🇬🇧 English (en)
+- 🇩🇪 German (de)
+- 🇪🇸 Spanish (es)
+- 🇮🇹 Italian (it)
+- 🇫🇷 French (fr)
+- 🇷🇺 Russian (ru)
 
-When adding features:
-- Update both language versions
-- Keep translations synchronized
-- Use clear, simple language
+### For New Modules
+
+**Every new module MUST have full i18n support.** Follow the workflow:
+```bash
+# Use the new module workflow
+cat .windsurf/workflows/add-new-module.md
+```
+
+**Requirements:**
+1. All user-facing strings use `${T_VAR:-fallback}` pattern
+2. Add translations to ALL 7 language files in `lib/i18n/`:
+   - `en.sh`, `pl.sh`, `de.sh`, `es.sh`, `fr.sh`, `it.sh`, `ru.sh`
+3. Use descriptive variable names: `T_MODULE_ACTION_DESC`
+4. Include help text translations
+5. Test in at least 2 languages before submitting PR
+
+**Example:**
+```bash
+# In your module
+log_info "${T_MYMODULE_RUNNING:-Running my module...}"
+
+# In lib/i18n/en.sh
+export T_MYMODULE_RUNNING="Running my module..."
+
+# In lib/i18n/pl.sh
+export T_MYMODULE_RUNNING="Uruchamianie mojego modułu..."
+# ... and 5 more languages
+```
+
+**PR Checklist for i18n:**
+- [ ] All strings use `T_*` variables (no hardcoded text)
+- [ ] Translations added to all 7 language files
+- [ ] Help text translated
+- [ ] Tested with `LANG=pl_PL.UTF-8` and `LANG=en_US.UTF-8`
+- [ ] Workflow `.windsurf/workflows/add-new-module.md` followed
+
+See `docs/developer/I18N-REQUIREMENTS.md` for detailed guidelines.
 
 ## 🎨 Project Structure
 

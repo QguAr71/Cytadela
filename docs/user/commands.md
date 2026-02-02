@@ -18,7 +18,12 @@ Complete list of all Citadel commands.
 | `install-doh-parallel` | Install DoH parallel racing |
 | `check-deps` | Check dependencies |
 | `check-dependencies` | Check dependencies (alias) |
-| `check-deps --install` | Install missing dependencies |
+| `check-deps --install` | Install missing dependencies (with AUR fallback for Arch) |
+| `verify-config` | Verify configuration, services, and DNS |
+| `verify-config dns` | Test DNS resolution only |
+| `verify-config services` | Show service status only |
+| `verify-config files` | Show configuration files only |
+| `verify-config all` | Run all verification checks |
 
 ---
 

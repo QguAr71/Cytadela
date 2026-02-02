@@ -83,12 +83,13 @@ Citadel supports **7 languages** with full translations:
 
 **What's translated:**
 - **Interactive installer wizard** - All 7 languages (auto-detect from $LANG) ✅
-- **CLI commands** - Planned for v3.2 (`citadel.sh help [lang]`)
-- **System messages** - Planned for v3.2
-- **Modules** - Planned for v3.2 (adblock, diagnostics, help)
-- **Error logs and reports** - Planned for v3.2
+- **All CLI modules** - 30+ modules fully translated ✅
+  - install-wizard, uninstall, check-dependencies, verify-config
+  - All user-facing strings use `${T_VAR:-fallback}` pattern
+- **Error messages** - All 7 languages ✅
+- **System messages** - All 7 languages ✅
 
-> **Note:** Currently, only **PL and EN** have full documentation. Other 5 languages (DE, ES, IT, FR, RU) are available only in install-wizard interface. Complete i18n for all modules, CLI commands, and documentation is planned for **v3.2 (Weles-SysQ release)**.
+> **Note:** Documentation (README, manuals) is available in PL and EN. Other languages have full CLI i18n support.
 
 ---
 

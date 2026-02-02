@@ -2,6 +2,64 @@
 
 All notable changes to this repository will be documented in this file.
 
+## [3.1.3] - 2026-02-02 - I18N & MODULE UPDATE
+
+### 🌍 Internationalization Complete
+- **Full i18n support for all 30+ modules** - Every module now uses T_* variables
+- **7 languages fully supported:** Polish, English, German, Spanish, Italian, French, Russian
+- **Translation coverage:**
+  - ✅ install-wizard (all 7 languages)
+  - ✅ uninstall (all 7 languages)
+  - ✅ check-dependencies (all 7 languages)
+  - ✅ verify-config (all 7 languages)
+  - All user-facing strings use `${T_VAR:-fallback}` pattern
+
+### ✨ New Module: verify-config
+- **Purpose:** Verify Citadel configuration, services, and DNS functionality
+- **Commands:**
+  - `verify-config` - Full configuration check
+  - `verify-config dns` - DNS resolution tests only
+  - `verify-config services` - Service status only
+  - `verify-config files` - Configuration files only
+  - `verify-config all` - All checks including DNS
+- **Features:**
+  - CoreDNS configuration validation
+  - DNSCrypt configuration validation
+  - NFTables table verification
+  - Service status (coredns, dnscrypt-proxy)
+  - DNS resolution tests
+  - DNSSEC validation check
+
+### 📦 Dependency Installation Improvements
+- **AUR fallback for Arch Linux:**
+  - Auto-detects yay/paru helpers
+  - Asks user before trying AUR
+  - Shows manual instructions if no helper available
+- **Per-package installation:**
+  - Continues to next package on failure
+  - Individual success/failure tracking
+  - Summary with installed/failed/AUR lists
+- **Alternative sources info:**
+  - Debian/Ubuntu: PPA suggestions
+  - Fedora/RHEL: EPEL, RPM Fusion, COPR suggestions
+
+### 📚 Documentation Updates
+- **New workflow:** `.windsurf/workflows/add-new-module.md`
+  - Step-by-step guide for creating modules with i18n
+  - Templates and examples
+  - Requirements checklist
+- **Updated commands.md:** Added verify-config documentation
+- **Updated README.md:** Marked i18n as complete for all modules
+
+### 📊 Statistics
+- **Commits:** 5 commits
+- **Files Changed:** 15 files
+- **New Module:** 1 (verify-config)
+- **Translation Strings Added:** 322 (46 per language × 7 languages)
+- **Lines Added:** ~1,500
+
+---
+
 ## [3.1.1] - 2026-02-01 - MAINTENANCE RELEASE
 
 ### 🎉 All TODO Items Completed
