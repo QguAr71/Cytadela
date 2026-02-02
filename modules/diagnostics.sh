@@ -14,12 +14,14 @@ run_diagnostics() {
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
-    local resolver_ip
-    resolver_ip=$(dig +short whoami.cloudflare @127.0.0.1 +time=3 2>/dev/null)
-    if [[ -n "$resolver_ip" ]]; then
-        log_success "DNS via: $resolver_ip"
+    # Używamy whoami.cloudflare, żeby zweryfikować ścieżkę wyjścia
+    # +time i +tries zapobiegają "wiszeniu" diagnostyki
+    DNS_IP=$(dig +short whoami.cloudflare @127.0.0.1 +time=2 +tries=1 2>/dev/null)
+
+    if [ -n "$DNS_IP" ]; then
+        log_success "DNS resolution working (Exit IP: $DNS_IP)"
     else
-        log_error "DNS resolution failed"
+        log_error "DNS resolution failed or timed out"
     fi
 
     echo -e "\n${CYAN}Prometheus Metrics:${NC}"
