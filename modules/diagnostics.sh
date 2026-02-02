@@ -14,8 +14,10 @@ run_diagnostics() {
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
-    if test_dns_resolution; then
-        log_success "DNS resolution working"
+    local resolver_ip
+    resolver_ip=$(dig +short whoami.cloudflare @127.0.0.1 +time=3 2>/dev/null)
+    if [[ -n "$resolver_ip" ]]; then
+        log_success "DNS via: $resolver_ip"
     else
         log_error "DNS resolution failed"
     fi
