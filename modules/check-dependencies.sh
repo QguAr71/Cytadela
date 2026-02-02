@@ -44,10 +44,17 @@ check_dependencies() {
     # Monitoring tools
     check_dep "notify-send" "optional" "Desktop notifications" "sudo pacman -S libnotify" || ((optional_missing++))
     check_dep "ping6" "optional" "IPv6 connectivity test" "sudo pacman -S iputils" || ((optional_missing++))
+    check_dep "htop" "optional" "Interactive process viewer" "sudo pacman -S htop" || ((optional_missing++))
+    check_dep "watch" "optional" "Periodic command execution" "sudo pacman -S procps-ng" || ((optional_missing++))
 
     # Development tools
     check_dep "shellcheck" "optional" "Shell script linter" "sudo pacman -S shellcheck" || ((optional_missing++))
     check_dep "git" "optional" "Version control" "sudo pacman -S git" || ((optional_missing++))
+
+    # Network diagnostics
+    check_dep "lsof" "optional" "List open files" "sudo pacman -S lsof" || ((optional_missing++))
+    check_dep "fuser" "optional" "Find processes using files" "sudo pacman -S psmisc" || ((optional_missing++))
+    check_dep "netstat" "optional" "Network statistics" "sudo pacman -S net-tools" || ((optional_missing++))
 
     echo ""
     echo "=== SUMMARY ==="
@@ -246,6 +253,12 @@ Optional:
   - notify-send    Desktop notifications
   - shellcheck     Shell script linter
   - git            Version control
+  - htop           Interactive process viewer
+  - watch          Periodic command execution
+  - lsof           List open files
+  - fuser          Find processes using files
+  - netstat        Network statistics
+  - ping6          IPv6 connectivity test
 
 EXAMPLES:
   sudo cytadela++ check-deps           # Check dependencies

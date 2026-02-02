@@ -294,7 +294,7 @@ fullscale=brightgreen,black
     local optional_deps=()
     local dep_cmd
     
-    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck; do
+    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck git htop watch lsof fuser netstat nmcli networkctl ping6; do
         if ! command -v "$dep_cmd" &>/dev/null; then
             optional_deps+=("$dep_cmd")
         fi
@@ -312,6 +312,15 @@ fullscale=brightgreen,black
         log_info "  whiptail - Interactive GUI (already required for wizard)"
         log_info "  notify-send - Desktop notifications"
         log_info "  shellcheck - Script linting"
+        log_info "  git - Version control for updates"
+        log_info "  htop - Interactive process viewer"
+        log_info "  watch - Periodic command execution"
+        log_info "  lsof - List open files"
+        log_info "  fuser - Find processes using files"
+        log_info "  netstat - Network statistics"
+        log_info "  nmcli - NetworkManager CLI"
+        log_info "  networkctl - systemd-networkd CLI"
+        log_info "  ping6 - IPv6 connectivity test"
         echo ""
         read -rp "Install optional dependencies now? [y/N]: " deps_answer
         if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
