@@ -26,7 +26,7 @@ run_diagnostics() {
     # Test 2: Upstream DNS status (community info)
     echo -e "\n${CYAN}DNSCrypt Upstream Status:${NC}"
     upstream=$(sudo journalctl -u dnscrypt-proxy --since "2 hours ago" | grep "Server with the lowest initial latency" | tail -1) || true
-    if [[ $upstream =~ Server\ with\ the\ lowest\ initial\ latency:\ (.*)\ \(rtt:\ ([0-9]+)ms\) ]]; then
+    if [[ $upstream =~ Server.*lowest.*latency:\ *([a-z0-9-]+).*\(rtt:\ *([0-9]+)ms ]]; then
         server="${BASH_REMATCH[1]}"
         rtt="${BASH_REMATCH[2]}"
         log_success "Upstream: ${server^} (${rtt}ms) via DNSCrypt"
@@ -44,7 +44,7 @@ run_diagnostics() {
     fi
 
     # Test 4: Internet connectivity (bonus)
-    EXIT_IP=$(curl -s https://1.1.1.1/cdn-cgi/trace | grep -oP 'ip=\K.*')
+    EXIT_IP=$(curl -s https://1.1.1.1/cdn-cgi/trace 2>/dev/null | grep -oP 'ip=\K.*' || true)
     if [[ -n "$EXIT_IP" ]]; then
         log_success "Internet connectivity (Public IP: $EXIT_IP)"
     fi
