@@ -47,7 +47,8 @@ setup_wizard() {
                 ;;
         esac
     else
-        # Not installed - run install wizard
+        # Not installed - load install-wizard and run it
+        load_module "install-wizard"
         install_wizard
     fi
 }
