@@ -377,3 +377,4 @@ $ ./tests/smoke-test.sh
 | Input validation | modules/install-wizard.sh | Added empty selection check |
 | Return values | lib/module-loader.sh | Added `return $?` to all load_module calls |
 | Cancelled panic | modules/emergency.sh | Return 1 instead of 0 when cancelled |
+| Version update | modules/config-backup.sh | Updated v3.1.0 → 3.1.1 |
