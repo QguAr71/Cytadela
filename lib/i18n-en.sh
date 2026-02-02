@@ -84,6 +84,11 @@ ${CYAN}Diagnostic Commands:${NC}
   diagnostics           Run full system diagnostics
   status                Show service status
   verify                Verify full stack (ports/services/DNS/NFT/metrics)
+  verify-config         Verify configuration and DNS
+  verify-config dns     DNS resolution tests only
+  verify-config all     All verification checks
+  check-deps            Check dependencies
+  check-deps --install  Install missing deps (with AUR fallback for Arch)
   ghost-check           Port exposure audit (warn about 0.0.0.0/::)
   ipv6-deep-reset       Flush IPv6 + neighbor cache + reconnect
   test-all              Smoke test (verify + leak test + IPv6)

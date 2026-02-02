@@ -39,8 +39,13 @@ ${GREEN}📊 Status i diagnostyka:${NC}
   ${CYAN}status${NC}                Pokaż status usług
   ${CYAN}diagnostics${NC}          Pełna diagnostyka systemu
   ${CYAN}verify${NC}                Weryfikuj cały stack
+  ${CYAN}verify-config${NC}         Weryfikacja konfiguracji i DNS
+  ${CYAN}verify-config dns${NC}     Tylko test DNS
+  ${CYAN}verify-config all${NC}     Wszystkie testy
   ${CYAN}test-all${NC}              Smoke test + leak test
   ${CYAN}ghost-check${NC}           Audyt otwartych portów
+  ${CYAN}check-deps${NC}            Sprawdź zależności
+  ${CYAN}check-deps --install${NC}  Zainstaluj brakujące (z AUR dla Arch)
 
 ${BLUE}🔧 Zarządzanie blocklist:${NC}
   ${CYAN}blocklist-list${NC}        Pokaż dostępne profile

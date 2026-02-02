@@ -335,6 +335,21 @@ case "$ACTION" in
         esac
         ;;
 
+    # Verify Config
+    verify-config)
+        load_module "verify-config"
+        local subcmd="${1:-check}"
+        case "$subcmd" in
+            check) verify_config_check ;;
+            dns) verify_config_dns ;;
+            services) verify_config_services ;;
+            files) verify_config_files ;;
+            all) verify_config_check && verify_config_dns ;;
+            help|--help|-h) verify_config_help ;;
+            *) verify_config "$subcmd" ;;
+        esac
+        ;;
+
     # Unknown command
     *)
         log_error "Nieznana komenda: $ACTION"
