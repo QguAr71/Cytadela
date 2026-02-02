@@ -2,7 +2,7 @@
 
 **Advanced hardened DNS resolver with full privacy stack for home users and small businesses.**
 
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/QguAr71/Cytadela/releases)
+[![Version](https://img.shields.io/badge/version-3.1.1-blue.svg)](https://github.com/QguAr71/Cytadela/releases)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![ShellCheck](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/shellcheck.yml?label=shellcheck)](https://github.com/QguAr71/Cytadela/actions)
