@@ -44,25 +44,25 @@ sudo ./citadel.sh status
 **Real-time monitoring with `citadel-top`:**
 
 ```
-┌─ CYTADELA++ TERMINAL DASHBOARD v3.1 ───────────────────────┐
+┌─ CYTADELA++ TERMINAL DASHBOARD v3.1 ────────────────────┐
 │                                                         │
-│ 📊 SYSTEM STATUS                                          │
+│ 📊 SYSTEM STATUS                                        │
 │ ├─ DNSCrypt Proxy:     ● ACTIVE (127.0.0.1:5353)        │
 │ ├─ CoreDNS:            ● ACTIVE (127.0.0.1:53)          │
 │ ├─ NFTables:           ● ACTIVE (DNS leak protection)   │
-│ └─ Blocklist:          325,847 domains                 │
+│ └─ Blocklist:          325,847 domains                  │
 │                                                         │
-│ 📈 PERFORMANCE METRICS                                   │
-│ ├─ DNS Queries:        1,247/min                       │
-│ ├─ Cache Hit Rate:      94.2%                          │
-│ ├─ Blocked Queries:    187/min (15.0%)                │
-│ └─ Response Time:      12ms avg                       │
+│ 📈 PERFORMANCE METRICS                                  │
+│ ├─ DNS Queries:        1,247/min                        │
+│ ├─ Cache Hit Rate:      94.2%                           │
+│ ├─ Blocked Queries:    187/min (15.0%)                  │
+│ └─ Response Time:      12ms avg                         │
 │                                                         │
-│ 🛡️ SECURITY STATUS                                       │
-│ ├─ Firewall Mode:      STRICT                          │
+│ 🛡️ SECURITY STATUS                                      │
+│ ├─ Firewall Mode:      STRICT                           │
 │ ├─ DNS Encryption:     DoH + DoT                        │
-│ ├─ Last Update:        2 hours ago                     │
-│ └─ Emergency Mode:     INACTIVE                        │
+│ ├─ Last Update:        2 hours ago                      │
+│ └─ Emergency Mode:     INACTIVE                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
