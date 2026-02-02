@@ -8,7 +8,7 @@
 # GLOBAL VARIABLES
 # ==============================================================================
 # shellcheck disable=SC2034
-CYTADELA_VERSION="3.1.0"
+CYTADELA_VERSION="3.1.1"
 CYTADELA_MANIFEST="/etc/cytadela/manifest.sha256"
 CYTADELA_STATE_DIR="/var/lib/cytadela"
 # shellcheck disable=SC2034

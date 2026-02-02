@@ -153,7 +153,7 @@ _benchmark_basic() {
 # CACHE PERFORMANCE TEST
 # ==============================================================================
 
-benchmark_cache() {
+_benchmark_cache() {
     log_section "💾 CACHE PERFORMANCE TEST"
 
     log_info "Testing cache hit/miss ratio..."
@@ -208,7 +208,7 @@ benchmark_cache() {
 # BLOCKLIST PERFORMANCE
 # ==============================================================================
 
-benchmark_blocklist() {
+_benchmark_blocklist() {
     log_section "🚫 BLOCKLIST PERFORMANCE"
 
     local blocklist_file="/etc/coredns/zones/combined.hosts"
@@ -236,18 +236,46 @@ benchmark_blocklist() {
         total_time=$((total_time + duration))
     done
 
-    local avg_time=$((total_time / ${#blocked_domains[@]}))
+    local avg_time=0
+    local domain_count=${#blocked_domains[@]}
+    if [[ $domain_count -gt 0 ]]; then
+        avg_time=$((total_time / domain_count))
+    fi
 
     log_success "Blocklist benchmark completed!"
     printf "  Blocklist size:    %'d entries\n" "$entries"
     printf "  Block lookup time: %d ms avg\n" "$avg_time"
 }
 
+benchmark_dns() {
+    benchmark_dns_performance
+}
+
+benchmark_cache() {
+    _benchmark_cache
+}
+
+benchmark_blocklist() {
+    _benchmark_blocklist
+}
+
+benchmark_all() {
+    _benchmark_all
+}
+
+benchmark_show_report() {
+    _benchmark_show_report
+}
+
+benchmark_compare() {
+    _benchmark_compare
+}
+
 # ==============================================================================
 # COMPREHENSIVE BENCHMARK
 # ==============================================================================
 
-benchmark_all() {
+_benchmark_all() {
     log_section "🎯 COMPREHENSIVE BENCHMARK SUITE"
 
     mkdir -p "$BENCHMARK_DIR"
@@ -257,8 +285,8 @@ benchmark_all() {
 
     # Run all benchmarks
     benchmark_dns_performance
-    benchmark_cache
-    benchmark_blocklist
+    _benchmark_cache
+    _benchmark_blocklist
 
     local end_time
     end_time=$(date +%s)
