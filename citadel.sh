@@ -190,10 +190,10 @@ case "$ACTION" in
         # Detect language and load appropriate module
         if [[ "${LANG}" =~ ^pl ]]; then
             load_module "uninstall_pl"
-            call_fn "${ACTION}_pl"
+            call_fn "citadel_${ACTION}_pl"
         else
             load_module "uninstall"
-            call_fn "$ACTION"
+            call_fn "citadel_$ACTION"
         fi
         ;;
 
