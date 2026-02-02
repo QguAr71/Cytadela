@@ -121,7 +121,7 @@ Citadel supports **7 languages** with full translations:
 
 ## 🏆 Project Status
 
-### ✅ **v3.1.0 - STABLE** (Current - 2026-01-31)
+### ✅ **v3.1.1 - STABLE** (Current - 2026-02-02)
 
 **Production-ready with:**
 - ✅ 32 functional modules with lazy loading
@@ -263,14 +263,14 @@ sudo ./citadel.sh config-backup        # Backup configuration
 
 ## 📊 Project Status
 
-- **Version:** 3.1.0 (Stable)
+- **Version:** 3.1.1 (Stable)
 - **Development:** Active
 - **Maintenance:** Regular updates
 - **Community:** Growing
 - **License:** GPL-3.0
 
 ### Version History
-- ✅ **v3.1.0** (2026-01-31) - STABLE - Modular architecture, 7 languages, 29 modules
+- ✅ **v3.1.1** (2026-02-02) - STABLE - Modular architecture, 7 languages, 32 modules
 - ✅ **v3.0.0** (2026-01-25) - Initial stable release
 - 🔄 **v3.2.0** (Q1 2026) - PLANNED - Gateway Mode, Terminal UI
 
@@ -342,7 +342,7 @@ For detailed acknowledgments, licenses, and how to support these projects, see [
 
 Citadel uses [Semantic Versioning](https://semver.org/): **MAJOR.MINOR.PATCH**
 
-- **v3.1.0** - Current stable release
+- **v3.1.1** - Current stable release
 - **v3.1.1** - Next patch release (bug fixes)
 - **v3.2.0** - Next minor release (new features)
 
