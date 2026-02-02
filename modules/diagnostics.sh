@@ -14,14 +14,38 @@ run_diagnostics() {
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
-    # Używamy whoami.cloudflare, żeby zweryfikować ścieżkę wyjścia
-    # +time i +tries zapobiegają "wiszeniu" diagnostyki
-    DNS_IP=$(dig +short whoami.cloudflare @127.0.0.1 +time=2 +tries=1 2>/dev/null)
-
-    if [ -n "$DNS_IP" ]; then
+    # Test 1: DNS stack verification (działa z Orange)
+    DNS_IP=$(dig +short wikipedia.org @127.0.0.1 +time=2 +tries=1 2>/dev/null)
+    if [[ -n "$DNS_IP" ]]; then
         log_success "DNS resolution working (Exit IP: $DNS_IP)"
     else
-        log_error "DNS resolution failed or timed out"
+        log_error "DNS resolution failed"
+    fi
+
+    # Test 2: Upstream DNS status (community info)
+    echo -e "\n${CYAN}DNSCrypt Upstream Status:${NC}"
+    upstream=$(sudo journalctl -u dnscrypt-proxy --since "1 hour ago" | grep "Server with the lowest initial latency" | tail -1)
+    if [[ $upstream =~ (.*)\ (rtt:\ ([0-9]+)ms) ]]; then
+        server="${BASH_REMATCH[1]}"
+        rtt="${BASH_REMATCH[3]}"
+        log_success "Upstream: ${server^} (${rtt}ms) via DNSCrypt"
+        
+        # Test 3: Quality assessment
+        if [[ "$rtt" -lt 50 ]]; then
+            echo -e "${GREEN}✅ Excellent DNSCrypt performance${NC}"
+        elif [[ "$rtt" -lt 150 ]]; then
+            echo -e "${YELLOW}⚠️  Moderate latency - check ISP throttling${NC}"
+        else
+            echo -e "${RED}✖ High latency - possible ISP interference${NC}"
+        fi
+    else
+        log_error "Unable to get upstream info"
+    fi
+
+    # Test 4: Internet connectivity (bonus)
+    EXIT_IP=$(curl -s https://1.1.1.1/cdn-cgi/trace | grep -oP 'ip=\K.*')
+    if [[ -n "$EXIT_IP" ]]; then
+        log_success "Internet connectivity (Public IP: $EXIT_IP)"
     fi
 
     echo -e "\n${CYAN}Prometheus Metrics:${NC}"

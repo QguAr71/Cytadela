@@ -4,6 +4,9 @@
 # ║  Polskie komunikaty i help                                                ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load color variables
+source "$(dirname "${BASH_SOURCE[0]}")/cytadela-core.sh"
+
 show_help_pl() {
     echo -e "
 ${BLUE}╔═══════════════════════════════════════════════════════════════════════════╗${NC}

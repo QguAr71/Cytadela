@@ -42,6 +42,8 @@ YELLOW="$VIO"
 BLUE="$VIO"
 # shellcheck disable=SC2034
 CYAN="$EMR"
+# shellcheck disable=SC2034
+PURPLE="$VIO"
 NC="$RST"
 
 # Loaded modules tracking
