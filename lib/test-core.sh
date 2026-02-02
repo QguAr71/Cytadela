@@ -69,6 +69,12 @@ test_network_connectivity() {
     ping -c 1 -W 3 "$target" >/dev/null 2>&1
 }
 
+# Test DNS resolution
+test_dns_resolution() {
+    local domain="${1:-google.com}"
+    dig +short "$domain" @127.0.0.1 +time=3 >/dev/null 2>&1
+}
+
 # Test if interface has IP
 test_interface_ip() {
     local iface="$1"

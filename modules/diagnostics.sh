@@ -21,7 +21,7 @@ run_diagnostics() {
     fi
 
     echo -e "\n${CYAN}Prometheus Metrics:${NC}"
-    curl -s http://127.0.0.1:9153/metrics | grep "coredns_dns_request_count_total" || log_error "Metrics unavailable"
+    curl -s http://127.0.0.1:9153/metrics | grep "^coredns_" | head -5 || log_error "Metrics unavailable"
 
     echo -e "\n${CYAN}DNSCrypt Activity (last 20 lines):${NC}"
     journalctl -u dnscrypt-proxy -n 20 --no-pager
