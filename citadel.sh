@@ -185,6 +185,12 @@ case "$ACTION" in
         call_fn "$ACTION"
         ;;
 
+    # Uninstall
+    uninstall | uninstall-keep-config)
+        load_module "uninstall"
+        call_fn "$ACTION"
+        ;;
+
     # Supply Chain
     supply-chain-status | supply-chain-init | supply-chain-verify)
         load_module "supply-chain"

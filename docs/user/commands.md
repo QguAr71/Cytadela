@@ -148,7 +148,7 @@ Complete list of all Citadel commands.
 | Command | Description |
 |---------|-------------|
 | `config-backup` | Backup configuration |
-| `config-restore <file>` | Restore from backup |
+| `config-restore [file]` | Restore configuration from backup |
 | `config-list` | List backups |
 | `config-delete <file>` | Delete backup |
 | `lkg-save` | Save last-known-good |
@@ -157,7 +157,16 @@ Complete list of all Citadel commands.
 
 ---
 
-## 🔧 Debug Commands
+## �️ Uninstall Commands
+
+| Command | Description |
+|---------|-------------|
+| `uninstall` | Complete removal (config + data) |
+| `uninstall-keep-config` | Stop services, keep config |
+
+---
+
+## �🔧 Debug Commands
 
 | Command | Description |
 |---------|-------------|
