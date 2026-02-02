@@ -24,7 +24,7 @@ run_diagnostics() {
 
     # Test 2: Upstream DNS status (community info)
     echo -e "\n${CYAN}DNSCrypt Upstream Status:${NC}"
-    upstream=$(sudo journalctl -u dnscrypt-proxy --since "1 hour ago" | grep "Server with the lowest initial latency" | tail -1)
+    upstream=$(sudo journalctl -u dnscrypt-proxy --since "2 hours ago" | grep "Server with the lowest initial latency" | tail -1)
     if [[ $upstream =~ (.*)\ (rtt:\ ([0-9]+)ms) ]]; then
         server="${BASH_REMATCH[1]}"
         rtt="${BASH_REMATCH[3]}"
