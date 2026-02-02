@@ -109,12 +109,16 @@ check_dependencies_install() {
 
     # Detect package manager
     local pkg_manager=""
+    local distro_family=""
     if command -v pacman &>/dev/null; then
         pkg_manager="pacman"
+        distro_family="arch"
     elif command -v apt &>/dev/null; then
         pkg_manager="apt"
+        distro_family="debian"
     elif command -v dnf &>/dev/null; then
         pkg_manager="dnf"
+        distro_family="rhel"
     else
         log_error "${T_NO_PKG_MANAGER:-No supported package manager found (pacman/apt/dnf)}"
         return 1
@@ -170,25 +174,123 @@ check_dependencies_install() {
     echo ""
     log_info "${T_INSTALLING_PACKAGES:-Installing packages...}"
 
-    local exit_code=0
-    case "$pkg_manager" in
-        pacman)
-            sudo pacman -S --needed --noconfirm "${packages[@]}" || exit_code=$?
-            ;;
-        apt)
-            sudo apt update && sudo apt install -y "${packages[@]}" || exit_code=$?
-            ;;
-        dnf)
-            sudo dnf install -y "${packages[@]}" || exit_code=$?
-            ;;
-    esac
+    # Install packages one by one to handle failures individually
+    local failed_packages=()
+    local aur_failed=()
+    local success_count=0
 
-    if [[ $exit_code -eq 0 ]]; then
-        log_success "${T_INSTALL_SUCCESS:-Dependencies installed successfully!}"
+    for pkg in "${packages[@]}"; do
         echo ""
-        log_info "${T_VERIFY_HINT:-Run 'sudo cytadela++ check-deps' to verify installation}"
+        log_info "Installing: $pkg"
+        local exit_code=0
+
+        case "$pkg_manager" in
+            pacman)
+                # Try official repos first
+                if ! sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null; then
+                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    
+                    # For Arch - try AUR
+                    if [[ "$distro_family" == "arch" ]]; then
+                        echo -n "  Try to install from AUR? [y/N]: "
+                        read -r aur_answer
+                        
+                        if [[ "$aur_answer" =~ ^[Yy]$ ]]; then
+                            # Check for AUR helper
+                            local aur_helper=""
+                            if command -v yay &>/dev/null; then
+                                aur_helper="yay"
+                            elif command -v paru &>/dev/null; then
+                                aur_helper="paru"
+                            fi
+
+                            if [[ -n "$aur_helper" ]]; then
+                                log_info "  Using AUR helper: $aur_helper"
+                                if ! $aur_helper -S --needed --noconfirm "$pkg" 2>/dev/null; then
+                                    log_error "  ✗ AUR installation failed for '$pkg'"
+                                    aur_failed+=("$pkg")
+                                else
+                                    log_success "  ✓ Installed from AUR: $pkg"
+                                    ((success_count++))
+                                    continue
+                                fi
+                            else
+                                log_warning "  No AUR helper found (yay/paru)"
+                                echo "  Manual installation required:"
+                                echo "    git clone https://aur.archlinux.org/${pkg}.git"
+                                echo "    cd ${pkg} && makepkg -si"
+                                echo ""
+                                read -rp "  Press Enter to continue to next package..."
+                                aur_failed+=("$pkg")
+                            fi
+                        else
+                            failed_packages+=("$pkg")
+                        fi
+                    else
+                        failed_packages+=("$pkg")
+                    fi
+                else
+                    log_success "  ✓ Installed: $pkg"
+                    ((success_count++))
+                fi
+                ;;
+            apt)
+                if ! sudo apt install -y "$pkg" 2>/dev/null; then
+                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    echo "  Alternative sources:"
+                    echo "    - Check third-party PPAs"
+                    echo "    - Build from source"
+                    echo "    - Download .deb package manually"
+                    echo ""
+                    read -rp "  Press Enter to continue to next package..."
+                    failed_packages+=("$pkg")
+                else
+                    log_success "  ✓ Installed: $pkg"
+                    ((success_count++))
+                fi
+                ;;
+            dnf)
+                if ! sudo dnf install -y "$pkg" 2>/dev/null; then
+                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    echo "  Alternative sources:"
+                    echo "    - Enable EPEL: sudo dnf install epel-release"
+                    echo "    - Enable RPM Fusion: sudo dnf install ..."
+                    echo "    - COPR repositories"
+                    echo ""
+                    read -rp "  Press Enter to continue to next package..."
+                    failed_packages+=("$pkg")
+                else
+                    log_success "  ✓ Installed: $pkg"
+                    ((success_count++))
+                fi
+                ;;
+        esac
+    done
+
+    echo ""
+    echo "=== ${T_SUMMARY:-INSTALLATION SUMMARY} ==="
+    echo ""
+    log_success "Successfully installed: $success_count packages"
+
+    if [[ ${#failed_packages[@]} -gt 0 ]]; then
+        log_warning "Failed to install: ${failed_packages[*]}"
+    fi
+
+    if [[ ${#aur_failed[@]} -gt 0 ]]; then
+        log_info "AUR packages need manual install: ${aur_failed[*]}"
+        echo "  Install manually:"
+        for pkg in "${aur_failed[@]}"; do
+            echo "    git clone https://aur.archlinux.org/${pkg}.git && cd ${pkg} && makepkg -si"
+        done
+    fi
+
+    echo ""
+    log_info "${T_VERIFY_HINT:-Run 'sudo cytadela++ check-deps' to verify installation}"
+
+    # Return success if at least some packages were installed
+    if [[ $success_count -gt 0 ]]; then
+        return 0
     else
-        log_error "${T_INSTALL_FAILED:-Installation failed with exit code} $exit_code"
         return 1
     fi
 }
