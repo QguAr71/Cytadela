@@ -418,3 +418,49 @@ Warnings: 0
 | Status | ✅ PASS | ✅ PASS |
 
 **All GitHub Actions workflows should now pass!** 🎉
+
+---
+
+## 📊 SESSION REPORT: 2026-02-02 (Part 5) - Uninstall Module Implementation
+
+### New Feature: Complete Uninstallation System
+
+**Module:** `modules/uninstall.sh` - Full and partial uninstallation support
+
+#### Commands Added
+| Command | Purpose |
+|---------|---------|
+| `uninstall` | Complete removal of Citadel |
+| `uninstall-keep-config` | Stop services, preserve config |
+
+#### Features
+- **Safe DNS restoration**: Restores `/etc/resolv.conf` BEFORE stopping services
+- **DNS connectivity test**: Verifies 1.1.1.1 works before proceeding
+- **Optional package cleanup**: Detects and offers removal of dnsperf, curl, jq, etc.
+- **Dependency checking**: Uses `pacman -Qi` to skip packages required by other apps
+- **Firewall cleanup**: Removes nftables table `citadel_dns`
+- **Service cleanup**: Stops and disables coredns, dnscrypt-proxy
+- **User removal**: Removes system user `dnscrypt`
+- **Complete file removal**: `/etc/coredns/`, `/etc/dnscrypt-proxy/`, `/opt/cytadela/`
+
+#### Safety Features
+- Confirmation required (type `yes`)
+- DNS restored first to prevent internet loss
+- DNS connectivity verified before service shutdown
+- Graceful handling of missing files/directories
+
+#### Documentation Updated
+- `commands.md` - New "Uninstall Commands" table
+- `MANUAL_EN.md` - "## 🗑️ UNINSTALLATION" section
+- `MANUAL_PL.md` - "## 🗑️ DEINSTALACJA" section
+- `quick-start.md` - Brief uninstall section
+
+### Future Enhancement (v3.2)
+Per-feature uninstall planned:
+```bash
+sudo ./citadel.sh uninstall dashboard    # Remove only dashboard
+sudo ./citadel.sh uninstall adblock      # Remove only adblock
+sudo ./citadel.sh uninstall health       # Remove only watchdog
+```
+
+---
