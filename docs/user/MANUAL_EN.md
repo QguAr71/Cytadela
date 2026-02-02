@@ -365,13 +365,22 @@ sudo ./citadel.sh uninstall
 ```
 
 **This will:**
+- Check and optionally remove optional packages (dnsperf, curl, jq)
+- **Restore DNS** (checks backup validity, uses NetworkManager if available, or sets fallback DNS)
+- **Test DNS** with multiple servers (1.1.1.1, 8.8.8.8, 9.9.9.9) before proceeding
 - Stop and disable services (coredns, dnscrypt-proxy)
 - Remove firewall rules
 - Delete configuration files (`/etc/coredns/`, `/etc/dnscrypt-proxy/`)
 - Remove data directories
 - Remove system user `dnscrypt`
-- Restore original DNS settings
-- Check for optional packages (dnsperf, curl, jq) and offer removal
+
+**DNS Safety Features:**
+- Ignores backup if it points to localhost (127.0.0.1)
+- Attempts to use NetworkManager auto-DNS if available
+- Uses 3 fallback DNS servers (Cloudflare, Google, Quad9)
+- Tests DNS before continuing - warns if not working
+- Allows cancellation if DNS issues detected
+- Provides manual fix instructions
 
 **Confirmation required:** Type `yes` to proceed.
 
