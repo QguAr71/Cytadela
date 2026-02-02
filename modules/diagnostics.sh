@@ -4,6 +4,9 @@
 # ║  Diagnostic tools and verification                                        ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load centralized test functions
+source_lib "${CYTADELA_LIB}/test-core.sh"
+
 run_diagnostics() {
     log_section "🔍 CITADEL++ DIAGNOSTICS"
 
@@ -11,7 +14,11 @@ run_diagnostics() {
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
-    dig +short whoami.cloudflare @127.0.0.1 || log_error "DNS resolution failed"
+    if test_dns_resolution whoami.cloudflare; then
+        dig +short whoami.cloudflare @127.0.0.1
+    else
+        log_error "DNS resolution failed"
+    fi
 
     echo -e "\n${CYAN}Prometheus Metrics:${NC}"
     curl -s http://127.0.0.1:9153/metrics | grep "coredns_dns_request_count_total" || log_error "Metrics unavailable"

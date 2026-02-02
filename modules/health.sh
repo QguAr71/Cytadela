@@ -4,21 +4,13 @@
 # ║  Health checks and watchdog                                               ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load centralized test functions
+source_lib "${CYTADELA_LIB}/test-core.sh"
+
 HEALTH_CHECK_SERVICES=(dnscrypt-proxy coredns)
 
 health_check_dns() {
-    local test_domain="cloudflare.com"
-    local timeout=3
-
-    if command -v dig &>/dev/null; then
-        dig +short +time=$timeout "$test_domain" @127.0.0.1 >/dev/null 2>&1
-        return $?
-    elif command -v nslookup &>/dev/null; then
-        timeout $timeout nslookup "$test_domain" 127.0.0.1 >/dev/null 2>&1
-        return $?
-    else
-        ss -ln | grep -q ":53 " && return 0 || return 1
-    fi
+    test_dns_resolution "cloudflare.com"
 }
 
 health_status() {
@@ -28,7 +20,7 @@ health_status() {
 
     echo "=== SERVICES ==="
     for svc in "${HEALTH_CHECK_SERVICES[@]}"; do
-        if systemctl is-active --quiet "$svc" 2>/dev/null; then
+        if test_service_active "$svc"; then
             printf "${GREEN}%-20s ACTIVE${NC}\n" "$svc"
         else
             printf "${RED}%-20s INACTIVE${NC}\n" "$svc"
@@ -47,7 +39,7 @@ health_status() {
 
     echo ""
     echo "=== FIREWALL ==="
-    if nft list tables 2>/dev/null | grep -q "citadel"; then
+    if test_nftables_citadel; then
         log_success "Citadel firewall rules loaded"
     else
         log_warning "Citadel firewall rules NOT loaded"
