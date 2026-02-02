@@ -56,19 +56,76 @@ citadel_uninstall() {
 
     # CRITICAL: Restore DNS first (before stopping services!)
     log_info "Restoring original DNS configuration..."
+    
+    local dns_restored=false
+    local dns_servers=("1.1.1.1" "8.8.8.8" "9.9.9.9")
+    
+    # Check if backup exists and is valid (not pointing to localhost)
     if [[ -f /etc/resolv.conf.bak ]]; then
-        mv /etc/resolv.conf.bak /etc/resolv.conf 2>/dev/null || true
-        log_success "Restored from backup"
-    else
-        echo "nameserver 1.1.1.1" > /etc/resolv.conf
-        log_info "Set fallback DNS (1.1.1.1)"
+        local backup_dns
+        backup_dns=$(grep "^nameserver" /etc/resolv.conf.bak | head -1 | awk '{print $2}')
+        if [[ "$backup_dns" != "127.0.0.1" && -n "$backup_dns" ]]; then
+            mv /etc/resolv.conf.bak /etc/resolv.conf 2>/dev/null || true
+            log_success "Restored from backup (DNS: $backup_dns)"
+            dns_restored=true
+        else
+            log_warning "Backup points to localhost, ignoring..."
+            rm -f /etc/resolv.conf.bak 2>/dev/null || true
+        fi
+    fi
+    
+    # If no valid backup, try to detect system DNS configuration
+    if [[ "$dns_restored" == false ]]; then
+        # Try NetworkManager
+        if command -v nmcli >/dev/null 2>&1 && systemctl is-active --quiet NetworkManager; then
+            log_info "Detected NetworkManager - enabling automatic DNS..."
+            nmcli general reload 2>/dev/null || true
+            # Wait a moment for NM to configure DNS
+            sleep 2
+            if dig +time=2 +tries=1 google.com >/dev/null 2>&1; then
+                log_success "NetworkManager DNS is working"
+                dns_restored=true
+            fi
+        fi
+    fi
+    
+    # If still no DNS, use fallback servers
+    if [[ "$dns_restored" == false ]]; then
+        log_info "Setting fallback DNS servers..."
+        {
+            echo "# Temporary DNS configuration after Citadel uninstall"
+            echo "nameserver 1.1.1.1"
+            echo "nameserver 8.8.8.8"
+            echo "nameserver 9.9.9.9"
+        } > /etc/resolv.conf
+        log_info "Set fallback DNS (Cloudflare, Google, Quad9)"
     fi
 
-    # Test DNS before proceeding
-    if dig +time=2 +tries=1 @1.1.1.1 google.com >/dev/null 2>&1; then
-        log_success "DNS connectivity verified"
-    else
-        log_warning "DNS test failed - system may lose internet after restart"
+    # Test DNS connectivity with multiple servers
+    log_info "Testing DNS connectivity..."
+    local dns_works=false
+    for server in "${dns_servers[@]}"; do
+        if dig +time=2 +tries=1 @"$server" google.com >/dev/null 2>&1; then
+            log_success "DNS connectivity verified via $server"
+            dns_works=true
+            break
+        fi
+    done
+    
+    if [[ "$dns_works" == false ]]; then
+        log_error "DNS test failed - system may lose internet after restart!"
+        echo ""
+        log_info "Manual fix options:"
+        log_info "  1. Restart NetworkManager: sudo systemctl restart NetworkManager"
+        log_info "  2. Or restart systemd-resolved: sudo systemctl restart systemd-resolved"
+        log_info "  3. Or manually edit: sudo nano /etc/resolv.conf"
+        log_info "     and add: nameserver 1.1.1.1"
+        echo ""
+        read -rp "Continue with uninstall despite DNS issues? (yes/no): " continue_anyway
+        if [[ "$continue_anyway" != "yes" ]]; then
+            log_info "Uninstall cancelled. Fix DNS first, then run uninstall again."
+            return 0
+        fi
     fi
 
     echo ""
