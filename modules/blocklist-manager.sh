@@ -78,7 +78,7 @@ blocklist_switch() {
         return 0
     fi
 
-    IFS='|' read -r _name desc urls <<<"${BLOCKLIST_PROFILES[$new_profile]}"
+    IFS='|' read -r name desc urls <<<"${BLOCKLIST_PROFILES[$new_profile]}"
 
     log_info "Switching from: $current_profile"
     log_info "Switching to:   $new_profile ($desc)"
@@ -101,6 +101,9 @@ blocklist_switch() {
     local tmp_block
     tmp_block=$(mktemp)
     local download_failed=0
+
+    # Cleanup on exit
+    trap 'rm -f "$tmp_raw" "$tmp_block"' EXIT
 
     if [[ "$urls" == "CUSTOM" ]]; then
         # Use custom URLs

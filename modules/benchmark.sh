@@ -69,10 +69,10 @@ EOF
 
     # Parse results
     local queries_sent queries_completed qps avg_latency
-    queries_sent=$(echo "$benchmark_output" | grep "Queries sent:" | awk '{print $3}')
-    queries_completed=$(echo "$benchmark_output" | grep "Queries completed:" | awk '{print $3}')
-    qps=$(echo "$benchmark_output" | grep "Queries per second:" | awk '{print $4}')
-    avg_latency=$(echo "$benchmark_output" | grep "Average Latency" | awk '{print $3}')
+    queries_sent=$(echo "$benchmark_output" | grep "Queries sent:" | awk '{print $3}' || echo "0")
+    queries_completed=$(echo "$benchmark_output" | grep "Queries completed:" | awk '{print $3}' || echo "0")
+    qps=$(echo "$benchmark_output" | grep "Queries per second:" | awk '{print $4}' || echo "0")
+    avg_latency=$(echo "$benchmark_output" | grep "Average Latency" | awk '{print $3}' || echo "N/A")
 
     # Save report
     cat > "$BENCHMARK_REPORT" << EOF

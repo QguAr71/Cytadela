@@ -76,7 +76,8 @@ test_installation() {
     
     # Check version (skip if requires sudo)
     if cytadela++ --version >/dev/null 2>&1; then
-        local version=$(cytadela++ --version 2>/dev/null | head -1)
+        local version
+        version=$(cytadela++ --version 2>/dev/null | head -1)
         test_pass "Version check: $version"
     else
         test_info "Version check skipped (requires sudo)"
@@ -119,7 +120,8 @@ test_dns_basic() {
     
     # Test 1: Can resolve google.com
     if dig +short google.com @127.0.0.1 +time=3 >/dev/null 2>&1; then
-        local ip=$(dig +short google.com @127.0.0.1 +time=3 2>/dev/null | head -1)
+        local ip
+        ip=$(dig +short google.com @127.0.0.1 +time=3 2>/dev/null | head -1)
         test_pass "DNS resolution works (google.com → $ip)"
     else
         test_fail "Cannot resolve google.com" "Check DNS services: sudo systemctl status coredns"
@@ -149,7 +151,8 @@ test_adblock() {
     local blocked=0
     
     for domain in "${ad_domains[@]}"; do
-        local result=$(dig +short "$domain" @127.0.0.1 +time=2 2>/dev/null | head -1)
+        local result
+        result=$(dig +short "$domain" @127.0.0.1 +time=2 2>/dev/null | head -1)
         if [[ "$result" == "0.0.0.0" ]]; then
             ((blocked++))
         fi
@@ -178,7 +181,8 @@ test_firewall() {
         test_pass "Firewall table exists (citadel_dns)"
         
         # Check if rules are present
-        local rules_count=$(sudo nft list table inet citadel_dns 2>/dev/null | grep -c "udp dport 53" || true)
+        local rules_count
+        rules_count=$(sudo nft list table inet citadel_dns 2>/dev/null | grep -c "udp dport 53" || true)
         if [[ $rules_count -gt 0 ]]; then
             test_pass "DNS leak protection rules active ($rules_count rules)"
         else
@@ -250,7 +254,8 @@ test_performance() {
     print_header "Test 9: Performance Check"
     
     # Test query time
-    local query_time=$(dig google.com @127.0.0.1 2>/dev/null | grep "Query time:" | awk '{print $4}')
+    local query_time
+    query_time=$(dig google.com @127.0.0.1 2>/dev/null | grep "Query time:" | awk '{print $4}')
     
     if [[ -n "$query_time" ]]; then
         if [[ $query_time -lt 50 ]]; then
