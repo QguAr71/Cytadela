@@ -58,8 +58,12 @@ source_lib() {
 source_lib "${CYTADELA_LIB}/cytadela-core.sh"
 source_lib "${CYTADELA_LIB}/network-utils.sh"
 source_lib "${CYTADELA_LIB}/module-loader.sh"
-# domyślnie ładujemy polskie tłumaczenia; rozważ wybór na podstawie env/arg
-source_lib "${CYTADELA_LIB}/i18n-pl.sh"
+# Load i18n based on LANG environment
+if [[ "${LANG}" =~ ^pl ]]; then
+    source_lib "${CYTADELA_LIB}/i18n/pl.sh"
+else
+    source_lib "${CYTADELA_LIB}/i18n/en.sh"
+fi
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
 call_fn() {
