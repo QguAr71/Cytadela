@@ -15,7 +15,8 @@ run_diagnostics() {
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
     # Test 1: DNS stack verification (działa z Orange)
-    DNS_IP=$(dig +short wikipedia.org @127.0.0.1 +time=2 +tries=1 2>/dev/null)
+    local DNS_IP=""
+    DNS_IP=$(dig +short wikipedia.org @127.0.0.1 +time=2 +tries=1 2>/dev/null) || true
     if [[ -n "$DNS_IP" ]]; then
         log_success "DNS resolution working (Exit IP: $DNS_IP)"
     else
