@@ -494,3 +494,29 @@ sudo ./citadel.sh uninstall health       # Remove only watchdog
 - All set -e conflicts resolved
 
 ---
+
+## 📊 SESSION REPORT: 2026-02-02 (Part 7) - Uninstall DNS Safety Improvements
+
+### DNS Restoration Enhancements
+
+| Issue | Solution |
+|-------|----------|
+| Backup points to 127.0.0.1 | Check backup content, ignore if points to localhost |
+| VPN/custom DNS config | Try NetworkManager auto-DNS first |
+| ISP blocks port 53 | Test 3 different DNS servers (1.1.1.1, 8.8.8.8, 9.9.9.9) |
+| DNS test failure | Allow user to cancel uninstall with manual fix instructions |
+
+### New Safety Flow
+
+1. Check backup validity (must not be 127.0.0.1)
+2. Try NetworkManager if available
+3. Set 3 fallback DNS servers
+4. Test all 3 servers
+5. If none work → show fix instructions + allow cancel
+
+### Documentation Updated
+
+- `MANUAL_EN.md` - DNS safety features section
+- `MANUAL_PL.md` - Polish translation
+
+---
