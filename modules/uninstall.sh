@@ -54,6 +54,25 @@ citadel_uninstall() {
 
     echo ""
 
+    # CRITICAL: Restore DNS first (before stopping services!)
+    log_info "Restoring original DNS configuration..."
+    if [[ -f /etc/resolv.conf.bak ]]; then
+        mv /etc/resolv.conf.bak /etc/resolv.conf 2>/dev/null || true
+        log_success "Restored from backup"
+    else
+        echo "nameserver 1.1.1.1" > /etc/resolv.conf
+        log_info "Set fallback DNS (1.1.1.1)"
+    fi
+
+    # Test DNS before proceeding
+    if dig +time=2 +tries=1 @1.1.1.1 google.com >/dev/null 2>&1; then
+        log_success "DNS connectivity verified"
+    else
+        log_warning "DNS test failed - system may lose internet after restart"
+    fi
+
+    echo ""
+
     # Stop and disable services
     log_info "Stopping services..."
     systemctl stop coredns dnscrypt-proxy 2>/dev/null || true
@@ -90,14 +109,6 @@ citadel_uninstall() {
     log_info "Removing dashboard..."
     rm -f /usr/local/bin/citadel-top 2>/dev/null || true
     rm -f /etc/systemd/system/citadel-dashboard.service 2>/dev/null || true
-
-    # Restore original DNS
-    log_info "Restoring original DNS configuration..."
-    if [[ -f /etc/resolv.conf.bak ]]; then
-        mv /etc/resolv.conf.bak /etc/resolv.conf 2>/dev/null || true
-    else
-        echo "nameserver 1.1.1.1" > /etc/resolv.conf
-    fi
 
     # Remove cron jobs
     log_info "Removing scheduled tasks..."
