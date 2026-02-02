@@ -185,11 +185,18 @@ case "$ACTION" in
         call_fn "$ACTION"
         ;;
 
-    # Uninstall
+    # Uninstall (with i18n support)
     uninstall | uninstall-keep-config)
-        load_module "uninstall"
-        call_fn "$ACTION"
+        # Detect language and load appropriate module
+        if [[ "${LANG}" =~ ^pl ]]; then
+            load_module "uninstall_pl"
+            call_fn "${ACTION}_pl"
+        else
+            load_module "uninstall"
+            call_fn "$ACTION"
+        fi
         ;;
+
 
     # Supply Chain
     supply-chain-status | supply-chain-init | supply-chain-verify)
