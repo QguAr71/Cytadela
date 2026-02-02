@@ -1,7 +1,7 @@
 # 🛡️ CITADEL - COMPLETE USER MANUAL
 
-**Version:** 3.1.0  
-**Date:** 2026-01-31  
+**Version:** 3.1.1  
+**Date:** 2026-02-02  
 **Language:** English
 
 ---

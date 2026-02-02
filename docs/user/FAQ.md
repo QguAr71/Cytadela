@@ -458,4 +458,4 @@ sudo ./citadel.sh diagnostics
 ---
 
 **Last updated:** 2026-01-31  
-**Version:** 3.1.0
+**Version:** 3.1.1

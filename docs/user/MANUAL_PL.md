@@ -1,6 +1,6 @@
 # 🛡️ CITADEL - KOMPLETNY PODRĘCZNIK UŻYTKOWNIKA
 
-**Wersja:** 3.1.0  
+**Wersja:** 3.1.1  
 **Data:** 2026-01-31  
 **Język:** Polski
 
