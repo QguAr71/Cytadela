@@ -16,6 +16,9 @@ Complete list of all Citadel commands.
 | `install-dashboard` | Install terminal dashboard |
 | `install-editor` | Install editor integration |
 | `install-doh-parallel` | Install DoH parallel racing |
+| `check-deps` | Check dependencies |
+| `check-dependencies` | Check dependencies (alias) |
+| `check-deps --install` | Install missing dependencies |
 
 ---
 
@@ -41,8 +44,13 @@ Complete list of all Citadel commands.
 | `verify` | Verify full stack |
 | `diagnostics` | Run full diagnostics |
 | `health-status` | Health check |
+| `health-install` | Install health watchdog |
+| `health-uninstall` | Uninstall health watchdog |
 | `discover` | Network & firewall snapshot |
 | `cache-stats` | DNS cache statistics |
+| `cache-stats-top [N]` | Top N most queried domains |
+| `cache-stats-reset` | Reset statistics |
+| `cache-stats-watch` | Watch statistics live |
 | `logs` | Show recent logs |
 
 ---
@@ -60,6 +68,13 @@ Complete list of all Citadel commands.
 | `adblock-rebuild` | Rebuild blocklist |
 | `blocklist-list` | List available blocklist profiles |
 | `blocklist-switch <profile>` | Switch blocklist profile |
+| `blocklist-status` | Show blocklist status |
+| `blocklist-add-url <url>` | Add custom blocklist URL |
+| `blocklist-remove-url <url>` | Remove blocklist URL |
+| `blocklist-show-urls` | Show configured blocklist URLs |
+| `allowlist-list` | Show allowlisted domains |
+| `allowlist-add <domain>` | Add domain to allowlist |
+| `allowlist-remove <domain>` | Remove domain from allowlist |
 
 ---
 
@@ -160,6 +175,7 @@ Complete list of all Citadel commands.
 | `test` | Basic DNS test |
 | `test-all` | Comprehensive tests |
 | `safe-test` | Safe test mode |
+| `benchmark` | DNS performance benchmark |
 
 ---
 
