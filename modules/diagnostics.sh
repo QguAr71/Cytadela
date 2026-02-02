@@ -14,14 +14,20 @@ run_diagnostics() {
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
 
     echo -e "\n${CYAN}DNS Resolution Test:${NC}"
-    if test_dns_resolution whoami.cloudflare; then
-        dig +short whoami.cloudflare @127.0.0.1
+    if test_dns_resolution; then
+        log_success "DNS resolution working"
     else
         log_error "DNS resolution failed"
     fi
 
     echo -e "\n${CYAN}Prometheus Metrics:${NC}"
-    curl -s http://127.0.0.1:9153/metrics | grep "^coredns_" | head -5 || log_error "Metrics unavailable"
+    local metrics
+    metrics=$(curl -s http://127.0.0.1:9153/metrics 2>/dev/null)
+    if echo "$metrics" | grep -q "^coredns_"; then
+        echo "$metrics" | grep "^coredns_" | head -5
+    else
+        log_error "Metrics unavailable"
+    fi
 
     echo -e "\n${CYAN}DNSCrypt Activity (last 20 lines):${NC}"
     journalctl -u dnscrypt-proxy -n 20 --no-pager
