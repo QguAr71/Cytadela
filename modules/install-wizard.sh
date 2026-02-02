@@ -73,14 +73,8 @@ select_language() {
 }
 
 install_wizard() {
-    # Load i18n for detection menu
-    local wiz_lang="${LANG%%_*}"
-    wiz_lang="${wiz_lang:-en}"
-    local wiz_module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
-    if [[ -f "${wiz_module_dir}/lib/i18n/${wiz_lang}.sh" ]]; then
-        # shellcheck source=/dev/null
-        source "${wiz_module_dir}/lib/i18n/${wiz_lang}.sh"
-    fi
+    # Load i18n for install-wizard module
+    load_i18n_module "install-wizard"
 
     # Check if Citadel is already installed - offer management options
     if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
@@ -160,24 +154,8 @@ fullscale=brightgreen,black
     local WIZARD_LANG
     WIZARD_LANG=$(select_language "${1:-}")
 
-    # Load i18n translations for selected language
-    # Determine script directory (same as citadel.sh bootstrap)
-    local module_dir
-    if command -v realpath >/dev/null 2>&1; then
-        module_dir="$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"
-    else
-        module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
-    fi
-
-    local i18n_file="${module_dir}/lib/i18n/${WIZARD_LANG}.sh"
-    if [[ -f "$i18n_file" ]]; then
-        # shellcheck source=/dev/null
-        source "$i18n_file"
-    else
-        log_warning "Translation file not found: $i18n_file, falling back to English"
-        # shellcheck source=/dev/null
-        source "${module_dir}/lib/i18n/en.sh"
-    fi
+    # Reload i18n with selected language
+    CYTADELA_LANG="$WIZARD_LANG" load_i18n_module "install-wizard"
 
     # Display wizard title in selected language
     log_section "🎯 ${T_WIZARD_TITLE}"

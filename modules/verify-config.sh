@@ -20,14 +20,8 @@ MODULE_TAGS=("config" "verify" "diagnostics")
 # =============================================================================
 
 verify_config() {
-    # Load i18n strings based on language
-    local lang="${LANG%%_*}"
-    lang="${lang:-en}"
-    local module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
-    if [[ -f "${module_dir}/lib/i18n/${lang}.sh" ]]; then
-        # shellcheck source=/dev/null
-        source "${module_dir}/lib/i18n/${lang}.sh"
-    fi
+    # Load i18n for verify-config module
+    load_i18n_module "verify-config"
     
     # Parse arguments
     local action="${1:-check}"

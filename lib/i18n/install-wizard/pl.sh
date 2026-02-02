@@ -1,0 +1,48 @@
+#!/bin/bash
+# Kreator Instalacji - Tłumaczenia (PL)
+
+export T_WIZARD_TITLE="INTERAKTYWNY KREATOR INSTALACJI"
+export T_DIALOG_TITLE="Cytadela++ v3.1 - Kreator Instalacji"
+export T_SELECT_MODULES="Wybierz moduły do instalacji:"
+export T_DIALOG_HELP="(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)"
+export T_REQUIRED_NOTE="Moduły wymagane są wstępnie zaznaczone i nie można ich wyłączyć."
+
+export T_MOD_DNSCRYPT="Szyfrowany resolver DNS (DNSCrypt/DoH)"
+export T_MOD_COREDNS="Lokalny serwer DNS z adblockiem i cache"
+export T_MOD_NFTABLES="Reguły firewall (ochrona przed DNS leak)"
+export T_MOD_HEALTH="Auto-restart usług przy awarii"
+export T_MOD_SUPPLY="Weryfikacja binariów (sumy kontrolne)"
+export T_MOD_LKG="Cache Last Known Good dla blocklist"
+export T_MOD_IPV6="Zarządzanie rozszerzeniami prywatności IPv6"
+export T_MOD_LOCATION="Firewall zależny od SSID"
+export T_MOD_DEBUG="Łańcuch debug NFTables z logowaniem"
+
+export T_SUMMARY_TITLE="PODSUMOWANIE INSTALACJI"
+export T_SELECTED_MODULES="Wybrane moduły:"
+export T_CONFIRM_WARNING="To zainstaluje i skonfiguruje usługi DNS w Twoim systemie."
+export T_CONFIRM_PROMPT="Kontynuować instalację? [t/N]: "
+
+export T_INSTALLING_TITLE="INSTALOWANIE MODUŁÓW"
+export T_INSTALLING="Instalowanie"
+export T_INSTALLED="zainstalowany"
+export T_FAILED="instalacja nie powiodła się"
+export T_INITIALIZED="zainicjalizowany"
+export T_INIT_FAILED="inicjalizacja nie powiodła się"
+export T_CACHE_SAVED="cache zapisany"
+export T_CONFIGURED="skonfigurowany"
+export T_CONFIG_SKIPPED="konfiguracja pominięta"
+export T_MODULE_LOADED="moduł załadowany"
+export T_USE_COMMAND="użyj"
+export T_TO_ENABLE="aby włączyć"
+
+export T_COMPLETE_TITLE="INSTALACJA ZAKOŃCZONA"
+export T_ALL_SUCCESS="Wszystkie moduły zainstalowane pomyślnie!"
+export T_SOME_FAILED="instalacja modułu/ów nie powiodła się"
+export T_NEXT_STEPS="Następne kroki:"
+export T_STEP_TEST="Test DNS: dig +short google.com @127.0.0.1"
+export T_STEP_CONFIG="Konfiguracja systemu: sudo cytadela++ configure-system"
+export T_STEP_VERIFY="Weryfikacja: sudo cytadela++ verify"
+
+export T_CANCELLED="Instalacja anulowana przez użytkownika"
+export T_CANCELLED_SHORT="Instalacja anulowana"
+export T_UNKNOWN_MODULE="Nieznany moduł"

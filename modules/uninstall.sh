@@ -5,14 +5,8 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 citadel_uninstall() {
-    # Load i18n strings based on language
-    local lang="${LANG%%_*}"
-    lang="${lang:-en}"
-    local module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
-    if [[ -f "${module_dir}/lib/i18n/${lang}.sh" ]]; then
-        # shellcheck source=/dev/null
-        source "${module_dir}/lib/i18n/${lang}.sh"
-    fi
+    # Load i18n for uninstall module
+    load_i18n_module "uninstall"
 
     log_section "🗑️  ${T_UNINSTALL_TITLE:-CITADEL++ UNINSTALLATION}"
 
