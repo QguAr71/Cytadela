@@ -97,7 +97,7 @@ check_dep() {
             printf "  ${RED}✗${NC} %-20s %s\n" "$cmd" "$desc"
             [[ -n "$install_hint" ]] && echo "      Install: $install_hint"
         else
-            printf "  ${YELLOW}⚠${NC} %-20s %s\n" "$cmd" "$desc"
+            printf "  ${YELLOW}󰀨${NC} %-20s %s\n" "$cmd" "$desc"
             [[ -n "$install_hint" ]] && echo "      Install: $install_hint"
         fi
         return 1
@@ -188,7 +188,7 @@ check_dependencies_install() {
             pacman)
                 # Try official repos first
                 if ! sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null; then
-                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    log_warning "󰀨 Package '$pkg' not found in official repositories"
                     
                     # For Arch - try AUR
                     if [[ "$distro_family" == "arch" ]]; then
@@ -236,7 +236,7 @@ check_dependencies_install() {
                 ;;
             apt)
                 if ! sudo apt install -y "$pkg" 2>/dev/null; then
-                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    log_warning "󰀨 Package '$pkg' not found in official repositories"
                     echo "  Alternative sources:"
                     echo "    - Check third-party PPAs"
                     echo "    - Build from source"
@@ -251,7 +251,7 @@ check_dependencies_install() {
                 ;;
             dnf)
                 if ! sudo dnf install -y "$pkg" 2>/dev/null; then
-                    log_warning "⚠ Package '$pkg' not found in official repositories"
+                    log_warning "󰀨 Package '$pkg' not found in official repositories"
                     echo "  Alternative sources:"
                     echo "    - Enable EPEL: sudo dnf install epel-release"
                     echo "    - Enable RPM Fusion: sudo dnf install ..."

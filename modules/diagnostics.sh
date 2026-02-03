@@ -38,7 +38,7 @@ run_diagnostics() {
         if [[ "$rtt" -lt 50 ]]; then
             echo -e "${GREEN}󰄬 ${T_DIAG_UPSTREAM_EXCELLENT:-Excellent DNSCrypt performance}${NC}"
         elif [[ "$rtt" -lt 150 ]]; then
-            echo -e "${YELLOW}⚠️  ${T_DIAG_UPSTREAM_MODERATE:-Moderate latency - check ISP throttling}${NC}"
+            echo -e "${YELLOW}󰀨  ${T_DIAG_UPSTREAM_MODERATE:-Moderate latency - check ISP throttling}${NC}"
         else
             echo -e "${RED}✖ ${T_DIAG_UPSTREAM_HIGH:-High latency - possible ISP interference}${NC}"
         fi
@@ -158,7 +158,7 @@ test_all() {
         if ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
             echo "  󰄬 IPv6 connectivity OK"
         else
-            echo "  ⚠ IPv6 connectivity FAILED"
+            echo "  󰀨 IPv6 connectivity FAILED"
         fi
     else
         echo "  (ping6 not installed)"

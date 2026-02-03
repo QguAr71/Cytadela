@@ -8,7 +8,7 @@ citadel_uninstall() {
     # Load i18n for uninstall module
     load_i18n_module "uninstall"
 
-    log_section "🗑️  ${T_UNINSTALL_TITLE:-CITADEL++ UNINSTALLATION}"
+    log_section "󰩹  ${T_UNINSTALL_TITLE:-CITADEL++ UNINSTALLATION}"
 
     log_warning "${T_UNINSTALL_WARNING:-This will REMOVE all Citadel components!}"
     log_info "${T_UNINSTALL_INFO:-Services will be stopped and disabled}"
@@ -212,7 +212,7 @@ citadel_uninstall_keep_config() {
         source "${module_dir}/lib/i18n/${lang}.sh"
     fi
 
-    log_section "🗑️  ${T_KEEP_CONFIG_TITLE:-CITADEL++ UNINSTALL (Keep Config)}"
+    log_section "󰩹  ${T_KEEP_CONFIG_TITLE:-CITADEL++ UNINSTALL (Keep Config)}"
 
     log_warning "${T_KEEP_CONFIG_WARNING:-This will stop services but KEEP configuration files}"
     echo ""

@@ -177,7 +177,7 @@ verify_config_dns() {
     if dig +dnssec +short @127.0.0.1 dnssec-failed.org 2>/dev/null | grep -q "SERVFAIL"; then
         log_success "  󰄬 ${T_VERIFY_DNSSEC_OK:-DNSSEC validation working}"
     else
-        log_warning "  ⚠ ${T_VERIFY_DNSSEC_WARN:-DNSSEC validation may not be enforced}"
+        log_warning "  󰀨 ${T_VERIFY_DNSSEC_WARN:-DNSSEC validation may not be enforced}"
     fi
     
     if [[ $failed -eq 0 ]]; then

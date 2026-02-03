@@ -126,7 +126,7 @@ EOF
 }
 
 uninstall_health_watchdog() {
-    log_section "🗑️ UNINSTALLING HEALTH WATCHDOG"
+    log_section "󰩹 UNINSTALLING HEALTH WATCHDOG"
 
     systemctl stop citadel-health-check.timer 2>/dev/null || true
     systemctl disable citadel-health-check.timer 2>/dev/null || true

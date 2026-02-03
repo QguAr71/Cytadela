@@ -35,7 +35,7 @@ safe_test_mode() {
     # Test 3: Check ports
     log_info "Sprawdzanie portów..."
     if ss -ln | grep -q ":53"; then
-        echo "⚠ Port 53 zajęty - może wymagać zatrzymania systemd-resolved"
+        echo "󰀨 Port 53 zajęty - może wymagać zatrzymania systemd-resolved"
     else
         echo "󰄬 Port 53 wolny"
     fi

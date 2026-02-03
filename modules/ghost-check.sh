@@ -62,7 +62,7 @@ ghost_check() {
             done
 
             if [[ $allowed -eq 0 ]]; then
-                printf "${YELLOW}%-8s %-25s %-20s %s${NC} ⚠ EXPOSED (%s)\n" "$proto" "$addr" "$state" "$process" "$exposure_type"
+                printf "${YELLOW}%-8s %-25s %-20s %s${NC} 󰀨 EXPOSED (%s)\n" "$proto" "$addr" "$state" "$process" "$exposure_type"
                 ((warnings++))
             else
                 printf "${GREEN}%-8s %-25s %-20s %s${NC} 󰄬 (allowed)\n" "$proto" "$addr" "$state" "$process"

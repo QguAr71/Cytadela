@@ -96,7 +96,7 @@ EOF
 }
 
 config_restore() {
-    log_section "♻️  CONFIG RESTORE"
+    log_section "󰜸  CONFIG RESTORE"
 
     local backup_file="$1"
 
@@ -224,7 +224,7 @@ config_list() {
 }
 
 config_delete() {
-    log_section "🗑️  DELETE BACKUP"
+    log_section "󰩹  DELETE BACKUP"
 
     local backup_file="$1"
 

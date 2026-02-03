@@ -57,7 +57,7 @@ install_all() {
         test_domain="$(awk 'NF>=2 {print $2; exit}' /etc/coredns/zones/custom.hosts 2>/dev/null || true)"
         [[ -z "$test_domain" ]] && test_domain="$(awk 'NF>=2 {print $2; exit}' /etc/coredns/zones/combined.hosts 2>/dev/null || true)"
         if [[ -z "$test_domain" ]]; then
-            echo "  ⚠ Adblock test: custom.hosts/combined.hosts empty/missing"
+            echo "  󰀨 Adblock test: custom.hosts/combined.hosts empty/missing"
         else
             if dig +time=2 +tries=1 +short "$test_domain" @127.0.0.1 2>/dev/null | head -n 1 | grep -qx "0.0.0.0"; then
                 echo "  󰄬 Adblock test ($test_domain): BLOCKED (0.0.0.0)"

@@ -61,7 +61,7 @@ declare -gA CYTADELA_LOADED_MODULES
 # ==============================================================================
 log_info() { printf '%b\n' "${EMR}󰄮${RST} ${VIO}$1${RST}"; }
 log_success() { printf '%b\n' "${EMR}✔${RST} $1"; }
-log_warning() { printf '%b\n' "${RED}⚠${RST} $1"; }
+log_warning() { printf '%b\n' "${RED}󰀨${RST} $1"; }
 log_error() { printf '%b\n' "${RED}✖${RST} $1" >&2; }
 log_section() {
     printf '\n%b\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
