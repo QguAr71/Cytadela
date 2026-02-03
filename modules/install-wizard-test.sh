@@ -50,7 +50,7 @@ print_frame_footer() {
 
 select_language_menu() {
     while true; do
-        clear 2>/dev/null || echo ""
+        # clear 2>/dev/null || echo ""
         print_frame_header "${T_SELECT_LANG:-SELECT LANGUAGE}"
         print_frame_line "${GREEN}[1]${NC} English"
         print_frame_line "${GREEN}[2]${NC} Polski"
