@@ -46,7 +46,7 @@ citadel_help() {
         print_frame_line "${GREEN}[5]${NC} ${T_HELP_MENU_5:-5. Emergency}"
         print_frame_line "${YELLOW}[6]${NC} ${T_HELP_MENU_6:-6. All Commands}"
         print_frame_line ""
-        print_frame_line "${RED}[q]${NC} ${T_HELP_MENU_QUIT:-Quit}"
+        print_frame_line "${VIO}[q]${NC} ${T_HELP_MENU_QUIT:-Quit}"
         echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
         echo -n "${T_HELP_PROMPT:-Your choice}: "
