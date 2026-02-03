@@ -155,6 +155,59 @@ actcheckbox=black,brightgreen
         esac
     fi
 
+    # === CHECK AND INSTALL OPTIONAL DEPENDENCIES (before any DNS changes) ===
+    echo ""
+    log_section "📦 OPTIONAL DEPENDENCIES"
+    log_info "Checking optional dependencies..."
+    local optional_deps=()
+    local dep_cmd
+    
+    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck git htop watch lsof fuser netstat nmcli networkctl; do
+        if ! command -v "$dep_cmd" &>/dev/null; then
+            optional_deps+=("$dep_cmd")
+        fi
+    done
+    
+    if [[ ${#optional_deps[@]} -gt 0 ]]; then
+        echo ""
+        log_warning "Optional dependencies not installed:"
+        printf "  • %s\n" "${optional_deps[@]}"
+        echo ""
+        log_info "These packages enhance functionality but are not required:"
+        log_info "  dnsperf - DNS performance benchmarking"
+        log_info "  curl - HTTP client for metrics"
+        log_info "  jq - JSON processor"
+        log_info "  whiptail - Interactive GUI (already required for wizard)"
+        log_info "  notify-send - Desktop notifications"
+        log_info "  shellcheck - Script linting"
+        log_info "  git - Version control for updates"
+        log_info "  htop - Interactive process viewer"
+        log_info "  watch - Periodic command execution"
+        log_info "  lsof - List open files"
+        log_info "  fuser - Find processes using files"
+        log_info "  netstat - Network statistics"
+        log_info "  nmcli - NetworkManager CLI"
+        log_info "  networkctl - systemd-networkd CLI"
+        echo ""
+        echo -n "Install optional dependencies now? [y/N]: "
+        read -r deps_answer </dev/tty
+        if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
+            log_info "Installing optional dependencies..."
+            for dep in "${optional_deps[@]}"; do
+                # Map command to package name
+                local pkg="$dep"
+                case "$dep" in
+                    netstat) pkg="net-tools" ;;
+                    fuser) pkg="psmisc" ;;
+                    watch) pkg="procps" ;;
+                esac
+                install_dep "$pkg" "$dep"
+            done
+        fi
+    else
+        log_success "All optional dependencies already installed"
+    fi
+
     # Set whiptail colors (256-color palette for better contrast)
     # Format: root=,window=,border=,textbox=,button=
     export NEWT_COLORS='
@@ -292,58 +345,6 @@ fullscale=brightgreen,black
         IFS='|' read -r name desc default required <<<"${MODULES[$module]}"
         printf "  ${GREEN}✓${NC} %s\n" "$name"
     done
-
-    # Check and prompt for optional dependencies
-    echo ""
-    log_info "Checking optional dependencies..."
-    local optional_deps=()
-    local dep_cmd
-    
-    for dep_cmd in dnsperf curl jq whiptail notify-send shellcheck git htop watch lsof fuser netstat nmcli networkctl; do
-        if ! command -v "$dep_cmd" &>/dev/null; then
-            optional_deps+=("$dep_cmd")
-        fi
-    done
-    
-    if [[ ${#optional_deps[@]} -gt 0 ]]; then
-        echo ""
-        log_warning "Optional dependencies not installed:"
-        printf "  • %s\n" "${optional_deps[@]}"
-        echo ""
-        log_info "These packages enhance functionality but are not required:"
-        log_info "  dnsperf - DNS performance benchmarking"
-        log_info "  curl - HTTP client for metrics"
-        log_info "  jq - JSON processor"
-        log_info "  whiptail - Interactive GUI (already required for wizard)"
-        log_info "  notify-send - Desktop notifications"
-        log_info "  shellcheck - Script linting"
-        log_info "  git - Version control for updates"
-        log_info "  htop - Interactive process viewer"
-        log_info "  watch - Periodic command execution"
-        log_info "  lsof - List open files"
-        log_info "  fuser - Find processes using files"
-        log_info "  netstat - Network statistics"
-        log_info "  nmcli - NetworkManager CLI"
-        log_info "  networkctl - systemd-networkd CLI"
-        echo ""
-        echo -n "Install optional dependencies now? [y/N]: "
-        read -r deps_answer </dev/tty
-        if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
-            log_info "Installing optional dependencies..."
-            for dep in "${optional_deps[@]}"; do
-                # Map command to package name
-                local pkg="$dep"
-                case "$dep" in
-                    netstat) pkg="net-tools" ;;
-                    fuser) pkg="psmisc" ;;
-                    watch) pkg="procps" ;;
-                esac
-                install_dep "$pkg" "$dep"
-            done
-        fi
-    else
-        log_success "All optional dependencies already installed"
-    fi
 
     echo ""
     log_warning "This will install and configure DNS services on your system."
