@@ -26,6 +26,22 @@
 
 ## 🎯 WPROWADZENIE
 
+### Interaktywny System Pomocy
+
+Citadel++ zawiera interaktywny system pomocy:
+
+```bash
+sudo cytadela.sh help
+```
+
+To menu zapewnia:
+- **5 zorganizowanych sekcji**: Instalacja, Główny program, Dodatki, Zaawansowane, Awaryjne
+- **70+ komend** z opisami
+- **Obsługę 7 języków**: Automatycznie używa języka systemowego
+- **Łatwą nawigację**: Wybór sekcji przez numer
+
+---
+
 ### Czym jest Citadel?
 
 Citadel to zaawansowany system DNS z pełnym stosem prywatności, zaprojektowany dla użytkowników domowych i małych firm. Łączy w sobie:

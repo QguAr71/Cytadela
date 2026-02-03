@@ -4,6 +4,25 @@ Complete list of all Citadel commands.
 
 ---
 
+## ❓ Interactive Help System
+
+Citadel++ now includes an interactive help system accessible via:
+
+```bash
+sudo cytadela.sh help
+```
+
+This opens a menu with 5 sections:
+1. **Installation** - All install commands
+2. **Main Program** - Core functionality
+3. **Add-ons** - Adblock, blocklist, notifications
+4. **Advanced** - LKG, auto-update, cache, health
+5. **Emergency & Recovery** - Panic, kill-switch, debug
+
+Each section displays relevant commands with descriptions in your language.
+
+---
+
 ## 🚀 Installation Commands
 
 | Command | Description |
