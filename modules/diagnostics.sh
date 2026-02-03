@@ -171,7 +171,7 @@ show_status() {
         load_i18n_module "diagnostics"
     fi
     
-    log_section "📊 ${T_STATUS_TITLE:-CYTADELA++ STATUS}"
+    log_section "󰄬 ${T_STATUS_TITLE:-CYTADELA++ STATUS}"
 
     echo -e "${CYAN}Services:${NC}"
     for svc in dnscrypt-proxy coredns; do

@@ -216,7 +216,7 @@ blocklist_switch() {
 }
 
 blocklist_status() {
-    log_section "📊 BLOCKLIST STATUS"
+    log_section "󰄬 BLOCKLIST STATUS"
 
     local current_profile
     current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")

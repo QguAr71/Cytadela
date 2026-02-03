@@ -302,7 +302,7 @@ _benchmark_all() {
 # ==============================================================================
 
 benchmark_show_report() {
-    log_section "📊 BENCHMARK REPORTS"
+    log_section "󰄬 BENCHMARK REPORTS"
 
     if [[ -f "$BENCHMARK_REPORT" ]]; then
         echo "Latest benchmark report:"
