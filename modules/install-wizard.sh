@@ -175,12 +175,14 @@ EOF
     log_success "System backup complete"
     log_info "Backup location: $SYSTEM_BACKUP_DIR"
     echo ""
-    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${RED}║${NC} ${BOLD}EMERGENCY RECOVERY:${NC}                                          ${RED}║${NC}"
-    echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${RED}║${NC} If installation fails:                                         ${RED}║${NC}"
-    echo -e "${RED}║${NC}   ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}                ${RED}║${NC}"
-    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
+    
+    # Emergency frame - 62 chars wide
+    printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
+    printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "${BOLD}EMERGENCY RECOVERY:${NC}"
+    printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
+    printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "If installation fails:"
+    printf "${RED}║${NC}   ${YELLOW}%-56s${NC} ${RED}║${NC}\n" "sudo ./citadel.sh emergency-network-restore"
+    printf "${RED}╚══════════════════════════════════════════════════════════════╝${NC}\n"
     echo ""
 
     # Check if Citadel is already installed - offer management options
