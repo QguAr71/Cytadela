@@ -393,13 +393,15 @@ fullscale=brightgreen,black
     local dialog_title="${T_DIALOG_TITLE}"
     local dialog_text="\n${T_SELECT_MODULES}\n${T_DIALOG_HELP}\n\n${T_REQUIRED_NOTE}"
 
+    # Show checklist - use || true to prevent set -e from triggering on Cancel
+    local selected=""
+    local exit_code=0
+    
     selected=$(whiptail --title "$dialog_title" \
         --checklist "$dialog_text" \
         24 78 10 \
         "${options[@]}" \
-        3>&1 1>&2 2>&3)
-
-    local exit_code=$?
+        3>&1 1>&2 2>&3) || exit_code=$?
 
     if [[ $exit_code -ne 0 ]]; then
         log_warning "Instalacja anulowana przez użytkownika"
