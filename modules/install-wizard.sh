@@ -107,7 +107,11 @@ install_wizard() {
     local SYSTEM_BACKUP_DIR="${CYTADELA_STATE_DIR}/backups"
     mkdir -p "$SYSTEM_BACKUP_DIR"
     
-    log_section "🛡️  SAFETY BACKUP"
+    # Purple frame for section header
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🛡️  SAFETY BACKUP${NC}" $((60 - 16)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
     log_info "Creating backup of system DNS configuration..."
     
     # Backup resolv.conf (the critical file for internet connectivity)
@@ -251,7 +255,9 @@ actcheckbox=black,brightgreen
 
     # === CHECK AND INSTALL OPTIONAL DEPENDENCIES (before any DNS changes) ===
     echo ""
-    log_section "📦 OPTIONAL DEPENDENCIES"
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}📦 OPTIONAL DEPENDENCIES${NC}" $((60 - 23)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
     log_info "Checking optional dependencies..."
     local optional_deps=()
     local dep_cmd
@@ -332,7 +338,10 @@ fullscale=brightgreen,black
     CYTADELA_LANG="$WIZARD_LANG" load_i18n_module "install-wizard"
 
     # Display wizard title in selected language
-    log_section "🎯 ${T_WIZARD_TITLE}"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🎯 ${T_WIZARD_TITLE}${NC}" $((60 - 3 - ${#T_WIZARD_TITLE})) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
@@ -433,7 +442,9 @@ fullscale=brightgreen,black
 
     # Show summary
     echo ""
-    log_section "📋 INSTALLATION SUMMARY"
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}📋 INSTALLATION SUMMARY${NC}" $((60 - 22)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo "Selected modules:"
     for module in "${modules_to_install[@]}"; do
         IFS='|' read -r name desc default required <<<"${MODULES[$module]}"
@@ -451,7 +462,10 @@ fullscale=brightgreen,black
     fi
 
     # Install selected modules
-    log_section "🚀 INSTALLING MODULES"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🚀 INSTALLING MODULES${NC}" $((60 - 20)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     local failed=0
 
@@ -579,7 +593,9 @@ fullscale=brightgreen,black
     # Final summary
     echo ""
     if [[ "$WIZARD_LANG" == "pl" ]]; then
-        log_section "✅ INSTALACJA ZAKOŃCZONA"
+        echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+        printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}✅ INSTALACJA ZAKOŃCZONA${NC}" $((60 - 23)) ""
+        echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
         if [[ $failed -eq 0 ]]; then
             log_success "Wszystkie moduły zainstalowane pomyślnie!"
@@ -593,7 +609,9 @@ fullscale=brightgreen,black
         echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
         echo "  3. Weryfikacja: sudo cytadela++ verify"
     else
-        log_section "✅ INSTALLATION COMPLETE"
+        echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+        printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}✅ INSTALLATION COMPLETE${NC}" $((60 - 23)) ""
+        echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
         if [[ $failed -eq 0 ]]; then
             log_success "All modules installed successfully!"
