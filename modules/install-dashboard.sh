@@ -45,7 +45,7 @@ while true; do
     echo "╚═══════════════════════════════════════════════════════════════╝"
     echo ""
     
-    echo "🔥 SERVICE STATUS:"
+    echo "󰈸 SERVICE STATUS:"
     systemctl is-active dnscrypt-proxy >/dev/null && echo "󰄬 DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
     systemctl is-active coredns >/dev/null && echo "󰄬 CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
     if sudo -n nft list table inet citadel_dns >/dev/null 2>&1; then
@@ -66,19 +66,19 @@ while true; do
     fi
     echo ""
     
-    echo "🌐 NETWORK STATUS:"
+    echo "󰌐 NETWORK STATUS:"
     echo "  DNS Resolution: $(dig +short google.com @127.0.0.1 -p ${COREDNS_PORT} 2>/dev/null | head -1 || echo "FAILED")"
     echo "  External IP: $(curl -s https://api.ipify.org 2>/dev/null || echo "UNKNOWN")"
     echo ""
     
-    echo "⚡ PERFORMANCE:"
+    echo "󱐋 PERFORMANCE:"
     if command -v ss >/dev/null; then
         DNS_CONNECTIONS=$(ss -tn | grep :53 | wc -l)
         echo "  Active DNS Connections: $DNS_CONNECTIONS"
     fi
     echo ""
     
-    echo "🔥 SYSTEM LOAD:"
+    echo "󰈸 SYSTEM LOAD:"
     echo "  CPU: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
     echo "  Memory: $(free | grep Mem | awk '{printf("%.1f%%", $3/$2 * 100.0)}')"
     echo ""

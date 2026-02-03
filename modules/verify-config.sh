@@ -152,7 +152,7 @@ verify_config_check() {
 }
 
 verify_config_dns() {
-    log_section "🌐 ${T_VERIFY_DNS_TITLE:-DNS VERIFICATION TEST}"
+    log_section "󰌐 ${T_VERIFY_DNS_TITLE:-DNS VERIFICATION TEST}"
     
     local test_domains=("google.com" "cloudflare.com" "github.com")
     local failed=0

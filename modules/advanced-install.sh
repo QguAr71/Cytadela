@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 optimize_kernel_priority() {
-    log_section "⚡ KERNEL PRIORITY OPTIMIZATION"
+    log_section "󱐋 KERNEL PRIORITY OPTIMIZATION"
 
     # Check if running on CachyOS/Arch
     if [[ ! -f /etc/arch-release ]]; then
@@ -124,14 +124,14 @@ DNSCRYPT_CONFIG="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
 case "$ACTION" in
     edit)
-        echo "📝 Opening Citadel++ configuration in micro editor..."
+        echo "󰗉 Opening Citadel++ configuration in micro editor..."
         sudo micro "$CONFIG_DIR/Corefile"
         echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
         echo "󰄬 CoreDNS reloaded with new configuration"
         ;;
     edit-dnscrypt)
-        echo "📝 Opening DNSCrypt configuration..."
+        echo "󰗉 Opening DNSCrypt configuration..."
         sudo micro "$DNSCRYPT_CONFIG"
         echo "󰜝 Restarting DNSCrypt..."
         sudo systemctl restart dnscrypt-proxy
@@ -146,8 +146,8 @@ case "$ACTION" in
         journalctl -u dnscrypt-proxy -u coredns -n 20 --no-pager
         ;;
     test)
-        echo "🧪 Testing DNS resolution..."
-        dig +short whoami.cloudflare @127.0.0.1 || echo "❌ DNS test failed"
+        echo "󰙨 Testing DNS resolution..."
+        dig +short whoami.cloudflare @127.0.0.1 || echo "󰅖 DNS test failed"
         ;;
     help|--help|-h)
         cat <<HELP
