@@ -134,23 +134,9 @@ citadel_uninstall() {
     if [[ "$dns_works" == false ]]; then
         log_error "${T_DNS_FAILED:-DNS test failed - system may lose internet after restart!}"
         echo ""
-        # Emergency frame - using exact print_menu_line pattern from help.sh
-        print_frame_line() {
-            local text="$1"
-            local total_width=60
-            local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
-            local visible_len=${#visible_text}
-            local padding=$((total_width - visible_len))
-            printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
-        }
-        
-        printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
-        print_frame_line "${BOLD}EMERGENCY RECOVERY:${NC}"
-        printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
-        print_frame_line "Run:"
-        print_frame_line "  ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}"
-        printf "${RED}╚══════════════════════════════════════════════════════════════╝${NC}\n"
-        echo ""
+        draw_emergency_frame "EMERGENCY RECOVERY:" \
+            "Run:" \
+            "  ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}"
         log_info "${T_MANUAL_FIX:-Manual fix options:}"
         log_info "  1. ${T_RESTART_NM:-Restart NetworkManager}: sudo systemctl restart NetworkManager"
         log_info "  2. ${T_RESTART_SD:-Or restart systemd-resolved}: sudo systemctl restart systemd-resolved"
@@ -211,27 +197,9 @@ citadel_uninstall() {
     log_info "${T_REMOVING_SHORTCUTS:-Removing command shortcuts...}"
     rm -f /usr/local/bin/citadel 2>/dev/null || true
 
-    echo ""
-    log_success "${T_UNINSTALL_COMPLETE:-Citadel has been completely removed}"
-    echo ""
-    
-    # Emergency frame - using exact print_menu_line pattern from help.sh
-    print_frame_line() {
-        local text="$1"
-        local total_width=60
-        local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
-        local visible_len=${#visible_text}
-        local padding=$((total_width - visible_len))
-        printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
-    }
-    
-    printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
-    print_frame_line "${BOLD}NEXT STEPS:${NC}"
-    printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
-    print_frame_line "Reinstall:  sudo ./citadel.sh install-wizard"
-    print_frame_line "If issues:  sudo ./citadel.sh emergency-network-restore"
-    printf "${RED}╚══════════════════════════════════════════════════════════════╝${NC}\n"
-}
+    draw_emergency_frame "NEXT STEPS:" \
+        "Reinstall:  sudo ./citadel.sh install-wizard" \
+        "If issues:  sudo ./citadel.sh emergency-network-restore"
 
 citadel_uninstall_keep_config() {
     # Load i18n strings based on language

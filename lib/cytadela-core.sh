@@ -122,6 +122,52 @@ load_i18n_module() {
 }
 
 # ==============================================================================
+# REUSABLE FRAME DRAWING FUNCTIONS (using print_menu_line pattern from help.sh)
+# ==============================================================================
+
+# Draw a single line within a frame (internal use)
+_frame_line() {
+    local color="$1"
+    local text="$2"
+    local total_width=60
+    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_len=${#visible_text}
+    local padding=$((total_width - visible_len))
+    printf "${color}║${NC} %b%*s ${color}║${NC}\n" "$text" "$padding" ""
+}
+
+# Draw section header with purple frame
+draw_section_header() {
+    local title="$1"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    _frame_line "$VIO" "${BOLD}${title}${NC}"
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+}
+
+# Draw emergency frame with red color
+draw_emergency_frame() {
+    local title="$1"
+    shift
+    echo ""
+    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
+    _frame_line "$RED" "${BOLD}${title}${NC}"
+    echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
+    for line in "$@"; do
+        _frame_line "$RED" "$line"
+    done
+    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
+}
+
+# ==============================================================================
+# LEGACY: log_section for backward compatibility (now uses frames)
+# ==============================================================================
+
+log_section() {
+    draw_section_header "$1"
+}
+
+# ==============================================================================
 # UTILITY FUNCTIONS
 # ==============================================================================
 require_cmd() {
