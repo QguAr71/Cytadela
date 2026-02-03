@@ -155,9 +155,37 @@ show_help_section_emergency() {
 }
 
 show_help_full() {
-    show_help_section_install
-    show_help_section_main
-    show_help_section_addons
-    show_help_section_advanced
-    show_help_section_emergency
+    draw_section_header "6. ALL COMMANDS"
+    echo ""
+    echo -e "${EMR}=== INSTALLATION ===${NC}"
+    echo -e "${CYAN}install-wizard${NC}       - ${T_HELP_CMD_INSTALL_WIZARD:-Interactive installer (RECOMMENDED)}"
+    echo -e "${CYAN}install-all${NC}          - ${T_HELP_CMD_INSTALL_ALL:-Install all DNS modules}"
+    echo -e "${CYAN}install-dnscrypt${NC}     - ${T_HELP_CMD_INSTALL_DNSCRYPT:-Install DNSCrypt-Proxy only}"
+    echo -e "${CYAN}install-coredns${NC}      - ${T_HELP_CMD_INSTALL_COREDNS:-Install CoreDNS only}"
+    echo -e "${CYAN}install-nftables${NC}     - ${T_HELP_CMD_INSTALL_NFTABLES:-Install NFTables rules only}"
+    echo ""
+    echo -e "${EMR}=== MAIN PROGRAM ===${NC}"
+    echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel++}"
+    echo -e "${CYAN}restore-system${NC}     - ${T_HELP_CMD_RESTORE_SYSTEM:-Restore systemd-resolved}"
+    echo -e "${CYAN}firewall-safe${NC}      - ${T_HELP_CMD_FIREWALL_SAFE:-SAFE mode (won\'t break connectivity)}"
+    echo -e "${CYAN}firewall-strict${NC}    - ${T_HELP_CMD_FIREWALL_STRICT:-STRICT mode (DNS leak protection)}"
+    echo -e "${CYAN}status${NC}             - ${T_HELP_CMD_STATUS:-Show service status}"
+    echo -e "${CYAN}diagnostics${NC}        - ${T_HELP_CMD_DIAGNOSTICS:-Full system diagnostics}"
+    echo -e "${CYAN}verify${NC}             - ${T_HELP_CMD_VERIFY:-Verify full stack}"
+    echo -e "${CYAN}test-all${NC}           - ${T_HELP_CMD_TEST_ALL:-Smoke test + leak test}"
+    echo ""
+    echo -e "${EMR}=== ADD-ONS ===${NC}"
+    echo -e "${CYAN}blocklist-list${NC}     - ${T_HELP_CMD_BLOCKLIST_LIST:-Show available blocklist profiles}"
+    echo -e "${CYAN}adblock-status${NC}     - ${T_HELP_CMD_ADBLOCK_STATUS:-Show adblock status}"
+    echo -e "${CYAN}notify-enable${NC}      - ${T_HELP_CMD_NOTIFY_ENABLE:-Enable desktop notifications}"
+    echo ""
+    echo -e "${EMR}=== ADVANCED ===${NC}"
+    echo -e "${CYAN}lkg-save${NC}           - ${T_HELP_CMD_LKG_SAVE:-Save blocklist to cache}"
+    echo -e "${CYAN}health-status${NC}      - ${T_HELP_CMD_HEALTH_STATUS:-Show health status}"
+    echo -e "${CYAN}supply-init${NC}        - ${T_HELP_CMD_SUPPLY_INIT:-Initialize checksums}"
+    echo ""
+    echo -e "${EMR}=== EMERGENCY ===${NC}"
+    echo -e "${CYAN}panic-bypass${NC}       - ${T_HELP_CMD_PANIC_BYPASS:-Disable protection + auto-rollback}"
+    echo -e "${CYAN}killswitch-on${NC}      - ${T_HELP_CMD_KILLSWITCH_ON:-Activate DNS kill-switch}"
+    echo -e "${CYAN}nft-debug-on${NC}       - ${T_HELP_CMD_NFT_DEBUG_ON:-Enable debug chain}"
 }
