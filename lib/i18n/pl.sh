@@ -28,7 +28,7 @@ ${YELLOW}󰒓  Konfiguracja systemu:${NC}
   ${CYAN}firewall-safe${NC}         Tryb bezpieczny (nie zrywa internetu)
   ${CYAN}firewall-strict${NC}       Tryb ścisły (pełna blokada DNS-leak)
 
-${RED}🚨 Awaryjne:${NC}
+${RED}󰀨 Awaryjne:${NC}
   ${CYAN}panic-bypass [s]${NC}      Wyłącz ochronę + auto-rollback
   ${CYAN}panic-restore${NC}         Przywróć tryb chroniony
   ${CYAN}emergency-refuse${NC}      Odrzuć wszystkie zapytania DNS
@@ -61,7 +61,7 @@ ${PURPLE}󰒃  Adblock:${NC}
   ${CYAN}adblock-query <dom>${NC}   Sprawdź domenę
   ${CYAN}allowlist-add <dom>${NC}   Dodaj do allowlist
 
-${CYAN}🔍 Nowe funkcje v3.1:${NC}
+${CYAN}󰍉 Nowe funkcje v3.1:${NC}
   ${CYAN}smart-ipv6${NC}            Smart IPv6 detection
   ${CYAN}discover${NC}              Network sanity snapshot
   ${CYAN}install-dashboard${NC}     Terminal dashboard
@@ -75,7 +75,7 @@ ${GREEN}󰓍 Przykładowy workflow:${NC}
   ${YELLOW}4.${NC} sudo cytadela.sh configure-system
   ${YELLOW}5.${NC} sudo cytadela.sh firewall-strict
 
-${CYAN}📚 Dokumentacja:${NC}
+${CYAN}󰌙 Dokumentacja:${NC}
   GitHub: https://github.com/QguAr71/Cytadela
 "
 }
