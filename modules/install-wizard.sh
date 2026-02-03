@@ -176,12 +176,21 @@ EOF
     log_info "Backup location: $SYSTEM_BACKUP_DIR"
     echo ""
     
-    # Emergency frame - using same pattern as help.sh
+    # Emergency frame - using exact print_menu_line pattern from help.sh
+    print_frame_line() {
+        local text="$1"
+        local total_width=60
+        local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+        local visible_len=${#visible_text}
+        local padding=$((total_width - visible_len))
+        printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
+    }
+    
     echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "${BOLD}EMERGENCY RECOVERY:${NC}" $((60 - 18)) ""
+    print_frame_line "${BOLD}EMERGENCY RECOVERY:${NC}"
     echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
-    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "If installation fails:" $((60 - 22)) ""
-    printf "${RED}║${NC}   %b%*s ${RED}║${NC}\n" "${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}" $((60 - 46)) ""
+    print_frame_line "If installation fails:"
+    print_frame_line "  ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}"
     echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     
