@@ -125,18 +125,28 @@ load_i18n_module() {
 # REUSABLE FRAME DRAWING FUNCTIONS
 # ==============================================================================
 
-# Draw section header with purple frame using exact print_menu_line pattern
-draw_section_header() {
-    local title="$1"
-    local text="${BOLD}${title}${NC}"
+# Funkcja do rysowania równej linii w ramce (EXACT code from user)
+print_menu_line() {
+    local text="$1"
     local total_width=60
+    
+    # Usuwamy kody kolorów (niewidoczne znaki) tylko do obliczenia długości
     local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_text}
+    
+    # Obliczamy ile spacji brakuje
     local padding=$((total_width - visible_len))
     
+    # Drukujemy linię: Tekst + dopełnienie spacjami + zamknięcie ramki
+    printf "║ %b%*s ║\n" "$text" "$padding" ""
+}
+
+# Draw section header with purple frame
+draw_section_header() {
+    local title="$1"
     echo ""
     echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "$text" "$padding" ""
+    print_menu_line "${BOLD}${title}${NC}"
     echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 }
 
@@ -144,25 +154,13 @@ draw_section_header() {
 draw_emergency_frame() {
     local title="$1"
     shift
-    local text="${BOLD}${title}${NC}"
-    local total_width=60
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
-    local visible_len=${#visible_text}
-    local padding=$((total_width - visible_len))
-    
     echo ""
     echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
+    print_menu_line "${BOLD}${title}${NC}"
     echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
-    
     for line in "$@"; do
-        local line_text="$line"
-        local line_visible=$(echo -e "$line_text" | sed 's/\x1b\[[0-9;]*m//g')
-        local line_len=${#line_visible}
-        local line_padding=$((total_width - line_len))
-        printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$line_text" "$line_padding" ""
+        print_menu_line "$line"
     done
-    
     echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
 }
 
