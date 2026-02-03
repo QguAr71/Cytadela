@@ -283,37 +283,11 @@ fullscale=brightgreen,black
         log_warning "Optional dependencies not installed:"
         printf "  • %s\n" "${optional_deps[@]}"
         echo ""
-        log_info "These packages enhance functionality but are not required:"
-        log_info "  dnsperf - DNS performance benchmarking"
-        log_info "  curl - HTTP client for metrics"
-        log_info "  jq - JSON processor"
-        log_info "  whiptail - Interactive GUI (already required for wizard)"
-        log_info "  notify-send - Desktop notifications"
-        log_info "  shellcheck - Script linting"
-        log_info "  git - Version control for updates"
-        log_info "  htop - Interactive process viewer"
-        log_info "  watch - Periodic command execution"
-        log_info "  lsof - List open files"
-        log_info "  fuser - Find processes using files"
-        log_info "  netstat - Network statistics"
-        log_info "  nmcli - NetworkManager CLI"
-        log_info "  networkctl - systemd-networkd CLI"
+        log_info "Install manually if needed:"
+        log_info "  sudo pacman -S ${optional_deps[*]}"
         echo ""
-        read -rp "Install optional dependencies now? [y/N]: " deps_answer
-        if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
-            log_info "Installing optional dependencies..."
-            for dep in "${optional_deps[@]}"; do
-                # Map command to package name
-                local pkg="$dep"
-                case "$dep" in
-                    netstat) pkg="net-tools" ;;
-                    fuser) pkg="psmisc" ;;
-                    watch) pkg="procps" ;;
-                esac
-                log_info "Installing $dep ($pkg)..."
-                sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null || log_warning "Failed to install $dep"
-            done
-        fi
+        log_info "Press Enter to continue..."
+        read </dev/tty
     else
         log_success "All optional dependencies already installed"
     fi
