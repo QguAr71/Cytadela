@@ -36,10 +36,9 @@ citadel_help() {
     while true; do
         clear 2>/dev/null || echo ""
         
-        # Display menu with frame
-        echo "╔══════════════════════════════════════════════════════════════╗"
-        print_menu_line "${CYAN}${T_HELP_MENU_TITLE:-CITADEL++ HELP}${NC}"
-        echo "╠══════════════════════════════════════════════════════════════╣"
+        # Display menu with purple frame using template
+        draw_section_header "${T_HELP_MENU_TITLE:-CITADEL++ HELP}"
+        echo -e "${VIO}╠══════════════════════════════════════════════════════════════╣${NC}"
         print_menu_line "${GREEN}[1]${NC} ${T_HELP_MENU_1:-1. Installation}"
         print_menu_line "${GREEN}[2]${NC} ${T_HELP_MENU_2:-2. Main Program}"
         print_menu_line "${GREEN}[3]${NC} ${T_HELP_MENU_3:-3. Add-ons}"
@@ -48,7 +47,7 @@ citadel_help() {
         print_menu_line "${YELLOW}[6]${NC} ${T_HELP_MENU_6:-6. All Commands}"
         print_menu_line ""
         print_menu_line "${RED}[q]${NC} ${T_HELP_MENU_QUIT:-Quit}"
-        echo "╚══════════════════════════════════════════════════════════════╝"
+        echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
         echo -n "${T_HELP_PROMPT:-Your choice}: "
         read choice
