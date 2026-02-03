@@ -16,6 +16,13 @@ print_frame_line() {
 }
 
 install_wizard() {
+    # Check if already installed
+    if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
+        already_installed_menu
+        return $?
+    fi
+    
+    # Language selection
     while true; do
         echo ""
         echo "╔══════════════════════════════════════════════════════════════╗"
@@ -40,6 +47,7 @@ install_wizard() {
     
     CYTADELA_LANG="$WIZARD_LANG" load_i18n_module "install-wizard"
     
+    # Welcome
     echo ""
     echo "╔══════════════════════════════════════════════════════════════╗"
     print_frame_line "${CYAN}${T_WIZARD_TITLE:-CITADEL INSTALL WIZARD}${NC}"
@@ -55,7 +63,7 @@ install_wizard() {
     echo -n "${T_PRESS_ENTER:-Press Enter to continue...}"
     read </dev/tty
     
-    # Module selection with toggle
+    # Module selection
     local selected=()
     while true; do
         echo ""
@@ -122,13 +130,127 @@ install_wizard() {
     read -r answer </dev/tty
     
     if [[ "$answer" =~ ^[Yy]$ ]]; then
-        echo ""
-        log_section "${T_INSTALLING:-INSTALLING}"
-        echo "Installation would run here..."
-        sleep 1
-        log_success "${T_COMPLETE:-Complete!}"
+        run_full_installation "$WIZARD_LANG" "${selected[@]}"
     else
         log_warning "${T_CANCELLED:-Cancelled}"
         return 1
     fi
+}
+
+already_installed_menu() {
+    while true; do
+        echo ""
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        print_frame_line "${CYAN}CITADEL SETUP${NC}"
+        echo "╠══════════════════════════════════════════════════════════════╣"
+        print_frame_line "Citadel is already installed."
+        print_frame_line ""
+        print_frame_line "${GREEN}[1]${NC} Reinstall with backup"
+        print_frame_line "${GREEN}[2]${NC} Remove Citadel"
+        print_frame_line "${GREEN}[3]${NC} Modify components"
+        print_frame_line "${RED}[q]${NC} Exit"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        echo ""
+        echo -n "Choice: "
+        read -r choice </dev/tty
+        
+        case "$choice" in
+            1) 
+                if declare -f config_backup_create >/dev/null 2>&1; then
+                    config_backup_create
+                fi
+                if declare -f citadel_uninstall >/dev/null 2>&1; then
+                    citadel_uninstall
+                else
+                    load_module "uninstall"
+                    citadel_uninstall
+                fi
+                return 0
+                ;;
+            2)
+                if declare -f citadel_uninstall >/dev/null 2>&1; then
+                    citadel_uninstall
+                else
+                    load_module "uninstall"
+                    citadel_uninstall
+                fi
+                return 0
+                ;;
+            3)
+                echo "Component modification coming in v3.2"
+                return 0
+                ;;
+            q) return 1 ;;
+        esac
+    done
+}
+
+run_full_installation() {
+    local lang="$1"
+    shift
+    local optional_modules=("$@")
+    
+    log_section "INSTALLING MODULES"
+    local failed=0
+    
+    # Install required modules
+    for mod in dnscrypt coredns nftables; do
+        echo ""
+        log_info "Installing: ${mod}"
+        case "$mod" in
+            dnscrypt)
+                if ! declare -f install_dnscrypt >/dev/null 2>&1; then
+                    load_module "install-dnscrypt"
+                fi
+                install_dnscrypt && log_success "${mod} installed" || { log_error "${mod} failed"; ((failed++)); }
+                ;;
+            coredns)
+                if ! declare -f install_coredns >/dev/null 2>&1; then
+                    load_module "install-coredns"
+                fi
+                install_coredns && log_success "${mod} installed" || { log_error "${mod} failed"; ((failed++)); }
+                ;;
+            nftables)
+                if ! declare -f install_nftables >/dev/null 2>&1; then
+                    load_module "install-nftables"
+                fi
+                install_nftables && log_success "${mod} installed" || { log_error "${mod} failed"; ((failed++)); }
+                ;;
+        esac
+    done
+    
+    # Install optional modules
+    for mod in "${optional_modules[@]}"; do
+        echo ""
+        log_info "Installing: ${mod}"
+        case "$mod" in
+            health)
+                if ! declare -f install_health_watchdog >/dev/null 2>&1; then
+                    load_module "health"
+                fi
+                install_health_watchdog && log_success "${mod} installed" || log_warning "${mod} failed"
+                ;;
+            lkg)
+                if ! declare -f lkg_save_blocklist >/dev/null 2>&1; then
+                    load_module "lkg"
+                fi
+                lkg_save_blocklist && log_success "${mod} configured" || log_warning "${mod} skipped"
+                ;;
+        esac
+    done
+    
+    # Final verification
+    echo ""
+    log_section "INSTALLATION COMPLETE"
+    
+    if [[ $failed -eq 0 ]]; then
+        log_success "All modules installed successfully!"
+    else
+        log_warning "$failed module(s) failed to install"
+    fi
+    
+    if ! declare -f verify_stack >/dev/null 2>&1; then
+        load_module "diagnostics"
+    fi
+    verify_stack
 }
