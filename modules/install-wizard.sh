@@ -359,13 +359,16 @@ fullscale=brightgreen,black
         [ipv6]="IPv6 Privacy|${T_MOD_IPV6}|0|0"
         [location]="Location-aware|${T_MOD_LOCATION}|0|0"
         [nft-debug]="NFT Debug|${T_MOD_DEBUG}|0|0"
+        [dashboard]="Dashboard|${T_MOD_DASHBOARD}|0|0"
+        [editor]="Editor Integration|${T_MOD_EDITOR}|0|0"
+        [doh-parallel]="DoH Parallel|${T_MOD_DOH_PARALLEL}|0|0"
     )
 
     # Build checklist options for whiptail
     local options=()
 
     # Sort keys for consistent order
-    local sorted_keys=(dnscrypt coredns nftables lkg health supply-chain ipv6 location nft-debug)
+    local sorted_keys=(dnscrypt coredns nftables lkg health supply-chain ipv6 location nft-debug dashboard editor doh-parallel)
 
     for key in "${sorted_keys[@]}"; do
         [[ -z "${MODULES[$key]}" ]] && continue
@@ -558,6 +561,42 @@ fullscale=brightgreen,black
                     load_module "nft-debug"
                 fi
                 [[ "$WIZARD_LANG" == "pl" ]] && log_info "Moduł $name załadowany (użyj: nft-debug-on aby włączyć)" || log_info "$name module loaded (use: nft-debug-on to enable)"
+                ;;
+
+            dashboard)
+                if ! declare -f install_citadel_top >/dev/null 2>&1; then
+                    load_module "install-dashboard"
+                fi
+                if install_citadel_top; then
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                else
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    ((failed++))
+                fi
+                ;;
+
+            editor)
+                if ! declare -f install_editor_integration >/dev/null 2>&1; then
+                    load_module "advanced-install"
+                fi
+                if install_editor_integration; then
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowana" || log_success "$name installed"
+                else
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    ((failed++))
+                fi
+                ;;
+
+            doh-parallel)
+                if ! declare -f install_doh_parallel >/dev/null 2>&1; then
+                    load_module "advanced-install"
+                fi
+                if install_doh_parallel; then
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                else
+                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    ((failed++))
+                fi
                 ;;
 
             *)
