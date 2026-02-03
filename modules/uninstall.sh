@@ -64,17 +64,31 @@ citadel_uninstall() {
     
     local dns_restored=false
     local dns_servers=("1.1.1.1" "8.8.8.8" "9.9.9.9")
+    local backup_dir="${CYTADELA_STATE_DIR}/backups"
     
-    # Check if backup exists and is valid (not pointing to localhost)
-    if [[ -f /etc/resolv.conf.bak ]]; then
+    # Check if backup exists in new location (install-wizard backup)
+    if [[ -f "${backup_dir}/resolv.conf.pre-citadel" ]]; then
         local backup_dns
-        backup_dns=$(grep "^nameserver" /etc/resolv.conf.bak | head -1 | awk '{print $2}')
+        backup_dns=$(grep "^nameserver" "${backup_dir}/resolv.conf.pre-citadel" | head -1 | awk '{print $2}')
         if [[ "$backup_dns" != "127.0.0.1" && -n "$backup_dns" ]]; then
-            mv /etc/resolv.conf.bak /etc/resolv.conf 2>/dev/null || true
+            chattr -i /etc/resolv.conf 2>/dev/null || true
+            cp "${backup_dir}/resolv.conf.pre-citadel" /etc/resolv.conf
             log_success "${T_RESTORED_BACKUP:-Restored from backup} (DNS: $backup_dns)"
             dns_restored=true
         else
-            log_warning "Backup points to localhost, ignoring..."
+            log_warning "Backup points to localhost, using fallback..."
+        fi
+    # Check old location for compatibility
+    elif [[ -f /etc/resolv.conf.bak ]]; then
+        local backup_dns
+        backup_dns=$(grep "^nameserver" /etc/resolv.conf.bak | head -1 | awk '{print $2}')
+        if [[ "$backup_dns" != "127.0.0.1" && -n "$backup_dns" ]]; then
+            chattr -i /etc/resolv.conf 2>/dev/null || true
+            cp /etc/resolv.conf.bak /etc/resolv.conf
+            log_success "${T_RESTORED_BACKUP:-Restored from backup} (DNS: $backup_dns)"
+            dns_restored=true
+        else
+            log_warning "Backup points to localhost, using fallback..."
             rm -f /etc/resolv.conf.bak 2>/dev/null || true
         fi
     fi

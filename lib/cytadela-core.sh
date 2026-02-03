@@ -25,11 +25,15 @@ if [[ -t 1 ]]; then
     EMR='\e[38;5;43m'  # Emerald - success/active
     VIO='\e[38;5;99m'  # Violet - info/sections
     RED='\e[38;5;160m' # Crimson - errors/warnings
-    RST='\e[0m'        # Reset
+    BOLD='\e[1m'       # Bold text
+    NC='\e[0m'         # Reset
+    RST='\e[0m'        # Reset (alias)
 else
     EMR=''
     VIO=''
     RED=''
+    BOLD=''
+    NC=''
     RST=''
 fi
 
