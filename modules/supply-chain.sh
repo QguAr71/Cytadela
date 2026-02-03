@@ -115,10 +115,7 @@ supply_chain_init() {
 }
 
 supply_chain_verify() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN VERIFY${NC}" $((60 - 21)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔐 SUPPLY-CHAIN VERIFY"
 
     if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
         log_warning "No checksums file. Run 'supply-chain-init' first."
