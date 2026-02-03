@@ -205,7 +205,7 @@ citadel_uninstall() {
     log_success "${T_UNINSTALL_COMPLETE:-Citadel has been completely removed}"
     echo ""
     printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
-    printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "${BOLD}NEXT STEPS:${NC}"
+    printf "${RED}║${NC} ${BOLD}%-58s${NC} ${RED}║${NC}\n" "NEXT STEPS:"
     printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
     printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "Reinstall:  sudo ./citadel.sh install-wizard"
     printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "If issues:  sudo ./citadel.sh emergency-network-restore"

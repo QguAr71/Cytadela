@@ -178,12 +178,15 @@ EOF
     
     # Emergency frame - 62 chars wide
     printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
-    printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "${BOLD}EMERGENCY RECOVERY:${NC}"
+    printf "${RED}║${NC} ${BOLD}%-58s${NC} ${RED}║${NC}\n" "EMERGENCY RECOVERY:"
     printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
     printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "If installation fails:"
     printf "${RED}║${NC}   ${YELLOW}%-56s${NC} ${RED}║${NC}\n" "sudo ./citadel.sh emergency-network-restore"
     printf "${RED}╚══════════════════════════════════════════════════════════════╝${NC}\n"
     echo ""
+    
+    # Pause so user can see the message
+    sleep 2
 
     # Check if Citadel is already installed - offer management options
     if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
