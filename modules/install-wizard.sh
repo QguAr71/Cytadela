@@ -175,10 +175,12 @@ EOF
     log_success "System backup complete"
     log_info "Backup location: $SYSTEM_BACKUP_DIR"
     echo ""
-    echo -e "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${RED}║  EMERGENCY RECOVERY:${NC}                                        ${RED}║${NC}"
-    echo -e "${RED}║${NC}  If installation fails: ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}  ${RED}║${NC}"
-    echo -e "${RED}╚════════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║${NC} ${BOLD}EMERGENCY RECOVERY:${NC}                                          ${RED}║${NC}"
+    echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${RED}║${NC} If installation fails:                                         ${RED}║${NC}"
+    echo -e "${RED}║${NC}   ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}                ${RED}║${NC}"
+    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
     # Check if Citadel is already installed - offer management options
