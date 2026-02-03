@@ -27,7 +27,7 @@ draw_section_header() {
     local visible_title=$(echo -e "$title" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_title}
     # Add 1 extra space for common emoji (approximation)
-    if [[ "$visible_title" =~ [📦🛡🎯📋🚀✅🔐🏥🔧🔒] ]]; then
+    if [[ "$visible_title" =~ [󰏗󰒃󰇄󰓍󱓞󰄬󰯄󰓙󰊠󰌾] ]]; then
         visible_len=$((visible_len + 1))
     fi
     local padding=$((total_width - visible_len))

@@ -27,7 +27,7 @@ declare -A BLOCKLIST_PROFILES=(
 )
 
 blocklist_list() {
-    log_section "📋 AVAILABLE BLOCKLIST PROFILES"
+    log_section "󰓍 AVAILABLE BLOCKLIST PROFILES"
 
     local current_profile
     current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
@@ -39,7 +39,7 @@ blocklist_list() {
         IFS='|' read -r name desc urls <<<"${BLOCKLIST_PROFILES[$profile]}"
 
         if [[ "$profile" == "$current_profile" ]]; then
-            printf "  ${GREEN}✓ %-12s${NC} %s\n" "$profile" "$desc"
+            printf "  ${GREEN}󰄬 %-12s${NC} %s\n" "$profile" "$desc"
         else
             printf "    %-12s %s\n" "$profile" "$desc"
         fi
@@ -68,7 +68,7 @@ blocklist_switch() {
         return 1
     fi
 
-    log_section "🔄 SWITCHING BLOCKLIST PROFILE"
+    log_section "󰜝 SWITCHING BLOCKLIST PROFILE"
 
     local current_profile
     current_profile=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "balanced")
@@ -321,7 +321,7 @@ blocklist_remove_url() {
 }
 
 blocklist_show_urls() {
-    log_section "📋 CUSTOM URLS"
+    log_section "󰓍 CUSTOM URLS"
 
     if [[ ! -f "$BLOCKLIST_CUSTOM_URLS" ]] || [[ ! -s "$BLOCKLIST_CUSTOM_URLS" ]]; then
         echo "No custom URLs defined"

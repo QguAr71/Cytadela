@@ -8,7 +8,7 @@ AUTO_UPDATE_SERVICE="/etc/systemd/system/cytadela-auto-update.service"
 AUTO_UPDATE_TIMER="/etc/systemd/system/cytadela-auto-update.timer"
 
 auto_update_enable() {
-    log_section "🔄 ENABLING AUTO-UPDATE"
+    log_section "󰜝 ENABLING AUTO-UPDATE"
 
     # Check if LKG module is available
     if ! declare -f lists_update >/dev/null 2>&1; then
@@ -103,7 +103,7 @@ auto_update_status() {
 }
 
 auto_update_now() {
-    log_section "🔄 MANUAL UPDATE NOW"
+    log_section "󰜝 MANUAL UPDATE NOW"
 
     if ! declare -f lists_update >/dev/null 2>&1; then
         load_module "lkg"

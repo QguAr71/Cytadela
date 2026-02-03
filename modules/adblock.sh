@@ -30,41 +30,41 @@ adblock_reload() {
 }
 
 adblock_status() {
-    log_section "🧱 CITADEL++ ADBLOCK STATUS"
+    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
 
     if systemctl is-active --quiet coredns; then
-        echo "  ✓ coredns: running"
+        echo "  󰄬 coredns: running"
     else
         echo "  ✗ coredns: not running"
     fi
 
     if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined\.hosts' /etc/coredns/Corefile; then
-        echo "  ✓ Corefile: uses combined.hosts"
+        echo "  󰄬 Corefile: uses combined.hosts"
     else
         echo "  ✗ Corefile: missing combined.hosts"
     fi
 
     if [[ -f /etc/coredns/zones/custom.hosts ]]; then
-        echo "  ✓ custom.hosts:   $(wc -l </etc/coredns/zones/custom.hosts)"
+        echo "  󰄬 custom.hosts:   $(wc -l </etc/coredns/zones/custom.hosts)"
     else
         echo "  ✗ custom.hosts: missing"
     fi
 
     if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
-        echo "  ✓ blocklist.hosts: $(wc -l </etc/coredns/zones/blocklist.hosts)"
+        echo "  󰄬 blocklist.hosts: $(wc -l </etc/coredns/zones/blocklist.hosts)"
     else
         echo "  ✗ blocklist.hosts: missing"
     fi
 
     if [[ -f /etc/coredns/zones/combined.hosts ]]; then
-        echo "  ✓ combined.hosts:  $(wc -l </etc/coredns/zones/combined.hosts)"
+        echo "  󰄬 combined.hosts:  $(wc -l </etc/coredns/zones/combined.hosts)"
     else
         echo "  ✗ combined.hosts: missing"
     fi
 }
 
 adblock_stats() {
-    log_section "📈 CITADEL++ ADBLOCK STATS"
+    log_section "󰓇 CITADEL++ ADBLOCK STATS"
     echo "custom.hosts:   $(wc -l </etc/coredns/zones/custom.hosts 2>/dev/null || echo 0)"
     echo "blocklist.hosts: $(wc -l </etc/coredns/zones/blocklist.hosts 2>/dev/null || echo 0)"
     echo "combined.hosts:  $(wc -l </etc/coredns/zones/combined.hosts 2>/dev/null || echo 0)"

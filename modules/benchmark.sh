@@ -37,7 +37,7 @@ _check_benchmark_tools() {
 # ==============================================================================
 
 benchmark_dns_performance() {
-    log_section "🚀 DNS PERFORMANCE BENCHMARK"
+    log_section "󱓞 DNS PERFORMANCE BENCHMARK"
 
     if ! _check_benchmark_tools; then
         log_info "Running basic benchmark without dnsperf..."
@@ -130,7 +130,7 @@ _benchmark_basic() {
             duration=$(( (end_time - start_time) / 1000000 ))  # Convert to ms
             total_time=$((total_time + duration))
             ((success_count++))
-            printf "  ✓ %s: %d ms\n" "$domain" "$duration"
+            printf "  󰄬 %s: %d ms\n" "$domain" "$duration"
         else
             ((fail_count++))
             printf "  ✗ %s: FAILED\n" "$domain"
@@ -154,7 +154,7 @@ _benchmark_basic() {
 # ==============================================================================
 
 _benchmark_cache() {
-    log_section "💾 CACHE PERFORMANCE TEST"
+    log_section "󰇉 CACHE PERFORMANCE TEST"
 
     log_info "Testing cache hit/miss ratio..."
 
@@ -209,7 +209,7 @@ _benchmark_cache() {
 # ==============================================================================
 
 _benchmark_blocklist() {
-    log_section "🚫 BLOCKLIST PERFORMANCE"
+    log_section "󰁑 BLOCKLIST PERFORMANCE"
 
     local blocklist_file="/etc/coredns/zones/combined.hosts"
 
@@ -276,7 +276,7 @@ benchmark_compare() {
 # ==============================================================================
 
 _benchmark_all() {
-    log_section "🎯 COMPREHENSIVE BENCHMARK SUITE"
+    log_section "󰇄 COMPREHENSIVE BENCHMARK SUITE"
 
     mkdir -p "$BENCHMARK_DIR"
 
@@ -323,7 +323,7 @@ benchmark_show_report() {
 }
 
 benchmark_compare() {
-    log_section "📈 BENCHMARK COMPARISON"
+    log_section "󰓇 BENCHMARK COMPARISON"
 
     if [[ ! -f "$BENCHMARK_HISTORY" ]]; then
         log_error "No benchmark history found"

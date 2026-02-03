@@ -15,8 +15,8 @@ ${BLUE}╔═══════════════════════�
 ${BLUE}║                  CYTADELA++ v3.1 - Instrukcja                              ║${NC}
 ${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}
 
-${GREEN}🚀 Instalacja (ZALECANE):${NC}
-  ${CYAN}install-wizard${NC}        🎯 Interaktywny instalator z checklistą
+${GREEN}󱓞 Instalacja (ZALECANE):${NC}
+  ${CYAN}install-wizard${NC}        󰇄 Interaktywny instalator z checklistą
   ${CYAN}install-all${NC}           Instaluj wszystkie moduły DNS
   ${CYAN}install-dnscrypt${NC}      Instaluj tylko DNSCrypt-Proxy
   ${CYAN}install-coredns${NC}       Instaluj tylko CoreDNS
@@ -47,14 +47,14 @@ ${GREEN}📊 Status i diagnostyka:${NC}
   ${CYAN}check-deps${NC}            Sprawdź zależności
   ${CYAN}check-deps --install${NC}  Zainstaluj brakujące (z AUR dla Arch)
 
-${BLUE}🔧 Zarządzanie blocklist:${NC}
+${BLUE}󰊠 Zarządzanie blocklist:${NC}
   ${CYAN}blocklist-list${NC}        Pokaż dostępne profile
   ${CYAN}blocklist-switch <p>${NC}  Przełącz profil
   ${CYAN}lists-update${NC}          Aktualizuj z LKG fallback
   ${CYAN}lkg-save${NC}              Zapisz blocklist do cache
   ${CYAN}lkg-restore${NC}           Przywróć z cache
 
-${PURPLE}🛡️  Adblock:${NC}
+${PURPLE}󰒃  Adblock:${NC}
   ${CYAN}adblock-status${NC}        Status adblock
   ${CYAN}adblock-add <dom>${NC}     Dodaj domenę
   ${CYAN}adblock-remove <dom>${NC}  Usuń domenę
@@ -68,7 +68,7 @@ ${CYAN}🔍 Nowe funkcje v3.1:${NC}
   ${CYAN}cache-stats${NC}           Statystyki DNS cache
   ${CYAN}notify-enable${NC}         Powiadomienia systemowe
 
-${GREEN}📋 Przykładowy workflow:${NC}
+${GREEN}󰓍 Przykładowy workflow:${NC}
   ${YELLOW}1.${NC} sudo cytadela.sh install-all
   ${YELLOW}2.${NC} sudo cytadela.sh firewall-safe
   ${YELLOW}3.${NC} dig +short google.com @127.0.0.1

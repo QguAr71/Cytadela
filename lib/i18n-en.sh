@@ -11,7 +11,7 @@ ${BLUE}║                  CITADEL++ v3.1 - Command Reference                  
 ${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}
 
 ${CYAN}Installation commands (SAFE):${NC}
-  install-wizard        🎯 Interactive installer with checklist (RECOMMENDED)
+  install-wizard        󰇄 Interactive installer with checklist (RECOMMENDED)
   install-all           Install all DNS modules (does NOT disable systemd-resolved)
   install-dnscrypt      Install DNSCrypt-Proxy only
   install-coredns       Install CoreDNS only

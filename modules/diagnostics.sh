@@ -36,7 +36,7 @@ run_diagnostics() {
         
         # Test 3: Quality assessment
         if [[ "$rtt" -lt 50 ]]; then
-            echo -e "${GREEN}✅ ${T_DIAG_UPSTREAM_EXCELLENT:-Excellent DNSCrypt performance}${NC}"
+            echo -e "${GREEN}󰄬 ${T_DIAG_UPSTREAM_EXCELLENT:-Excellent DNSCrypt performance}${NC}"
         elif [[ "$rtt" -lt 150 ]]; then
             echo -e "${YELLOW}⚠️  ${T_DIAG_UPSTREAM_MODERATE:-Moderate latency - check ISP throttling}${NC}"
         else
@@ -77,7 +77,7 @@ verify_stack() {
         load_i18n_module "diagnostics"
     fi
     
-    log_section "✅ ${T_VERIFY_TITLE:-CITADEL++ VERIFY}"
+    log_section "󰄬 ${T_VERIFY_TITLE:-CITADEL++ VERIFY}"
 
     local dnscrypt_port
     local coredns_port
@@ -92,12 +92,12 @@ verify_stack() {
     echo "  Metrics:         ${COREDNS_METRICS_ADDR}"
 
     echo -e "\n${CYAN}${T_VERIFY_SERVICES:-Services:}${NC}"
-    systemctl is-active --quiet dnscrypt-proxy && echo "  ✓ dnscrypt-proxy: ${T_VERIFY_RUNNING:-running}" || echo "  ✗ dnscrypt-proxy: ${T_VERIFY_NOT_RUNNING:-not running}"
-    systemctl is-active --quiet coredns && echo "  ✓ coredns:        ${T_VERIFY_RUNNING:-running}" || echo "  ✗ coredns:        ${T_VERIFY_NOT_RUNNING:-not running}"
+    systemctl is-active --quiet dnscrypt-proxy && echo "  󰄬 dnscrypt-proxy: ${T_VERIFY_RUNNING:-running}" || echo "  ✗ dnscrypt-proxy: ${T_VERIFY_NOT_RUNNING:-not running}"
+    systemctl is-active --quiet coredns && echo "  󰄬 coredns:        ${T_VERIFY_RUNNING:-running}" || echo "  ✗ coredns:        ${T_VERIFY_NOT_RUNNING:-not running}"
 
     echo -e "\n${CYAN}${T_VERIFY_FIREWALL:-Firewall:}${NC}"
     if nft list table inet citadel_dns >/dev/null 2>&1; then
-        echo "  ✓ nftables rules: ${T_VERIFY_FIREWALL_LOADED:-loaded} (inet citadel_dns)"
+        echo "  󰄬 nftables rules: ${T_VERIFY_FIREWALL_LOADED:-loaded} (inet citadel_dns)"
     else
         echo "  ✗ nftables rules: ${T_VERIFY_FIREWALL_NOT_LOADED:-not loaded}"
     fi
@@ -114,7 +114,7 @@ verify_stack() {
     echo -e "\n${CYAN}${T_DIAG_DNS_TESTS:-DNS tests:}${NC}"
     if command -v dig >/dev/null 2>&1; then
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 -p "$coredns_port" >/dev/null 2>&1; then
-            echo "  ✓ Local DNS OK"
+            echo "  󰄬 Local DNS OK"
         else
             echo "  ✗ Local DNS FAILED"
         fi
@@ -124,7 +124,7 @@ verify_stack() {
 
     echo -e "\n${CYAN}${T_DIAG_METRICS:-Metrics:}${NC}"
     if command -v curl >/dev/null 2>&1 && curl -s "http://${COREDNS_METRICS_ADDR}/metrics" >/dev/null 2>&1; then
-        echo "  ✓ Prometheus endpoint OK"
+        echo "  󰄬 Prometheus endpoint OK"
     else
         echo "  ✗ Prometheus endpoint FAILED"
     fi
@@ -146,7 +146,7 @@ test_all() {
         if dig +time=2 +tries=1 @1.1.1.1 test.com >/dev/null 2>&1; then
             echo "  ✗ Leak test: NOT blocked (dig @1.1.1.1 succeeded)"
         else
-            echo "  ✓ Leak test: blocked/time-out (expected in STRICT)"
+            echo "  󰄬 Leak test: blocked/time-out (expected in STRICT)"
         fi
     else
         echo "  (dig not installed)"
@@ -156,7 +156,7 @@ test_all() {
     echo -e "${CYAN}${T_TEST_IPV6:-IPv6 test:}${NC}"
     if command -v ping6 >/dev/null 2>&1; then
         if ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
-            echo "  ✓ IPv6 connectivity OK"
+            echo "  󰄬 IPv6 connectivity OK"
         else
             echo "  ⚠ IPv6 connectivity FAILED"
         fi

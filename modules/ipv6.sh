@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 ipv6_privacy_auto_ensure() {
-    draw_section_header "🔒 IPv6 PRIVACY AUTO-ENSURE"
+    draw_section_header "󰌾 IPv6 PRIVACY AUTO-ENSURE"
 
     # Ensure network-utils functions are available
     if ! declare -f discover_active_interface >/dev/null 2>&1; then
@@ -85,7 +85,7 @@ EOF
 }
 
 ipv6_privacy_on() {
-    log_section "🔒 IPv6 PRIVACY ON"
+    log_section "󰌾 IPv6 PRIVACY ON"
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
@@ -105,7 +105,7 @@ EOF
 }
 
 ipv6_privacy_off() {
-    log_section "🔓 IPv6 PRIVACY OFF"
+    log_section "󰌿 IPv6 PRIVACY OFF"
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
@@ -150,7 +150,7 @@ ipv6_privacy_status() {
 }
 
 ipv6_deep_reset() {
-    log_section "🔄 IPv6 DEEP RESET"
+    log_section "󰜝 IPv6 DEEP RESET"
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {

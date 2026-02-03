@@ -126,7 +126,7 @@ cache_stats_top() {
 }
 
 cache_stats_reset() {
-    log_section "🔄 RESET CACHE STATS"
+    log_section "󰜝 RESET CACHE STATS"
 
     log_warning "This will restart CoreDNS (metrics will be reset)"
     read -p "Continue? [y/N]: " answer

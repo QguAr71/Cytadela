@@ -14,7 +14,7 @@ health_check_dns() {
 }
 
 health_status() {
-    draw_section_header "🏥 HEALTH STATUS"
+    draw_section_header "󰓙 HEALTH STATUS"
 
     local all_healthy=1
 
@@ -56,7 +56,7 @@ health_status() {
 }
 
 install_health_watchdog() {
-    log_section "🔧 INSTALLING HEALTH WATCHDOG"
+    log_section "󰊠 INSTALLING HEALTH WATCHDOG"
 
     log_info "Creating health check script..."
     cat >/usr/local/bin/citadel-health-check <<'EOF'

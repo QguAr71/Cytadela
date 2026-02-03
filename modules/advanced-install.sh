@@ -58,7 +58,7 @@ EOF
 }
 
 install_doh_parallel() {
-    log_section "🚀 DNS-OVER-HTTPS PARALLEL RACING"
+    log_section "󱓞 DNS-OVER-HTTPS PARALLEL RACING"
 
     # Create advanced DNSCrypt config with DoH parallel racing
     sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
@@ -126,23 +126,23 @@ case "$ACTION" in
     edit)
         echo "📝 Opening Citadel++ configuration in micro editor..."
         sudo micro "$CONFIG_DIR/Corefile"
-        echo "🔄 Restarting CoreDNS..."
+        echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
-        echo "✓ CoreDNS reloaded with new configuration"
+        echo "󰄬 CoreDNS reloaded with new configuration"
         ;;
     edit-dnscrypt)
         echo "📝 Opening DNSCrypt configuration..."
         sudo micro "$DNSCRYPT_CONFIG"
-        echo "🔄 Restarting DNSCrypt..."
+        echo "󰜝 Restarting DNSCrypt..."
         sudo systemctl restart dnscrypt-proxy
-        echo "✓ DNSCrypt reloaded with new configuration"
+        echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
         echo "📊 Citadel++ Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
-        echo "📋 Recent logs:"
+        echo "󰓍 Recent logs:"
         journalctl -u dnscrypt-proxy -u coredns -n 20 --no-pager
         ;;
     test)

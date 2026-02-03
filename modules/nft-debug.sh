@@ -7,7 +7,7 @@
 NFT_DEBUG_TABLE="citadel_debug"
 
 nft_debug_on() {
-    draw_section_header "🔧 NFT DEBUG - ENABLING"
+    draw_section_header "󰊠 NFT DEBUG - ENABLING"
 
     log_info "Creating debug table with rate-limited logging..."
 
@@ -27,7 +27,7 @@ nft_debug_on() {
 }
 
 nft_debug_off() {
-    draw_section_header "🔧 NFT DEBUG - DISABLING"
+    draw_section_header "󰊠 NFT DEBUG - DISABLING"
 
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         nft delete table inet $NFT_DEBUG_TABLE 2>/dev/null || true
@@ -38,7 +38,7 @@ nft_debug_off() {
 }
 
 nft_debug_status() {
-    draw_section_header "🔧 NFT DEBUG STATUS"
+    draw_section_header "󰊠 NFT DEBUG STATUS"
 
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         printf "Debug chain: ${GREEN}ENABLED${NC}\n"
@@ -56,7 +56,7 @@ nft_debug_status() {
 }
 
 nft_debug_logs() {
-    draw_section_header "🔧 NFT DEBUG LOGS (last 50)"
+    draw_section_header "󰊠 NFT DEBUG LOGS (last 50)"
 
     echo "Searching for CITADEL log entries..."
     echo ""

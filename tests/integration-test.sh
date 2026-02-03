@@ -405,7 +405,7 @@ main() {
     echo ""
     
     if [[ $TESTS_FAILED -eq 0 ]]; then
-        echo -e "${GREEN}✓ All integration tests passed!${NC}"
+        echo -e "${GREEN}󰄬 All integration tests passed!${NC}"
         echo ""
         echo "Note: Some tests were skipped because components are not installed."
         echo "This is normal for a partial installation."

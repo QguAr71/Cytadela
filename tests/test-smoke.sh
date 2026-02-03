@@ -12,7 +12,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 log_info() { echo -e "${CYAN}ℹ${NC} $1"; }
-log_success() { echo -e "${GREEN}✓${NC} $1"; }
+log_success() { echo -e "${GREEN}󰄬${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1" >&2; }
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"

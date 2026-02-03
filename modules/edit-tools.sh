@@ -46,7 +46,7 @@ edit_dnscrypt() {
 }
 
 show_logs() {
-    log_section "📋 RECENT LOGS"
+    log_section "󰓍 RECENT LOGS"
 
     log_info "Showing last 20 log entries..."
     journalctl -u dnscrypt-proxy -u coredns -n 20 --no-pager

@@ -30,7 +30,7 @@ print_header() {
 }
 
 test_pass() {
-    echo -e "${GREEN}✓${NC} $1"
+    echo -e "${GREEN}󰄬${NC} $1"
     ((TESTS_PASSED++))
     ((TESTS_TOTAL++))
 }
@@ -315,7 +315,7 @@ print_summary() {
     local pass_rate=$((TESTS_PASSED * 100 / TESTS_TOTAL))
     
     if [[ $TESTS_FAILED -eq 0 ]]; then
-        echo -e "${GREEN}✓ All tests passed! Cytadela is working correctly.${NC}"
+        echo -e "${GREEN}󰄬 All tests passed! Cytadela is working correctly.${NC}"
         echo ""
         echo -e "${CYAN}Next steps:${NC}"
         echo "  • Visit https://dnsleaktest.com to verify no DNS leaks"

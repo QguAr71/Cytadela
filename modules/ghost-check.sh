@@ -65,7 +65,7 @@ ghost_check() {
                 printf "${YELLOW}%-8s %-25s %-20s %s${NC} ⚠ EXPOSED (%s)\n" "$proto" "$addr" "$state" "$process" "$exposure_type"
                 ((warnings++))
             else
-                printf "${GREEN}%-8s %-25s %-20s %s${NC} ✓ (allowed)\n" "$proto" "$addr" "$state" "$process"
+                printf "${GREEN}%-8s %-25s %-20s %s${NC} 󰄬 (allowed)\n" "$proto" "$addr" "$state" "$process"
             fi
         else
             printf "%-8s %-25s %-20s %s\n" "$proto" "$addr" "$state" "$process"

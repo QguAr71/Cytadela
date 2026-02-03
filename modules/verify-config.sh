@@ -81,7 +81,7 @@ verify_config_check() {
     log_info "${T_VERIFY_COREDNS:-Checking CoreDNS configuration...}"
     if [[ -f /etc/coredns/Corefile ]]; then
         if coredns -conf /etc/coredns/Corefile -check 2>/dev/null; then
-            log_success "  ✓ ${T_VERIFY_COREDNS_OK:-CoreDNS configuration valid}"
+            log_success "  󰄬 ${T_VERIFY_COREDNS_OK:-CoreDNS configuration valid}"
         else
             log_error "  ✗ ${T_VERIFY_COREDNS_ERROR:-CoreDNS configuration has errors}"
             ((errors++))
@@ -96,7 +96,7 @@ verify_config_check() {
     log_info "${T_VERIFY_DNSCRYPT:-Checking DNSCrypt configuration...}"
     if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
         if dnscrypt-proxy -check -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
-            log_success "  ✓ ${T_VERIFY_DNSCRYPT_OK:-DNSCrypt configuration valid}"
+            log_success "  󰄬 ${T_VERIFY_DNSCRYPT_OK:-DNSCrypt configuration valid}"
         else
             log_error "  ✗ ${T_VERIFY_DNSCRYPT_ERROR:-DNSCrypt configuration has errors}"
             ((errors++))
@@ -110,7 +110,7 @@ verify_config_check() {
     echo ""
     log_info "${T_VERIFY_NFT:-Checking NFTables configuration...}"
     if nft list table inet citadel_dns &>/dev/null; then
-        log_success "  ✓ ${T_VERIFY_NFT_OK:-Citadel NFTables table exists}"
+        log_success "  󰄬 ${T_VERIFY_NFT_OK:-Citadel NFTables table exists}"
     else
         log_error "  ✗ ${T_VERIFY_NFT_MISSING:-Citadel NFTables table not found}"
         ((errors++))
@@ -121,7 +121,7 @@ verify_config_check() {
     log_info "${T_VERIFY_SERVICES:-Checking services...}"
     for service in coredns dnscrypt-proxy; do
         if systemctl is-active --quiet "$service" 2>/dev/null; then
-            log_success "  ✓ $service ${T_VERIFY_RUNNING:-is running}"
+            log_success "  󰄬 $service ${T_VERIFY_RUNNING:-is running}"
         else
             log_error "  ✗ $service ${T_VERIFY_NOT_RUNNING:-is not running}"
             ((errors++))
@@ -132,7 +132,7 @@ verify_config_check() {
     echo ""
     log_info "${T_VERIFY_DNS:-Testing DNS resolution...}"
     if dig +short +time=3 @127.0.0.1 google.com &>/dev/null; then
-        log_success "  ✓ ${T_VERIFY_DNS_OK:-Local DNS resolver working}"
+        log_success "  󰄬 ${T_VERIFY_DNS_OK:-Local DNS resolver working}"
     else
         log_error "  ✗ ${T_VERIFY_DNS_ERROR:-Local DNS resolver not responding}"
         ((errors++))
@@ -164,7 +164,7 @@ verify_config_dns() {
         local result
         result=$(dig +short +time=5 @127.0.0.1 "$domain" 2>/dev/null | head -1)
         if [[ -n "$result" ]]; then
-            log_success "  ✓ $domain → $result"
+            log_success "  󰄬 $domain → $result"
         else
             log_error "  ✗ $domain ${T_VERIFY_DNS_FAIL:-failed to resolve}"
             ((failed++))
@@ -175,7 +175,7 @@ verify_config_dns() {
     echo ""
     log_info "${T_VERIFY_DNSSEC:-Checking DNSSEC validation...}"
     if dig +dnssec +short @127.0.0.1 dnssec-failed.org 2>/dev/null | grep -q "SERVFAIL"; then
-        log_success "  ✓ ${T_VERIFY_DNSSEC_OK:-DNSSEC validation working}"
+        log_success "  󰄬 ${T_VERIFY_DNSSEC_OK:-DNSSEC validation working}"
     else
         log_warning "  ⚠ ${T_VERIFY_DNSSEC_WARN:-DNSSEC validation may not be enforced}"
     fi

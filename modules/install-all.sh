@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_all() {
-    log_section "🚀 CITADEL++ FULL INSTALLATION"
+    log_section "󱓞 CITADEL++ FULL INSTALLATION"
 
     log_info "Instalacja wszystkich modułów DNS..."
 
@@ -48,7 +48,7 @@ install_all() {
 
     if command -v dig >/dev/null 2>&1; then
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
-            echo "  ✓ DNS (google.com) via 127.0.0.1: OK"
+            echo "  󰄬 DNS (google.com) via 127.0.0.1: OK"
         else
             echo "  ✗ DNS (google.com) via 127.0.0.1: FAILED"
         fi
@@ -60,7 +60,7 @@ install_all() {
             echo "  ⚠ Adblock test: custom.hosts/combined.hosts empty/missing"
         else
             if dig +time=2 +tries=1 +short "$test_domain" @127.0.0.1 2>/dev/null | head -n 1 | grep -qx "0.0.0.0"; then
-                echo "  ✓ Adblock test ($test_domain): BLOCKED (0.0.0.0)"
+                echo "  󰄬 Adblock test ($test_domain): BLOCKED (0.0.0.0)"
             else
                 echo "  ✗ Adblock test ($test_domain): FAILED"
             fi

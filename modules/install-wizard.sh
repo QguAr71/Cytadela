@@ -382,7 +382,7 @@ fullscale=brightgreen,black
 
         if [[ "$required" == "1" ]]; then
             # Required modules - always ON
-            options+=("$key" "✓ $name - $desc [REQUIRED]" "ON")
+            options+=("$key" "󰄬 $name - $desc [REQUIRED]" "ON")
         else
             # Optional modules
             options+=("$key" "  $name - $desc" "$state")
@@ -434,7 +434,7 @@ fullscale=brightgreen,black
     draw_section_header "󰓍 INSTALLATION SUMMARY"
     for module in "${modules_to_install[@]}"; do
         IFS='|' read -r name desc default required <<<"${MODULES[$module]}"
-        printf "  ${GREEN}✓${NC} %s\n" "$name"
+        printf "  ${GREEN}󰄬${NC} %s\n" "$name"
     done
 
     echo ""
@@ -650,7 +650,7 @@ fullscale=brightgreen,black
 
 install_wizard_help() {
     cat <<'EOF'
-🎯 INSTALL WIZARD - Interactive Installer
+󰇄 INSTALL WIZARD - Interactive Installer
 
 USAGE:
   sudo cytadela++ install-wizard

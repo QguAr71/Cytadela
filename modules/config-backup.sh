@@ -8,7 +8,7 @@ BACKUP_DIR="/var/lib/cytadela/backups"
 BACKUP_DATE=$(date +%Y%m%d-%H%M%S)
 
 config_backup() {
-    log_section "💾 CONFIG BACKUP"
+    log_section "󰇉 CONFIG BACKUP"
 
     mkdir -p "$BACKUP_DIR"
 
@@ -23,7 +23,7 @@ config_backup() {
         mkdir -p "${tmp_dir}/dnscrypt-proxy"
         cp /etc/dnscrypt-proxy/dnscrypt-proxy.toml "${tmp_dir}/dnscrypt-proxy/"
         [[ -f /etc/dnscrypt-proxy/cloaking-rules.txt ]] && cp /etc/dnscrypt-proxy/cloaking-rules.txt "${tmp_dir}/dnscrypt-proxy/"
-        log_info "✓ DNSCrypt config"
+        log_info "󰄬 DNSCrypt config"
     fi
 
     # CoreDNS config
@@ -31,7 +31,7 @@ config_backup() {
         mkdir -p "${tmp_dir}/coredns"
         cp /etc/coredns/Corefile "${tmp_dir}/coredns/"
         [[ -f /etc/coredns/Corefile.citadel ]] && cp /etc/coredns/Corefile.citadel "${tmp_dir}/coredns/"
-        log_info "✓ CoreDNS config"
+        log_info "󰄬 CoreDNS config"
     fi
 
     # CoreDNS zones
@@ -39,7 +39,7 @@ config_backup() {
         mkdir -p "${tmp_dir}/coredns/zones"
         cp /etc/coredns/zones/custom.hosts "${tmp_dir}/coredns/zones/" 2>/dev/null || true
         cp /etc/coredns/zones/allowlist.txt "${tmp_dir}/coredns/zones/" 2>/dev/null || true
-        log_info "✓ CoreDNS zones (custom.hosts, allowlist.txt)"
+        log_info "󰄬 CoreDNS zones (custom.hosts, allowlist.txt)"
     fi
 
     # NFTables config
@@ -47,14 +47,14 @@ config_backup() {
         mkdir -p "${tmp_dir}/nftables.d"
         cp /etc/nftables.d/citadel-*.nft "${tmp_dir}/nftables.d/" 2>/dev/null || true
         [[ -f /etc/nftables.conf ]] && cp /etc/nftables.conf "${tmp_dir}/"
-        log_info "✓ NFTables config"
+        log_info "󰄬 NFTables config"
     fi
 
     # NetworkManager config
     if [[ -f /etc/NetworkManager/conf.d/citadel-dns.conf ]]; then
         mkdir -p "${tmp_dir}/NetworkManager/conf.d"
         cp /etc/NetworkManager/conf.d/citadel-dns.conf "${tmp_dir}/NetworkManager/conf.d/"
-        log_info "✓ NetworkManager config"
+        log_info "󰄬 NetworkManager config"
     fi
 
     # Cytadela state
@@ -63,7 +63,7 @@ config_backup() {
         cp /var/lib/cytadela/manifest.sha256 "${tmp_dir}/cytadela-state/" 2>/dev/null || true
         cp /var/lib/cytadela/panic.state "${tmp_dir}/cytadela-state/" 2>/dev/null || true
         cp /var/lib/cytadela/location-trusted.txt "${tmp_dir}/cytadela-state/" 2>/dev/null || true
-        log_info "✓ Cytadela state files"
+        log_info "󰄬 Cytadela state files"
     fi
 
     # Systemd services
@@ -72,7 +72,7 @@ config_backup() {
     cp /etc/systemd/system/cytadela-*.timer "${tmp_dir}/systemd/" 2>/dev/null || true
     cp /etc/systemd/system/citadel-*.service "${tmp_dir}/systemd/" 2>/dev/null || true
     cp /etc/systemd/system/citadel-*.timer "${tmp_dir}/systemd/" 2>/dev/null || true
-    log_info "✓ Systemd units"
+    log_info "󰄬 Systemd units"
 
     # Create metadata
     cat >"${tmp_dir}/backup-metadata.txt" <<EOF
@@ -146,48 +146,48 @@ config_restore() {
     # DNSCrypt
     if [[ -d "${tmp_dir}/dnscrypt-proxy" ]]; then
         cp "${tmp_dir}/dnscrypt-proxy"/* /etc/dnscrypt-proxy/ 2>/dev/null || true
-        log_info "✓ DNSCrypt config restored"
+        log_info "󰄬 DNSCrypt config restored"
     fi
 
     # CoreDNS
     if [[ -d "${tmp_dir}/coredns" ]]; then
         cp "${tmp_dir}/coredns/Corefile" /etc/coredns/ 2>/dev/null || true
         cp "${tmp_dir}/coredns/Corefile.citadel" /etc/coredns/ 2>/dev/null || true
-        log_info "✓ CoreDNS config restored"
+        log_info "󰄬 CoreDNS config restored"
     fi
 
     # CoreDNS zones
     if [[ -d "${tmp_dir}/coredns/zones" ]]; then
         cp "${tmp_dir}/coredns/zones"/* /etc/coredns/zones/ 2>/dev/null || true
-        log_info "✓ CoreDNS zones restored"
+        log_info "󰄬 CoreDNS zones restored"
     fi
 
     # NFTables
     if [[ -d "${tmp_dir}/nftables.d" ]]; then
         cp "${tmp_dir}/nftables.d"/* /etc/nftables.d/ 2>/dev/null || true
         [[ -f "${tmp_dir}/nftables.conf" ]] && cp "${tmp_dir}/nftables.conf" /etc/
-        log_info "✓ NFTables config restored"
+        log_info "󰄬 NFTables config restored"
     fi
 
     # NetworkManager
     if [[ -d "${tmp_dir}/NetworkManager" ]]; then
         mkdir -p /etc/NetworkManager/conf.d
         cp "${tmp_dir}/NetworkManager/conf.d"/* /etc/NetworkManager/conf.d/ 2>/dev/null || true
-        log_info "✓ NetworkManager config restored"
+        log_info "󰄬 NetworkManager config restored"
     fi
 
     # Cytadela state
     if [[ -d "${tmp_dir}/cytadela-state" ]]; then
         mkdir -p /var/lib/cytadela
         cp "${tmp_dir}/cytadela-state"/* /var/lib/cytadela/ 2>/dev/null || true
-        log_info "✓ Cytadela state restored"
+        log_info "󰄬 Cytadela state restored"
     fi
 
     # Systemd units
     if [[ -d "${tmp_dir}/systemd" ]]; then
         cp "${tmp_dir}/systemd"/* /etc/systemd/system/ 2>/dev/null || true
         systemctl daemon-reload
-        log_info "✓ Systemd units restored"
+        log_info "󰄬 Systemd units restored"
     fi
 
     # Cleanup
@@ -199,7 +199,7 @@ config_restore() {
 }
 
 config_list() {
-    log_section "📋 AVAILABLE BACKUPS"
+    log_section "󰓍 AVAILABLE BACKUPS"
 
     if [[ ! -d "$BACKUP_DIR" ]] || [[ -z "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]]; then
         echo "No backups found in $BACKUP_DIR"

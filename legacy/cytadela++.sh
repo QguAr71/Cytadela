@@ -59,7 +59,7 @@ NC='\033[0m' # No Color
 
 # Logging functions
 log_info() { echo -e "${CYAN}ℹ${NC} $1"; }
-log_success() { echo -e "${GREEN}✓${NC} $1"; }
+log_success() { echo -e "${GREEN}󰄬${NC} $1"; }
 log_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1"; }
 log_section() { echo -e "\n${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}"; echo -e "${BLUE}║${NC} $1"; echo -e "${BLUE}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}\n"; }
@@ -153,7 +153,7 @@ integrity_check() {
 }
 
 integrity_init() {
-    log_section "🔐 INTEGRITY INIT"
+    log_section "󰯄 INTEGRITY INIT"
 
     # Create directories if needed
     mkdir -p "$(dirname "$CYTADELA_MANIFEST")"
@@ -200,7 +200,7 @@ integrity_init() {
 }
 
 integrity_status() {
-    log_section "🔐 INTEGRITY STATUS"
+    log_section "󰯄 INTEGRITY STATUS"
     echo "Mode: $CYTADELA_MODE"
     echo "Manifest: $CYTADELA_MANIFEST"
     if [[ -f "$CYTADELA_MANIFEST" ]]; then
@@ -304,7 +304,7 @@ discover() {
 # IPv6 PRIVACY AUTO-ENSURE (Issue #9)
 # ==============================================================================
 ipv6_privacy_auto_ensure() {
-    log_section "🔒 IPv6 PRIVACY AUTO-ENSURE"
+    log_section "󰌾 IPv6 PRIVACY AUTO-ENSURE"
     
     # Step 1: Detect active interface
     local iface
@@ -476,7 +476,7 @@ lkg_restore_blocklist() {
 }
 
 lkg_status() {
-    log_section "📦 LKG (Last Known Good) STATUS"
+    log_section "󰏗 LKG (Last Known Good) STATUS"
     
     echo "LKG Directory: $CYTADELA_LKG_DIR"
     
@@ -616,7 +616,7 @@ EOF
 }
 
 panic_restore() {
-    log_section "🔄 PANIC RESTORE - Returning to Protected Mode"
+    log_section "󰜝 PANIC RESTORE - Returning to Protected Mode"
     
     local auto_mode="${1:-}"
     
@@ -744,7 +744,7 @@ ghost_check() {
                 printf "${YELLOW}%-8s %-25s %-20s %s${NC} ⚠ EXPOSED (%s)\n" "$proto" "$addr" "$state" "$process" "$exposure_type"
                 ((warnings++))
             else
-                printf "${GREEN}%-8s %-25s %-20s %s${NC} ✓ (allowed)\n" "$proto" "$addr" "$state" "$process"
+                printf "${GREEN}%-8s %-25s %-20s %s${NC} 󰄬 (allowed)\n" "$proto" "$addr" "$state" "$process"
             fi
         else
             printf "%-8s %-25s %-20s %s\n" "$proto" "$addr" "$state" "$process"
@@ -783,7 +783,7 @@ ghost_check() {
 # IPv6 DEEP RESET (Roadmap: refresh IPv6 without router UI)
 # ==============================================================================
 ipv6_deep_reset() {
-    log_section "🔄 IPv6 DEEP RESET"
+    log_section "󰜝 IPv6 DEEP RESET"
     
     local iface
     iface=$(discover_active_interface)
@@ -889,7 +889,7 @@ health_check_dns() {
 }
 
 health_status() {
-    log_section "🏥 HEALTH STATUS"
+    log_section "󰓙 HEALTH STATUS"
     
     local all_healthy=1
     
@@ -934,7 +934,7 @@ health_status() {
 }
 
 install_health_watchdog() {
-    log_section "🔧 INSTALLING HEALTH WATCHDOG"
+    log_section "󰊠 INSTALLING HEALTH WATCHDOG"
     
     # Create health check script
     log_info "Creating health check script..."
@@ -1094,7 +1094,7 @@ supply_chain_download() {
 }
 
 supply_chain_status() {
-    log_section "🔐 SUPPLY-CHAIN STATUS"
+    log_section "󰯄 SUPPLY-CHAIN STATUS"
     
     echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
     
@@ -1111,7 +1111,7 @@ supply_chain_status() {
 }
 
 supply_chain_init() {
-    log_section "🔐 SUPPLY-CHAIN INIT"
+    log_section "󰯄 SUPPLY-CHAIN INIT"
     
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
     
@@ -1144,7 +1144,7 @@ supply_chain_init() {
 }
 
 supply_chain_verify() {
-    log_section "🔐 SUPPLY-CHAIN VERIFY"
+    log_section "󰯄 SUPPLY-CHAIN VERIFY"
     
     if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
         log_warning "No checksums file. Run 'supply-chain-init' first."
@@ -1398,7 +1398,7 @@ location_list_trusted() {
 NFT_DEBUG_TABLE="citadel_debug"
 
 nft_debug_on() {
-    log_section "🔧 NFT DEBUG - ENABLING"
+    log_section "󰊠 NFT DEBUG - ENABLING"
     
     # Create debug table with logging chain
     log_info "Creating debug table with rate-limited logging..."
@@ -1430,7 +1430,7 @@ nft_debug_on() {
 }
 
 nft_debug_off() {
-    log_section "🔧 NFT DEBUG - DISABLING"
+    log_section "󰊠 NFT DEBUG - DISABLING"
     
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         nft delete table inet $NFT_DEBUG_TABLE 2>/dev/null || true
@@ -1441,7 +1441,7 @@ nft_debug_off() {
 }
 
 nft_debug_status() {
-    log_section "🔧 NFT DEBUG STATUS"
+    log_section "󰊠 NFT DEBUG STATUS"
     
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         printf "Debug chain: ${GREEN}ENABLED${NC}\n"
@@ -1459,7 +1459,7 @@ nft_debug_status() {
 }
 
 nft_debug_logs() {
-    log_section "🔧 NFT DEBUG LOGS (last 50)"
+    log_section "󰊠 NFT DEBUG LOGS (last 50)"
     
     echo "Searching for CITADEL log entries..."
     echo ""
@@ -1962,39 +1962,39 @@ adblock_reload() {
 }
 
 adblock_status() {
-    log_section "🧱 CITADEL++ ADBLOCK STATUS"
+    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
 
     if systemctl is-active --quiet coredns; then
-        echo "  ✓ coredns: running"
+        echo "  󰄬 coredns: running"
     else
         echo "  ✗ coredns: not running"
     fi
 
     if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined\.hosts' /etc/coredns/Corefile; then
-        echo "  ✓ Corefile: uses combined.hosts"
+        echo "  󰄬 Corefile: uses combined.hosts"
     else
         echo "  ✗ Corefile: missing combined.hosts"
     fi
 
     if [[ -f /etc/coredns/zones/custom.hosts ]]; then
-        echo "  ✓ custom.hosts:   $(wc -l < /etc/coredns/zones/custom.hosts)"
+        echo "  󰄬 custom.hosts:   $(wc -l < /etc/coredns/zones/custom.hosts)"
     else
         echo "  ✗ custom.hosts: missing"
     fi
     if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
-        echo "  ✓ blocklist.hosts: $(wc -l < /etc/coredns/zones/blocklist.hosts)"
+        echo "  󰄬 blocklist.hosts: $(wc -l < /etc/coredns/zones/blocklist.hosts)"
     else
         echo "  ✗ blocklist.hosts: missing"
     fi
     if [[ -f /etc/coredns/zones/combined.hosts ]]; then
-        echo "  ✓ combined.hosts:  $(wc -l < /etc/coredns/zones/combined.hosts)"
+        echo "  󰄬 combined.hosts:  $(wc -l < /etc/coredns/zones/combined.hosts)"
     else
         echo "  ✗ combined.hosts: missing"
     fi
 }
 
 adblock_stats() {
-    log_section "📈 CITADEL++ ADBLOCK STATS"
+    log_section "󰓇 CITADEL++ ADBLOCK STATS"
     echo "custom.hosts:   $(wc -l < /etc/coredns/zones/custom.hosts 2>/dev/null || echo 0)"
     echo "blocklist.hosts: $(wc -l < /etc/coredns/zones/blocklist.hosts 2>/dev/null || echo 0)"
     echo "combined.hosts:  $(wc -l < /etc/coredns/zones/combined.hosts 2>/dev/null || echo 0)"
@@ -2331,7 +2331,7 @@ install_all() {
 
     if command -v dig >/dev/null 2>&1; then
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
-            echo "  ✓ DNS (google.com) via 127.0.0.1: OK"
+            echo "  󰄬 DNS (google.com) via 127.0.0.1: OK"
         else
             echo "  ✗ DNS (google.com) via 127.0.0.1: FAILED"
         fi
@@ -2343,7 +2343,7 @@ install_all() {
             echo "  ⚠ Adblock test: custom.hosts/combined.hosts empty/missing"
         else
             if dig +time=2 +tries=1 +short "$test_domain" @127.0.0.1 2>/dev/null | head -n 1 | grep -qx "0.0.0.0"; then
-                echo "  ✓ Adblock test ($test_domain): BLOCKED (0.0.0.0)"
+                echo "  󰄬 Adblock test ($test_domain): BLOCKED (0.0.0.0)"
             else
                 echo "  ✗ Adblock test ($test_domain): FAILED"
             fi
@@ -2432,7 +2432,7 @@ run_diagnostics() {
 }
 
 verify_stack() {
-    log_section "✅ CITADEL++ VERIFY"
+    log_section "󰄬 CITADEL++ VERIFY"
 
     local dnscrypt_port
     local coredns_port
@@ -2447,12 +2447,12 @@ verify_stack() {
     echo "  Metrics:         ${COREDNS_METRICS_ADDR}"
 
     echo -e "\n${CYAN}Services:${NC}"
-    systemctl is-active --quiet dnscrypt-proxy && echo "  ✓ dnscrypt-proxy: running" || echo "  ✗ dnscrypt-proxy: not running"
-    systemctl is-active --quiet coredns && echo "  ✓ coredns:        running" || echo "  ✗ coredns:        not running"
+    systemctl is-active --quiet dnscrypt-proxy && echo "  󰄬 dnscrypt-proxy: running" || echo "  ✗ dnscrypt-proxy: not running"
+    systemctl is-active --quiet coredns && echo "  󰄬 coredns:        running" || echo "  ✗ coredns:        not running"
 
     echo -e "\n${CYAN}Firewall:${NC}"
     if nft list table inet citadel_dns >/dev/null 2>&1; then
-        echo "  ✓ nftables rules: loaded (inet citadel_dns)"
+        echo "  󰄬 nftables rules: loaded (inet citadel_dns)"
     else
         echo "  ✗ nftables rules: not loaded"
     fi
@@ -2469,7 +2469,7 @@ verify_stack() {
     echo -e "\n${CYAN}DNS tests:${NC}"
     if command -v dig >/dev/null 2>&1; then
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 -p "$coredns_port" >/dev/null 2>&1; then
-            echo "  ✓ Local DNS OK"
+            echo "  󰄬 Local DNS OK"
         else
             echo "  ✗ Local DNS FAILED"
         fi
@@ -2479,7 +2479,7 @@ verify_stack() {
 
     echo -e "\n${CYAN}Metrics:${NC}"
     if command -v curl >/dev/null 2>&1 && curl -s "http://${COREDNS_METRICS_ADDR}/metrics" >/dev/null 2>&1; then
-        echo "  ✓ Prometheus endpoint OK"
+        echo "  󰄬 Prometheus endpoint OK"
     else
         echo "  ✗ Prometheus endpoint FAILED"
     fi
@@ -2496,7 +2496,7 @@ test_all() {
         if dig +time=2 +tries=1 @1.1.1.1 test.com >/dev/null 2>&1; then
             echo "  ✗ Leak test: NOT blocked (dig @1.1.1.1 succeeded)"
         else
-            echo "  ✓ Leak test: blocked/time-out (expected in STRICT)"
+            echo "  󰄬 Leak test: blocked/time-out (expected in STRICT)"
         fi
     else
         echo "  (dig not installed)"
@@ -2506,7 +2506,7 @@ test_all() {
     echo -e "${CYAN}IPv6 test:${NC}"
     if command -v ping6 >/dev/null 2>&1; then
         if ping6 -c 1 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
-            echo "  ✓ IPv6 connectivity OK"
+            echo "  󰄬 IPv6 connectivity OK"
         else
             echo "  ⚠ IPv6 connectivity FAILED"
         fi
@@ -2592,7 +2592,7 @@ smart_ipv6_detection() {
 ipv6_privacy_on() {
     local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
 
-    log_section "🔒 IPV6 PRIVACY EXTENSIONS"
+    log_section "󰌾 IPV6 PRIVACY EXTENSIONS"
     log_info "Włączanie IPv6 Privacy Extensions (prefer temporary addresses)..."
 
     sudo tee "$sysctl_file" >/dev/null <<'EOF'
@@ -2607,7 +2607,7 @@ EOF
 ipv6_privacy_off() {
     local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
 
-    log_section "🔓 IPV6 PRIVACY EXTENSIONS"
+    log_section "󰌿 IPV6 PRIVACY EXTENSIONS"
     log_info "Wyłączanie IPv6 Privacy Extensions..."
 
     sudo tee "$sysctl_file" >/dev/null <<'EOF'
@@ -2666,12 +2666,12 @@ while true; do
     echo ""
     
     echo "🔥 SERVICE STATUS:"
-    systemctl is-active dnscrypt-proxy >/dev/null && echo "✓ DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
-    systemctl is-active coredns >/dev/null && echo "✓ CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
+    systemctl is-active dnscrypt-proxy >/dev/null && echo "󰄬 DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
+    systemctl is-active coredns >/dev/null && echo "󰄬 CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
     if sudo -n nft list table inet citadel_dns >/dev/null 2>&1; then
-        echo "✓ NFTables: RULES LOADED"
+        echo "󰄬 NFTables: RULES LOADED"
     else
-        systemctl is-active nftables >/dev/null && echo "✓ NFTables: RUNNING" || echo "✗ NFTables: STOPPED"
+        systemctl is-active nftables >/dev/null && echo "󰄬 NFTables: RUNNING" || echo "✗ NFTables: STOPPED"
     fi
     echo ""
     
@@ -2742,23 +2742,23 @@ case "$ACTION" in
     edit)
         echo "📝 Opening Citadel++ configuration in micro editor..."
         sudo micro "$CONFIG_DIR/Corefile"
-        echo "🔄 Restarting CoreDNS..."
+        echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
-        echo "✓ CoreDNS reloaded with new configuration"
+        echo "󰄬 CoreDNS reloaded with new configuration"
         ;;
     edit-dnscrypt)
         echo "📝 Opening DNSCrypt configuration..."
         sudo micro "$DNSCRYPT_CONFIG"
-        echo "🔄 Restarting DNSCrypt..."
+        echo "󰜝 Restarting DNSCrypt..."
         sudo systemctl restart dnscrypt-proxy
-        echo "✓ DNSCrypt reloaded with new configuration"
+        echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
         echo "📊 Citadel++ Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
-        echo "📋 Recent logs:"
+        echo "󰓍 Recent logs:"
         journalctl -u dnscrypt-proxy -u coredns -n 20 --no-pager
         ;;
     test)
@@ -2848,7 +2848,7 @@ EOF
 # NEW FEATURES MODULE 9: DNS-over-HTTPS Parallel Racing
 # ==============================================================================
 install_doh_parallel() {
-    log_section "🚀 DNS-OVER-HTTPS PARALLEL RACING"
+    log_section "󱓞 DNS-OVER-HTTPS PARALLEL RACING"
     
     # Create advanced DNSCrypt config with DoH parallel racing
     sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
@@ -2893,7 +2893,7 @@ EOF
 # PORT CONFLICT RESOLUTION
 # ==============================================================================
 fix_port_conflicts() {
-    log_section "🔧 PORT CONFLICT RESOLUTION"
+    log_section "󰊠 PORT CONFLICT RESOLUTION"
     
     log_info "Sprawdzanie konfliktów portów..."
     
@@ -3168,9 +3168,9 @@ while true; do
     echo ""
     
     echo "🔥 SERVICE STATUS:"
-    systemctl is-active dnscrypt-proxy >/dev/null && echo "✓ DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
-    systemctl is-active coredns >/dev/null && echo "✓ CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
-    systemctl is-active nftables >/dev/null && echo "✓ NFTables: RUNNING" || echo "✗ NFTables: STOPPED"
+    systemctl is-active dnscrypt-proxy >/dev/null && echo "󰄬 DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
+    systemctl is-active coredns >/dev/null && echo "󰄬 CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
+    systemctl is-active nftables >/dev/null && echo "󰄬 NFTables: RUNNING" || echo "✗ NFTables: STOPPED"
     echo ""
     
     echo "📊 PROMETHEUS METRICS:"
@@ -3235,23 +3235,23 @@ case "$ACTION" in
     edit)
         echo "📝 Opening Citadel++ configuration in micro editor..."
         micro "$CONFIG_DIR/Corefile"
-        echo "🔄 Restarting CoreDNS..."
+        echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
-        echo "✓ CoreDNS reloaded with new configuration"
+        echo "󰄬 CoreDNS reloaded with new configuration"
         ;;
     edit-dnscrypt)
         echo "📝 Opening DNSCrypt configuration..."
         sudo micro "$DNSCRYPT_CONFIG"
-        echo "🔄 Restarting DNSCrypt..."
+        echo "󰜝 Restarting DNSCrypt..."
         sudo systemctl restart dnscrypt-proxy
-        echo "✓ DNSCrypt reloaded with new configuration"
+        echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
         echo "📊 Citadel++ Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
-        echo "📋 Recent logs:"
+        echo "󰓍 Recent logs:"
         journalctl -u dnscrypt-proxy -u coredns -n 20 --no-pager
         ;;
     test)
@@ -3335,7 +3335,7 @@ EOF
 # NEW FEATURES MODULE 9: DNS-over-HTTPS Parallel Racing
 # ==============================================================================
 install_doh_parallel() {
-    log_section "🚀 DNS-OVER-HTTPS PARALLEL RACING"
+    log_section "󱓞 DNS-OVER-HTTPS PARALLEL RACING"
     
     # Create advanced DNSCrypt config with DoH parallel racing
     tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
@@ -3388,7 +3388,7 @@ safe_test_mode() {
     log_info "Sprawdzanie zależności..."
     for cmd in dnscrypt-proxy coredns nftables; do
         if command -v "$cmd" >/dev/null; then
-            echo "✓ $cmd dostępny"
+            echo "󰄬 $cmd dostępny"
         else
             echo "✗ $cmd nieznaleziony"
         fi
@@ -3398,7 +3398,7 @@ safe_test_mode() {
     log_info "Walidacja konfiguracji..."
     if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
         if dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml -check >/dev/null 2>&1; then
-            echo "✓ DNSCrypt config poprawny"
+            echo "󰄬 DNSCrypt config poprawny"
         else
             echo "✗ DNSCrypt config błędny"
         fi
@@ -3409,7 +3409,7 @@ safe_test_mode() {
     if ss -ln | grep -q ":53"; then
         echo "⚠ Port 53 zajęty - może wymagać zatrzymania systemd-resolved"
     else
-        echo "✓ Port 53 wolny"
+        echo "󰄬 Port 53 wolny"
     fi
     
     echo ""

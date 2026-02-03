@@ -76,7 +76,7 @@ lkg_restore_blocklist() {
 }
 
 lkg_status() {
-    log_section "📦 LKG (Last Known Good) STATUS"
+    log_section "󰏗 LKG (Last Known Good) STATUS"
 
     echo "LKG Directory: $CYTADELA_LKG_DIR"
 

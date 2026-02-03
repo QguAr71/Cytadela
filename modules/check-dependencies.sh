@@ -41,7 +41,7 @@ check_dependencies() {
     echo ""
 
     if [[ $missing -eq 0 ]]; then
-        log_success "${T_ALL_REQUIRED_OK:-All required dependencies are installed!} ✓"
+        log_success "${T_ALL_REQUIRED_OK:-All required dependencies are installed!} 󰄬"
     else
         log_error "$missing ${T_REQUIRED_MISSING:-required dependencies are missing!}"
         echo ""
@@ -50,7 +50,7 @@ check_dependencies() {
     fi
 
     if [[ $optional_missing -eq 0 ]]; then
-        log_success "${T_ALL_OPTIONAL_OK:-All optional dependencies are installed!} ✓"
+        log_success "${T_ALL_OPTIONAL_OK:-All optional dependencies are installed!} 󰄬"
     else
         log_warning "$optional_missing ${T_OPTIONAL_MISSING:-optional dependencies are missing}"
         echo ""
@@ -87,9 +87,9 @@ check_dep() {
         esac
 
         if [[ -n "$version" ]]; then
-            printf "  ${GREEN}✓${NC} %-20s %s (v%s)\n" "$cmd" "$desc" "$version"
+            printf "  ${GREEN}󰄬${NC} %-20s %s (v%s)\n" "$cmd" "$desc" "$version"
         else
-            printf "  ${GREEN}✓${NC} %-20s %s\n" "$cmd" "$desc"
+            printf "  ${GREEN}󰄬${NC} %-20s %s\n" "$cmd" "$desc"
         fi
         return 0
     else
@@ -105,7 +105,7 @@ check_dep() {
 }
 
 check_dependencies_install() {
-    log_section "📦 ${T_AUTO_INSTALL_TITLE:-AUTO-INSTALLING MISSING DEPENDENCIES}"
+    log_section "󰏗 ${T_AUTO_INSTALL_TITLE:-AUTO-INSTALLING MISSING DEPENDENCIES}"
 
     # Detect package manager
     local pkg_manager=""
@@ -210,7 +210,7 @@ check_dependencies_install() {
                                     log_error "  ✗ AUR installation failed for '$pkg'"
                                     aur_failed+=("$pkg")
                                 else
-                                    log_success "  ✓ Installed from AUR: $pkg"
+                                    log_success "  󰄬 Installed from AUR: $pkg"
                                     ((success_count++))
                                     continue
                                 fi
@@ -230,7 +230,7 @@ check_dependencies_install() {
                         failed_packages+=("$pkg")
                     fi
                 else
-                    log_success "  ✓ Installed: $pkg"
+                    log_success "  󰄬 Installed: $pkg"
                     ((success_count++))
                 fi
                 ;;
@@ -245,7 +245,7 @@ check_dependencies_install() {
                     read -rp "  Press Enter to continue to next package..."
                     failed_packages+=("$pkg")
                 else
-                    log_success "  ✓ Installed: $pkg"
+                    log_success "  󰄬 Installed: $pkg"
                     ((success_count++))
                 fi
                 ;;
@@ -260,7 +260,7 @@ check_dependencies_install() {
                     read -rp "  Press Enter to continue to next package..."
                     failed_packages+=("$pkg")
                 else
-                    log_success "  ✓ Installed: $pkg"
+                    log_success "  󰄬 Installed: $pkg"
                     ((success_count++))
                 fi
                 ;;

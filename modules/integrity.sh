@@ -103,7 +103,7 @@ integrity_check() {
 # INTEGRITY INITIALIZATION
 # ==============================================================================
 integrity_init() {
-    log_section "🔐 INTEGRITY INIT"
+    log_section "󰯄 INTEGRITY INIT"
 
     # Create directories
     mkdir -p "$(dirname "$CYTADELA_MANIFEST")"
@@ -177,7 +177,7 @@ integrity_init() {
 # INTEGRITY STATUS
 # ==============================================================================
 integrity_status() {
-    log_section "🔐 INTEGRITY STATUS"
+    log_section "󰯄 INTEGRITY STATUS"
 
     echo "Mode: $CYTADELA_MODE"
     echo "Manifest: $CYTADELA_MANIFEST"

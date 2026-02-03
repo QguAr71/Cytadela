@@ -66,7 +66,7 @@ supply_chain_download() {
 }
 
 supply_chain_status() {
-    draw_section_header "🔐 SUPPLY-CHAIN STATUS"
+    draw_section_header "󰯄 SUPPLY-CHAIN STATUS"
 
     echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
 
@@ -83,7 +83,7 @@ supply_chain_status() {
 }
 
 supply_chain_init() {
-    draw_section_header "🔐 SUPPLY-CHAIN INIT"
+    draw_section_header "󰯄 SUPPLY-CHAIN INIT"
 
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
 
@@ -115,7 +115,7 @@ supply_chain_init() {
 }
 
 supply_chain_verify() {
-    draw_section_header "🔐 SUPPLY-CHAIN VERIFY"
+    draw_section_header "󰯄 SUPPLY-CHAIN VERIFY"
 
     if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
         log_warning "No checksums file. Run 'supply-chain-init' first."

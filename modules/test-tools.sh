@@ -16,7 +16,7 @@ safe_test_mode() {
     log_info "Sprawdzanie zależności..."
     for cmd in dnscrypt-proxy coredns nftables; do
         if command -v "$cmd" >/dev/null; then
-            echo "✓ $cmd dostępny"
+            echo "󰄬 $cmd dostępny"
         else
             echo "✗ $cmd nieznaleziony"
         fi
@@ -26,7 +26,7 @@ safe_test_mode() {
     log_info "Walidacja konfiguracji..."
     if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
         if dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml -check >/dev/null 2>&1; then
-            echo "✓ DNSCrypt config poprawny"
+            echo "󰄬 DNSCrypt config poprawny"
         else
             echo "✗ DNSCrypt config błędny"
         fi
@@ -37,7 +37,7 @@ safe_test_mode() {
     if ss -ln | grep -q ":53"; then
         echo "⚠ Port 53 zajęty - może wymagać zatrzymania systemd-resolved"
     else
-        echo "✓ Port 53 wolny"
+        echo "󰄬 Port 53 wolny"
     fi
 
     echo ""

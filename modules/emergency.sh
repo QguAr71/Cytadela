@@ -98,7 +98,7 @@ EOF
 #   - Restores original resolv.conf
 #   - Kills rollback timer
 panic_restore() {
-    log_section "🔄 PANIC RESTORE"
+    log_section "󰜝 PANIC RESTORE"
 
     [[ ! -f "$PANIC_STATE_FILE" ]] && {
         log_info "Not in panic mode."
@@ -133,7 +133,7 @@ panic_status() {
 }
 
 emergency_refuse() {
-    log_section "🚫 EMERGENCY REFUSE MODE"
+    log_section "󰁑 EMERGENCY REFUSE MODE"
     log_warning "This will make CoreDNS refuse all DNS queries!"
 
     local corefile="/etc/coredns/Corefile"
@@ -156,7 +156,7 @@ EOF
 }
 
 emergency_restore() {
-    log_section "✅ EMERGENCY RESTORE"
+    log_section "󰄬 EMERGENCY RESTORE"
 
     local corefile="/etc/coredns/Corefile"
     [[ -f "${corefile}.backup" ]] && cp "${corefile}.backup" "$corefile"
@@ -175,7 +175,7 @@ emergency_restore() {
 #   - Adds nftables rules to drop external DNS
 #   - Only allows 127.0.0.0/8 and ::1 DNS
 emergency_killswitch_on() {
-    log_section "🔒 KILL-SWITCH ON"
+    log_section "󰌾 KILL-SWITCH ON"
     log_warning "This will block all DNS except localhost!"
 
     nft add rule inet citadel filter_output ip daddr != 127.0.0.0/8 udp dport 53 drop 2>/dev/null || true
@@ -194,7 +194,7 @@ emergency_killswitch_on() {
 #   - Removes nftables DNS drop rules
 #   - Restores normal DNS access
 emergency_killswitch_off() {
-    log_section "🔓 KILL-SWITCH OFF"
+    log_section "󰌿 KILL-SWITCH OFF"
 
     nft delete rule inet citadel filter_output ip daddr != 127.0.0.0/8 udp dport 53 drop 2>/dev/null || true
     nft delete rule inet citadel filter_output ip6 daddr != ::1 udp dport 53 drop 2>/dev/null || true
