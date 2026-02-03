@@ -92,7 +92,7 @@ show_help_section_main() {
     echo ""
     echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel++}"
     echo -e "${CYAN}restore-system${NC}     - ${T_HELP_CMD_RESTORE_SYSTEM:-Restore systemd-resolved}"
-    echo -e "${CYAN}firewall-safe${NC}      - ${T_HELP_CMD_FIREWALL_SAFE:-SAFE mode (won't break connectivity)}"
+    echo -e "${CYAN}firewall-safe${NC}      - ${T_HELP_CMD_FIREWALL_SAFE:-SAFE mode (won\'t break connectivity)}"
     echo -e "${CYAN}firewall-strict${NC}    - ${T_HELP_CMD_FIREWALL_STRICT:-STRICT mode (DNS leak protection)}"
     echo -e "${CYAN}status${NC}             - ${T_HELP_CMD_STATUS:-Show service status}"
     echo -e "${CYAN}diagnostics${NC}        - ${T_HELP_CMD_DIAGNOSTICS:-Full system diagnostics}"
