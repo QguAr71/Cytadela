@@ -110,7 +110,7 @@ install_wizard() {
     mkdir -p "$SYSTEM_BACKUP_DIR"
     
     # Purple frame for section header
-    draw_section_header "🛡️  SAFETY BACKUP"
+    draw_section_header "🛡️ SAFETY BACKUP"
     log_info "Creating backup of system DNS configuration..."
     
     # Backup resolv.conf (the critical file for internet connectivity)
