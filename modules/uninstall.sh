@@ -120,6 +120,8 @@ citadel_uninstall() {
     if [[ "$dns_works" == false ]]; then
         log_error "${T_DNS_FAILED:-DNS test failed - system may lose internet after restart!}"
         echo ""
+        log_info "${YELLOW}Emergency recovery:${NC} sudo ./citadel.sh emergency-network-restore"
+        echo ""
         log_info "${T_MANUAL_FIX:-Manual fix options:}"
         log_info "  1. ${T_RESTART_NM:-Restart NetworkManager}: sudo systemctl restart NetworkManager"
         log_info "  2. ${T_RESTART_SD:-Or restart systemd-resolved}: sudo systemctl restart systemd-resolved"
@@ -184,6 +186,7 @@ citadel_uninstall() {
     log_success "${T_UNINSTALL_COMPLETE:-Citadel has been completely removed}"
     echo ""
     log_info "${T_REINSTALL_HINT:-To reinstall, run: sudo ./citadel.sh install-wizard}"
+    log_info "${YELLOW}If you have network issues:${NC} sudo ./citadel.sh emergency-network-restore"
 }
 
 citadel_uninstall_keep_config() {

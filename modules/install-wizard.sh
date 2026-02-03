@@ -175,6 +175,7 @@ EOF
     log_success "System backup complete"
     log_info "Backup location: $SYSTEM_BACKUP_DIR"
     log_info "To restore: sudo ./citadel.sh restore-system"
+    log_info "${YELLOW}Emergency help: sudo ./citadel.sh emergency-network-restore${NC}"
     echo ""
 
     # Check if Citadel is already installed - offer management options
