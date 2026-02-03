@@ -479,7 +479,7 @@ fullscale=brightgreen,black
                     else
                         log_error "$name installation failed"
                     fi
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -491,7 +491,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -503,7 +503,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -515,7 +515,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -527,7 +527,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainicjalizowany" || log_success "$name initialized"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Inicjalizacja $name nie powiodła się" || log_error "$name initialization failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -575,7 +575,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -587,7 +587,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowana" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
@@ -599,7 +599,7 @@ fullscale=brightgreen,black
                     [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
                 else
                     [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
-                    ((failed++))
+                    ((failed++)) || true
                 fi
                 ;;
 
