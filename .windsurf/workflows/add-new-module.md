@@ -45,20 +45,36 @@ Główne funkcje modułu:
 ```bash
 my_new_module() {
     # Wczytaj i18n
-    local lang="${LANG%%_*}"
-    local module_dir="$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
-    [[ -f "${module_dir}/lib/i18n/${lang}.sh" ]] && source "${_}"
+    load_i18n_module "my-module"
     
-    # Logika modułu
-    log_section "${T_MYMODULE_TITLE:-My Module}"
+    # Użyj fioletowej ramki z szablonu
+    draw_section_header "${T_MYMODULE_TITLE:-My Module}"
     
     # Używaj zmiennych T_* z fallbackiem
     log_info "${T_MYMODULE_RUNNING:-Running...}"
 }
 
 my_new_module_help() {
-    echo "${T_USAGE:-USAGE}: cytadela++ my-new-module [run|help]"
+    cat <<'EOF'
+${T_MYMODULE_USAGE:-USAGE}: cytadela++ my-new-module [run|help]
+EOF
 }
+```
+
+### Ramki UI
+
+Używaj funkcji z `lib/frame-ui.sh`:
+
+- `draw_section_header "Tytuł"` - fioletowa ramka z nagłówkiem
+- `draw_emergency_frame "Tytuł"` - czerwona ramka (awaryjna)
+- `print_frame_line "tekst"` - pojedyncza linia z obramowaniem
+
+Przykład:
+```bash
+draw_section_header "${T_MYMODULE_TITLE:-My Module}"
+print_frame_line "${T_STEP_1:-Step 1}: ${T_CONFIGURING:-Configuring...}"
+print_frame_line "${T_STEP_2:-Step 2}: ${T_VERIFYING:-Verifying...}"
+echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 ```
 
 ## Krok 5: Testuj moduł
