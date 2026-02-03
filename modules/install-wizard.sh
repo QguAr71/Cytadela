@@ -72,16 +72,26 @@ select_language() {
     fi
 }
 
-# Function to safely install dependencies
+# Function to safely install dependencies with fallback
 install_dep() {
     local pkg_name=$1
     local display_name=$2
     
     log_info "Installing $display_name ($pkg_name)..."
     
-    # Install with --noconfirm and --needed
+    # First attempt
     if sudo pacman -S --noconfirm --needed "$pkg_name" &>/dev/null; then
         log_success "$display_name installed"
+        return 0
+    fi
+    
+    # Fallback: refresh databases and retry (don't fail if Sy fails)
+    log_warning "Download failed, refreshing databases..."
+    sudo pacman -Sy --noconfirm &>/dev/null || true
+    
+    # Second attempt after sync
+    if sudo pacman -S --noconfirm --needed "$pkg_name" &>/dev/null; then
+        log_success "$display_name installed after sync"
     else
         log_warning "Failed to install $display_name (skipped)"
     fi
