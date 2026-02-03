@@ -4,6 +4,20 @@
 # ║  Reusable frame drawing functions                                         ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Draw a single line with colored frame borders
+print_frame_line() {
+    local text="$1"
+    local frame_color="${2:-$VIO}"
+    local total_width=60
+    
+    # Strip ANSI colors for length calculation  
+    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_len=${#visible_text}
+    local padding=$((total_width - visible_len))
+    
+    printf "${frame_color}║${NC} %b%*s ${frame_color}║${NC}\n" "$text" "$padding" ""
+}
+
 # Draw section header with purple frame
 draw_section_header() {
     local title="$1"
