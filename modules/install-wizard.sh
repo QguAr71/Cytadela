@@ -298,24 +298,25 @@ actcheckbox=black,brightgreen
 
     # Set whiptail colors (256-color palette for better contrast)
     # Format: root=,window=,border=,textbox=,button=
+    # Background changed to gray (lighter), increased window size
     export NEWT_COLORS='
-root=,black
-window=brightmagenta,black
-border=brightgreen,black
-textbox=brightmagenta,black
+root=,gray
+window=brightmagenta,gray
+border=brightgreen,gray
+textbox=black,gray
 button=black,brightgreen
 actbutton=black,brightmagenta
-checkbox=brightgreen,black
+checkbox=brightgreen,gray
 actcheckbox=black,brightgreen
-entry=brightmagenta,black
-label=brightmagenta,black
-listbox=brightmagenta,black
+entry=black,gray
+label=black,gray
+listbox=black,gray
 actlistbox=black,brightgreen
 sellistbox=black,brightgreen
-title=brightgreen,black
-roottext=brightmagenta,black
-emptyscale=black
-fullscale=brightgreen,black
+title=brightgreen,gray
+roottext=black,gray
+emptyscale=gray
+fullscale=brightgreen,gray
 '
 
     # Language selection
@@ -401,7 +402,7 @@ fullscale=brightgreen,black
     
     selected=$(whiptail --title "$dialog_title" \
         --checklist "$dialog_text" \
-        24 78 10 \
+        26 82 12 \
         "${options[@]}" \
         3>&1 1>&2 2>&3) || exit_code=$?
 
