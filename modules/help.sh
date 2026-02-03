@@ -8,6 +8,26 @@ MODULE_AUTHOR="Citadel++ Team"
 MODULE_DEPENDS=()
 MODULE_TAGS=("help" "i18n" "documentation" "interactive")
 
+# =============================================================================
+# HELPER: Print menu line with proper alignment (handles ANSI colors)
+# =============================================================================
+
+print_menu_line() {
+    local text="$1"
+    local total_width=60
+    
+    # Strip ANSI colors for length calculation
+    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_len=${#visible_text}
+    local padding=$((total_width - visible_len))
+    
+    printf "║ %b%*s ║\n" "$text" "$padding" ""
+}
+
+# =============================================================================
+# MAIN HELP FUNCTION - Interactive menu
+# =============================================================================
+
 citadel_help() {
     load_i18n_module "help"
     local lang="${LANG%%_*}"
@@ -16,20 +36,21 @@ citadel_help() {
     while true; do
         clear 2>/dev/null || echo ""
         
+        # Display menu with frame
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        print_menu_line "${CYAN}${T_HELP_MENU_TITLE:-CITADEL++ HELP}${NC}"
+        echo "╠══════════════════════════════════════════════════════════════╣"
+        print_menu_line "${GREEN}[1]${NC} ${T_HELP_MENU_1:-1. Installation}"
+        print_menu_line "${GREEN}[2]${NC} ${T_HELP_MENU_2:-2. Main Program}"
+        print_menu_line "${GREEN}[3]${NC} ${T_HELP_MENU_3:-3. Add-ons}"
+        print_menu_line "${GREEN}[4]${NC} ${T_HELP_MENU_4:-4. Advanced}"
+        print_menu_line "${GREEN}[5]${NC} ${T_HELP_MENU_5:-5. Emergency}"
+        print_menu_line "${YELLOW}[6]${NC} ${T_HELP_MENU_6:-6. All Commands}"
+        print_menu_line ""
+        print_menu_line "${RED}[q]${NC} ${T_HELP_MENU_QUIT:-Quit}"
+        echo "╚══════════════════════════════════════════════════════════════╝"
         echo ""
-        echo -e "${BLUE}========================================${NC}"
-        echo -e "${CYAN}  CITADEL++ HELP${NC}"
-        echo -e "${BLUE}========================================${NC}"
-        echo ""
-        echo -e "${GREEN}[1]${NC} 1. Installation"
-        echo -e "${GREEN}[2]${NC} 2. Main Program"
-        echo -e "${GREEN}[3]${NC} 3. Add-ons"
-        echo -e "${GREEN}[4]${NC} 4. Advanced"
-        echo -e "${GREEN}[5]${NC} 5. Emergency"
-        echo -e "${YELLOW}[6]${NC} 6. All Commands"
-        echo -e "${RED}[q]${NC} Quit"
-        echo ""
-        echo -n "Your choice: "
+        echo -n "${T_HELP_PROMPT:-Your choice}: "
         read choice
         
         case "$choice" in
