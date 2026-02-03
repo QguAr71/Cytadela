@@ -65,14 +65,14 @@ notify_enable() {
 }
 
 notify_disable() {
-    log_section "🔕 DISABLE DESKTOP NOTIFICATIONS"
+    log_section "󰂛 DISABLE DESKTOP NOTIFICATIONS"
 
     rm -f "$NOTIFY_ENABLED_FILE"
     log_success "Notifications disabled"
 }
 
 notify_status() {
-    log_section "📊 NOTIFICATION STATUS"
+    log_section "󰄬 NOTIFICATION STATUS"
 
     if [[ -f "$NOTIFY_ENABLED_FILE" ]]; then
         local notify_user
@@ -91,7 +91,7 @@ notify_status() {
 }
 
 notify_test() {
-    log_section "🧪 TEST NOTIFICATION"
+    log_section " PROMETHEUS INTEGRATION"
 
     if [[ ! -f "$NOTIFY_ENABLED_FILE" ]]; then
         log_error "Notifications are disabled. Enable first: notify-enable"

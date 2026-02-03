@@ -13,7 +13,7 @@ METRICS_PORT="${CITADEL_METRICS_PORT:-9100}"
 # ==============================================================================
 
 prometheus_collect() {
-    log_section "📊 PROMETHEUS METRICS EXPORT"
+    log_section "󰄬 PROMETHEUS METRICS EXPORT"
 
     mkdir -p "$METRICS_DIR"
 
@@ -197,7 +197,7 @@ prometheus_serve_start() {
 }
 
 prometheus_status() {
-    log_section "📊 PROMETHEUS STATUS"
+    log_section "󰄬 PROMETHEUS STATUS"
 
     if [[ -f "$METRICS_FILE" ]]; then
         local last_update

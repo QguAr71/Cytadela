@@ -69,7 +69,7 @@ EOF
 }
 
 auto_update_disable() {
-    log_section "🛑 DISABLING AUTO-UPDATE"
+    log_section "󰓛 DISABLING AUTO-UPDATE"
 
     # Stop and disable timer
     systemctl stop cytadela-auto-update.timer 2>/dev/null || true
@@ -79,7 +79,7 @@ auto_update_disable() {
 }
 
 auto_update_status() {
-    log_section "📊 AUTO-UPDATE STATUS"
+    log_section "󰄬 AUTO-UPDATE STATUS"
 
     if systemctl is-enabled cytadela-auto-update.timer &>/dev/null; then
         echo -e "${GREEN}Status: ENABLED${NC}"
@@ -119,7 +119,7 @@ auto_update_now() {
 }
 
 auto_update_configure() {
-    log_section "⚙️  CONFIGURE AUTO-UPDATE"
+    log_section "󰒓 CONFIGURE AUTO-UPDATE"
 
     echo "Select update frequency:"
     echo "  1) Daily (default)"

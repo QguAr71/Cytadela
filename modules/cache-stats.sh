@@ -8,7 +8,7 @@ METRICS_URL="http://${COREDNS_METRICS_ADDR:-127.0.0.1:9153}/metrics"
 
 # shellcheck disable=SC2120
 cache_stats() {
-    log_section "📊 DNS CACHE STATISTICS"
+    log_section "󰄬 DNS CACHE STATISTICS"
 
     local top_n="${1:-10}"
 
@@ -140,7 +140,7 @@ cache_stats_reset() {
 }
 
 cache_stats_watch() {
-    log_section "👁️  WATCH CACHE STATS (live)"
+    log_section "󰄮 WATCH CACHE STATS (live)"
 
     log_info "Updating every 2 seconds (Ctrl+C to stop)"
     echo ""
