@@ -50,7 +50,7 @@ install_all() {
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 >/dev/null 2>&1; then
             echo "  󰄬 DNS (google.com) via 127.0.0.1: OK"
         else
-            echo "  ✗ DNS (google.com) via 127.0.0.1: FAILED"
+            echo "  󰅖 DNS (google.com) via 127.0.0.1: FAILED"
         fi
 
         local test_domain
@@ -62,7 +62,7 @@ install_all() {
             if dig +time=2 +tries=1 +short "$test_domain" @127.0.0.1 2>/dev/null | head -n 1 | grep -qx "0.0.0.0"; then
                 echo "  󰄬 Adblock test ($test_domain): BLOCKED (0.0.0.0)"
             else
-                echo "  ✗ Adblock test ($test_domain): FAILED"
+                echo "  󰅖 Adblock test ($test_domain): FAILED"
             fi
         fi
     else

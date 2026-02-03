@@ -125,7 +125,7 @@ EOF
 }
 
 ipv6_privacy_status() {
-    log_section "🔍 IPv6 PRIVACY STATUS"
+    log_section "󰍉 IPv6 PRIVACY STATUS"
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
@@ -182,7 +182,7 @@ ipv6_deep_reset() {
 }
 
 smart_ipv6_detection() {
-    log_section "🔍 SMART IPv6 DETECTION"
+    log_section "󰍉 SMART IPv6 DETECTION"
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {

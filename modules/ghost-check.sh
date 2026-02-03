@@ -7,7 +7,7 @@
 GHOST_ALLOWED_PORTS=(22 53 5353 9153)
 
 ghost_check() {
-    log_section "👻 GHOST-CHECK: Port Exposure Audit"
+    log_section "󰊠 GHOST-CHECK: Port Exposure Audit"
 
     # Ensure network-utils functions are available
     if ! declare -f discover_active_interface >/dev/null 2>&1; then

@@ -91,7 +91,7 @@ lkg_status() {
 }
 
 lists_update() {
-    log_section "📥 LISTS UPDATE (with LKG fallback)"
+    log_section "󰇚 LISTS UPDATE (with LKG fallback)"
 
     local staging_file
     staging_file=$(mktemp)

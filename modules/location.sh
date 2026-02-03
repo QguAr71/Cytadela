@@ -35,7 +35,7 @@ location_get_firewall_mode() {
 }
 
 location_status() {
-    log_section "📍 LOCATION STATUS"
+    log_section "󰍦 LOCATION STATUS"
 
     local ssid
     ssid=$(location_get_ssid)
@@ -79,7 +79,7 @@ location_status() {
 }
 
 location_check() {
-    log_section "📍 LOCATION CHECK"
+    log_section "󰍦 LOCATION CHECK"
 
     local ssid
     ssid=$(location_get_ssid)
@@ -180,7 +180,7 @@ location_remove_trusted() {
 }
 
 location_list_trusted() {
-    log_section "📍 TRUSTED SSIDS"
+    log_section "󰍦 TRUSTED SSIDS"
 
     if [[ -f "$TRUSTED_SSIDS_FILE" ]]; then
         local count
