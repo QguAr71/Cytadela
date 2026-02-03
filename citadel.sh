@@ -135,7 +135,7 @@ case "$ACTION" in
         ;;
 
     # Emergency
-    panic-bypass | panic-restore | panic-status | emergency-refuse | emergency-restore | killswitch-on | killswitch-off)
+    panic-bypass | panic-restore | panic-status | emergency-refuse | emergency-restore | killswitch-on | killswitch-off | emergency-network-restore | emergency-dns-fix)
         load_module "emergency"
         call_fn "$ACTION" "$@" || true
         ;;
