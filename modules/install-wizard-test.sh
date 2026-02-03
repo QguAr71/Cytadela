@@ -61,7 +61,7 @@ select_language_menu() {
         print_frame_footer
         echo "DEBUG: Before read" >&2
         echo -n "Choice: "
-        read choice
+        read -r choice </dev/tty
         echo "DEBUG: Read choice: $choice" >&2
         case "$choice" in
             1) echo "en"; return ;;
