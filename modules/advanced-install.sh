@@ -100,7 +100,7 @@ EOF
 }
 
 install_editor_integration() {
-    log_section "✏️ EDITOR INTEGRATION SETUP"
+    log_section "󰏫 EDITOR INTEGRATION SETUP"
 
     if ! command -v yay >/dev/null 2>&1; then
         log_warning "Brak yay - nie mogę automatycznie zainstalować micro"
@@ -138,7 +138,7 @@ case "$ACTION" in
         echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
-        echo "📊 Citadel++ Status:"
+        echo "󰄬 Citadel++ Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)

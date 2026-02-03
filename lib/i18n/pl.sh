@@ -22,7 +22,7 @@ ${GREEN}󱓞 Instalacja (ZALECANE):${NC}
   ${CYAN}install-coredns${NC}       Instaluj tylko CoreDNS
   ${CYAN}install-nftables${NC}      Instaluj tylko reguły NFTables
 
-${YELLOW}⚙️  Konfiguracja systemu:${NC}
+${YELLOW}󰒓  Konfiguracja systemu:${NC}
   ${CYAN}configure-system${NC}      Przełącz system na Citadel++ DNS
   ${CYAN}restore-system${NC}        Przywróć systemd-resolved
   ${CYAN}firewall-safe${NC}         Tryb bezpieczny (nie zrywa internetu)
@@ -35,7 +35,7 @@ ${RED}🚨 Awaryjne:${NC}
   ${CYAN}killswitch-on${NC}         Aktywuj DNS kill-switch
   ${CYAN}killswitch-off${NC}        Dezaktywuj kill-switch
 
-${GREEN}📊 Status i diagnostyka:${NC}
+${GREEN}󰄬 Status i diagnostyka:${NC}
   ${CYAN}status${NC}                Pokaż status usług
   ${CYAN}diagnostics${NC}          Pełna diagnostyka systemu
   ${CYAN}verify${NC}                Weryfikuj cały stack

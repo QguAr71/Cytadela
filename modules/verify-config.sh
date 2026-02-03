@@ -192,7 +192,7 @@ verify_config_dns() {
 }
 
 verify_config_services() {
-    log_section "⚙️  ${T_VERIFY_SERVICES_TITLE:-SERVICE STATUS}"
+    log_section "󰒓  ${T_VERIFY_SERVICES_TITLE:-SERVICE STATUS}"
     
     local services=("coredns" "dnscrypt-proxy" "nftables")
     

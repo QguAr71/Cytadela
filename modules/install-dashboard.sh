@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_citadel_top() {
-    log_section "📊 TERMINAL DASHBOARD INSTALLATION"
+    log_section "󰄬 TERMINAL DASHBOARD INSTALLATION"
 
     require_cmds curl jq systemctl || return 1
     if ! command -v pacman >/dev/null 2>&1; then
@@ -55,7 +55,7 @@ while true; do
     fi
     echo ""
     
-    echo "📊 PROMETHEUS METRICS:"
+    echo "󰄬 PROMETHEUS METRICS:"
     if curl -s http://127.0.0.1:9153/metrics >/dev/null 2>&1; then
         QUERIES=$(curl -s http://127.0.0.1:9153/metrics | grep "coredns_dns_request_count_total" | tail -1 | awk '{print $2}')
         CACHE_HITS=$(curl -s http://127.0.0.1:9153/metrics | grep "coredns_cache_hits_total" | tail -1 | awk '{print $2}')
