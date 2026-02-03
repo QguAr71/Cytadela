@@ -49,23 +49,31 @@ print_frame_footer() {
 # =============================================================================
 
 select_language_menu() {
-    echo "DEBUG: Entering select_language_menu" >&2
     while true; do
-        echo "DEBUG: In loop" >&2
-        # clear 2>/dev/null || echo ""
-        echo "DEBUG: After clear" >&2
-        print_frame_header "SELECT LANGUAGE"
-        echo "DEBUG: After header" >&2
+        clear 2>/dev/null || echo ""
+        print_frame_header "${T_SELECT_LANG:-SELECT LANGUAGE}"
         print_frame_line "${GREEN}[1]${NC} English"
         print_frame_line "${GREEN}[2]${NC} Polski"
+        print_frame_line "${GREEN}[3]${NC} Deutsch"
+        print_frame_line "${GREEN}[4]${NC} Español"
+        print_frame_line "${GREEN}[5]${NC} Italiano"
+        print_frame_line "${GREEN}[6]${NC} Français"
+        print_frame_line "${GREEN}[7]${NC} Русский"
+        print_frame_line ""
+        print_frame_line "${RED}[q]${NC} ${T_CANCEL:-Cancel}"
         print_frame_footer
-        echo "DEBUG: Before read" >&2
-        echo -n "Choice: "
+        echo ""
+        echo -n "${T_CHOICE:-Choice}: "
         read -r choice </dev/tty
-        echo "DEBUG: Read choice: $choice" >&2
+        
         case "$choice" in
             1) echo "en"; return ;;
             2) echo "pl"; return ;;
+            3) echo "de"; return ;;
+            4) echo "es"; return ;;
+            5) echo "it"; return ;;
+            6) echo "fr"; return ;;
+            7) echo "ru"; return ;;
             q) echo ""; return 1 ;;
         esac
     done
