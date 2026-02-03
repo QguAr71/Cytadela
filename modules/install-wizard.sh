@@ -176,13 +176,13 @@ EOF
     log_info "Backup location: $SYSTEM_BACKUP_DIR"
     echo ""
     
-    # Emergency frame - 62 chars wide
-    printf "${RED}╔══════════════════════════════════════════════════════════════╗${NC}\n"
-    printf "${RED}║${NC} ${BOLD}%-58s${NC} ${RED}║${NC}\n" "EMERGENCY RECOVERY:"
-    printf "${RED}╠══════════════════════════════════════════════════════════════╣${NC}\n"
-    printf "${RED}║${NC} %-60s ${RED}║${NC}\n" "If installation fails:"
-    printf "${RED}║${NC}   ${YELLOW}%-56s${NC} ${RED}║${NC}\n" "sudo ./citadel.sh emergency-network-restore"
-    printf "${RED}╚══════════════════════════════════════════════════════════════╝${NC}\n"
+    # Emergency frame - using same pattern as help.sh
+    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "${BOLD}EMERGENCY RECOVERY:${NC}" $((60 - 18)) ""
+    echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
+    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "If installation fails:" $((60 - 22)) ""
+    printf "${RED}║${NC}   %b%*s ${RED}║${NC}\n" "${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}" $((60 - 46)) ""
+    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     
     # Pause so user can see the message
