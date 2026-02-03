@@ -35,31 +35,31 @@ adblock_status() {
     if systemctl is-active --quiet coredns; then
         echo "  󰄬 coredns: running"
     else
-        echo "  ✗ coredns: not running"
+        echo "  󰅖 coredns: not running"
     fi
 
     if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined\.hosts' /etc/coredns/Corefile; then
         echo "  󰄬 Corefile: uses combined.hosts"
     else
-        echo "  ✗ Corefile: missing combined.hosts"
+        echo "  󰅖 Corefile: missing combined.hosts"
     fi
 
     if [[ -f /etc/coredns/zones/custom.hosts ]]; then
         echo "  󰄬 custom.hosts:   $(wc -l </etc/coredns/zones/custom.hosts)"
     else
-        echo "  ✗ custom.hosts: missing"
+        echo "  󰅖 custom.hosts: missing"
     fi
 
     if [[ -f /etc/coredns/zones/blocklist.hosts ]]; then
         echo "  󰄬 blocklist.hosts: $(wc -l </etc/coredns/zones/blocklist.hosts)"
     else
-        echo "  ✗ blocklist.hosts: missing"
+        echo "  󰅖 blocklist.hosts: missing"
     fi
 
     if [[ -f /etc/coredns/zones/combined.hosts ]]; then
         echo "  󰄬 combined.hosts:  $(wc -l </etc/coredns/zones/combined.hosts)"
     else
-        echo "  ✗ combined.hosts: missing"
+        echo "  󰅖 combined.hosts: missing"
     fi
 }
 

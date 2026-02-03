@@ -46,12 +46,12 @@ while true; do
     echo ""
     
     echo "󰈸 SERVICE STATUS:"
-    systemctl is-active dnscrypt-proxy >/dev/null && echo "󰄬 DNSCrypt-Proxy: RUNNING" || echo "✗ DNSCrypt-Proxy: STOPPED"
-    systemctl is-active coredns >/dev/null && echo "󰄬 CoreDNS: RUNNING" || echo "✗ CoreDNS: STOPPED"
+    systemctl is-active dnscrypt-proxy >/dev/null && echo "󰄬 DNSCrypt-Proxy: RUNNING" || echo "󰅖 DNSCrypt-Proxy: STOPPED"
+    systemctl is-active coredns >/dev/null && echo "󰄬 CoreDNS: RUNNING" || echo "󰅖 CoreDNS: STOPPED"
     if sudo -n nft list table inet citadel_dns >/dev/null 2>&1; then
         echo "󰄬 NFTables: RULES LOADED"
     else
-        systemctl is-active nftables >/dev/null && echo "󰄬 NFTables: RUNNING" || echo "✗ NFTables: STOPPED"
+        systemctl is-active nftables >/dev/null && echo "󰄬 NFTables: RUNNING" || echo "󰅖 NFTables: STOPPED"
     fi
     echo ""
     
