@@ -1,19 +1,156 @@
 #!/bin/bash
-# Help Translations (EN)
+# Help - Translations (EN)
 
-export T_HELP_TITLE="CITADEL++ - Hardened Local DNS Stack"
-export T_HELP_USAGE="USAGE"
-export T_HELP_COMMANDS="COMMANDS"
-export T_HELP_OPTIONS="OPTIONS"
-export T_HELP_EXAMPLES="EXAMPLES"
-export T_HELP_SEE_ALSO="SEE ALSO"
-export T_HELP_VERSION="VERSION"
-export T_HELP_AUTHOR="AUTHOR"
-export T_HELP_LICENSE="LICENSE"
+export T_HELP_TITLE="CITADEL++ v3.1 - Command Reference"
 
-export T_HELP_CAT_INSTALL="Installation"
-export T_HELP_CAT_CONFIG="Configuration"
-export T_HELP_CAT_DIAGNOSTIC="Diagnostics"
-export T_HELP_CAT_EMERGENCY="Emergency"
-export T_HELP_CAT_ADBLOCK="Adblock"
-export T_HELP_CAT_FIREWALL="Firewall"
+# Sections
+export T_HELP_SECTION_INSTALL="Installation commands (SAFE):"
+export T_HELP_SECTION_DNSSEC="DNSSEC (optional):"
+export T_HELP_SECTION_NEW="NEW FEATURES v3.1:"
+export T_HELP_SECTION_CONFIG="System Configuration (WARNING - disables systemd-resolved):"
+export T_HELP_SECTION_EMERGENCY="Emergency Commands:"
+export T_HELP_SECTION_PANIC="Panic Bypass (SPOF recovery):"
+export T_HELP_SECTION_LKG="LKG (Last Known Good):"
+export T_HELP_SECTION_AUTOUPDATE="Auto-update:"
+export T_HELP_SECTION_BACKUP="Config Backup/Restore:"
+export T_HELP_SECTION_CACHE="Cache Stats:"
+export T_HELP_SECTION_NOTIFICATIONS="Desktop Notifications:"
+export T_HELP_SECTION_DIAGNOSTICS="Diagnostic Commands:"
+export T_HELP_SECTION_HEALTH="Health Watchdog:"
+export T_HELP_SECTION_SUPPLY="Supply-Chain Verification:"
+export T_HELP_SECTION_LOCATION="Location-Aware Advisory:"
+export T_HELP_SECTION_NFTDEBUG="NFT Debug Chain:"
+export T_HELP_SECTION_FIREWALL="Firewall Modes:"
+export T_HELP_SECTION_WORKFLOW="Recommended workflow:"
+export T_HELP_SECTION_DOCS="Documentation:"
+
+# Install commands
+export T_HELP_CMD_INSTALL_WIZARD="Interactive installer with checklist (RECOMMENDED)"
+export T_HELP_CMD_INSTALL_ALL="Install all DNS modules (does NOT disable systemd-resolved)"
+export T_HELP_CMD_INSTALL_DNSCRYPT="Install DNSCrypt-Proxy only"
+export T_HELP_CMD_INSTALL_COREDNS="Install CoreDNS only"
+export T_HELP_CMD_INSTALL_NFTABLES="Install NFTables rules only"
+
+# Config
+export T_HELP_CMD_CONFIGURE_SYSTEM="Switch system DNS to Citadel++ (with confirmation)"
+export T_HELP_CMD_RESTORE_SYSTEM="Restore systemd-resolved + DNS (rollback)"
+export T_HELP_CMD_FIREWALL_SAFE="Set SAFE rules (won't break connectivity)"
+export T_HELP_CMD_FIREWALL_STRICT="Set STRICT rules (blocks DNS leaks)"
+
+# Emergency
+export T_HELP_CMD_EMERGENCY_REFUSE="Refuse all DNS queries (emergency mode)"
+export T_HELP_CMD_EMERGENCY_RESTORE="Restore normal operation"
+export T_HELP_CMD_KILLSWITCH_ON="Activate DNS kill-switch (block all non-localhost)"
+export T_HELP_CMD_KILLSWITCH_OFF="Deactivate kill-switch"
+export T_HELP_CMD_PANIC_BYPASS="Disable protection + auto-rollback (default 300s)"
+export T_HELP_CMD_PANIC_RESTORE="Manually restore protected mode"
+export T_HELP_CMD_PANIC_STATUS="Show panic mode status"
+
+# Diagnostics
+export T_HELP_CMD_STATUS="Show service status"
+export T_HELP_CMD_DIAGNOSTICS="Run full system diagnostics"
+export T_HELP_CMD_VERIFY="Verify full stack (ports/services/DNS/NFT/metrics)"
+export T_HELP_CMD_VERIFY_CONFIG="Verify configuration and DNS"
+export T_HELP_CMD_VERIFY_CONFIG_DNS="DNS resolution tests only"
+export T_HELP_CMD_VERIFY_CONFIG_ALL="All verification checks"
+export T_HELP_CMD_CHECK_DEPS="Check dependencies"
+export T_HELP_CMD_CHECK_DEPS_INSTALL="Install missing deps (with AUR fallback for Arch)"
+export T_HELP_CMD_GHOST_CHECK="Port exposure audit (warn about 0.0.0.0/::)"
+export T_HELP_CMD_TEST_ALL="Smoke test (verify + leak test + IPv6)"
+
+# LKG
+export T_HELP_CMD_LKG_SAVE="Save current blocklist to cache"
+export T_HELP_CMD_LKG_RESTORE="Restore blocklist from cache"
+export T_HELP_CMD_LKG_STATUS="Show LKG cache status"
+export T_HELP_CMD_LISTS_UPDATE="Update blocklist with LKG fallback"
+
+# Auto-update
+export T_HELP_CMD_AUTO_UPDATE_ENABLE="Enable automatic blocklist updates (daily)"
+export T_HELP_CMD_AUTO_UPDATE_DISABLE="Disable automatic updates"
+export T_HELP_CMD_AUTO_UPDATE_STATUS="Show auto-update status"
+export T_HELP_CMD_AUTO_UPDATE_NOW="Run update now (manual)"
+export T_HELP_CMD_AUTO_UPDATE_CONFIGURE="Configure frequency (daily/weekly/custom)"
+
+# Cache
+export T_HELP_CMD_CACHE_STATS="Show DNS cache statistics (hit rate, latency)"
+export T_HELP_CMD_CACHE_STATS_TOP="Top N most common domains (default 20)"
+export T_HELP_CMD_CACHE_STATS_RESET="Reset statistics (restart CoreDNS)"
+export T_HELP_CMD_CACHE_STATS_WATCH="Live monitoring (2s refresh)"
+
+# Notifications
+export T_HELP_CMD_NOTIFY_ENABLE="Enable desktop notifications"
+export T_HELP_CMD_NOTIFY_DISABLE="Disable notifications"
+export T_HELP_CMD_NOTIFY_STATUS="Show notification status"
+export T_HELP_CMD_NOTIFY_TEST="Send test notification"
+
+# Supply Chain
+export T_HELP_CMD_SUPPLY_STATUS="Show checksums file status"
+export T_HELP_CMD_SUPPLY_INIT="Initialize checksums for known assets"
+export T_HELP_CMD_SUPPLY_VERIFY="Verify local files against manifest"
+
+# Location
+export T_HELP_CMD_LOCATION_STATUS="Show current SSID, trust status, firewall mode"
+export T_HELP_CMD_LOCATION_CHECK="Check and advise on firewall mode"
+export T_HELP_CMD_LOCATION_ADD_TRUSTED="Add SSID to trusted list (or current if no arg)"
+export T_HELP_CMD_LOCATION_REMOVE_TRUSTED="Remove SSID from trusted list"
+export T_HELP_CMD_LOCATION_LIST_TRUSTED="List all trusted SSIDs"
+
+# NFT Debug
+export T_HELP_CMD_NFT_DEBUG_ON="Enable debug chain with rate-limited logging"
+export T_HELP_CMD_NFT_DEBUG_OFF="Disable debug chain"
+export T_HELP_CMD_NFT_DEBUG_STATUS="Show debug chain status and counters"
+export T_HELP_CMD_NFT_DEBUG_LOGS="Show recent CITADEL log entries"
+
+# New features v3.1
+export T_HELP_CMD_SMART_IPV6="Smart IPv6 detection & auto-reconfiguration"
+export T_HELP_CMD_IPV6_PRIVACY_ON="Enable IPv6 Privacy Extensions (prefer temporary)"
+export T_HELP_CMD_IPV6_PRIVACY_OFF="Disable IPv6 Privacy Extensions"
+export T_HELP_CMD_IPV6_PRIVACY_STATUS="Show IPv6 Privacy Extensions status"
+export T_HELP_CMD_IPV6_PRIVACY_AUTO="Auto-ensure IPv6 privacy (detect + fix if needed)"
+export T_HELP_CMD_DISCOVER="Network & firewall sanity snapshot"
+export T_HELP_CMD_INSTALL_DASHBOARD="Install terminal dashboard (citadel-top)"
+export T_HELP_CMD_INSTALL_EDITOR="Install editor integration (citadel edit)"
+export T_HELP_CMD_OPTIMIZE_KERNEL="Apply real-time priority for DNS processes"
+export T_HELP_CMD_INSTALL_DOH_PARALLEL="Install DNS-over-HTTPS parallel racing"
+export T_HELP_CMD_FIX_PORTS="Resolve port conflicts with avahi/chromium"
+export T_HELP_CMD_IPV6_DEEP_RESET="Flush IPv6 + neighbor cache + reconnect"
+
+# Health
+export T_HELP_CMD_HEALTH_STATUS="Show health status (services, DNS probe, firewall)"
+export T_HELP_CMD_HEALTH_INSTALL="Install auto-restart + health check timer"
+export T_HELP_CMD_HEALTH_UNINSTALL="Remove health watchdog"
+
+# Config backup
+export T_HELP_CMD_CONFIG_BACKUP="Create configuration backup (tar.gz)"
+export T_HELP_CMD_CONFIG_RESTORE="Restore configuration from backup"
+export T_HELP_CMD_CONFIG_LIST="Show available backups"
+export T_HELP_CMD_CONFIG_DELETE="Delete backup"
+
+# Blocklist
+export T_HELP_CMD_BLOCKLIST_LIST="Show available profiles"
+export T_HELP_CMD_BLOCKLIST_SWITCH="Switch profile"
+export T_HELP_CMD_ADBLOCK_STATUS="Show adblock status"
+export T_HELP_CMD_ADBLOCK_ADD="Add domain"
+export T_HELP_CMD_ADBLOCK_REMOVE="Remove domain"
+export T_HELP_CMD_ADBLOCK_QUERY="Check domain"
+
+# Workflow
+export T_HELP_WORKFLOW_STEP1="sudo ./citadel.sh install-all"
+export T_HELP_WORKFLOW_STEP2="sudo ./citadel.sh firewall-safe"
+export T_HELP_WORKFLOW_STEP3="dig +short google.com @127.0.0.1"
+export T_HELP_WORKFLOW_STEP4="sudo ./citadel.sh configure-system"
+export T_HELP_WORKFLOW_STEP5="ping -c 3 google.com"
+export T_HELP_WORKFLOW_STEP6="sudo ./citadel.sh firewall-strict"
+
+# Docs
+export T_HELP_GITHUB="GitHub: https://github.com/QguAr71/Cytadela"
+
+# DNSSEC
+export T_HELP_DNSSEC_ENV="Generate DNSCrypt with require_dnssec = true"
+export T_HELP_DNSSEC_FLAG="Alternatively: pass flag to install-dnscrypt/install-all"
+
+# Additional labels
+export T_HELP_RECOMMENDED="RECOMMENDED"
+export T_HELP_SAFE="SAFE"
+export T_HELP_STRICT="STRICT"
+export T_HELP_WARNING="WARNING"
