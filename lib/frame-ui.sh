@@ -17,8 +17,8 @@ print_menu_line() {
     # Obliczamy ile spacji brakuje
     local padding=$((total_width - visible_len))
     
-    # Drukujemy linię z kolorem ramki: kolor + ║ + spacja + tekst + spacje + ║ + reset
-    printf "${frame_color}║${NC} %b%*s ${frame_color}║${NC}\n" "$text" "$padding" ""
+    # Drukujemy linię z kolorem ramki - używamy echo -e aby zinterpretować kody kolorów
+    echo -e "${frame_color}║${NC} ${text}$(printf '%*s' "$padding" '') ${frame_color}║${NC}"
 }
 
 # Draw section header with purple frame
