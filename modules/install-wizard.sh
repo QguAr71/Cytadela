@@ -303,8 +303,15 @@ fullscale=brightgreen,black
         if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
             log_info "Installing optional dependencies..."
             for dep in "${optional_deps[@]}"; do
-                log_info "Installing $dep..."
-                pacman -S --noconfirm "$dep" 2>/dev/null || log_warning "Failed to install $dep"
+                # Map command to package name
+                local pkg="$dep"
+                case "$dep" in
+                    netstat) pkg="net-tools" ;;
+                    fuser) pkg="psmisc" ;;
+                    watch) pkg="procps" ;;
+                esac
+                log_info "Installing $dep ($pkg)..."
+                sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null || log_warning "Failed to install $dep"
             done
         fi
     else
