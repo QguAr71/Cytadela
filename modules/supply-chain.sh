@@ -66,7 +66,10 @@ supply_chain_download() {
 }
 
 supply_chain_status() {
-    log_section "🔐 SUPPLY-CHAIN STATUS"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN STATUS${NC}" $((60 - 21)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
 
@@ -83,7 +86,10 @@ supply_chain_status() {
 }
 
 supply_chain_init() {
-    log_section "🔐 SUPPLY-CHAIN INIT"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN INIT${NC}" $((60 - 19)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
 
@@ -115,7 +121,10 @@ supply_chain_init() {
 }
 
 supply_chain_verify() {
-    log_section "🔐 SUPPLY-CHAIN VERIFY"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN VERIFY${NC}" $((60 - 21)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
         log_warning "No checksums file. Run 'supply-chain-init' first."

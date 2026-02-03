@@ -14,7 +14,10 @@ health_check_dns() {
 }
 
 health_status() {
-    log_section "🏥 HEALTH STATUS"
+    echo ""
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🏥 HEALTH STATUS${NC}" $((60 - 15)) ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 
     local all_healthy=1
 
