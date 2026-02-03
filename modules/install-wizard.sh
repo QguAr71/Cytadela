@@ -403,7 +403,7 @@ fullscale=brightgreen,black
 
     if [[ $exit_code -ne 0 ]]; then
         log_warning "Instalacja anulowana przez użytkownika"
-        return 1
+        return 0
     fi
 
     # Validate selection is not empty
@@ -440,7 +440,7 @@ fullscale=brightgreen,black
 
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
         log_warning "Installation cancelled"
-        return 1
+        return 0
     fi
 
     # Install selected modules
