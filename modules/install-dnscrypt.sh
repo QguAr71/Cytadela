@@ -5,10 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_dnscrypt() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}MODULE 1: DNSCrypt-Proxy${NC}" $((60 - 24)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "MODULE 1: DNSCrypt-Proxy"
 
     require_cmds ss awk grep tee systemctl dnscrypt-proxy || return 1
 

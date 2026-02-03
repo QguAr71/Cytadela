@@ -5,10 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_nftables() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}MODULE 3: NFTables Firewall${NC}" $((60 - 27)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "MODULE 3: NFTables Firewall"
 
     require_cmds nft grep awk systemctl || return 1
 

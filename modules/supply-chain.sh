@@ -66,10 +66,7 @@ supply_chain_download() {
 }
 
 supply_chain_status() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN STATUS${NC}" $((60 - 21)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔐 SUPPLY-CHAIN STATUS"
 
     echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
 
@@ -86,10 +83,7 @@ supply_chain_status() {
 }
 
 supply_chain_init() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔐 SUPPLY-CHAIN INIT${NC}" $((60 - 19)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔐 SUPPLY-CHAIN INIT"
 
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
 

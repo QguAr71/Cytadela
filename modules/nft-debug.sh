@@ -7,10 +7,7 @@
 NFT_DEBUG_TABLE="citadel_debug"
 
 nft_debug_on() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔧 NFT DEBUG - ENABLING${NC}" $((60 - 22)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔧 NFT DEBUG - ENABLING"
 
     log_info "Creating debug table with rate-limited logging..."
 
@@ -30,10 +27,7 @@ nft_debug_on() {
 }
 
 nft_debug_off() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔧 NFT DEBUG - DISABLING${NC}" $((60 - 23)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔧 NFT DEBUG - DISABLING"
 
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         nft delete table inet $NFT_DEBUG_TABLE 2>/dev/null || true
@@ -44,10 +38,7 @@ nft_debug_off() {
 }
 
 nft_debug_status() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔧 NFT DEBUG STATUS${NC}" $((60 - 18)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔧 NFT DEBUG STATUS"
 
     if nft list tables 2>/dev/null | grep -q "$NFT_DEBUG_TABLE"; then
         printf "Debug chain: ${GREEN}ENABLED${NC}\n"
@@ -65,10 +56,7 @@ nft_debug_status() {
 }
 
 nft_debug_logs() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}🔧 NFT DEBUG LOGS (last 50)${NC}" $((60 - 26)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    draw_section_header "🔧 NFT DEBUG LOGS (last 50)"
 
     echo "Searching for CITADEL log entries..."
     echo ""
