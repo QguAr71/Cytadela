@@ -72,6 +72,30 @@ select_language() {
     fi
 }
 
+# Function to safely install dependencies with fallback
+install_dep() {
+    local pkg_name=$1
+    local display_name=$2
+    
+    log_info "Installing $display_name ($pkg_name)..."
+    
+    # --noconfirm: don't ask for confirmation
+    # --needed: skip if already installed
+    if sudo pacman -S --noconfirm --needed "$pkg_name" &>/dev/null; then
+        log_success "$display_name installed successfully"
+    else
+        # If fails, try refreshing databases (once)
+        log_warning "Download failed, refreshing databases..."
+        sudo pacman -Sy --noconfirm &>/dev/null
+        
+        if sudo pacman -S --noconfirm --needed "$pkg_name" &>/dev/null; then
+            log_success "$display_name installed after sync"
+        else
+            log_warning "Failed to install $display_name"
+        fi
+    fi
+}
+
 install_wizard() {
     # Load i18n for install-wizard module
     load_i18n_module "install-wizard"
@@ -283,11 +307,37 @@ fullscale=brightgreen,black
         log_warning "Optional dependencies not installed:"
         printf "  • %s\n" "${optional_deps[@]}"
         echo ""
-        log_info "Install manually if needed:"
-        log_info "  sudo pacman -S ${optional_deps[*]}"
+        log_info "These packages enhance functionality but are not required:"
+        log_info "  dnsperf - DNS performance benchmarking"
+        log_info "  curl - HTTP client for metrics"
+        log_info "  jq - JSON processor"
+        log_info "  whiptail - Interactive GUI (already required for wizard)"
+        log_info "  notify-send - Desktop notifications"
+        log_info "  shellcheck - Script linting"
+        log_info "  git - Version control for updates"
+        log_info "  htop - Interactive process viewer"
+        log_info "  watch - Periodic command execution"
+        log_info "  lsof - List open files"
+        log_info "  fuser - Find processes using files"
+        log_info "  netstat - Network statistics"
+        log_info "  nmcli - NetworkManager CLI"
+        log_info "  networkctl - systemd-networkd CLI"
         echo ""
-        log_info "Press Enter to continue..."
-        read </dev/tty
+        echo -n "Install optional dependencies now? [y/N]: "
+        read -r deps_answer </dev/tty
+        if [[ "$deps_answer" =~ ^[Yy]$ ]]; then
+            log_info "Installing optional dependencies..."
+            for dep in "${optional_deps[@]}"; do
+                # Map command to package name
+                local pkg="$dep"
+                case "$dep" in
+                    netstat) pkg="net-tools" ;;
+                    fuser) pkg="psmisc" ;;
+                    watch) pkg="procps" ;;
+                esac
+                install_dep "$pkg" "$dep"
+            done
+        fi
     else
         log_success "All optional dependencies already installed"
     fi
