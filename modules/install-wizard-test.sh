@@ -4,7 +4,7 @@
 NC='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+BOLD='\033[1;37m'
 CYAN='\033[0;36m'
 
 print_frame_line() {
@@ -43,8 +43,8 @@ install_wizard() {
     print_frame_line ""
     print_frame_line "This wizard will install Citadel++ DNS system"
     print_frame_line ""
-    print_frame_line "${YELLOW}Required:${NC} Root privileges"
-    print_frame_line "${YELLOW}Time:${NC} ~5 minutes"
+    print_frame_line "${BOLD}Required:${NC} Root privileges"
+    print_frame_line "${BOLD}Time:${NC} ~5 minutes"
     print_frame_line ""
     echo "╚══════════════════════════════════════════════════════════════╝"
     echo ""
