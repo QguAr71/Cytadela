@@ -60,9 +60,9 @@ declare -gA CYTADELA_LOADED_MODULES
 # LOGGING FUNCTIONS (using printf for safety)
 # ==============================================================================
 log_info() { printf '%b\n' "${EMR}󰄮${RST} ${VIO}$1${RST}"; }
-log_success() { printf '%b\n' "${EMR}✔${RST} $1"; }
+log_success() { printf '%b\n' "${EMR}󰄬${RST} $1"; }
 log_warning() { printf '%b\n' "${RED}󰀨${RST} $1"; }
-log_error() { printf '%b\n' "${RED}✖${RST} $1" >&2; }
+log_error() { printf '%b\n' "${RED}󰅖${RST} $1" >&2; }
 log_section() {
     printf '\n%b\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
     printf '%b\n' "${VIO}║${RST} $1"
@@ -81,7 +81,7 @@ trap_err_handler() {
     local line_no=${BASH_LINENO[0]}
     local func_name=${FUNCNAME[1]:-main}
     local command="$BASH_COMMAND"
-    printf '%b\n' "${RED}✗ ERROR in ${func_name}() at line ${line_no}: '${command}' exited with code ${exit_code}${NC}" >&2
+    printf '%b\n' "${RED}󰅖 ERROR in ${func_name}() at line ${line_no}: '${command}' exited with code ${exit_code}${NC}" >&2
 }
 trap 'trap_err_handler' ERR
 

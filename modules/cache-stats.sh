@@ -104,7 +104,7 @@ cache_stats() {
 }
 
 cache_stats_top() {
-    log_section "🔝 TOP DOMAINS"
+    log_section "󰁛 TOP DOMAINS"
 
     local top_n="${1:-20}"
 

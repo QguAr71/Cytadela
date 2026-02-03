@@ -24,7 +24,7 @@ install_all() {
     install_nftables
 
     echo ""
-    log_section "🎉 INSTALACJA ZAKOŃCZONA POMYŚLNIE"
+    log_section "󰇏 INSTALACJA ZAKOŃCZONA POMYŚLNIE"
 
     echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║  CITADEL++ v3.1 - FULLY OPERATIONAL                           ║${NC}"
@@ -35,7 +35,7 @@ install_all() {
     systemctl --no-pager status dnscrypt-proxy coredns nftables || true
 
     echo ""
-    log_section "🧪 HEALTHCHECK: DNS + ADBLOCK"
+    log_section "󰙨 HEALTHCHECK: DNS + ADBLOCK"
 
     if ! declare -f adblock_rebuild >/dev/null 2>&1; then
         load_module "adblock"

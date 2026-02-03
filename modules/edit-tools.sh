@@ -8,7 +8,7 @@ CONFIG_DIR="/etc/coredns"
 DNSCRYPT_CONFIG="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
 edit_config() {
-    log_section "📝 EDIT COREDNS CONFIG"
+    log_section "󰗉 EDIT COREDNS CONFIG"
 
     if command -v micro &>/dev/null; then
         log_info "Opening Corefile in micro editor..."
@@ -27,7 +27,7 @@ edit_config() {
 }
 
 edit_dnscrypt() {
-    log_section "📝 EDIT DNSCRYPT CONFIG"
+    log_section "󰗉 EDIT DNSCRYPT CONFIG"
 
     if command -v micro &>/dev/null; then
         log_info "Opening DNSCrypt config in micro editor..."
