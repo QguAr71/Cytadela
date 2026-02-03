@@ -1,24 +1,37 @@
 #!/bin/bash
 # Help - Translations (EN)
 
-# Title
-export T_HELP_TITLE="CITADEL++ v3.1 - Command Reference"
+# Menu
+export T_HELP_MENU_TITLE="CITADEL++ HELP - Select Section"
+export T_HELP_MENU_1="1. Installation"
+export T_HELP_MENU_2="2. Main Program"
+export T_HELP_MENU_3="3. Add-ons"
+export T_HELP_MENU_4="4. Advanced"
+export T_HELP_MENU_5="5. Emergency & Recovery"
+export T_HELP_MENU_6="6. All Commands"
+export T_HELP_MENU_QUIT="Quit"
+export T_HELP_PROMPT="Your choice"
+export T_HELP_INVALID="Invalid choice"
+export T_HELP_CONTINUE="Press Enter to return to menu..."
 
 # Sections
 export T_HELP_SECTION_INSTALL="1. INSTALLATION"
 export T_HELP_SECTION_MAIN="2. MAIN PROGRAM"
 export T_HELP_SECTION_ADDONS="3. ADD-ONS"
 export T_HELP_SECTION_ADVANCED="4. ADVANCED"
-export T_HELP_SECTION_WORKFLOW="QUICK START"
+export T_HELP_SECTION_EMERGENCY="5. EMERGENCY & RECOVERY"
 
-# Installation commands
+# Installation
 export T_HELP_CMD_INSTALL_WIZARD="Interactive installer (RECOMMENDED)"
 export T_HELP_CMD_INSTALL_ALL="Install all DNS modules"
 export T_HELP_CMD_INSTALL_DNSCRYPT="Install DNSCrypt-Proxy only"
 export T_HELP_CMD_INSTALL_COREDNS="Install CoreDNS only"
 export T_HELP_CMD_INSTALL_NFTABLES="Install NFTables rules only"
+export T_HELP_CMD_INSTALL_DASHBOARD="Install terminal dashboard"
+export T_HELP_CMD_INSTALL_EDITOR="Install editor integration"
+export T_HELP_CMD_INSTALL_DOH_PARALLEL="Install DNS-over-HTTPS parallel"
 
-# Main program commands
+# Main
 export T_HELP_CMD_CONFIGURE_SYSTEM="Switch system DNS to Citadel++"
 export T_HELP_CMD_RESTORE_SYSTEM="Restore systemd-resolved"
 export T_HELP_CMD_FIREWALL_SAFE="SAFE mode (won't break connectivity)"
@@ -27,28 +40,65 @@ export T_HELP_CMD_STATUS="Show service status"
 export T_HELP_CMD_DIAGNOSTICS="Full system diagnostics"
 export T_HELP_CMD_VERIFY="Verify full stack"
 export T_HELP_CMD_VERIFY_CONFIG="Verify config and DNS"
+export T_HELP_CMD_VERIFY_CONFIG_DNS="DNS resolution tests only"
+export T_HELP_CMD_VERIFY_CONFIG_ALL="All verification checks"
 export T_HELP_CMD_TEST_ALL="Smoke test + leak test"
+export T_HELP_CMD_CHECK_DEPS="Check dependencies"
+export T_HELP_CMD_CHECK_DEPS_INSTALL="Install missing deps"
 
-# Add-ons commands
+# Addons
 export T_HELP_CMD_BLOCKLIST_LIST="Show available blocklist profiles"
 export T_HELP_CMD_BLOCKLIST_SWITCH="Switch blocklist profile"
+export T_HELP_CMD_LISTS_UPDATE="Update blocklist with LKG fallback"
 export T_HELP_CMD_ADBLOCK_STATUS="Show adblock status"
 export T_HELP_CMD_ADBLOCK_ADD="Add domain to adblock"
+export T_HELP_CMD_ADBLOCK_REMOVE="Remove domain from adblock"
+export T_HELP_CMD_ADBLOCK_QUERY="Check domain in adblock"
+export T_HELP_CMD_ALLOWLIST_ADD="Add domain to allowlist"
 export T_HELP_CMD_NOTIFY_ENABLE="Enable desktop notifications"
+export T_HELP_CMD_NOTIFY_DISABLE="Disable notifications"
+export T_HELP_CMD_NOTIFY_STATUS="Show notification status"
+export T_HELP_CMD_NOTIFY_TEST="Send test notification"
 
-# Advanced commands
-export T_HELP_CMD_PANIC_BYPASS="Emergency bypass + auto-rollback"
+# Advanced
 export T_HELP_CMD_LKG_SAVE="Save blocklist to cache"
 export T_HELP_CMD_LKG_RESTORE="Restore blocklist from cache"
+export T_HELP_CMD_LKG_STATUS="Show LKG cache status"
 export T_HELP_CMD_AUTO_UPDATE_ENABLE="Enable automatic updates"
+export T_HELP_CMD_AUTO_UPDATE_DISABLE="Disable automatic updates"
+export T_HELP_CMD_AUTO_UPDATE_STATUS="Show auto-update status"
+export T_HELP_CMD_AUTO_UPDATE_NOW="Run update now"
+export T_HELP_CMD_AUTO_UPDATE_CONFIGURE="Configure frequency"
 export T_HELP_CMD_CACHE_STATS="Show DNS cache statistics"
+export T_HELP_CMD_CACHE_STATS_TOP="Top N domains"
+export T_HELP_CMD_CACHE_STATS_RESET="Reset statistics"
+export T_HELP_CMD_CACHE_STATS_WATCH="Live monitoring"
+export T_HELP_CMD_HEALTH_STATUS="Show health status"
 export T_HELP_CMD_HEALTH_INSTALL="Install health watchdog"
+export T_HELP_CMD_HEALTH_UNINSTALL="Remove health watchdog"
+export T_HELP_CMD_CONFIG_BACKUP="Create backup"
+export T_HELP_CMD_CONFIG_RESTORE="Restore from backup"
+export T_HELP_CMD_CONFIG_LIST="List backups"
+export T_HELP_CMD_CONFIG_DELETE="Delete backup"
+export T_HELP_CMD_SUPPLY_STATUS="Show checksums status"
+export T_HELP_CMD_SUPPLY_INIT="Initialize checksums"
+export T_HELP_CMD_SUPPLY_VERIFY="Verify files"
+export T_HELP_CMD_LOCATION_STATUS="Show current SSID"
+export T_HELP_CMD_LOCATION_CHECK="Check firewall mode"
+export T_HELP_CMD_LOCATION_ADD_TRUSTED="Add SSID to trusted"
+export T_HELP_CMD_OPTIMIZE_KERNEL="Apply real-time priority"
+export T_HELP_CMD_FIX_PORTS="Fix port conflicts"
+export T_HELP_CMD_SMART_IPV6="Smart IPv6 detection"
 
-# Workflow
-export T_HELP_WORKFLOW_STEP1="sudo ./citadel.sh install-all"
-export T_HELP_WORKFLOW_STEP2="sudo ./citadel.sh firewall-safe"
-export T_HELP_WORKFLOW_STEP3="dig +short google.com @127.0.0.1"
-export T_HELP_WORKFLOW_STEP4="sudo ./citadel.sh configure-system"
-
-# Docs
-export T_HELP_GITHUB="GitHub: https://github.com/QguAr71/Cytadela"
+# Emergency
+export T_HELP_CMD_PANIC_BYPASS="Disable protection + auto-rollback"
+export T_HELP_CMD_PANIC_RESTORE="Restore protected mode"
+export T_HELP_CMD_PANIC_STATUS="Show panic status"
+export T_HELP_CMD_EMERGENCY_REFUSE="Refuse all DNS queries"
+export T_HELP_CMD_EMERGENCY_RESTORE="Restore normal operation"
+export T_HELP_CMD_KILLSWITCH_ON="Activate DNS kill-switch"
+export T_HELP_CMD_KILLSWITCH_OFF="Deactivate kill-switch"
+export T_HELP_CMD_NFT_DEBUG_ON="Enable debug chain"
+export T_HELP_CMD_NFT_DEBUG_OFF="Disable debug chain"
+export T_HELP_CMD_NFT_DEBUG_STATUS="Show debug status"
+export T_HELP_CMD_NFT_DEBUG_LOGS="Show recent logs"
