@@ -65,7 +65,7 @@ verify_config() {
 # =============================================================================
 
 verify_config_check() {
-    log_section "🔍 ${T_VERIFY_CONFIG_TITLE:-CONFIGURATION VERIFICATION}"
+    log_section "󰍉 ${T_VERIFY_CONFIG_TITLE:-CONFIGURATION VERIFICATION}"
     
     local errors=0
     local warnings=0
@@ -83,11 +83,11 @@ verify_config_check() {
         if coredns -conf /etc/coredns/Corefile -check 2>/dev/null; then
             log_success "  󰄬 ${T_VERIFY_COREDNS_OK:-CoreDNS configuration valid}"
         else
-            log_error "  ✗ ${T_VERIFY_COREDNS_ERROR:-CoreDNS configuration has errors}"
+            log_error "  󰅖 ${T_VERIFY_COREDNS_ERROR:-CoreDNS configuration has errors}"
             ((errors++))
         fi
     else
-        log_error "  ✗ ${T_VERIFY_COREDNS_MISSING:-Corefile not found at /etc/coredns/Corefile}"
+        log_error "  󰅖 ${T_VERIFY_COREDNS_MISSING:-Corefile not found at /etc/coredns/Corefile}"
         ((errors++))
     fi
     
@@ -98,11 +98,11 @@ verify_config_check() {
         if dnscrypt-proxy -check -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
             log_success "  󰄬 ${T_VERIFY_DNSCRYPT_OK:-DNSCrypt configuration valid}"
         else
-            log_error "  ✗ ${T_VERIFY_DNSCRYPT_ERROR:-DNSCrypt configuration has errors}"
+            log_error "  󰅖 ${T_VERIFY_DNSCRYPT_ERROR:-DNSCrypt configuration has errors}"
             ((errors++))
         fi
     else
-        log_error "  ✗ ${T_VERIFY_DNSCRYPT_MISSING:-DNSCrypt config not found}"
+        log_error "  󰅖 ${T_VERIFY_DNSCRYPT_MISSING:-DNSCrypt config not found}"
         ((errors++))
     fi
     
@@ -112,7 +112,7 @@ verify_config_check() {
     if nft list table inet citadel_dns &>/dev/null; then
         log_success "  󰄬 ${T_VERIFY_NFT_OK:-Citadel NFTables table exists}"
     else
-        log_error "  ✗ ${T_VERIFY_NFT_MISSING:-Citadel NFTables table not found}"
+        log_error "  󰅖 ${T_VERIFY_NFT_MISSING:-Citadel NFTables table not found}"
         ((errors++))
     fi
     
@@ -123,7 +123,7 @@ verify_config_check() {
         if systemctl is-active --quiet "$service" 2>/dev/null; then
             log_success "  󰄬 $service ${T_VERIFY_RUNNING:-is running}"
         else
-            log_error "  ✗ $service ${T_VERIFY_NOT_RUNNING:-is not running}"
+            log_error "  󰅖 $service ${T_VERIFY_NOT_RUNNING:-is not running}"
             ((errors++))
         fi
     done
@@ -134,7 +134,7 @@ verify_config_check() {
     if dig +short +time=3 @127.0.0.1 google.com &>/dev/null; then
         log_success "  󰄬 ${T_VERIFY_DNS_OK:-Local DNS resolver working}"
     else
-        log_error "  ✗ ${T_VERIFY_DNS_ERROR:-Local DNS resolver not responding}"
+        log_error "  󰅖 ${T_VERIFY_DNS_ERROR:-Local DNS resolver not responding}"
         ((errors++))
     fi
     
@@ -166,7 +166,7 @@ verify_config_dns() {
         if [[ -n "$result" ]]; then
             log_success "  󰄬 $domain → $result"
         else
-            log_error "  ✗ $domain ${T_VERIFY_DNS_FAIL:-failed to resolve}"
+            log_error "  󰅖 $domain ${T_VERIFY_DNS_FAIL:-failed to resolve}"
             ((failed++))
         fi
     done
@@ -221,7 +221,7 @@ verify_config_services() {
 }
 
 verify_config_files() {
-    log_section "📁 ${T_VERIFY_FILES_TITLE:-CONFIGURATION FILES}"
+    log_section "󰉋 ${T_VERIFY_FILES_TITLE:-CONFIGURATION FILES}"
     
     local files=(
         "/etc/coredns/Corefile"
@@ -250,7 +250,7 @@ verify_config_files() {
 
 verify_config_help() {
     cat <<EOF
-🔍 ${T_VERIFY_CONFIG_TITLE:-VERIFY-CONFIG} - ${MODULE_DESCRIPTION}
+󰍉 ${T_VERIFY_CONFIG_TITLE:-VERIFY-CONFIG} - ${MODULE_DESCRIPTION}
 
 ${T_USAGE:-USAGE}:
   cytadela++ verify-config [check|dns|services|files|all|help]
