@@ -200,7 +200,6 @@ citadel_uninstall() {
     draw_emergency_frame "NEXT STEPS:" \
         "Reinstall:  sudo ./citadel.sh install-wizard" \
         "If issues:  sudo ./citadel.sh emergency-network-restore"
-}
 
 citadel_uninstall_keep_config() {
     # Load i18n strings based on language

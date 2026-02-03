@@ -5,10 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_coredns() {
-    echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}MODULE 2: CoreDNS${NC}" $((60 - 17)) ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    log_section "MODULE 2: CoreDNS Installation"
 
     require_cmds coredns curl awk sort wc mktemp systemctl || return 1
 
