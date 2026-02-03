@@ -103,6 +103,80 @@ install_wizard() {
     # Load i18n for install-wizard module
     load_i18n_module "install-wizard"
 
+    # === SAFETY FIRST: Backup system DNS state BEFORE any changes ===
+    local SYSTEM_BACKUP_DIR="${CYTADELA_STATE_DIR}/backups"
+    mkdir -p "$SYSTEM_BACKUP_DIR"
+    
+    log_section "🛡️  SAFETY BACKUP"
+    log_info "Creating backup of system DNS configuration..."
+    
+    # Backup resolv.conf (the critical file for internet connectivity)
+    if [[ -f /etc/resolv.conf ]]; then
+        cp /etc/resolv.conf "${SYSTEM_BACKUP_DIR}/resolv.conf.pre-citadel"
+        log_success "Backed up /etc/resolv.conf"
+        
+        # Show current DNS for user awareness
+        local current_dns
+        current_dns=$(grep "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
+        log_info "Current DNS server: ${current_dns:-unknown}"
+    else
+        log_warning "/etc/resolv.conf not found - system may not be using traditional DNS"
+    fi
+    
+    # Backup systemd-resolved state
+    local resolved_state="disabled"
+    if systemctl is-enabled systemd-resolved &>/dev/null; then
+        resolved_state="enabled"
+    fi
+    echo "$resolved_state" > "${SYSTEM_BACKUP_DIR}/systemd-resolved.state"
+    log_success "Backed up systemd-resolved state: $resolved_state"
+    
+    # Backup NetworkManager DNS config if exists
+    if [[ -f /etc/NetworkManager/NetworkManager.conf ]]; then
+        cp /etc/NetworkManager/NetworkManager.conf "${SYSTEM_BACKUP_DIR}/NetworkManager.conf.pre-citadel"
+        log_success "Backed up NetworkManager.conf"
+    fi
+    
+    # Create restore instructions
+    cat > "${SYSTEM_BACKUP_DIR}/RESTORE-INSTRUCTIONS.txt" <<'EOF'
+================================================================================
+CITADEL SYSTEM BACKUP - RESTORE INSTRUCTIONS
+================================================================================
+
+If you need to restore internet connectivity after failed installation:
+
+OPTION 1: Use Citadel restore command (if available):
+  sudo ./citadel.sh restore-system
+
+OPTION 2: Manual restore:
+  # Restore DNS configuration
+  sudo cp resolv.conf.pre-citadel /etc/resolv.conf
+  
+  # Restore systemd-resolved (if was enabled)
+  sudo systemctl unmask systemd-resolved
+  sudo systemctl enable systemd-resolved  # only if it was enabled before
+  sudo systemctl restart systemd-resolved
+  
+  # Restore NetworkManager (if was using it)
+  sudo systemctl restart NetworkManager
+
+OPTION 3: Emergency DNS (quick fix):
+  echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+  echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+
+================================================================================
+Backup created at: TIMESTAMP
+System: HOSTNAME
+================================================================================
+EOF
+    sed -i "s/TIMESTAMP/$(date -Iseconds)/" "${SYSTEM_BACKUP_DIR}/RESTORE-INSTRUCTIONS.txt"
+    sed -i "s/HOSTNAME/$(hostname)/" "${SYSTEM_BACKUP_DIR}/RESTORE-INSTRUCTIONS.txt"
+    
+    log_success "System backup complete"
+    log_info "Backup location: $SYSTEM_BACKUP_DIR"
+    log_info "To restore: sudo ./citadel.sh restore-system"
+    echo ""
+
     # Check if Citadel is already installed - offer management options
     if [[ -d /etc/coredns ]] || [[ -f /etc/systemd/system/coredns.service ]] || [[ -d /opt/cytadela ]]; then
         # Already installed - show management menu
