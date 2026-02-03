@@ -204,7 +204,12 @@ actcheckbox=black,brightgreen
             "reinstall" "${T_WIZARD_REINSTALL:-Reinstall with backup}" \
             "uninstall" "${T_WIZARD_UNINSTALL:-Remove Citadel}" \
             "modify" "${T_WIZARD_MODIFY:-Modify components (coming in v3.2)}" \
-            "cancel" "${T_WIZARD_CANCEL:-Exit}" 3>&1 1>&2 2>&3)
+            "cancel" "${T_WIZARD_CANCEL:-Exit}" 3>&1 1>&2 2>&3) || true
+        
+        # Handle cancel/escape
+        if [[ -z "$choice" ]]; then
+            return 0
+        fi
         
         case "$choice" in
             reinstall)
