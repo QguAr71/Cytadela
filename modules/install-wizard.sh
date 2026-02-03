@@ -110,7 +110,7 @@ install_wizard() {
     mkdir -p "$SYSTEM_BACKUP_DIR"
     
     # Purple frame for section header
-    draw_section_header "SAFETY BACKUP"
+    draw_section_header "󰒃 SAFETY BACKUP"
     log_info "Creating backup of system DNS configuration..."
     
     # Backup resolv.conf (the critical file for internet connectivity)
@@ -245,7 +245,7 @@ actcheckbox=black,brightgreen
     fi
 
     echo ""
-    draw_section_header "📦 OPTIONAL DEPENDENCIES"
+    draw_section_header "󰏗 OPTIONAL DEPENDENCIES"
     log_info "Checking optional dependencies..."
     local optional_deps=()
     local dep_cmd
@@ -326,7 +326,7 @@ fullscale=brightgreen,black
     CYTADELA_LANG="$WIZARD_LANG" load_i18n_module "install-wizard"
 
     # Display wizard title in selected language
-    draw_section_header "🎯 ${T_WIZARD_TITLE}"
+    draw_section_header "󰇄 ${T_WIZARD_TITLE}"
 
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
@@ -431,7 +431,7 @@ fullscale=brightgreen,black
     done
 
     # Show summary
-    draw_section_header "📋 INSTALLATION SUMMARY"
+    draw_section_header "󰓍 INSTALLATION SUMMARY"
     for module in "${modules_to_install[@]}"; do
         IFS='|' read -r name desc default required <<<"${MODULES[$module]}"
         printf "  ${GREEN}✓${NC} %s\n" "$name"
@@ -448,7 +448,7 @@ fullscale=brightgreen,black
     fi
 
     # Install selected modules
-    draw_section_header "🚀 INSTALLING MODULES"
+    draw_section_header "󱓞 INSTALLING MODULES"
 
     local failed=0
 
@@ -611,7 +611,7 @@ fullscale=brightgreen,black
 
     # Final summary
     if [[ "$WIZARD_LANG" == "pl" ]]; then
-        draw_section_header "✅ INSTALACJA ZAKOŃCZONA"
+        draw_section_header "󰄬 INSTALACJA ZAKOŃCZONA"
 
         if [[ $failed -eq 0 ]]; then
             log_success "Wszystkie moduły zainstalowane pomyślnie!"
@@ -625,7 +625,7 @@ fullscale=brightgreen,black
         echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
         echo "  3. Weryfikacja: sudo cytadela++ verify"
     else
-        draw_section_header "✅ INSTALLATION COMPLETE"
+        draw_section_header "󰄬 INSTALLATION COMPLETE"
 
         if [[ $failed -eq 0 ]]; then
             log_success "All modules installed successfully!"
