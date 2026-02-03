@@ -296,26 +296,26 @@ actcheckbox=black,brightgreen
         log_success "All optional dependencies already installed"
     fi
 
-    # Set whiptail colors - dark theme with cyan text and blue selection
+    # Set whiptail colors - original theme with blue selection
     # Format: root=,window=,border=,textbox=,button=
     export NEWT_COLORS='
 root=,black
 window=brightmagenta,black
-border=brightcyan,black
-textbox=brightcyan,black
-button=black,brightcyan
-actbutton=black,brightmagenta
-checkbox=blue,black
+border=brightgreen,black
+textbox=brightmagenta,black
+button=black,brightgreen
+actbutton=black,blue
+checkbox=brightgreen,black
 actcheckbox=black,blue
-entry=brightcyan,black
-label=brightcyan,black
-listbox=brightcyan,black
-actlistbox=black,brightcyan
-sellistbox=black,brightcyan
-title=brightcyan,black
-roottext=brightcyan,black
+entry=brightmagenta,black
+label=brightmagenta,black
+listbox=brightmagenta,black
+actlistbox=black,blue
+sellistbox=black,blue
+title=brightgreen,black
+roottext=brightmagenta,black
 emptyscale=black
-fullscale=brightcyan,black
+fullscale=brightgreen,black
 '
 
     # Language selection
