@@ -75,8 +75,7 @@ citadel_help() {
 }
 
 show_help_section_install() {
-    echo ""
-    echo -e "${GREEN}=== 1. INSTALLATION ===${NC}"
+    draw_section_header "1. INSTALLATION"
     echo ""
     echo -e "${CYAN}install-wizard${NC}     - Interactive installer"
     echo -e "${CYAN}install-all${NC}        - Install all DNS modules"
@@ -84,8 +83,7 @@ show_help_section_install() {
 }
 
 show_help_section_main() {
-    echo ""
-    echo -e "${YELLOW}=== 2. MAIN PROGRAM ===${NC}"
+    draw_section_header "2. MAIN PROGRAM"
     echo ""
     echo -e "${CYAN}configure-system${NC}   - Switch to Citadel DNS"
     echo -e "${CYAN}status${NC}             - Show service status"
@@ -93,24 +91,21 @@ show_help_section_main() {
 }
 
 show_help_section_addons() {
-    echo ""
-    echo -e "${PURPLE}=== 3. ADD-ONS ===${NC}"
+    draw_section_header "3. ADD-ONS"
     echo ""
     echo -e "${CYAN}blocklist-list${NC}     - Show blocklist profiles"
     echo -e "${CYAN}adblock-status${NC}     - Show adblock status"
 }
 
 show_help_section_advanced() {
-    echo ""
-    echo -e "${RED}=== 4. ADVANCED ===${NC}"
+    draw_section_header "4. ADVANCED"
     echo ""
     echo -e "${CYAN}panic-bypass${NC}       - Emergency bypass"
     echo -e "${CYAN}lkg-save${NC}           - Save blocklist"
 }
 
 show_help_section_emergency() {
-    echo ""
-    echo -e "${RED}=== 5. EMERGENCY ===${NC}"
+    draw_section_header "5. EMERGENCY"
     echo ""
     echo -e "${CYAN}panic-bypass${NC}       - Emergency bypass"
     echo -e "${CYAN}killswitch-on${NC}      - Activate kill-switch"
