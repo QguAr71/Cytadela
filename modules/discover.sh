@@ -22,7 +22,7 @@ discover_nftables_status() {
 }
 
 discover() {
-    log_section "🔍 DISCOVER - Network & Firewall Snapshot"
+    log_section "󰍉 DISCOVER - Network & Firewall Snapshot"
 
     # Get network info from lib/network-utils.sh
     local iface

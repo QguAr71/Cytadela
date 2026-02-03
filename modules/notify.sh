@@ -33,7 +33,7 @@ notify_send() {
 }
 
 notify_enable() {
-    log_section "🔔 ENABLE DESKTOP NOTIFICATIONS"
+    log_section "󰂚 ENABLE DESKTOP NOTIFICATIONS"
 
     # Check if notify-send is available
     if ! command -v notify-send &>/dev/null; then
@@ -65,14 +65,14 @@ notify_enable() {
 }
 
 notify_disable() {
-    log_section "󰂛 DISABLE DESKTOP NOTIFICATIONS"
+    log_section " DISABLE DESKTOP NOTIFICATIONS"
 
     rm -f "$NOTIFY_ENABLED_FILE"
     log_success "Notifications disabled"
 }
 
 notify_status() {
-    log_section "󰄬 NOTIFICATION STATUS"
+    log_section " NOTIFICATION STATUS"
 
     if [[ -f "$NOTIFY_ENABLED_FILE" ]]; then
         local notify_user

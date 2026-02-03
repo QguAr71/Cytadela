@@ -162,7 +162,7 @@ _collect_system_metrics() {
 # ==============================================================================
 
 prometheus_serve() {
-    log_section "🌐 PROMETHEUS METRICS SERVER"
+    log_section "� PROMETHEUS METRICS SERVER"
     log_info "Starting metrics server on port ${METRICS_PORT}..."
 
     # Simple HTTP server using netcat
