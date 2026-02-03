@@ -137,7 +137,7 @@ case "$ACTION" in
     # Emergency
     panic-bypass | panic-restore | panic-status | emergency-refuse | emergency-restore | killswitch-on | killswitch-off)
         load_module "emergency"
-        call_fn "$ACTION" "$@"
+        call_fn "$ACTION" "$@" || true
         ;;
 
     # Adblock
