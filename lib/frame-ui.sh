@@ -4,29 +4,20 @@
 # ║  Reusable frame drawing functions                                         ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-# Funkcja do rysowania równej linii w ramce (z kolorem ramki)
-print_menu_line() {
-    local text="$1"
-    local frame_color="${2:-$NC}"
-    local total_width=60
-    
-    # Usuwamy kody kolorów (niewidoczne znaki) tylko do obliczenia długości
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
-    local visible_len=${#visible_text}
-    
-    # Obliczamy ile spacji brakuje
-    local padding=$((total_width - visible_len))
-    
-    # Drukujemy linię z kolorem ramki - używamy echo -e aby zinterpretować kody kolorów
-    echo -e "${frame_color}║${NC} ${text}$(printf '%*s' "$padding" '') ${frame_color}║${NC}"
-}
-
 # Draw section header with purple frame
 draw_section_header() {
     local title="$1"
+    local total_width=60
+    
+    # Calculate display width (emoji count as 2 chars)
+    local visible_title=$(echo -e "$title" | sed 's/\x1b\[[0-9;]*m//g')
+    local emoji_count=$(echo "$visible_title" | grep -o '📦\|🛡️\|🎯\|📋\|🚀\|✅\|🔐\|🏥\|🔧\|🔒' | wc -l)
+    local visible_len=$((${#visible_title} + emoji_count))
+    local padding=$((total_width - visible_len))
+    
     echo ""
     echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
-    print_menu_line "${BOLD}${title}${NC}" "$VIO"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}${title}${NC}" "$padding" ""
     echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
 }
 
@@ -34,13 +25,25 @@ draw_section_header() {
 draw_emergency_frame() {
     local title="$1"
     shift
+    local text="${BOLD}${title}${NC}"
+    local total_width=60
+    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_len=${#visible_text}
+    local padding=$((total_width - visible_len))
+    
     echo ""
     echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
-    print_menu_line "${BOLD}${title}${NC}" "$RED"
+    printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
     echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
+    
     for line in "$@"; do
-        print_menu_line "$line" "$RED"
+        local line_text="$line"
+        local line_visible=$(echo -e "$line_text" | sed 's/\x1b\[[0-9;]*m//g')
+        local line_len=${#line_visible}
+        local line_padding=$((total_width - line_len))
+        printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$line_text" "$line_padding" ""
     done
+    
     echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
 }
 
