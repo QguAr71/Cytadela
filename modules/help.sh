@@ -20,6 +20,9 @@ MODULE_TAGS=("help" "i18n" "documentation")
 # =============================================================================
 
 citadel_help() {
+    # Load i18n for help module
+    load_i18n_module "help"
+    
     local lang="${LANG%%_*}"
     lang="${lang:-en}"
     
