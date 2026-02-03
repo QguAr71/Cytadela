@@ -68,3 +68,30 @@ draw_emergency_frame() {
 log_section() {
     draw_section_header "$1"
 }
+
+# Improved frame drawing with proper emoji width handling
+print_custom_frame() {
+    local text="$1"
+    local total_width=60  # Internal frame width
+    
+    # 1. Remove ANSI color codes for calculation
+    local clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    
+    # 2. Calculate visual width (emoji = 2 columns)
+    local visual_len
+    if command -v python3 &>/dev/null; then
+        visual_len=$(python3 -c "import unicodedata; print(sum(2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in '$clean_text'))")
+    else
+        # Fallback to simple counting
+        visual_len=${#clean_text}
+    fi
+    
+    # 3. Calculate padding
+    local padding=$((total_width - visual_len))
+    [[ $padding -lt 0 ]] && padding=0
+
+    # 4. Draw frame with colors
+    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "$text" "$padding" ""
+    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+}
