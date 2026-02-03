@@ -8,7 +8,7 @@
 source_lib "${CYTADELA_LIB}/test-core.sh"
 
 safe_test_mode() {
-    log_section "🧪 SAFE TEST MODE"
+    log_section "󰙨 SAFE TEST MODE"
 
     log_info "Uruchamiam testy bez przerywania internetu..."
 
@@ -18,7 +18,7 @@ safe_test_mode() {
         if command -v "$cmd" >/dev/null; then
             echo "󰄬 $cmd dostępny"
         else
-            echo "✗ $cmd nieznaleziony"
+            echo "󰅖 $cmd nieznaleziony"
         fi
     done
 
@@ -28,7 +28,7 @@ safe_test_mode() {
         if dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml -check >/dev/null 2>&1; then
             echo "󰄬 DNSCrypt config poprawny"
         else
-            echo "✗ DNSCrypt config błędny"
+            echo "󰅖 DNSCrypt config błędny"
         fi
     fi
 
@@ -45,7 +45,7 @@ safe_test_mode() {
 }
 
 test_dns() {
-    log_section "🧪 DNS TEST"
+    log_section "󰙨 DNS TEST"
 
     log_info "Testing DNS resolution..."
 

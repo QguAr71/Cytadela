@@ -10,7 +10,7 @@ if [[ -f "${CYTADELA_LIB}/dependencies.conf" ]]; then
 fi
 
 check_dependencies() {
-    log_section "🔍 ${T_CHECK_DEPS_TITLE:-CHECKING DEPENDENCIES}"
+    log_section "󰍉 ${T_CHECK_DEPS_TITLE:-CHECKING DEPENDENCIES}"
 
     local missing=0
     local optional_missing=0
@@ -94,7 +94,7 @@ check_dep() {
         return 0
     else
         if [[ "$type" == "required" ]]; then
-            printf "  ${RED}✗${NC} %-20s %s\n" "$cmd" "$desc"
+            printf "  ${RED}󰅖${NC} %-20s %s\n" "$cmd" "$desc"
             [[ -n "$install_hint" ]] && echo "      Install: $install_hint"
         else
             printf "  ${YELLOW}󰀨${NC} %-20s %s\n" "$cmd" "$desc"
@@ -207,7 +207,7 @@ check_dependencies_install() {
                             if [[ -n "$aur_helper" ]]; then
                                 log_info "  Using AUR helper: $aur_helper"
                                 if ! $aur_helper -S --needed --noconfirm "$pkg" 2>/dev/null; then
-                                    log_error "  ✗ AUR installation failed for '$pkg'"
+                                    log_error "  󰅖 AUR installation failed for '$pkg'"
                                     aur_failed+=("$pkg")
                                 else
                                     log_success "  󰄬 Installed from AUR: $pkg"
@@ -315,7 +315,7 @@ check_dependencies_help() {
     done
 
     cat <<EOF
-🔍 ${T_CHECK_DEPS_TITLE:-CHECK-DEPS} - ${T_CHECK_DEPS_DESC:-Dependency Checker}
+󰍉 ${T_CHECK_DEPS_TITLE:-CHECK-DEPS} - ${T_CHECK_DEPS_DESC:-Dependency Checker}
 
 ${T_USAGE:-USAGE}:
   sudo cytadela++ check-deps [--install]

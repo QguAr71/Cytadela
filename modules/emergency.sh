@@ -21,7 +21,7 @@ PANIC_ROLLBACK_TIMER=300
 #   - Backup/restore resolv.conf
 #   - Starts rollback timer
 panic_bypass() {
-    log_section "🚨 PANIC BYPASS - Emergency Recovery Mode"
+    log_section "󰀨 PANIC BYPASS - Emergency Recovery Mode"
 
     # Rate limiting: max 3 attempts per 60 seconds
     if declare -f rate_limit_check >/dev/null 2>&1; then
@@ -122,7 +122,7 @@ panic_restore() {
 }
 
 panic_status() {
-    log_section "🚨 PANIC MODE STATUS"
+    log_section "󰀨 PANIC MODE STATUS"
 
     if [[ -f "$PANIC_STATE_FILE" ]]; then
         log_warning "PANIC MODE: ACTIVE"
