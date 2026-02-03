@@ -11,7 +11,7 @@ run_diagnostics() {
     # Load i18n for diagnostics module
     load_i18n_module "diagnostics"
     
-    log_section "🔍 ${T_DIAG_TITLE:-CITADEL++ DIAGNOSTICS}"
+    log_section "󰍉 ${T_DIAG_TITLE:-CITADEL++ DIAGNOSTICS}"
 
     echo -e "${CYAN}${T_DIAG_SERVICE_STATUS:-Service Status:}${NC}"
     systemctl status --no-pager dnscrypt-proxy coredns nftables || true
@@ -40,7 +40,7 @@ run_diagnostics() {
         elif [[ "$rtt" -lt 150 ]]; then
             echo -e "${YELLOW}󰀨  ${T_DIAG_UPSTREAM_MODERATE:-Moderate latency - check ISP throttling}${NC}"
         else
-            echo -e "${RED}✖ ${T_DIAG_UPSTREAM_HIGH:-High latency - possible ISP interference}${NC}"
+            echo -e "${RED}󰅖 ${T_DIAG_UPSTREAM_HIGH:-High latency - possible ISP interference}${NC}"
         fi
     else
         log_error "${T_DIAG_UPSTREAM_ERROR:-Unable to get upstream info}"
@@ -92,14 +92,14 @@ verify_stack() {
     echo "  Metrics:         ${COREDNS_METRICS_ADDR}"
 
     echo -e "\n${CYAN}${T_VERIFY_SERVICES:-Services:}${NC}"
-    systemctl is-active --quiet dnscrypt-proxy && echo "  󰄬 dnscrypt-proxy: ${T_VERIFY_RUNNING:-running}" || echo "  ✗ dnscrypt-proxy: ${T_VERIFY_NOT_RUNNING:-not running}"
-    systemctl is-active --quiet coredns && echo "  󰄬 coredns:        ${T_VERIFY_RUNNING:-running}" || echo "  ✗ coredns:        ${T_VERIFY_NOT_RUNNING:-not running}"
+    systemctl is-active --quiet dnscrypt-proxy && echo "  󰄬 dnscrypt-proxy: ${T_VERIFY_RUNNING:-running}" || echo "  󰅖 dnscrypt-proxy: ${T_VERIFY_NOT_RUNNING:-not running}"
+    systemctl is-active --quiet coredns && echo "  󰄬 coredns:        ${T_VERIFY_RUNNING:-running}" || echo "  󰅖 coredns:        ${T_VERIFY_NOT_RUNNING:-not running}"
 
     echo -e "\n${CYAN}${T_VERIFY_FIREWALL:-Firewall:}${NC}"
     if nft list table inet citadel_dns >/dev/null 2>&1; then
         echo "  󰄬 nftables rules: ${T_VERIFY_FIREWALL_LOADED:-loaded} (inet citadel_dns)"
     else
-        echo "  ✗ nftables rules: ${T_VERIFY_FIREWALL_NOT_LOADED:-not loaded}"
+        echo "  󰅖 nftables rules: ${T_VERIFY_FIREWALL_NOT_LOADED:-not loaded}"
     fi
     if [[ -L /etc/nftables.d/citadel-dns.nft ]]; then
         local target
@@ -116,7 +116,7 @@ verify_stack() {
         if dig +time=2 +tries=1 +short google.com @127.0.0.1 -p "$coredns_port" >/dev/null 2>&1; then
             echo "  󰄬 Local DNS OK"
         else
-            echo "  ✗ Local DNS FAILED"
+            echo "  󰅖 Local DNS FAILED"
         fi
     else
         echo "  (dig not installed)"
@@ -126,7 +126,7 @@ verify_stack() {
     if command -v curl >/dev/null 2>&1 && curl -s "http://${COREDNS_METRICS_ADDR}/metrics" >/dev/null 2>&1; then
         echo "  󰄬 Prometheus endpoint OK"
     else
-        echo "  ✗ Prometheus endpoint FAILED"
+        echo "  󰅖 Prometheus endpoint FAILED"
     fi
 }
 
@@ -136,7 +136,7 @@ test_all() {
         load_i18n_module "diagnostics"
     fi
     
-    log_section "🧪 ${T_TEST_ALL_TITLE:-CITADEL++ TEST-ALL}"
+    log_section "󰙨 ${T_TEST_ALL_TITLE:-CITADEL++ TEST-ALL}"
 
     verify_stack
 
@@ -144,7 +144,7 @@ test_all() {
     echo -e "${CYAN}${T_TEST_LEAK:-Leak test (STRICT expected to block):}${NC}"
     if command -v dig >/dev/null 2>&1; then
         if dig +time=2 +tries=1 @1.1.1.1 test.com >/dev/null 2>&1; then
-            echo "  ✗ Leak test: NOT blocked (dig @1.1.1.1 succeeded)"
+            echo "  󰅖 Leak test: NOT blocked (dig @1.1.1.1 succeeded)"
         else
             echo "  󰄬 Leak test: blocked/time-out (expected in STRICT)"
         fi
