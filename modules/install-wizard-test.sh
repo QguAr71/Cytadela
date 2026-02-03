@@ -1,5 +1,5 @@
 #!/bin/bash
-# ULTRA MINIMAL INSTALL WIZARD - TEST
+# ULTRA MINIMAL INSTALL WIZARD - WITH COLORS
 
 NC='\033[0m'
 RED='\033[0;31m'
@@ -7,16 +7,24 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 
+print_frame_line() {
+    local text="$1"
+    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_len=${#visible_text}
+    local padding=$((60 - visible_len))
+    printf "║ %b%*s ║\n" "$text" "$padding" ""
+}
+
 install_wizard() {
     while true; do
         echo ""
         echo "╔══════════════════════════════════════════════════════════════╗"
-        echo "║  SELECT LANGUAGE                                             ║"
+        print_frame_line "${CYAN}SELECT LANGUAGE${NC}"
         echo "╠══════════════════════════════════════════════════════════════╣"
-        echo "║  [1] English                                                 ║"
-        echo "║  [2] Polski                                                  ║"
-        echo "║  [3] Deutsch                                                 ║"
-        echo "║  [q] Cancel                                                  ║"
+        print_frame_line "${GREEN}[1]${NC} English"
+        print_frame_line "${GREEN}[2]${NC} Polski"
+        print_frame_line "${GREEN}[3]${NC} Deutsch"
+        print_frame_line "${RED}[q]${NC} Cancel"
         echo "╚══════════════════════════════════════════════════════════════╝"
         echo ""
         echo -n "Choice: "
@@ -30,14 +38,14 @@ install_wizard() {
     
     echo ""
     echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║  CITADEL++ INSTALL WIZARD                                    ║"
+    print_frame_line "${CYAN}CITADEL++ INSTALL WIZARD${NC}"
     echo "╠══════════════════════════════════════════════════════════════╣"
-    echo "║                                                              ║"
-    echo "║  This wizard will install Citadel++ DNS system               ║"
-    echo "║                                                              ║"
-    echo "║  Required: Root privileges                                   ║"
-    echo "║  Time: ~5 minutes                                            ║"
-    echo "║                                                              ║"
+    print_frame_line ""
+    print_frame_line "This wizard will install Citadel++ DNS system"
+    print_frame_line ""
+    print_frame_line "${YELLOW}Required:${NC} Root privileges"
+    print_frame_line "${YELLOW}Time:${NC} ~5 minutes"
+    print_frame_line ""
     echo "╚══════════════════════════════════════════════════════════════╝"
     echo ""
     echo -n "Press Enter to continue..."
@@ -45,13 +53,13 @@ install_wizard() {
     
     echo ""
     echo "╔══════════════════════════════════════════════════════════════╗"
-    echo "║  INSTALLATION SUMMARY                                        ║"
+    print_frame_line "${CYAN}INSTALLATION SUMMARY${NC}"
     echo "╠══════════════════════════════════════════════════════════════╣"
-    echo "║  Modules to install:                                         ║"
-    echo "║  ✓ DNSCrypt-Proxy                                            ║"
-    echo "║  ✓ CoreDNS                                                   ║"
-    echo "║  ✓ NFTables                                                  ║"
-    echo "║                                                              ║"
+    print_frame_line "Modules to install:"
+    print_frame_line "${GREEN}✓${NC} DNSCrypt-Proxy"
+    print_frame_line "${GREEN}✓${NC} CoreDNS"
+    print_frame_line "${GREEN}✓${NC} NFTables"
+    print_frame_line ""
     echo "╚══════════════════════════════════════════════════════════════╝"
     echo ""
     echo -n "Proceed? [y/N]: "
