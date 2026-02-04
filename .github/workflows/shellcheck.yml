@@ -31,7 +31,7 @@ jobs:
       - name: Run Smoke Tests
         run: |
           # Run smoke tests (non-root, so some tests will be skipped)
-          bash scripts/tests/tests/smoke-test.sh || true
+          bash tests/smoke-test.sh || true
 
       - name: Run BATS Tests
         run: |
@@ -40,4 +40,4 @@ jobs:
             sudo apt-get install -y bats
           fi
           # Run BATS unit tests
-          bats scripts/tests/tests/ || true
+          bats tests/unit/ || true

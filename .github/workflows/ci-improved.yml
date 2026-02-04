@@ -51,7 +51,7 @@ jobs:
       - name: Run Smoke Tests
         run: |
           # Run smoke tests (non-root, so some tests will be skipped)
-          bash scripts/tests/tests/smoke-test.sh
+          bash tests/smoke-test.sh
 
   bats-tests:
     name: BATS Unit Tests

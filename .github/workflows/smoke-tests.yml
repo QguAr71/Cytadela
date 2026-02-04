@@ -20,10 +20,10 @@ jobs:
         sudo apt-get install -y shellcheck
     
     - name: Make smoke-test.sh executable
-      run: chmod +x scripts/tests/tests/smoke-test.sh
+      run: chmod +x tests/smoke-test.sh
     
     - name: Run Smoke Tests
-      run: bash scripts/tests/tests/smoke-test.sh || true
+      run: bash tests/smoke-test.sh || true
       # Smoke tests require root privileges which aren't available in CI
       # They will be skipped but the workflow should not fail
     
@@ -33,6 +33,6 @@ jobs:
       with:
         name: smoke-test-results
         path: |
-          scripts/tests/
+          tests/
           *.log
         retention-days: 7
