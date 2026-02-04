@@ -180,9 +180,9 @@ EOF
     echo ""
     
     # Emergency frame using reusable function
-    draw_emergency_frame "EMERGENCY RECOVERY:" \
-        "If installation fails:" \
-        "  ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}"
+    draw_emergency_frame "${T_EMERGENCY_RECOVERY:-EMERGENCY RECOVERY:}" \
+        "${T_EMERGENCY_IF_FAILS:-If installation fails:}" \
+        "  ${YELLOW}${T_EMERGENCY_RESTORE_CMD:-sudo ./citadel.sh emergency-network-restore}${NC}"
     
     # Pause so user can see the message
     sleep 2

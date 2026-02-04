@@ -49,3 +49,7 @@ export T_STEP_VERIFY="Weryfikacja: sudo cytadela++ verify"
 export T_CANCELLED="Instalacja anulowana przez użytkownika"
 export T_CANCELLED_SHORT="Instalacja anulowana"
 export T_UNKNOWN_MODULE="Nieznany moduł"
+
+export T_EMERGENCY_RECOVERY="ODZYSKIWANIE AWARYJNE:"
+export T_EMERGENCY_IF_FAILS="Jeśli instalacja się nie powiedzie:"
+export T_EMERGENCY_RESTORE_CMD="sudo ./citadel.sh emergency-network-restore"
