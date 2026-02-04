@@ -21,7 +21,7 @@
 
 ### **1. CYTADELA++ v3.1 (OBECNA)**
 
-| Funkcja | Cytadela++ | Pi-hole | AdGuard Home | pfSense | DNSCrypt |
+| Funkcja | Citadel | Pi-hole | AdGuard Home | pfSense | DNSCrypt |
 |---------|------------|---------|--------------|---------|----------|
 | **DNS Encryption** | ✅ DNSCrypt/DoH | ❌ | ✅ DoH/DoT | ✅ | ✅ |
 | **Adblock** | ✅ 1.2M domen | ✅ | ✅ | ⚠️ plugin | ❌ |
@@ -51,7 +51,7 @@
 
 ### **2. CYTADELA++ v3.2 + GATEWAY MODE (PLANOWANA)**
 
-| Funkcja | Cytadela++ v3.2 | Pi-hole | AdGuard Home | pfSense | OPNsense |
+| Funkcja | Citadel v3.2 | Pi-hole | AdGuard Home | pfSense | OPNsense |
 |---------|-----------------|---------|--------------|---------|----------|
 | **Wszystko z v3.1** | ✅ | - | - | - | - |
 | **Network Gateway** | ✅ | ❌ | ❌ | ✅ | ✅ |
@@ -85,17 +85,17 @@
 ## 🏆 PRZEWAGI CYTADELA++ (v3.2)
 
 ### **1. Bezpieczeństwo DNS**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Szyfrowanie DNS | ✅ DNSCrypt/DoH | ❌ | ✅ DoH/DoT | ✅ |
 | Leak prevention | ✅ NFTables strict | ⚠️ częściowo | ⚠️ częściowo | ✅ |
 | Local-first | ✅ | ⚠️ częściowo | ❌ telemetry | ✅ |
 | Supply-chain verify | ✅ | ❌ | ❌ | ⚠️ |
 
-**Werdykt:** 🥇 **Cytadela++ wygrywa** - jedyna z pełnym DNSCrypt + strict leak prevention
+**Werdykt:** 🥇 **Citadel wygrywa** - jedyna z pełnym DNSCrypt + strict leak prevention
 
 ### **2. Adblock**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Liczba domen | 1.2M (balanced) | ~1M | ~1M | ⚠️ plugin |
 | Multi-blocklist | ✅ 6 profili | ⚠️ ręcznie | ✅ | ❌ |
@@ -105,17 +105,17 @@
 **Werdykt:** 🥈 **Remis z Pi-hole/AdGuard** - wszystkie równie dobre
 
 ### **3. Łatwość użycia**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Instalacja | 10 min (wizard) | 5 min | 5 min | 60 min |
 | Interface | TUI + CLI | Web UI | Web UI | Web UI |
 | Dokumentacja PL | ✅ | ❌ | ⚠️ częściowo | ❌ |
 | Krzywa uczenia | Średnia | Łatwa | Łatwa | Wysoka |
 
-**Werdykt:** 🥈 **Pi-hole/AdGuard łatwiejsze** (Web UI), ale Cytadela++ ma TUI + PL docs
+**Werdykt:** 🥈 **Pi-hole/AdGuard łatwiejsze** (Web UI), ale Citadel ma TUI + PL docs
 
 ### **4. Funkcjonalność**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Modułowa | ✅ | ❌ | ❌ | ⚠️ |
 | Gateway | ✅ (v3.2) | ❌ | ❌ | ✅ |
@@ -123,32 +123,32 @@
 | Backup/Restore | ✅ 1 cmd | ⚠️ ręcznie | ✅ | ✅ |
 | Auto-update | ✅ all | ✅ blocklist | ✅ | ✅ |
 
-**Werdykt:** 🥇 **Cytadela++ wygrywa** - najbardziej modułowa i elastyczna
+**Werdykt:** 🥇 **Citadel wygrywa** - najbardziej modułowa i elastyczna
 
 ### **5. Prywatność**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Telemetria | ❌ zero | ❌ zero | ⚠️ opcjonalna | ❌ zero |
 | Local-first | ✅ | ✅ | ⚠️ | ✅ |
 | Open-source | ✅ | ✅ | ✅ | ✅ |
 | Supply-chain | ✅ verify | ❌ | ❌ | ⚠️ |
 
-**Werdykt:** 🥇 **Cytadela++ wygrywa** - zero telemetry + supply-chain verification
+**Werdykt:** 🥇 **Citadel wygrywa** - zero telemetry + supply-chain verification
 
 ### **6. Koszt**
-| | Cytadela++ | Pi-hole | AdGuard | pfSense |
+| | Citadel | Pi-hole | AdGuard | pfSense |
 |-|------------|---------|---------|---------|
 | Sprzęt | 150-300 zł (stary PC) | 400 zł (RPi 4) | 400 zł (RPi 4) | 500+ zł |
 | Prąd/rok | 140-210 zł | 50 zł | 50 zł | 200+ zł |
 | **Total/rok** | **290-510 zł** | **450 zł** | **450 zł** | **700+ zł** |
 
-**Werdykt:** 🥇 **Cytadela++ wygrywa** - najtańszy (stary PC za 150 zł)
+**Werdykt:** 🥇 **Citadel wygrywa** - najtańszy (stary PC za 150 zł)
 
 ---
 
 ## 🎯 POZYCJONOWANIE NA RYNKU
 
-### **Cytadela++ v3.2 (z Gateway) to:**
+### **Citadel v3.2 (z Gateway) to:**
 
 **Hybryda między:**
 - **Pi-hole** (adblock) + **pfSense** (gateway) + **DNSCrypt** (privacy)
@@ -165,7 +165,7 @@
 
 ## 📊 TABELA KOŃCOWA - OCENY
 
-| Kategoria | Cytadela++ v3.2 | Pi-hole | AdGuard | pfSense |
+| Kategoria | Citadel v3.2 | Pi-hole | AdGuard | pfSense |
 |-----------|-----------------|---------|---------|---------|
 | **Bezpieczeństwo DNS** | 🥇 10/10 | 6/10 | 7/10 | 9/10 |
 | **Adblock** | 🥈 10/10 | 10/10 | 10/10 | 5/10 |
@@ -182,7 +182,7 @@
 
 ## 🏅 WERDYKT KOŃCOWY
 
-### **Cytadela++ v3.2 (z Gateway Mode):**
+### **Citadel v3.2 (z Gateway Mode):**
 
 **🥇 NAJLEPSZA dla:**
 - Privacy-conscious użytkowników domowych
@@ -207,7 +207,7 @@
 
 ## 💡 UNIQUE SELLING POINTS (USP)
 
-**Co Cytadela++ robi LEPIEJ niż konkurencja:**
+**Co Citadel robi LEPIEJ niż konkurencja:**
 
 1. **Privacy-first** - zero telemetry, local-first, supply-chain verification
 2. **Modułowa** - łatwo dodawać nowe funkcje
@@ -222,7 +222,7 @@
 
 ## 🎯 PODSUMOWANIE
 
-**Cytadela++ v3.2 (z Gateway Mode) będzie:**
+**Citadel v3.2 (z Gateway Mode) będzie:**
 
 **Najlepsza dla prywatności i bezpieczeństwa DNS** 🥇  
 **Równa z Pi-hole/AdGuard w adblock** 🥈  

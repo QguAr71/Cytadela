@@ -254,7 +254,7 @@ verify_config_help() {
 󰍉 ${T_VERIFY_CONFIG_TITLE:-VERIFY-CONFIG} - ${MODULE_DESCRIPTION}
 
 ${T_USAGE:-USAGE}:
-  cytadela++ verify-config [check|dns|services|files|all|help]
+  Citadel verify-config [check|dns|services|files|all|help]
 
 ${T_OPTIONS:-OPTIONS}:
   check      ${T_VERIFY_HELP_CHECK:-Full configuration check (default)}
@@ -265,9 +265,9 @@ ${T_OPTIONS:-OPTIONS}:
   help       ${T_VERIFY_HELP_HELP:-Show this help}
 
 ${T_EXAMPLES:-EXAMPLES}:
-  cytadela++ verify-config              # Quick configuration check
-  cytadela++ verify-config dns          # Test DNS functionality
-  cytadela++ verify-config all          # Comprehensive verification
+  Citadel verify-config              # Quick configuration check
+  Citadel verify-config dns          # Test DNS functionality
+  Citadel verify-config all          # Comprehensive verification
 
 EOF
 }

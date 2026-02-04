@@ -8,7 +8,7 @@
 
 ## 📋 Overview
 
-This release marks a major milestone for **Citadel** (formerly Cytadela++). We have focused on extreme performance optimization, bulletproof DNS leak protection, and a robust recovery system. Fully verified and optimized for CachyOS.
+This release marks a major milestone for **Citadel** (formerly Citadel). We have focused on extreme performance optimization, bulletproof DNS leak protection, and a robust recovery system. Fully verified and optimized for CachyOS.
 
 ---
 

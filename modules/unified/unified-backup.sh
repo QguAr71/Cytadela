@@ -94,7 +94,7 @@ config_backup() {
 
     # Create metadata
     cat >"${tmp_dir}/backup-metadata.txt" <<EOF
-Cytadela++ Backup
+Citadel Backup
 Created: $(date -Iseconds)
 Hostname: $(hostname)
 Version: 3.2.0
@@ -245,6 +245,33 @@ config_list() {
 
 # Delete backup file
 config_delete() {
+config_list() {
+    log_section "󰓍 AVAILABLE BACKUPS"
+    
+    if [[ ! -d "$BACKUP_DIR" ]] || [[ -z "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]]; then
+        echo "No backups found in $BACKUP_DIR"
+        return 0
+    fi
+    
+    echo "Backups in $BACKUP_DIR:"
+    echo ""
+    
+    for file in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
+        [[ ! -f "$file" ]] && continue
+        local size
+        size=$(du -h "$file" | cut -f1)
+        local date
+        date=$(stat -c %y "$file" | cut -d'.' -f1)
+        
+        printf "  ${GREEN}%s${NC}
+" "$(basename "$file")"
+        printf "    Date: %s
+" "$date"
+        printf "    Size: %s
+" "$size"
+        echo ""
+    done
+}
     log_section "󰩹  DELETE BACKUP"
 
     local backup_file="$1"
@@ -484,14 +511,14 @@ auto_update_enable() {
     log_info "Creating systemd service..."
     tee "$AUTO_UPDATE_SERVICE" >/dev/null <<'EOF'
 [Unit]
-Description=Cytadela++ Automatic Blocklist Update
+Description=Citadel Automatic Blocklist Update
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
 User=root
-ExecStart=/usr/local/bin/cytadela++ lists-update
+ExecStart=/usr/local/bin/Citadel lists-update
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=cytadela-auto-update
@@ -508,7 +535,7 @@ EOF
     log_info "Creating systemd timer (daily updates)..."
     tee "$AUTO_UPDATE_TIMER" >/dev/null <<'EOF'
 [Unit]
-Description=Cytadela++ Daily Blocklist Update Timer
+Description=Citadel Daily Blocklist Update Timer
 Requires=cytadela-auto-update.service
 
 [Timer]

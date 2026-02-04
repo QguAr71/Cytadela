@@ -1,4 +1,4 @@
-# 🧪 Cytadela++ - Przewodnik Testowania dla Użytkownika
+# 🧪 Citadel - Przewodnik Testowania dla Użytkownika
 
 ## 📋 Spis Treści
 
@@ -20,7 +20,7 @@ which cytadela++
 
 # Sprawdź wersję
 sudo cytadela++ --version
-# Powinno zwrócić: Cytadela++ v3.x.x
+# Powinno zwrócić: Citadel v3.x.x
 ```
 
 **Oczekiwany wynik:** Komenda istnieje i zwraca wersję.
@@ -431,4 +431,4 @@ Jeśli żaden z powyższych testów nie pomógł:
 
 **Wersja dokumentu:** 1.0  
 **Data:** 2026-01-30  
-**Dla Cytadela++ v3.2.0+**
+**Dla Citadel v3.2.0+**

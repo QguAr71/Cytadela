@@ -364,7 +364,7 @@ main() {
 EOF
     echo -e "${NC}"
     
-    test_info "Starting Cytadela++ test suite..."
+    test_info "Starting Citadel test suite..."
     test_info "This will take about 30 seconds..."
     test_info "Note: Some tests may require sudo password"
     echo ""

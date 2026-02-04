@@ -200,7 +200,7 @@ smart_ipv6_detection() {
     fi
 }
 
-# Alias for compatibility with cytadela++.new.sh
+# Alias for compatibility with Citadel.new.sh
 smart_ipv6() {
     smart_ipv6_detection
 }

@@ -16,6 +16,32 @@ check_dependencies() {
     local optional_missing=0
 
     echo ""
+    echo "=== ${T_SYSTEM_CHECK:-SYSTEM REQUIREMENTS} ==="
+    echo ""
+
+    # Check systemd (required for Citadel)
+    if [[ "$SYSTEMD_DETECTED" == "true" ]]; then
+        printf "  ${GREEN}󰄬${NC} %-20s %s (v%s)\n" "systemd" "System and service manager" "$SYSTEMD_VERSION"
+    else
+        printf "  ${RED}󰅖${NC} %-20s %s\n" "systemd" "System and service manager"
+        echo "      Citadel requires systemd. Not compatible with SysV init or OpenRC."
+        ((missing++))
+    fi
+
+    # Verify systemd functionality
+    if [[ "$SYSTEMD_DETECTED" == "true" ]]; then
+        local systemctl_path
+        systemctl_path=$(get_systemctl_cmd)
+        if [[ -n "$systemctl_path" ]]; then
+            printf "  ${GREEN}󰄬${NC} %-20s %s (%s)\n" "systemctl" "Systemd control utility" "$systemctl_path"
+        else
+            printf "  ${RED}󰅖${NC} %-20s %s\n" "systemctl" "Systemd control utility"
+            echo "      systemctl not found in standard locations"
+            ((missing++))
+        fi
+    fi
+
+    echo ""
     echo "=== ${T_REQUIRED_DEPS:-REQUIRED DEPENDENCIES} ==="
     echo ""
 
@@ -59,7 +85,7 @@ check_dependencies() {
     fi
 
     echo ""
-    log_info "${T_INSTALL_HINT:-Run 'sudo cytadela++ check-deps --install' to auto-install missing packages}"
+    log_info "${T_INSTALL_HINT:-Run 'sudo Citadel check-deps --install' to auto-install missing packages}"
 
     return 0
 }
@@ -285,7 +311,7 @@ check_dependencies_install() {
     fi
 
     echo ""
-    log_info "${T_VERIFY_HINT:-Run 'sudo cytadela++ check-deps' to verify installation}"
+    log_info "${T_VERIFY_HINT:-Run 'sudo Citadel check-deps' to verify installation}"
 
     # Return success if at least some packages were installed
     if [[ $success_count -gt 0 ]]; then
@@ -318,7 +344,7 @@ check_dependencies_help() {
 󰍉 ${T_CHECK_DEPS_TITLE:-CHECK-DEPS} - ${T_CHECK_DEPS_DESC:-Dependency Checker}
 
 ${T_USAGE:-USAGE}:
-  sudo cytadela++ check-deps [--install]
+  sudo Citadel check-deps [--install]
 
 ${T_DESCRIPTION:-DESCRIPTION}:
   ${T_CHECK_DEPS_LONG_DESC:-Checks if all required and optional dependencies are installed.}
@@ -334,8 +360,8 @@ ${req_list}
 ${T_OPTIONAL_DEPS:-Optional} (${T_MOST_IMPORTANT:-most important}):
 ${opt_list}
 ${T_EXAMPLES:-EXAMPLES}:
-  sudo cytadela++ check-deps           # ${T_CHECK_ONLY:-Check dependencies}
-  sudo cytadela++ check-deps --install # ${T_AUTO_INSTALL_CMD:-Auto-install missing}
+  sudo Citadel check-deps           # ${T_CHECK_ONLY:-Check dependencies}
+  sudo Citadel check-deps --install # ${T_AUTO_INSTALL_CMD:-Auto-install missing}
 
 EOF
 }

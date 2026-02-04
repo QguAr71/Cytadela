@@ -1,0 +1,48 @@
+# Przykład 1: Podstawowa konfiguracja Citadel
+
+# Ten plik pokazuje podstawową konfigurację Citadel dla środowiska domowego
+# Kopiuj ten plik do /etc/citadel/config.yaml i dostosuj ustawienia
+
+# Citadel v3.3 Configuration - Basic Setup
+version: "3.3.0"
+profile: "standard"
+
+# Logging Configuration
+logging:
+  level: "info"
+  file: "/var/log/citadel/citadel.log"
+  max_size: "50MB"
+  max_files: 3
+
+# Basic Security Features
+security:
+  reputation:
+    enabled: true
+    threshold: 50
+    auto_block: true
+    block_duration: "24h"
+
+  event_logging:
+    enabled: true
+    format: "json"
+    retention: "7d"
+
+  honeypot:
+    enabled: true
+    ports: [22, 3389]
+    log_connections: true
+
+# Network Configuration
+network:
+  interfaces: ["eth0", "wlan0"]
+  firewall_backend: "nftables"
+  geo_blocking: false
+
+# Enterprise Features (disabled for basic setup)
+enterprise:
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
+  docker:
+    enabled: false

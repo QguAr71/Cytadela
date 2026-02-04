@@ -80,7 +80,7 @@ install_all() {
     echo ""
 
     log_info "Aby przełączyć system na Citadel++ (wyłączyć resolved):"
-    echo "  sudo ./cytadela++.sh configure-system"
+    echo "  sudo ./Citadel.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
-    echo "  sudo ./cytadela++.sh restore-system"
+    echo "  sudo ./Citadel.sh restore-system"
 }

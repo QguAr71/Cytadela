@@ -628,7 +628,7 @@ EOF
         fi
     else
         log_warning "Test DNS nieudany - zostawiam firewall SAFE"
-        log_warning "Rollback: sudo ./cytadela++.sh restore-system"
+        log_warning "Rollback: sudo ./Citadel.sh restore-system"
     fi
 
     log_success "Konfiguracja systemowa zakończona"
@@ -806,9 +806,9 @@ install_all() {
     echo ""
 
     log_info "Aby przełączyć system na Citadel++ (wyłączyć resolved):"
-    echo "  sudo ./cytadela++.sh configure-system"
+    echo "  sudo ./Citadel.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
-    echo "  sudo ./cytadela++.sh restore-system"
+    echo "  sudo ./Citadel.sh restore-system"
 }
 
 # ==============================================================================
@@ -1031,7 +1031,7 @@ check_dependencies_install() {
     fi
 
     echo ""
-    log_info "${T_VERIFY_HINT:-Run 'sudo cytadela++ check-deps' to verify installation}"
+    log_info "${T_VERIFY_HINT:-Run 'sudo Citadel check-deps' to verify installation}"
 
     # Return success if at least some packages were installed
     if [[ $success_count -gt 0 ]]; then

@@ -43,10 +43,10 @@ check_root() {
     fi
 }
 
-# Check if Cytadela++ is installed
+# Check if Citadel is installed
 check_cytadela() {
     if ! command -v cytadela.sh >/dev/null 2>&1; then
-        log_error "Cytadela++ not found. This script requires Cytadela++."
+        log_error "Citadel not found. This script requires Citadel."
         log_info "Download from: https://github.com/QguAr71/Cytadela"
         exit 1
     fi
@@ -156,7 +156,7 @@ restore_emergency() {
 # Restore system to original state
 restore_system() {
     log_emergency "RESTORING SYSTEM TO ORIGINAL STATE"
-    log_warning "This will restore systemd-resolved and remove Cytadela++ DNS"
+    log_warning "This will restore systemd-resolved and remove Citadel DNS"
     
     if cytadela.sh restore-system; then
         log_success "System restored to original state"
@@ -186,7 +186,7 @@ check_status() {
     echo ""
     
     # Cytadela status
-    log_info "Cytadela++ status:"
+    log_info "Citadel status:"
     cytadela.sh status
     
     echo ""
@@ -326,7 +326,7 @@ emergency_menu() {
 
 # Show help
 show_help() {
-    echo "Cytadela++ Emergency Recovery Script"
+    echo "Citadel Emergency Recovery Script"
     echo ""
     echo "Usage: $0 [option]"
     echo ""

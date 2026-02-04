@@ -19,14 +19,14 @@ auto_update_enable() {
     log_info "Creating systemd service..."
     tee "$AUTO_UPDATE_SERVICE" >/dev/null <<'EOF'
 [Unit]
-Description=Cytadela++ Automatic Blocklist Update
+Description=Citadel Automatic Blocklist Update
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
 User=root
-ExecStart=/usr/local/bin/cytadela++ lists-update
+ExecStart=/usr/local/bin/Citadel lists-update
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=cytadela-auto-update
@@ -43,7 +43,7 @@ EOF
     log_info "Creating systemd timer (daily updates)..."
     tee "$AUTO_UPDATE_TIMER" >/dev/null <<'EOF'
 [Unit]
-Description=Cytadela++ Daily Blocklist Update Timer
+Description=Citadel Daily Blocklist Update Timer
 Requires=cytadela-auto-update.service
 
 [Timer]

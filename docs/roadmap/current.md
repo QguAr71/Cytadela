@@ -123,7 +123,7 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 ### Gateway Mode (PRIORYTET #1)
 
 - **Network Gateway** (v3.2)
-  - Cytadela++ jako gateway dla całej sieci domowej
+  - Citadel jako gateway dla całej sieci domowej
   - DHCP server (dnsmasq lub systemd-networkd)
   - NAT & routing (NFTables)
   - Per-device statistics

@@ -2,7 +2,233 @@
 
 All notable changes to this repository will be documented in this file.
 
-## [3.1.3] - 2026-02-02 - I18N & MODULE UPDATE
+## [4.0.0] - 2026-02-04
+
+### 🎉 **Major Release: Gateway Mode & Network Infrastructure**
+
+Citadel v4.0 transforms Citadel from a DNS resolver into a full network gateway solution, enabling complete home/office network management and advanced security monitoring.
+
+### ✨ Added
+
+#### 🚪 **Gateway Mode - Complete Network Gateway**
+- **Full Network Gateway** - Transform Citadel into a network router/gateway
+  - DHCP server integration (dnsmasq)
+  - NAT and routing configuration
+  - Network interface detection and management
+  - Firewall rules for secure routing
+- **Device Management** - Monitor and manage all network devices
+  - Real-time device discovery and tracking
+  - DHCP lease monitoring and management
+  - ARP table integration for device visibility
+  - Per-device network statistics
+- **Interactive Gateway Wizard** - Easy setup for gateway mode
+  - Automatic network interface detection
+  - Guided configuration process
+  - Network settings validation
+  - One-command gateway activation
+- **Gateway Services** - Production-ready gateway services
+  - Systemd service integration
+  - Service lifecycle management
+  - Health monitoring and auto-recovery
+  - Gateway-specific logging and metrics
+
+#### 🛡️ **Network Security Infrastructure**
+- **Advanced Firewall Management** - Gateway-specific firewall rules
+  - NAT rule automation
+  - DHCP traffic allowance
+  - DNS query protection
+  - Secure routing policies
+- **Network Monitoring** - Comprehensive network visibility
+  - Connected device enumeration
+  - DHCP lease tracking
+  - Network traffic monitoring
+  - Gateway performance metrics
+
+### 🔄 Changed
+
+- **Architecture Expansion** - Citadel now supports dual modes
+  - DNS Resolver Mode (original functionality)
+  - Gateway Mode (new network infrastructure)
+- **Service Architecture** - Enhanced service management
+  - Gateway-specific services
+  - Multi-interface network configuration
+  - DHCP integration with DNS
+
+#### �️ **Advanced IDS Integration**
+- **Suricata Integration** - Network IDS for DNS traffic analysis
+  - DNS-specific detection rules and signatures
+  - Real-time DNS query monitoring and alerting
+  - DGA (Domain Generation Algorithm) detection
+  - DNS tunneling and amplification attack detection
+  - Suspicious TLD and domain pattern analysis
+- **Zeek Integration** - Advanced network analysis framework
+  - DNS protocol analysis and logging
+  - Entropy-based DGA detection algorithms
+  - NXDOMAIN storm detection and alerting
+  - Comprehensive DNS traffic pattern analysis
+  - Scriptable analysis and alerting framework
+- **DNS Threat Detection** - Advanced DNS security monitoring
+  - Query flood detection and rate limiting
+  - Suspicious domain pattern recognition
+  - Fast flux domain detection
+  - DNS zone transfer attempt detection
+  - Comprehensive DNS security event logging
+
+### 🔄 Changed
+
+- **Security Architecture** - Enhanced threat detection capabilities
+  - Multi-layered IDS approach with Suricata and Zeek
+  - DNS-specific security monitoring and alerting
+  - Integration with existing reputation and blocking systems
+  - Advanced threat intelligence and pattern analysis
+
+#### 🌐 **Web Dashboard - Complete Monitoring Interface**
+- **Modern Web Interface** - Responsive HTML/CSS/JavaScript dashboard
+  - Real-time system status monitoring and visualization
+  - Security overview with threat metrics and alerts
+  - Network device management and DHCP lease tracking
+  - IDS alerts and status monitoring
+  - Interactive controls with auto-refresh capabilities
+- **Web Server Integration** - Nginx and Lighttpd support
+  - Automatic web server configuration and deployment
+  - Security hardening with proper headers and access controls
+  - Static file caching and compression optimization
+  - Reverse proxy for API endpoints
+- **RESTful API Backend** - JSON API for data retrieval
+  - System status, security metrics, and network information
+  - Real-time data updates with automatic refresh
+  - Error handling and status reporting
+  - Extensible API design for future enhancements
+- **User Experience** - Professional monitoring interface
+  - Clean, modern design with intuitive navigation
+  - Color-coded status indicators and alerts
+  - Responsive layout for desktop and mobile devices
+  - Accessibility features and keyboard navigation
+
+### 🔄 Changed
+
+- **User Interface Paradigm** - Web-based monitoring alongside CLI
+  - Dual interface approach (CLI + Web) for different use cases
+  - Web dashboard as primary monitoring interface
+  - CLI maintained for automation and scripting
+  - Consistent data and status reporting across interfaces
+
+### 📚 Documentation
+
+- **Web Dashboard Guide** - Complete web interface documentation
+- **API Reference** - RESTful API endpoint documentation
+- **Web Server Configuration** - Nginx/Lighttpd setup guides
+- **Security Best Practices** - Web interface security guidelines
+
+---
+
+## Roadmap Status
+
+### ✅ **Completed High-Priority Features**
+- **Gateway Mode** - Complete network infrastructure
+- **IDS Integration** - Advanced threat detection
+- **Web Dashboard** - Modern monitoring interface
+
+### 🔄 **Next Steps (Medium Priority)**
+- **Enhanced CLI** - Better UX and auto-completion
+- **Per-device Policies** - Network segmentation
+- **Advanced Threat Intelligence** - Enhanced threat feeds
+- **Compliance Features** - Audit and compliance tools
+
+### 🔮 **Future Enhancements**
+- **AI/ML Integration** - Automated threat analysis
+- **Performance Optimization** - Advanced caching
+- **Ecosystem Expansion** - Third-party integrations
+
+---
+
+### ✨ Added
+
+#### 🔒 **Security Features (v3.3.0)**
+- **Reputation System** - Dynamic IP reputation scoring with automatic blocking
+  - Real-time reputation tracking and scoring
+  - Configurable thresholds and auto-blocking
+  - Event-driven reputation updates
+- **ASN Blocking** - Network-level traffic control
+  - Autonomous System Number (ASN) based filtering
+  - WHOIS integration for prefix lookups
+  - Automated blocklist management
+- **Advanced Event Logging** - Structured JSON event logging
+  - Multi-format logging (JSON, text)
+  - Configurable retention policies
+  - Advanced querying and analysis capabilities
+- **Honeypot System** - Active threat detection
+  - Multiple service simulation (SSH, HTTP, RDP)
+  - Connection logging and analysis
+  - Automatic attacker blocking
+
+#### 🎯 **Management Features**
+- **YAML Configuration Management** - Profile-based configuration
+  - Multiple configuration profiles (standard, security, enterprise)
+  - Runtime configuration validation
+  - Import/export and diff capabilities
+- **Dynamic Module Management** - Runtime module control
+  - Load/unload modules without restart
+  - Dependency resolution and conflict detection
+  - Module discovery and status monitoring
+- **Systemd Service Integration** - Production-ready service management
+  - Automatic service file generation
+  - Service lifecycle management (start/stop/restart/enable/disable)
+  - Health monitoring and auto-recovery
+
+#### 🏢 **Enterprise Features**
+- **Prometheus/Grafana Integration** - Advanced monitoring and visualization
+  - Real-time metrics collection
+  - Pre-configured dashboards
+  - Custom metric endpoints
+- **Docker Integration** - Containerized deployment
+  - docker-compose orchestration
+  - Multi-service container management
+  - Production-ready container configurations
+- **Enterprise Security** - Corporate-grade security features
+  - Advanced firewall rules (nftables-based)
+  - Threat intelligence feeds integration
+  - Audit logging and compliance features
+- **Scalability Features** - High availability and load balancing
+  - HAProxy load balancing
+  - Keepalived high availability
+  - Performance monitoring and optimization
+
+#### 🎨 **User Interface**
+- **Enhanced CLI Installer** - Advanced installation options
+  - Profile-based component selection
+  - Dry-run and verbose modes
+  - Comprehensive dependency checking
+- **Gum TUI Dashboard** - Interactive terminal interface
+  - Real-time system monitoring
+  - Security status overview
+  - Configuration management interface
+
+### 🔄 Changed
+
+- **Architecture Overhaul** - Complete system redesign
+  - Modular architecture with unified modules
+  - Event-driven system design
+  - Plugin-based extensibility
+- **Configuration System** - Migration to YAML-based configuration
+  - Backward compatibility maintained
+  - Profile-based configuration management
+  - Runtime validation and error checking
+
+### 🐛 Fixed
+
+- **Memory Management** - Improved resource utilization
+- **Error Handling** - Enhanced error reporting and recovery
+- **Performance** - Optimized module loading and execution
+
+### 📚 Documentation
+
+- **Complete Documentation Suite** - Comprehensive user and developer documentation
+- **API Documentation** - Detailed module and API reference
+- **Troubleshooting Guide** - Common issues and solutions
+- **Developer Guide** - Architecture and contribution guidelines
+
+---
 
 ### 🌍 Internationalization Complete
 - **Full i18n support for all 30+ modules** - Every module now uses T_* variables

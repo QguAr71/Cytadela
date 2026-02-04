@@ -1,4 +1,4 @@
-# 🧪 Cytadela++ Testing Results - 2026-02-01
+# 🧪 Citadel Testing Results - 2026-02-01
 
 **Version:** v3.1.0  
 **Date:** 2026-02-01  

@@ -1,4 +1,4 @@
-# 🌍 Cytadela++ Internationalization (i18n)
+# 🌍 Citadel Internationalization (i18n)
 
 ## Adding a New Language
 
@@ -19,7 +19,7 @@ Edit the new file and translate all `T_*` variables:
 ```bash
 # lib/i18n/de.sh
 export T_WIZARD_TITLE="INTERAKTIVER INSTALLATIONSASSISTENT"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Installationsassistent"
+export T_DIALOG_TITLE="Citadel v3.1 - Installationsassistent"
 export T_SELECT_MODULES="Wählen Sie Module aus:"
 # ... etc
 ```
@@ -129,7 +129,7 @@ Want to add more? Copy `en.sh`, translate 35 strings, and submit a PR!
 5. Test your translation
 6. Submit a Pull Request
 
-**Thank you for helping make Cytadela++ accessible to more users!** 🌍
+**Thank you for helping make Citadel accessible to more users!** 🌍
 
 ---
 
@@ -151,7 +151,7 @@ Use ISO 639-1 two-letter codes:
 
 ## Auto-Detection
 
-Cytadela++ automatically detects language from `$LANG` environment variable:
+Citadel automatically detects language from `$LANG` environment variable:
 
 ```bash
 LANG=pl_PL.UTF-8  → Polish

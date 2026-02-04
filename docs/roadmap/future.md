@@ -1,8 +1,8 @@
-# 🦀 Cytadela++ 4.0 - Rust Rewrite Roadmap
+# 🦀 Citadel 4.0 - Rust Rewrite Roadmap
 
 ## 🎯 Vision
 
-Przepisanie Cytadela++ w Rust z modelem Open Core:
+Przepisanie Citadel w Rust z modelem Open Core:
 - **Community Edition** (GPL v3) - podstawowe funkcje, open source
 - **Enterprise Edition** (Paid) - zaawansowane funkcje dla firm
 - **Cloud Edition** (SaaS) - w pełni zarządzana usługa
@@ -195,7 +195,7 @@ clap = { version = "4.4", features = ["derive"] }
 - ✅ Customer portal
 - ✅ Monitoring & alerting
 
-**Deliverable:** `Cytadela++ Cloud`
+**Deliverable:** `Citadel Cloud`
 - SaaS platform
 - Subscription billing
 - Managed service

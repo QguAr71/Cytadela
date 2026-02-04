@@ -1,4 +1,4 @@
-# Wymagania i18n dla modułów Cytadela++
+# Wymagania i18n dla modułów Citadel
 
 > **WAŻNE:** Każdy nowo dodany moduł MUSI mieć pełną obsługę i18n (internationalization).
 
@@ -113,4 +113,4 @@ Lub szybka ściągawka:
 ---
 
 **Data utworzenia:** 2026-02-02  
-**Autor:** Cytadela++ Team
+**Autor:** Citadel Team

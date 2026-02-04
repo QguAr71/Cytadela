@@ -59,7 +59,7 @@
 
 | Rozwiązanie | Ochrona DNS | Adblock | Leak Prevention | Łatwość |
 |-------------|-------------|---------|-----------------|---------|
-| **Cytadela++** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Citadel** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | Pi-hole | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
 | AdGuard Home | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | Tylko DNSCrypt | ⭐⭐⭐⭐⭐ | ❌ | ⭐⭐ | ⭐⭐⭐ |
@@ -80,7 +80,7 @@
 
 ## 🎯 Podsumowanie
 
-**Cytadela++ to solidne, kompleksowe rozwiązanie DNS security dla zaawansowanych użytkowników Linux.**
+**Citadel to solidne, kompleksowe rozwiązanie DNS security dla zaawansowanych użytkowników Linux.**
 
 - **Ochrona:** Bardzo dobra dla DNS/adblock, wymaga VPN dla pełnej prywatności
 - **Przydatność:** Wysoka, szczególnie dzięki diagnostyce i recovery
@@ -883,7 +883,7 @@ sudo ./cytadela++.sh restore-system
 
 # GLOBAL ERROR TRAP
 
-Cytadela++ ma wbudowany global error trap który pokazuje:
+Citadel ma wbudowany global error trap który pokazuje:
 - Funkcję gdzie wystąpił błąd
 - Numer linii
 - Komendę która zawiodła

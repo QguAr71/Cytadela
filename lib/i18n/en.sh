@@ -6,7 +6,7 @@
 
 # Wizard titles
 export T_WIZARD_TITLE="INTERACTIVE INSTALLER WIZARD"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Installation Wizard"
+export T_DIALOG_TITLE="Citadel v3.1 - Installation Wizard"
 
 # Dialog messages
 export T_SELECT_MODULES="Select modules to install:"

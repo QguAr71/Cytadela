@@ -336,14 +336,14 @@ fullscale=brightgreen,black
             echo "  Debian/Ubuntu: sudo apt install whiptail"
             echo "  Fedora: sudo dnf install newt"
             echo ""
-            log_info "Lub uruchom: sudo cytadela++ check-deps --install"
+            log_info "Lub uruchom: sudo Citadel check-deps --install"
         else
             log_error "whiptail not found. Install it first:"
             echo "  Arch/Manjaro: sudo pacman -S libnewt"
             echo "  Debian/Ubuntu: sudo apt install whiptail"
             echo "  Fedora: sudo dnf install newt"
             echo ""
-            log_info "Or run: sudo cytadela++ check-deps --install"
+            log_info "Or run: sudo Citadel check-deps --install"
         fi
         return 1
     fi
@@ -622,8 +622,8 @@ fullscale=brightgreen,black
         echo ""
         log_info "Następne kroki:"
         echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-        echo "  2. Konfiguracja systemu: sudo cytadela++ configure-system"
-        echo "  3. Weryfikacja: sudo cytadela++ verify"
+        echo "  2. Konfiguracja systemu: sudo Citadel configure-system"
+        echo "  3. Weryfikacja: sudo Citadel verify"
     else
         draw_section_header "󰄬 INSTALLATION COMPLETE"
 
@@ -636,8 +636,8 @@ fullscale=brightgreen,black
         echo ""
         log_info "Next steps:"
         echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-        echo "  2. Configure system: sudo cytadela++ configure-system"
-        echo "  3. Verify: sudo cytadela++ verify"
+        echo "  2. Configure system: sudo Citadel configure-system"
+        echo "  3. Verify: sudo Citadel verify"
     fi
 
     if ! declare -f diagnostics >/dev/null 2>&1; then
@@ -653,7 +653,7 @@ install_wizard_help() {
 󰇄 INSTALL WIZARD - Interactive Installer
 
 USAGE:
-  sudo cytadela++ install-wizard
+  sudo Citadel install-wizard
 
 DESCRIPTION:
   Interactive installer with checklist for selecting modules.
@@ -677,7 +677,7 @@ REQUIREMENTS:
   - Root privileges
 
 EXAMPLE:
-  sudo cytadela++ install-wizard
+  sudo Citadel install-wizard
   # Select modules with SPACE, confirm with ENTER
   # Follow on-screen instructions
 

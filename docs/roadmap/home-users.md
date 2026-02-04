@@ -15,7 +15,7 @@
 - **Dla:** Użytkownik indywidualny
 
 ### 2. **Sieć domowa** (nowe - priorytet!)
-- Cytadela++ jako gateway dla całej sieci
+- Citadel jako gateway dla całej sieci
 - Ochrona wszystkich urządzeń (PC, telefony, IoT)
 - Centralne zarządzanie
 - **Dla:** Rodzina, smart home
@@ -30,9 +30,9 @@
 
 ## 🎯 PROPOZYCJE ROZWOJU (v3.2+)
 
-### **PRIORYTET 1: Cytadela++ jako Gateway Sieciowy** 🏆
+### **PRIORYTET 1: Citadel jako Gateway Sieciowy** 🏆
 
-**Problem:** Obecnie Cytadela++ chroni tylko jeden komputer. Użytkownicy chcą chronić całą sieć domową.
+**Problem:** Obecnie Citadel chroni tylko jeden komputer. Użytkownicy chcą chronić całą sieć domową.
 
 **Rozwiązanie:** Tryb "Network Gateway" na dedykowanym komputerze.
 
@@ -50,7 +50,7 @@ sudo cytadela++ gateway-setup
 
 #### Co robi:
 - **DHCP server** - automatyczne przydzielanie IP urządzeniom
-- **DNS dla całej sieci** - wszystkie urządzenia używają Cytadela++
+- **DNS dla całej sieci** - wszystkie urządzenia używają Citadel
 - **Firewall** - ochrona całej sieci
 - **Adblock** - blokowanie reklam dla wszystkich urządzeń
 - **Statystyki** - które urządzenie co robi
@@ -97,7 +97,7 @@ sudo cytadela++ tui
 
 **Interfejs w terminalu (ncurses):**
 ```
-┌─────────────────── Cytadela++ v3.2 ───────────────────┐
+┌─────────────────── Citadel v3.2 ───────────────────┐
 │                                                        │
 │  Status:  ✓ Działa                                    │
 │  DNS:     ✓ DNSCrypt + CoreDNS                        │
@@ -174,7 +174,7 @@ sudo cytadela++ parental-report 192.168.1.50
 ```bash
 sudo cytadela++ dashboard
 
-┌─────────────────── Cytadela++ Dashboard ──────────────────┐
+┌─────────────────── Citadel Dashboard ──────────────────┐
 │                                                            │
 │  Ostatnie 24h:                                             │
 │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
@@ -222,7 +222,7 @@ sudo cytadela++ auto-update-full enable
 # - Blocklist (już jest w v3.1)
 # - DNSCrypt resolver list
 # - CoreDNS
-# - Skrypty Cytadela++
+# - Skrypty Citadel
 # - Reguły firewall
 ```
 
@@ -258,7 +258,7 @@ Internet (WAN)
       │
       ▼
 ┌─────────────────────────────────────┐
-│  Cytadela++ Gateway (stary PC)      │
+│  Citadel Gateway (stary PC)      │
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │ WAN Interface (eth0)        │   │
@@ -319,7 +319,7 @@ Potrzebne:
 # Arch Linux (zalecane - lekki)
 # Lub: Debian, Ubuntu Server
 
-# Zainstaluj Cytadela++
+# Zainstaluj Citadel
 git clone https://github.com/QguAr71/Cytadela.git
 cd Cytadela
 sudo ./install-refactored.sh
@@ -340,12 +340,12 @@ sudo cytadela++ gateway-wizard
 
 #### 4. Podłączenie urządzeń:
 ```
-Router ISP → [WAN eth0] Cytadela++ [LAN eth1] → Switch → Urządzenia
+Router ISP → [WAN eth0] Citadel [LAN eth1] → Switch → Urządzenia
 ```
 
 #### 5. Test:
 ```bash
-# Na Cytadela++
+# Na Citadel
 sudo cytadela++ gateway-status
 
 # Na urządzeniu w sieci
@@ -389,7 +389,7 @@ nslookup google.com  # Test DNS (powinno pokazać 192.168.1.1)
 
 **Porównanie z Pi-hole na Raspberry Pi:**
 - Raspberry Pi 4 (4GB): ~400 zł + zasilacz + karta SD
-- Cytadela++ na starym PC: ~150 zł (wszystko w zestawie)
+- Citadel na starym PC: ~150 zł (wszystko w zestawie)
 - **Zaleta PC:** Więcej mocy, łatwiejszy troubleshooting, 2x Ethernet wbudowane
 
 ---

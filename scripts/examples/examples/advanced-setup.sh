@@ -43,10 +43,10 @@ check_root() {
     fi
 }
 
-# Check if Cytadela++ is installed
+# Check if Citadel is installed
 check_cytadela() {
     if ! command -v cytadela.sh >/dev/null 2>&1; then
-        log_error "Cytadela++ not found. Please install it first."
+        log_error "Citadel not found. Please install it first."
         log_info "Download from: https://github.com/QguAr71/Cytadela"
         exit 1
     fi
@@ -54,7 +54,7 @@ check_cytadela() {
 
 # Full installation with all features
 full_install() {
-    log_step "Installing all Cytadela++ components..."
+    log_step "Installing all Citadel components..."
     
     # Install all components
     if cytadela.sh install-all; then
@@ -132,7 +132,7 @@ configure_firewall() {
     fi
     
     # Switch system DNS
-    log_info "Switching system to Cytadela++ DNS..."
+    log_info "Switching system to Citadel DNS..."
     if cytadela.sh configure-system; then
         log_success "System DNS switched"
     else
@@ -225,7 +225,7 @@ show_final_status() {
     cytadela.sh status
     
     echo ""
-    log_success "Advanced Cytadela++ setup completed!"
+    log_success "Advanced Citadel setup completed!"
     echo ""
     log_info "System features enabled:"
     echo "  󰄬 Aggressive blocklist filtering"

@@ -13,6 +13,54 @@ CYTADELA_MANIFEST="${CYTADELA_STATE_DIR}/integrity/manifest.sha256"
 CYTADELA_LKG_DIR="${CYTADELA_STATE_DIR}/integrity/lkg"
 CYTADELA_OPT_BIN="/opt/cytadela/bin"
 
+# Load reputation system
+if [[ -f "lib/reputation.sh" ]]; then
+    source "lib/reputation.sh"
+else
+    log_warning "Reputation system library not found"
+fi
+
+# Initialize reputation system if enabled
+if [[ "${CYTADELA_SECURITY_REPUTATION:-true}" == "true" ]]; then
+    reputation_init
+fi
+
+# Load ASN blocking system
+if [[ -f "lib/asn-blocking.sh" ]]; then
+    source "lib/asn-blocking.sh"
+else
+    log_warning "ASN blocking system library not found"
+fi
+
+# Initialize ASN blocking if enabled
+if [[ "${CYTADELA_SECURITY_ASN_BLOCKING:-true}" == "true" ]]; then
+    asn_init
+fi
+
+# Load event logging system
+if [[ -f "lib/event-logger.sh" ]]; then
+    source "lib/event-logger.sh"
+else
+    log_warning "Event logging system library not found"
+fi
+
+# Initialize event logging if enabled
+if [[ "${CYTADELA_SECURITY_EVENT_LOGGING:-true}" == "true" ]]; then
+    event_log_init
+fi
+
+# Load honeypot system
+if [[ -f "lib/honeypot.sh" ]]; then
+    source "lib/honeypot.sh"
+else
+    log_warning "Honeypot system library not found"
+fi
+
+# Initialize honeypot system if enabled
+if [[ "${CYTADELA_SECURITY_HONEYPOT:-false}" == "true" ]]; then
+    honeypot_init
+fi
+
 # Location-based security settings
 LOCATION_TRUSTED_FILE="${CYTADELA_STATE_DIR}/location/trusted-ssids.txt"
 

@@ -64,7 +64,7 @@
 
 ```bash
 #!/bin/bash
-# Cytadela++ v3.1 - Polish Wrapper
+# Citadel v3.1 - Polish Wrapper
 set -euo pipefail
 
 # === PATHS ===

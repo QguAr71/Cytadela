@@ -1,6 +1,6 @@
-# Cytadela++ Testing Suite
+# Citadel Testing Suite
 
-Comprehensive testing framework for Cytadela++ v3.1 with three levels of validation.
+Comprehensive testing framework for Citadel v3.1 with three levels of validation.
 
 ## Test Levels
 
@@ -168,7 +168,7 @@ sudo ./tests/integration-test.sh
 - **FAIL** - Component broken, needs attention
 - **SKIP** - Component not installed (normal for partial setup)
 
-**Note:** Skipped tests are normal if Cytadela++ is not fully installed. Integration tests are designed to work on both development environments and production systems.
+**Note:** Skipped tests are normal if Citadel is not fully installed. Integration tests are designed to work on both development environments and production systems.
 
 ---
 

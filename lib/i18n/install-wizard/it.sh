@@ -2,7 +2,7 @@
 # Install Wizard Translations (EN)
 
 export T_WIZARD_TITLE="INTERACTIVE INSTALLER WIZARD"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Installation Wizard"
+export T_DIALOG_TITLE="Citadel v3.1 - Installation Wizard"
 export T_SELECT_MODULES="Select modules to install:"
 export T_DIALOG_HELP="(SPACE to toggle, TAB to navigate, ENTER to confirm)"
 export T_REQUIRED_NOTE="Required modules are pre-selected and cannot be disabled."

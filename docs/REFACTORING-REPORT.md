@@ -1,4 +1,4 @@
-# Raport zmian - Refaktoryzacja UI Cytadela++
+# Raport zmian - Refaktoryzacja UI Citadel
 ## Data: 2026-02-03
 
 ---

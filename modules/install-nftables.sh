@@ -213,7 +213,7 @@ EOF
         fi
     else
         log_warning "Test DNS nieudany - zostawiam firewall SAFE"
-        log_warning "Rollback: sudo ./cytadela++.sh restore-system"
+        log_warning "Rollback: sudo ./Citadel.sh restore-system"
     fi
 
     log_success "Konfiguracja systemowa zakończona"

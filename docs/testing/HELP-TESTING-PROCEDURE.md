@@ -1,10 +1,10 @@
-# Cytadela++ Interactive Help - Testing Procedure
+# Citadel Interactive Help - Testing Procedure
 
 ## Overview
 Test the new interactive help system with 5 sections and i18n support.
 
 ## Pre-requisites
-- Cytadela++ installed
+- Citadel installed
 - All i18n files present in `lib/i18n/help/`
 
 ## Test Cases

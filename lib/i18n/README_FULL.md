@@ -1,8 +1,8 @@
-# 🌍 Cytadela++ Full Internationalization System
+# 🌍 Citadel Full Internationalization System
 
 ## Overview
 
-Cytadela++ now has a complete i18n system that supports translating the entire application, not just the installer.
+Citadel now has a complete i18n system that supports translating the entire application, not just the installer.
 
 ## Structure
 

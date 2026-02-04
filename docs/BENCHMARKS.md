@@ -1,6 +1,6 @@
-# 📊 Cytadela++ Performance Benchmarks
+# 📊 Citadel Performance Benchmarks
 
-This document contains real-world performance benchmarks for Cytadela++ DNS stack.
+This document contains real-world performance benchmarks for Citadel DNS stack.
 
 ---
 
@@ -13,7 +13,7 @@ This document contains real-world performance benchmarks for Cytadela++ DNS stac
 
 **Software:**
 - OS: CachyOS (Arch-based)
-- Cytadela++ version: v3.1.0
+- Citadel version: v3.1.0
 - CoreDNS: Latest
 - DNSCrypt-Proxy: Latest
 

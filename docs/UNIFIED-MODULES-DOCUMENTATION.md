@@ -1,4 +1,4 @@
-# 📚 Cytadela++ v3.2 - Unified Modules Documentation
+# 📚 Citadel v3.2 - Unified Modules Documentation
 
 **Version:** 3.2.0
 **Created:** 2026-02-04
@@ -23,7 +23,7 @@
 
 ### **What are Unified Modules?**
 
-Cytadela++ v3.2 introduces **unified modules** - a new architecture that consolidates 29 scattered modules into 7 focused, maintainable modules. Each unified module handles a specific domain of functionality.
+Citadel v3.2 introduces **unified modules** - a new architecture that consolidates 29 scattered modules into 7 focused, maintainable modules. Each unified module handles a specific domain of functionality.
 
 ### **Benefits**
 - **Reduced Complexity:** 29 → 7 modules (-75%)

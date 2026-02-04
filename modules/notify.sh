@@ -54,7 +54,7 @@ notify_enable() {
     echo "$current_user" >"$NOTIFY_ENABLED_FILE"
 
     # Test notification
-    notify_send "Cytadela++" "Desktop notifications enabled" "normal" "security-high"
+    notify_send "Citadel" "Desktop notifications enabled" "normal" "security-high"
 
     log_success "Notifications enabled for $current_user"
     log_info "Notifications will be sent for:"
@@ -100,11 +100,11 @@ notify_test() {
 
     log_info "Sending test notifications..."
 
-    notify_send "Cytadela++ Test" "Normal priority notification" "normal" "dialog-information"
+    notify_send "Citadel Test" "Normal priority notification" "normal" "dialog-information"
     sleep 1
-    notify_send "Cytadela++ Warning" "Low priority notification" "low" "dialog-warning"
+    notify_send "Citadel Warning" "Low priority notification" "low" "dialog-warning"
     sleep 1
-    notify_send "Cytadela++ Critical" "Critical priority notification" "critical" "dialog-error"
+    notify_send "Citadel Critical" "Critical priority notification" "critical" "dialog-error"
 
     log_success "Test notifications sent"
 }
@@ -113,7 +113,7 @@ notify_test() {
 
 notify_health_failure() {
     local service="$1"
-    notify_send "Cytadela++ Health Check" \
+    notify_send "Citadel Health Check" \
         "Service $service is not responding" \
         "critical" \
         "dialog-error"
@@ -121,7 +121,7 @@ notify_health_failure() {
 
 notify_service_restart() {
     local service="$1"
-    notify_send "Cytadela++ Service" \
+    notify_send "Citadel Service" \
         "Service $service has been restarted" \
         "normal" \
         "view-refresh"
@@ -129,7 +129,7 @@ notify_service_restart() {
 
 notify_blocklist_updated() {
     local count="$1"
-    notify_send "Cytadela++ Blocklist" \
+    notify_send "Citadel Blocklist" \
         "Blocklist updated: $count domains" \
         "low" \
         "security-medium"
@@ -138,12 +138,12 @@ notify_blocklist_updated() {
 notify_panic_mode() {
     local action="$1"
     if [[ "$action" == "activated" ]]; then
-        notify_send "Cytadela++ PANIC MODE" \
+        notify_send "Citadel PANIC MODE" \
             "Emergency bypass activated" \
             "critical" \
             "security-low"
     else
-        notify_send "Cytadela++ PANIC MODE" \
+        notify_send "Citadel PANIC MODE" \
             "Normal mode restored" \
             "normal" \
             "security-high"
@@ -151,7 +151,7 @@ notify_panic_mode() {
 }
 
 notify_dns_leak_detected() {
-    notify_send "Cytadela++ DNS LEAK" \
+    notify_send "Citadel DNS LEAK" \
         "DNS leak detected - check firewall rules" \
         "critical" \
         "dialog-error"

@@ -1,0 +1,96 @@
+# Przykład 2: Konfiguracja korporacyjna Citadel
+
+# Ten plik pokazuje zaawansowaną konfigurację Citadel dla środowiska korporacyjnego
+# Zawiera wszystkie funkcje enterprise włączone i skonfigurowane
+
+# Citadel v3.3 Configuration - Enterprise Setup
+version: "3.3.0"
+profile: "enterprise"
+
+# Advanced Logging Configuration
+logging:
+  level: "debug"
+  file: "/var/log/citadel/citadel.log"
+  max_size: "100MB"
+  max_files: 5
+
+# Full Security Features
+security:
+  reputation:
+    enabled: true
+    threshold: 25
+    auto_block: true
+    block_duration: "12h"
+
+  asn_blocking:
+    enabled: true
+    whitelist: ["AS12345", "AS67890", "AS99999"]
+    update_interval: "1h"
+
+  event_logging:
+    enabled: true
+    format: "json"
+    retention: "90d"
+
+  honeypot:
+    enabled: true
+    ports: [22, 80, 443, 3389, 5900, 8080]
+    log_connections: true
+
+# Enterprise Features - Full Configuration
+enterprise:
+  prometheus:
+    enabled: true
+    port: 9090
+    metrics_interval: "15s"
+    retention: "30d"
+
+  grafana:
+    enabled: true
+    port: 3000
+    admin_password: "CHANGE_THIS_SECURE_PASSWORD"
+    dashboards:
+      enabled: true
+      path: "/var/lib/grafana/dashboards"
+
+  docker:
+    enabled: true
+    compose_file: "/etc/citadel/docker-compose.yml"
+    restart_policy: "unless-stopped"
+
+# Network Configuration - Enterprise
+network:
+  interfaces: ["eth0", "eth1", "wlan0"]
+  firewall_backend: "nftables"
+  geo_blocking: true
+  threat_feeds:
+    enabled: true
+    update_interval: "15m"
+    sources:
+      - "firehol_level1"
+      - "firehol_level2"
+      - "greensnow"
+      - "talos_intel"
+
+# Advanced Settings
+advanced:
+  performance:
+    cache_size: "512MB"
+    worker_threads: 4
+    max_connections: 1000
+
+  monitoring:
+    health_check_interval: "30s"
+    metrics_export_interval: "60s"
+    alert_thresholds:
+      cpu_usage: 80
+      memory_usage: 85
+      disk_usage: 90
+
+  security:
+    session_timeout: "30m"
+    max_login_attempts: 3
+    audit_log_retention: "1y"
+    encryption:
+      enabled: true
+      algorithm: "AES256"

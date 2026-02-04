@@ -2,7 +2,7 @@
 # Installationsassistent - Übersetzungen (DE)
 
 export T_WIZARD_TITLE="INTERAKTIVER INSTALLATIONSASSISTENT"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Installationsassistent"
+export T_DIALOG_TITLE="Citadel v3.1 - Installationsassistent"
 export T_SELECT_MODULES="Wählen Sie Module zur Installation:"
 export T_DIALOG_HELP="(LEERTASTE - auswählen/abwählen, TAB - navigieren, EINGABE - bestätigen)"
 export T_REQUIRED_NOTE="Erforderliche Module sind vorausgewählt und können nicht deaktiviert werden."

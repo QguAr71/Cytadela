@@ -42,59 +42,56 @@ check_bash_version() {
 # COMMAND TRANSLATION & BACKWARD COMPATIBILITY
 # ==============================================================================
 
-# Command mapping for unified interface
-# Uses associative arrays on Bash 5.0+, fallback to case on 4.x
-if [[ $BASH_MAJOR_VERSION -ge 5 ]]; then
-    # Bash 5.0+ - associative arrays for fast lookup
-    declare -A COMMAND_MAP=(
-        # Legacy → Unified mappings
-        ["tools-update"]="update blocklists"
-        ["adblock-rebuild"]="adblock rebuild"
-        ["tools-install"]="install all"
-        ["check-dependencies"]="install check-deps"
-        ["install-dnscrypt"]="install dnscrypt"
-        ["install-coredns"]="install coredns"
-        ["emergency"]="recovery panic-bypass"
-        ["lkg"]="backup lkg"
-        ["lists-update"]="backup update"
-        ["firewall-safe"]="install firewall-safe"
-        ["firewall-strict"]="install firewall-strict"
-        ["configure-system"]="install configure-system"
-        ["restore-system"]="recovery restore-system"
-        ["restore-system-default"]="recovery restore-system-default"
-    )
-else
-    # Bash 4.x - case statement fallback
-    COMMAND_MAP="case_fallback"
-fi
+# Command translation map (avoid associative arrays for compatibility)
+TRANSLATION_KEYS=(
+    "tools-update"
+    "adblock-rebuild"
+    "tools-install"
+    "check-dependencies"
+    "install-dnscrypt"
+    "install-coredns"
+    "emergency"
+    "lkg"
+    "lists-update"
+    "firewall-safe"
+    "firewall-strict"
+    "configure-system"
+    "restore-system"
+    "restore-system-default"
+)
+
+TRANSLATION_VALUES=(
+    "update blocklists"
+    "adblock rebuild"
+    "install all"
+    "install check-deps"
+    "install dnscrypt"
+    "install coredns"
+    "recovery panic-bypass"
+    "backup lkg"
+    "backup update"
+    "install firewall-safe"
+    "install firewall-strict"
+    "install configure-system"
+    "recovery restore-system"
+    "recovery restore-system-default"
+)
 
 # Translate legacy commands to unified interface
 translate_command() {
     local cmd="$1"
 
-    if [[ $BASH_MAJOR_VERSION -ge 5 ]]; then
-        # Fast associative array lookup
-        echo "${COMMAND_MAP[$cmd]:-$cmd}"
-    else
-        # Case fallback for Bash 4.x
-        case "$cmd" in
-            "tools-update")       echo "update blocklists" ;;
-            "adblock-rebuild")    echo "adblock rebuild" ;;
-            "tools-install")      echo "install all" ;;
-            "check-dependencies") echo "install check-deps" ;;
-            "install-dnscrypt")   echo "install dnscrypt" ;;
-            "install-coredns")    echo "install coredns" ;;
-            "emergency")          echo "recovery panic-bypass" ;;
-            "lkg")                echo "backup lkg" ;;
-            "lists-update")       echo "backup update" ;;
-            "firewall-safe")      echo "install firewall-safe" ;;
-            "firewall-strict")    echo "install firewall-strict" ;;
-            "configure-system")   echo "install configure-system" ;;
-            "restore-system")     echo "recovery restore-system" ;;
-            "restore-system-default") echo "recovery restore-system-default" ;;
-            *)                    echo "$cmd" ;;
-        esac
-    fi
+    # Find command in translation keys
+    local i
+    for ((i=0; i<${#TRANSLATION_KEYS[@]}; i++)); do
+        if [[ "${TRANSLATION_KEYS[$i]}" == "$cmd" ]]; then
+            echo "${TRANSLATION_VALUES[$i]}"
+            return 0
+        fi
+    done
+
+    # No translation found - return original command
+    echo "$cmd"
 }
 
 # ==============================================================================

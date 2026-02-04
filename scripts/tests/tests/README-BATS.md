@@ -1,6 +1,6 @@
-# BATS Tests for Cytadela++
+# BATS Tests for Citadel
 
-This directory contains BATS (Bash Automated Testing System) tests for Cytadela++.
+This directory contains BATS (Bash Automated Testing System) tests for Citadel.
 
 ## Installation
 

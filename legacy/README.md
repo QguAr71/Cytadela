@@ -1,6 +1,6 @@
 # 📦 Citadel Legacy (v3.0)
 
-This directory contains the **legacy monolithic version** of Citadel (formerly Cytadela++).
+This directory contains the **legacy monolithic version** of Citadel (formerly Citadel).
 
 ## ⚠️ Status: Stable but Deprecated
 

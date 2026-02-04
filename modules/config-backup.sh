@@ -76,7 +76,7 @@ config_backup() {
 
     # Create metadata
     cat >"${tmp_dir}/backup-metadata.txt" <<EOF
-Cytadela++ Backup
+Citadel Backup
 Created: $(date -Iseconds)
 Hostname: $(hostname)
 Version: 3.1.1

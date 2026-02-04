@@ -1,4 +1,4 @@
-# Cytadela++ v3.2+ Revised Roadmap
+# Citadel v3.2+ Revised Roadmap
 
 **Date:** 2026-02-01  
 **Status:** DRAFT - Internal Review  

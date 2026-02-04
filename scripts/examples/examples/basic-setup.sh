@@ -38,10 +38,10 @@ check_root() {
     fi
 }
 
-# Check if Cytadela++ is installed
+# Check if Citadel is installed
 check_cytadela() {
     if ! command -v cytadela.sh >/dev/null 2>&1; then
-        log_error "Cytadela++ not found. Please install it first."
+        log_error "Citadel not found. Please install it first."
         log_info "Download from: https://github.com/QguAr71/Cytadela"
         exit 1
     fi
@@ -49,7 +49,7 @@ check_cytadela() {
 
 # Basic installation
 basic_install() {
-    log_info "Starting basic Cytadela++ installation..."
+    log_info "Starting basic Citadel installation..."
     
     # Install all components
     log_info "Installing DNSCrypt, CoreDNS, and NFTables..."
@@ -82,14 +82,14 @@ configure_system() {
     fi
 }
 
-# Switch to Cytadela++ DNS
+# Switch to Citadel DNS
 switch_dns() {
-    log_info "Switching system to use Cytadela++ DNS..."
+    log_info "Switching system to use Citadel DNS..."
     log_warning "This will disable systemd-resolved"
     
     # Switch system DNS
     if cytadela.sh configure-system; then
-        log_success "System switched to Cytadela++ DNS"
+        log_success "System switched to Citadel DNS"
     else
         log_error "DNS switch failed"
         return 1
@@ -120,7 +120,7 @@ enable_strict() {
 
 # Show status
 show_status() {
-    log_info "Cytadela++ status:"
+    log_info "Citadel status:"
     cytadela.sh status
 }
 
@@ -170,7 +170,7 @@ main() {
     show_status
     
     echo ""
-    log_success "Basic Cytadela++ setup completed!"
+    log_success "Basic Citadel setup completed!"
     echo ""
     log_info "Useful commands:"
     echo "  cytadela.sh status          - Check status"

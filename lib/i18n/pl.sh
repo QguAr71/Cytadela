@@ -82,7 +82,7 @@ ${CYAN}󰌙 Dokumentacja:${NC}
 
 # Tytuły kreatora
 export T_WIZARD_TITLE="INTERAKTYWNY KREATOR INSTALACJI"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Kreator Instalacji"
+export T_DIALOG_TITLE="Citadel v3.1 - Kreator Instalacji"
 
 # Komunikaty dialogowe
 export T_SELECT_MODULES="Wybierz moduły do instalacji:"

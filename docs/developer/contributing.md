@@ -1,10 +1,10 @@
-# Contributing to Cytadela++
+# Contributing to Citadel
 
-Thank you for your interest in contributing to Cytadela++! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Citadel! This document provides guidelines for contributing to the project.
 
 ## 🎯 Project Philosophy
 
-Cytadela++ is a **hobby project** focused on:
+Citadel is a **hobby project** focused on:
 - **Privacy-first DNS stack** (DNSCrypt + CoreDNS + NFTables)
 - **Local-only control** (no cloud, no telemetry)
 - **Security hardening** (leak prevention, integrity checks)
@@ -197,7 +197,7 @@ All security-related PRs will be:
 
 ## 🌍 Internationalization (i18n)
 
-Cytadela++ supports **7 languages** with full translations:
+Citadel supports **7 languages** with full translations:
 - 🇵🇱 Polish (pl)
 - 🇬🇧 English (en)
 - 🇩🇪 German (de)
@@ -310,7 +310,7 @@ See [LICENSE](LICENSE) for details.
 
 ## 🙏 Thank You!
 
-Every contribution helps make Cytadela++ better for the privacy-conscious community!
+Every contribution helps make Citadel better for the privacy-conscious community!
 
 **Special thanks to:**
 - All future contributors
@@ -331,5 +331,5 @@ Every contribution helps make Cytadela++ better for the privacy-conscious commun
 ---
 
 *Last updated: 2026-01-30*  
-*Project: Cytadela++ v3.1*  
+*Project: Citadel v3.1*  
 *Maintainer: QguAr71*

@@ -2,7 +2,7 @@
 # Kreator Instalacji - Tłumaczenia (PL)
 
 export T_WIZARD_TITLE="INTERAKTYWNY KREATOR INSTALACJI"
-export T_DIALOG_TITLE="Cytadela++ v3.1 - Kreator Instalacji"
+export T_DIALOG_TITLE="Citadel v3.1 - Kreator Instalacji"
 export T_SELECT_MODULES="Wybierz moduły do instalacji:"
 export T_DIALOG_HELP="(SPACJA - zaznacz/odznacz, TAB - nawigacja, ENTER - potwierdź)"
 export T_REQUIRED_NOTE="Moduły wymagane są wstępnie zaznaczone i nie można ich wyłączyć."
