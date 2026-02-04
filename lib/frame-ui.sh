@@ -11,7 +11,8 @@ print_frame_line() {
     local total_width=60
     
     # Strip ANSI colors for length calculation  
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_text
+    visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_text}
     local padding=$((total_width - visible_len))
     
@@ -41,7 +42,8 @@ draw_emergency_frame() {
     shift
     local text="${BOLD}${title}${NC}"
     local total_width=60
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_text
+    visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_text}
     local padding=$((total_width - visible_len))
     
