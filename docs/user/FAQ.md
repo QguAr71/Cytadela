@@ -414,10 +414,6 @@ sudo ./citadel.sh install-editor
 
 This adds Citadel commands to your editor (vim/nano/etc).
 
-### Can I run Citadel in Docker?
-
-**Not yet** (v3.5+ - planned)
-
 Currently, Citadel requires direct system access for:
 - systemd services
 - Network configuration

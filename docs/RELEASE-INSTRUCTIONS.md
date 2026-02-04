@@ -106,7 +106,6 @@ Citadel uses [Semantic Versioning](https://semver.org/):
 - [ ] Announce on social media (optional)
 - [ ] Monitor issues for new bugs
 - [ ] Update package repositories (AUR, etc.)
-- [ ] Create Docker image (if applicable)
 
 ## 🆘 Troubleshooting
 

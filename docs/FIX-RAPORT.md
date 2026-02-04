@@ -163,7 +163,7 @@ $ ./tests/smoke-test.sh
 - [ ] Metrics/Prometheus (3 items)
 
 ### Future
-- [ ] Packaging (AUR, Debian, RPM, Docker)
+- [ ] Packaging (AUR, Debian, RPM)
 
 ---
 
