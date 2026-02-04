@@ -123,13 +123,13 @@ jobs:
               --exclude='legacy' \
               --exclude='*.log' \
               --exclude='tests/reports' \
-              -czf "dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz" \
+              -czf "dist/citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz" \
               .
 
       - name: Create checksum
         run: |
           cd dist
-          sha256sum "cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz" > "cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256"
+          sha256sum "citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz" > "citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -137,8 +137,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz
-          asset_name: cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_path: ./dist/citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_name: citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Checksum
@@ -147,6 +147,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./dist/cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
-          asset_name: cytadela-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
+          asset_path: ./dist/citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
+          asset_name: citadel-${{ steps.get_version.outputs.VERSION }}.tar.gz.sha256
           asset_content_type: text/plain
