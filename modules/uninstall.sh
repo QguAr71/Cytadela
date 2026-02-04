@@ -197,9 +197,9 @@ citadel_uninstall() {
     log_info "${T_REMOVING_SHORTCUTS:-Removing command shortcuts...}"
     rm -f /usr/local/bin/citadel 2>/dev/null || true
 
-    draw_emergency_frame "󰜝 NEXT STEPS:" \
-        "Reinstall:  sudo ./citadel.sh install-wizard" \
-        "If issues:  sudo ./citadel.sh emergency-network-restore"
+    draw_emergency_frame "󰜝 ${T_NEXT_STEPS:-NEXT STEPS:}" \
+        "${T_REINSTALL_CMD:-Reinstall:  sudo ./citadel.sh install-wizard}" \
+        "${T_IF_ISSUES_CMD:-If issues:  sudo ./citadel.sh emergency-network-restore}"
 }
 
 citadel_uninstall_keep_config() {
