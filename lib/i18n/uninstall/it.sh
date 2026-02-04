@@ -1,7 +1,7 @@
 #!/bin/bash
 # Uninstall Translations (EN)
 
-export T_UNINSTALL_TITLE="CYTADELA++ UNINSTALLATION"
+export T_UNINSTALL_TITLE="DISINSTALLAZIONE DI CITADEL"
 export T_UNINSTALL_WARNING="This will REMOVE all Citadel components!"
 export T_UNINSTALL_INFO="Services will be stopped and disabled"
 export T_UNINSTALL_CONFIG="Configuration files will be deleted"
