@@ -55,13 +55,13 @@ select_language() {
         
         choice=$(whiptail --title "Language / Język / Sprache / Idioma / Lingua / Langue / Язык" \
             --menu "Select language / Wybierz język / Sprache wählen / Seleccionar idioma / Seleziona lingua / Sélectionner la langue / Выберите язык:" 20 78 7 \
-            "en" "🇬🇧 English" \
-            "pl" "🇵🇱 Polski" \
-            "de" "🇩🇪 Deutsch" \
-            "es" "🇪🇸 Español" \
-            "it" "🇮🇹 Italiano" \
-            "fr" "🇫🇷 Français" \
-            "ru" "🇷🇺 Русский" \
+            "en" "English" \
+            "pl" "Polski" \
+            "de" "Deutsch" \
+            "es" "Español" \
+            "it" "Italiano" \
+            "fr" "Français" \
+            "ru" "Русский" \
             3>&1 1>&2 2>&3) || exit_code=$?
 
         if [[ $exit_code -eq 0 && -n "$choice" ]]; then
