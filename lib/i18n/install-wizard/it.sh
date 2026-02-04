@@ -46,6 +46,10 @@ export T_STEP_TEST="Test DNS: dig +short google.com @127.0.0.1"
 export T_STEP_CONFIG="Configure system: sudo cytadela++ configure-system"
 export T_STEP_VERIFY="Verify: sudo cytadela++ verify"
 
-export T_CANCELLED="Installation cancelled by user"
-export T_CANCELLED_SHORT="Installation cancelled"
-export T_UNKNOWN_MODULE="Unknown module"
+export T_CANCELLED="Installazione annullata dall'utente"
+export T_CANCELLED_SHORT="Installazione annullata"
+export T_UNKNOWN_MODULE="Modulo sconosciuto"
+
+export T_EMERGENCY_RECOVERY="RIPRISTINO DI EMERGENZA:"
+export T_EMERGENCY_IF_FAILS="Se l'installazione fallisce:"
+export T_EMERGENCY_RESTORE_CMD="sudo ./citadel.sh emergency-network-restore"
