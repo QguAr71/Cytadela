@@ -22,7 +22,7 @@ export T_DIAG_FIREWALL="Firewall Rules:"
 export T_DIAG_BLOCKLIST="Blocklist Stats:"
 
 # verify_stack function
-export T_VERIFY_TITLE="CITADEL++ VERIFY"
+export T_VERIFY_TITLE="CITADEL VERIFY"
 export T_VERIFY_PORTS="Ports:"
 export T_VERIFY_SERVICES="Services:"
 export T_VERIFY_RUNNING="running"
