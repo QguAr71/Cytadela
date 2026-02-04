@@ -1,0 +1,10 @@
+#!/bin/bash
+export T_SUPPLY_CHAIN_STATUS="SUPPLY-CHAIN STATUS"
+export T_SUPPLY_CHAIN_INIT="SUPPLY-CHAIN INIT"
+export T_SUPPLY_CHAIN_VERIFY="SUPPLY-CHAIN VERIFY"
+export T_CHECKSUMS_FILE="Checksums file"
+export T_INITIALIZED="Initialized checksums"
+export T_VERIFYING="Verifying"
+export T_OK="OK"
+export T_FAILED="FAILED"
+export T_NOT_FOUND="not found"

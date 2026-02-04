@@ -1,0 +1,10 @@
+#!/bin/bash
+export T_SUPPLY_CHAIN_STATUS="ESTADO SUPPLY-CHAIN"
+export T_SUPPLY_CHAIN_INIT="INICIALIZACIÓN SUPPLY-CHAIN"
+export T_SUPPLY_CHAIN_VERIFY="VERIFICACIÓN SUPPLY-CHAIN"
+export T_CHECKSUMS_FILE="Archivo de sumas de verificación"
+export T_INITIALIZED="Sumas de verificación inicializadas"
+export T_VERIFYING="Verificando"
+export T_OK="OK"
+export T_FAILED="FALLO"
+export T_NOT_FOUND="no encontrado"

@@ -66,9 +66,10 @@ supply_chain_download() {
 }
 
 supply_chain_status() {
-    draw_section_header "󰯄 SUPPLY-CHAIN STATUS"
+    load_i18n_module "supply-chain"
+    draw_section_header "󰯄 ${T_SUPPLY_CHAIN_STATUS:-SUPPLY-CHAIN STATUS}"
 
-    echo "Checksums file: $SUPPLY_CHAIN_CHECKSUMS"
+    echo "${T_CHECKSUMS_FILE:-Checksums file}: $SUPPLY_CHAIN_CHECKSUMS"
 
     if [[ -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
         echo "Status: EXISTS"
@@ -78,12 +79,13 @@ supply_chain_status() {
         cat "$SUPPLY_CHAIN_CHECKSUMS" | head -20
     else
         echo "Status: NOT FOUND"
-        log_info "Run 'supply-chain-init' to create checksums file"
+        log_info "${T_RUN_SUPPLY_CHAIN_INIT:-Run 'supply-chain-init' to create checksums file}"
     fi
 }
 
 supply_chain_init() {
-    draw_section_header "󰯄 SUPPLY-CHAIN INIT"
+    load_i18n_module "supply-chain"
+    draw_section_header "󰯄 ${T_SUPPLY_CHAIN_INIT:-SUPPLY-CHAIN INIT}"
 
     mkdir -p "$(dirname "$SUPPLY_CHAIN_CHECKSUMS")"
 
@@ -95,30 +97,31 @@ supply_chain_init() {
     echo "# Format: sha256  url  description" >>"$tmp"
     echo "" >>"$tmp"
 
-    log_info "Fetching current blocklist hash..."
+    log_info "${T_FETCHING_BLOCKLIST_HASH:-Fetching current blocklist hash...}"
     local blocklist_url="https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/pro.txt"
     local blocklist_hash
     blocklist_hash=$(curl -sSL --connect-timeout 10 "$blocklist_url" 2>/dev/null | sha256sum | awk '{print $1}')
 
     if [[ -n "$blocklist_hash" && "$blocklist_hash" != "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" ]]; then
         echo "$blocklist_hash  $blocklist_url  # Hagezi Pro blocklist" >>"$tmp"
-        log_success "Added blocklist hash"
+        log_success "${T_ADDED_BLOCKLIST_HASH:-Added blocklist hash}"
     else
-        log_warning "Could not fetch blocklist hash"
+        log_warning "${T_COULD_NOT_FETCH_BLOCKLIST_HASH:-Could not fetch blocklist hash}"
     fi
 
     mv "$tmp" "$SUPPLY_CHAIN_CHECKSUMS"
     chmod 644 "$SUPPLY_CHAIN_CHECKSUMS"
 
-    log_success "Supply-chain checksums initialized: $SUPPLY_CHAIN_CHECKSUMS"
-    log_info "Note: Blocklist hashes change frequently - use for audit, not strict enforcement"
+    log_success "${T_SUPPLY_CHAIN_CHECKSUMS_INITIALIZED:-Supply-chain checksums initialized: $SUPPLY_CHAIN_CHECKSUMS}"
+    log_info "${T_BLOCKLIST_HASHES_CHANGE_FREQUENTLY:-Note: Blocklist hashes change frequently - use for audit, not strict enforcement}"
 }
 
 supply_chain_verify() {
-    draw_section_header "󰯄 SUPPLY-CHAIN VERIFY"
+    load_i18n_module "supply-chain"
+    draw_section_header "󰯄 ${T_SUPPLY_CHAIN_VERIFY:-SUPPLY-CHAIN VERIFY}"
 
     if [[ ! -f "$SUPPLY_CHAIN_CHECKSUMS" ]]; then
-        log_warning "No checksums file. Run 'supply-chain-init' first."
+        log_warning "${T_NO_CHECKSUMS_FILE:-No checksums file. Run 'supply-chain-init' first.}"
         return 0
     fi
 

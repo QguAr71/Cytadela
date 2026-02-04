@@ -1,0 +1,12 @@
+#!/bin/bash
+export T_NFT_DEBUG_ON="NFT DEBUG - ABILITAZIONE"
+export T_NFT_DEBUG_OFF="NFT DEBUG - DISABILITAZIONE"
+export T_NFT_DEBUG_STATUS="STATO NFT DEBUG"
+export T_NFT_DEBUG_LOGS="LOG NFT DEBUG (ultimi 50)"
+export T_CREATING_DEBUG="Creazione tabella debug con logging a velocità limitata..."
+export T_DEBUG_CHAIN="Catena di debug"
+export T_ENABLED="ABILITATO"
+export T_DISABLED="DISABILITATO"
+export T_LOG_PREFIX="Prefisso log"
+export T_RATE_LIMIT="Limite di velocità"
+export T_SEARCHING_LOGS="Ricerca voci di log di CITADEL..."
