@@ -5,8 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 ipv6_privacy_auto_ensure() {
-    load_i18n_module "ipv6"
-    draw_section_header "󰌾 ${T_IPV6_PRIVACY_AUTO_ENSURE:-IPv6 PRIVACY AUTO-ENSURE}"
+    draw_section_header "󰌾 IPv6 PRIVACY AUTO-ENSURE"
 
     # Ensure network-utils functions are available
     if ! declare -f discover_active_interface >/dev/null 2>&1; then
@@ -16,14 +15,14 @@ ipv6_privacy_auto_ensure() {
     local iface
     iface=$(discover_active_interface)
     if [[ -z "$iface" ]]; then
-        log_warning "${T_NO_ACTIVE_INTERFACE:-No active interface detected. Skipping.}"
+        log_warning "No active interface detected. Skipping."
         return 0
     fi
-    log_info "${T_ACTIVE_INTERFACE:-Active interface}: $iface"
+    log_info "Active interface: $iface"
 
     local ipv6_global
     ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | grep -v temporary | awk '/inet6/ {print $2; exit}' || true)
-    [[ -z "$ipv6_global" ]] && log_info "${T_NO_GLOBAL_IPV6:-No global IPv6 on $iface. Ensuring sysctl is configured anyway.}"
+    [[ -z "$ipv6_global" ]] && log_info "No global IPv6 on $iface. Ensuring sysctl is configured anyway."
 
     local ipv6_temp
     ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ && /preferred_lft/ {print $2; exit}' || true)
@@ -35,12 +34,12 @@ ipv6_privacy_auto_ensure() {
     fi
 
     if [[ $temp_preferred -eq 1 ]]; then
-        log_success "${T_USABLE_TEMPORARY_IPV6_FOUND:-Usable temporary IPv6 address found}: $ipv6_temp"
-        log_success "${T_IPV6_PRIVACY_WORKING:-IPv6 Privacy Extensions are working correctly.}"
+        log_success "Usable temporary IPv6 address found: $ipv6_temp"
+        log_success "IPv6 Privacy Extensions are working correctly."
         return 0
     fi
 
-    log_warning "${T_NO_USABLE_TEMPORARY_IPV6:-No usable temporary IPv6 address. Applying remediation...}"
+    log_warning "No usable temporary IPv6 address. Applying remediation..."
 
     local sysctl_file="/etc/sysctl.d/40-citadel-ipv6-privacy.conf"
     log_info "Setting sysctl for IPv6 privacy extensions..."

@@ -14,12 +14,11 @@ health_check_dns() {
 }
 
 health_status() {
-    load_i18n_module "health"
-    draw_section_header "󰓙 ${T_HEALTH_STATUS:-HEALTH STATUS}"
+    draw_section_header "󰓙 HEALTH STATUS"
 
     local all_healthy=1
 
-    echo "=== ${T_SERVICES:-SERVICES} ==="
+    echo "=== SERVICES ==="
     for svc in "${HEALTH_CHECK_SERVICES[@]}"; do
         if test_service_active "$svc"; then
             printf "${GREEN}%-20s ACTIVE${NC}\n" "$svc"
