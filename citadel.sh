@@ -335,7 +335,7 @@ case "$ACTION" in
     # Verify Config
     verify-config)
         load_module "verify-config"
-        local subcmd="${1:-check}"
+        subcmd="${1:-check}"
         case "$subcmd" in
             check) verify_config_check ;;
             dns) verify_config_dns ;;

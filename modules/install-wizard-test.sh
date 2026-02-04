@@ -9,7 +9,8 @@ CYAN='\033[0;36m'
 
 print_frame_line() {
     local text="$1"
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_text
+    visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_text}
     local padding=$((60 - visible_len))
     printf "║ %b%*s ║\n" "$text" "$padding" ""

@@ -123,7 +123,8 @@ test_module_loading() {
     log_test "Testing core library loading..."
     
     # Create temporary test script
-    local test_script=$(mktemp)
+    local test_script
+    test_script=$(mktemp)
     cat > "$test_script" <<'EOF'
 #!/bin/bash
 set -euo pipefail
@@ -276,7 +277,8 @@ test_module_files() {
     
     for module_file in "$PROJECT_ROOT"/modules/*.sh; do
         ((module_count++))
-        local module_name=$(basename "$module_file" .sh)
+        local module_name
+        module_name=$(basename "$module_file" .sh)
         
         log_test "Validating module: $module_name"
         
@@ -332,7 +334,8 @@ test_adblock_false_positives() {
         log_test "Checking: $site"
         
         # Query the site
-        local result=$(dig @127.0.0.1 "$site" +short +time=2 2>/dev/null | head -1)
+        local result
+        result=$(dig @127.0.0.1 "$site" +short +time=2 2>/dev/null | head -1)
         
         if [[ -z "$result" ]]; then
             log_fail "$site - no response (possible timeout)"

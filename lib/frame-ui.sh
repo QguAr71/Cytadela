@@ -24,7 +24,8 @@ draw_section_header() {
     local total_width=60
     
     # Calculate display width - simple version without external tools
-    local visible_title=$(echo -e "$title" | sed 's/\x1b\[[0-9;]*m//g')
+    local visible_title
+    visible_title=$(echo -e "$title" | sed 's/\x1b\[[0-9;]*m//g')
     local visible_len=${#visible_title}
     local padding=$((total_width - visible_len))
     
@@ -51,7 +52,8 @@ draw_emergency_frame() {
     
     for line in "$@"; do
         local line_text="$line"
-        local line_visible=$(echo -e "$line_text" | sed 's/\x1b\[[0-9;]*m//g')
+        local line_visible
+        line_visible=$(echo -e "$line_text" | sed 's/\x1b\[[0-9;]*m//g')
         local line_len=${#line_visible}
         local line_padding=$((total_width - line_len))
         printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$line_text" "$line_padding" ""
@@ -71,7 +73,8 @@ print_custom_frame() {
     local total_width=60  # Internal frame width
     
     # 1. Remove ANSI color codes for calculation
-    local clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    local clean_text
+    clean_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
     
     # 2. Calculate visual width (emoji = 2 columns)
     local visual_len

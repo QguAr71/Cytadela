@@ -348,7 +348,8 @@ test_file_permissions() {
         log_test "Checking directory: $dir"
         
         if [[ -d "$dir" ]]; then
-            local perms=$(stat -c "%a" "$dir")
+            local perms
+            perms=$(stat -c "%a" "$dir")
             if [[ "$perms" =~ ^[0-7]?[0-7][0-5][0-5]$ ]]; then
                 log_pass "$dir - permissions OK ($perms)"
             else

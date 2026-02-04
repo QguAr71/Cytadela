@@ -206,7 +206,8 @@ citadel_uninstall_keep_config() {
     # Load i18n strings based on language
     local lang="${LANG%%_*}"
     lang="${lang:-en}"
-    local module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
+    local module_dir
+    module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
     if [[ -f "${module_dir}/lib/i18n/${lang}.sh" ]]; then
         # shellcheck source=/dev/null
         source "${module_dir}/lib/i18n/${lang}.sh"

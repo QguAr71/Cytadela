@@ -52,6 +52,7 @@ log_success "module-loader.sh loaded"
 # Test 7: Module utilities
 echo ""
 echo "Test 7: Module utilities..."
+declare -a modules
 modules=$(list_available_modules)
 log_success "Available modules: ${modules:-none}"
 
