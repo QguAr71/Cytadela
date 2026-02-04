@@ -59,12 +59,6 @@ source_lib "${CYTADELA_LIB}/cytadela-core.sh"
 source_lib "${CYTADELA_LIB}/network-utils.sh"
 source_lib "${CYTADELA_LIB}/module-loader.sh"
 
-# Load unified core library (v3.2 backward compatibility)
-source_lib "${CYTADELA_LIB}/unified-core.sh"
-
-# Initialize unified core
-unified_core_init "$@"
-
 # Note: i18n is now loaded modularly - each module calls load_i18n_module() when needed
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
@@ -103,20 +97,6 @@ fi
 ACTION="${1:-help}"
 shift || true
 
-# ==============================================================================
-# V3.2 BACKWARD COMPATIBILITY - Command Translation
-# ==============================================================================
-# Translate legacy commands to unified interface for seamless migration
-TRANSLATED_ACTION=$(translate_command "$ACTION")
-
-if [[ "$TRANSLATED_ACTION" != "$ACTION" ]]; then
-    log_debug "Translated legacy command: '$ACTION' → '$TRANSLATED_ACTION'"
-    ACTION="$TRANSLATED_ACTION"
-fi
-
-# Parse --silent and --verbose flags
-parse_silent_flag "$@"
-
 case "$ACTION" in
     # Help
     help | --help | -h)
@@ -124,9 +104,9 @@ case "$ACTION" in
         citadel_help
         ;;
 
-    # Integrity - now uses unified-security
+    # Integrity
     integrity-init | integrity-check | integrity-status)
-        smart_load_module "security"
+        load_module "integrity"
         call_fn "$ACTION"
         ;;
 
@@ -136,79 +116,67 @@ case "$ACTION" in
         call_fn "$ACTION"
         ;;
 
-    # IPv6 - now uses unified-network (non-recovery functions only)
-    ipv6-privacy-on | ipv6-privacy-off | ipv6-privacy-status | ipv6-privacy-auto)
-        smart_load_module "network"
+    # IPv6
+    ipv6-privacy-on | ipv6-privacy-off | ipv6-privacy-status | ipv6-privacy-auto | ipv6-deep-reset | smart-ipv6)
+        load_module "ipv6"
         call_fn "$ACTION"
         ;;
 
-    # Config Backup/Restore - now uses unified-backup
-    config-backup | config-restore | config-list | config-delete)
-        smart_load_module "backup"
-        call_fn "$ACTION" "$@"
-        ;;
-
-    # LKG - now uses unified-backup
+    # LKG
     lkg-save | lkg-restore | lkg-status | lists-update)
-        smart_load_module "backup"
+        load_module "lkg"
         call_fn "$ACTION"
         ;;
 
-    # Auto-update - now uses unified-backup
+    # Auto-update
     auto-update-enable | auto-update-disable | auto-update-status | auto-update-now | auto-update-configure)
-        smart_load_module "backup"
+        load_module "auto-update"
         call_fn "$ACTION"
         ;;
 
-    # Emergency (Panic Mode) - now uses unified-recovery
-    panic-bypass | panic-restore | panic-status)
-        smart_load_module "recovery"
+    # Emergency
+    panic-bypass | panic-restore | panic-status | emergency-refuse | emergency-restore | killswitch-on | killswitch-off)
+        load_module "emergency"
         call_fn "$ACTION" "$@" || true
         ;;
 
-    # Emergency Network Recovery - now uses unified-recovery
-    emergency-network-restore | emergency-network-fix)
-        smart_load_module "recovery"
-        call_fn "$ACTION"
-        ;;
-
-    # Adblock - now uses unified-adblock
+    # Adblock
     adblock-status | adblock-stats | adblock-show | adblock-query | adblock-add | adblock-remove | adblock-edit | adblock-rebuild)
-        smart_load_module "adblock"
+        load_module "adblock"
         call_fn "$ACTION" "$@"
         ;;
 
     # Adblock aliases (legacy compatibility)
     blocklist)
-        smart_load_module "adblock"
+        load_module "adblock"
         adblock_show blocklist
         ;;
 
     combined)
-        smart_load_module "adblock"
+        load_module "adblock"
         adblock_show combined
         ;;
 
     custom)
-        smart_load_module "adblock"
+        load_module "adblock"
         adblock_show custom
         ;;
 
-    # Blocklist Manager - now uses unified-adblock
+    # Blocklist Manager
     blocklist-list | blocklist-switch | blocklist-status | blocklist-add-url | blocklist-remove-url | blocklist-show-urls)
-        smart_load_module "adblock"
+        load_module "blocklist-manager"
         call_fn "$ACTION" "$@"
         ;;
 
-    # Allowlist - now uses unified-adblock
+    # Allowlist
     allowlist-list | allowlist-add | allowlist-remove)
-        smart_load_module "adblock"
+        load_module "adblock"
         call_fn "$ACTION" "$@"
         ;;
 
-    # Ghost Check - now uses unified-security
+    # Ghost Check
     ghost-check)
-        smart_load_module "security"
+        load_module "ghost-check"
         call_fn "$ACTION"
         ;;
 
@@ -224,21 +192,21 @@ case "$ACTION" in
         call_fn "citadel_$ACTION"
         ;;
 
-    # Supply Chain - now uses unified-security
+    # Supply Chain
     supply-chain-status | supply-chain-init | supply-chain-verify)
-        smart_load_module "security"
+        load_module "supply-chain"
         call_fn "$ACTION"
         ;;
 
-    # Location - now uses unified-security
+    # Location
     location-status | location-check | location-add-trusted | location-remove-trusted | location-list-trusted)
-        smart_load_module "security"
+        load_module "location"
         call_fn "$ACTION" "$@"
         ;;
 
-    # NFT Debug - now uses unified-security
+    # NFT Debug
     nft-debug-on | nft-debug-off | nft-debug-status | nft-debug-logs)
-        smart_load_module "security"
+        load_module "nft-debug"
         call_fn "$ACTION"
         ;;
 
@@ -270,14 +238,8 @@ case "$ACTION" in
         install_coredns
         ;;
 
-    install-nftables | firewall-safe | firewall-strict | configure-system)
+    install-nftables | firewall-safe | firewall-strict | configure-system | restore-system | restore-system-default)
         load_module "install-nftables"
-        call_fn "$ACTION"
-        ;;
-
-    # System Restore - now uses unified-recovery
-    restore-system | restore-system-default)
-        smart_load_module "recovery"
         call_fn "$ACTION"
         ;;
 
@@ -298,15 +260,9 @@ case "$ACTION" in
         call_fn "$ACTION" "$@"
         ;;
 
-    # Fix Ports - now uses unified-network
-    fix-ports)
-        smart_load_module "network"
-        fix_port_conflicts
-        ;;
-
-    # Notifications - now uses unified-network
+    # Notifications
     notify-enable | notify-disable | notify-status | notify-test)
-        smart_load_module "network"
+        load_module "notify"
         call_fn "$ACTION"
         ;;
 
@@ -332,20 +288,20 @@ case "$ACTION" in
         install_citadel_top
         ;;
 
-    # Edit Tools - now uses unified-network
+    # Edit Tools
     edit)
-        smart_load_module "network"
+        load_module "edit-tools"
         edit_config
         ;;
 
     edit-dnscrypt)
-        smart_load_module "network"
+        load_module "edit-tools"
         edit_dnscrypt
         ;;
 
     logs)
-        smart_load_module "network"
-        show_logs "$@"
+        load_module "edit-tools"
+        show_logs
         ;;
 
     # Test Tools

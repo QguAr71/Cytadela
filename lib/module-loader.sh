@@ -88,8 +88,78 @@ load_module_for_command() {
 }
 
 # ==============================================================================
-# MODULE UTILITIES
+# UNIFIED MODULE SUPPORT (v3.2)
 # ==============================================================================
+
+# Load unified module (new v3.2 architecture)
+load_unified_module() {
+    local module="$1"
+    local unified_file="${CYTADELA_MODULES}/unified/unified-${module}.sh"
+
+    # Check if unified module exists
+    if [[ ! -f "$unified_file" ]]; then
+        log_error "Unified module not found: unified-${module}"
+        return 1
+    fi
+
+    # Check if already loaded
+    if [[ -n "${CYTADELA_LOADED_MODULES[unified-${module}]:-}" ]]; then
+        log_debug "Unified module already loaded: unified-${module}"
+        return 0
+    fi
+
+    # Integrity check in secure mode
+    if [[ "$CYTADELA_MODE" == "secure" ]] && declare -f integrity_check_module >/dev/null 2>&1; then
+        if ! integrity_check_module "$unified_file"; then
+            log_error "Integrity check failed for unified module: unified-${module}"
+            return 1
+        fi
+    fi
+
+    # Load unified module
+    log_debug "Loading unified module: unified-${module}"
+    source_lib "$unified_file"
+
+    # Mark as loaded
+    CYTADELA_LOADED_MODULES[unified-${module}]=1
+
+    return 0
+}
+
+# Smart module loading - tries unified first, then legacy
+smart_load_module() {
+    local cmd="$1"
+
+    # Extract module name from command
+    local module="${cmd%%-*}"
+
+    # Try unified module first (v3.2 architecture)
+    case "$module" in
+        install|security|network|adblock|backup|monitor|recovery)
+            if load_unified_module "$module"; then
+                return 0
+            fi
+            ;;
+    esac
+
+    # Fallback to legacy loading
+    load_module_for_command "$cmd"
+}
+
+# Check if command should use unified module
+is_unified_command() {
+    local cmd="$1"
+    local module="${cmd%%-*}"
+
+    case "$module" in
+        install|security|network|adblock|backup|monitor|recovery)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
 list_available_modules() {
     local modules=()
     for module_file in "${CYTADELA_MODULES}"/*.sh; do
