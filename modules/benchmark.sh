@@ -133,7 +133,7 @@ _benchmark_basic() {
             printf "  󰄬 %s: %d ms\n" "$domain" "$duration"
         else
             ((fail_count++))
-            printf "  󰅖 %s: FAILED\n" "$domain"
+            printf "  ✗ %s: FAILED\n" "$domain"
         fi
     done
 

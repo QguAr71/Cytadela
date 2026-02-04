@@ -263,7 +263,7 @@ blocklist_add_url() {
         return 1
     fi
 
-    log_section "󰐕 ADD CUSTOM URL"
+    log_section "➕ ADD CUSTOM URL"
 
     mkdir -p "$(dirname "$BLOCKLIST_CUSTOM_URLS")"
     touch "$BLOCKLIST_CUSTOM_URLS"
@@ -298,7 +298,7 @@ blocklist_remove_url() {
         return 1
     fi
 
-    log_section "󰍴 REMOVE CUSTOM URL"
+    log_section "➖ REMOVE CUSTOM URL"
 
     if [[ ! -f "$BLOCKLIST_CUSTOM_URLS" ]]; then
         log_error "No custom URLs defined"

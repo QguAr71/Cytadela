@@ -6,6 +6,24 @@
 *~
 .DS_Store
 
-# Local artifacts
+# Logs
+*.log
+logs/
+
+# Temporary files
+.tmp/
 /tmp/
+
+# Backup directories
+backups/
+backup/
+
+# Build artifacts
+bin/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
 
