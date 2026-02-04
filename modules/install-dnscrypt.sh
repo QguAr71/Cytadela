@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_dnscrypt() {
-    draw_section_header "DNSCrypt-Proxy"
+    draw_section_header "󰇄 DNSCrypt-Proxy"
 
     require_cmds ss awk grep tee systemctl dnscrypt-proxy || return 1
 

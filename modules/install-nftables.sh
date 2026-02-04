@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_nftables() {
-    draw_section_header "NFTables Firewall"
+    draw_section_header "󰒃 NFTables Firewall"
 
     require_cmds nft grep awk systemctl || return 1
 
@@ -124,7 +124,7 @@ EOF
 }
 
 firewall_safe() {
-    log_section "NFTables Safe Mode"
+    log_section "󰒃 NFTables Safe Mode"
     ln -sf /etc/nftables.d/citadel-dns-safe.nft /etc/nftables.d/citadel-dns.nft
     nft flush table inet citadel_dns 2>/dev/null || true
     nft flush table inet citadel_emergency 2>/dev/null || true
@@ -135,7 +135,7 @@ firewall_safe() {
 }
 
 firewall_strict() {
-    log_section "NFTables Strict Mode"
+    log_section "󰒃 NFTables Strict Mode"
     ln -sf /etc/nftables.d/citadel-dns-strict.nft /etc/nftables.d/citadel-dns.nft
     nft flush table inet citadel_dns 2>/dev/null || true
     nft flush table inet citadel_emergency 2>/dev/null || true
@@ -146,7 +146,7 @@ firewall_strict() {
 }
 
 configure_system() {
-    log_section "System Configuration"
+    log_section "󰒓 System Configuration"
 
     log_warning "Ten krok zmienia DNS systemu (może chwilowo przerwać internet jeśli DNS nie działa)."
     printf "Czy na pewno chcesz kontynuować? (tak/nie): "
@@ -220,7 +220,7 @@ EOF
 }
 
 restore_system() {
-    log_section "System Restore"
+    log_section "󰜝 System Restore"
 
     local backup_dir="${CYTADELA_STATE_DIR}/backups"
 
@@ -273,7 +273,7 @@ restore_system() {
 }
 
 restore_system_default() {
-    log_section "System Restore (Default)"
+    log_section "󰜝 System Restore (Default)"
 
     log_warning "Ta opcja przywraca FABRYCZNĄ konfigurację systemd-resolved"
     log_warning "Ignoruje backup użytkownika - użyj 'restore-system' aby przywrócić backup"

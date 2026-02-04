@@ -5,7 +5,7 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 install_coredns() {
-    log_section "CoreDNS Installation"
+    log_section "󰌐 CoreDNS Installation"
 
     require_cmds coredns curl awk sort wc mktemp systemctl || return 1
 
