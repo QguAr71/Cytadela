@@ -131,6 +131,11 @@ firewall_safe() {
     nft delete table inet citadel_dns 2>/dev/null || true
     nft delete table inet citadel_emergency 2>/dev/null || true
     nft -f /etc/nftables.d/citadel-dns-safe.nft || log_warning "Nie udało się załadować reguł SAFE"
+
+    # Ensure nftables service is enabled and running
+    systemctl enable nftables 2>/dev/null || true
+    systemctl start nftables 2>/dev/null || true
+
     log_success "Firewall ustawiony na SAFE"
 }
 
@@ -298,4 +303,44 @@ restore_system_default() {
 
     log_success "System przywrócony do DOMYŚLNEJ konfiguracji systemd-resolved"
     log_info "Backup użytkownika (jeśli istnieje) pozostał w ${CYTADELA_STATE_DIR}/backups/"
+}
+
+uninstall_nftables() {
+    log_section "󰒃 NFTables Uninstall"
+
+    # Flush and delete Citadel tables
+    nft flush table inet citadel_dns 2>/dev/null || true
+    nft flush table inet citadel_emergency 2>/dev/null || true
+    nft delete table inet citadel_dns 2>/dev/null || true
+    nft delete table inet citadel_emergency 2>/dev/null || true
+
+    # Remove Citadel configuration files
+    rm -f /etc/nftables.d/citadel-dns.nft
+    rm -f /etc/nftables.d/citadel-dns-safe.nft
+    rm -f /etc/nftables.d/citadel-dns-strict.nft
+    rm -rf /etc/nftables.d/ 2>/dev/null || true
+
+    # Restore original nftables.conf from backup if it exists
+    if [[ -f /etc/nftables.conf.backup-citadel ]]; then
+        log_info "Przywracanie oryginalnej konfiguracji nftables..."
+        mv /etc/nftables.conf.backup-citadel /etc/nftables.conf
+        log_success "Przywrócono /etc/nftables.conf z backupu"
+    else
+        # Remove Citadel include line from nftables.conf
+        log_info "Usuwanie referencji Citadel z nftables.conf..."
+        if [[ -f /etc/nftables.conf ]]; then
+            sed -i '/include "\/etc\/nftables\.d\/citadel-dns\.nft"/d' /etc/nftables.conf
+            log_success "Usunięto referencje Citadel z /etc/nftables.conf"
+        fi
+    fi
+
+    # Remove Citadel priority optimization
+    rm -f /usr/local/bin/citadel-dns-priority.sh
+    systemctl disable citadel-dns-priority.timer 2>/dev/null || true
+    systemctl stop citadel-dns-priority.timer 2>/dev/null || true
+    rm -f /etc/systemd/system/citadel-dns-priority.service
+    rm -f /etc/systemd/system/citadel-dns-priority.timer
+    systemctl daemon-reload 2>/dev/null || true
+
+    log_success "NFTables wyczyszczony z Citadel"
 }

@@ -28,7 +28,7 @@ COMPONENTS=""
 DRY_RUN=false
 VERBOSE=false
 GUM_ENHANCED=false
-BACKUP_EXISTING=false
+BACKUP_EXISTING=true  # Enabled by default for safety
 SELECT_COMPONENTS=false
 
 # Available profiles
@@ -40,18 +40,7 @@ declare -A PROFILES=(
     ["custom"]=""
 )
 
-# Available components
-declare -A COMPONENTS_DESC=(
-    ["dnscrypt"]="DNS encryption and caching"
-    ["coredns"]="DNS server and filtering"
-    ["adblock"]="DNS-based ad blocking"
-    ["reputation"]="IP reputation scoring"
-    ["asn-blocking"]="Network-level blocking"
-    ["event-logging"]="Structured event logging"
-    ["honeypot"]="Scanner detection traps"
-    ["prometheus"]="Metrics collection"
-    ["firewall"]="NFTables firewall rules"
-)
+# Components are now defined after language loading
 
 # Colors for output
 RED='\033[0;31m'
@@ -176,13 +165,13 @@ USAGE:
     sudo ./citadel-install-cli.sh [OPTIONS]
 
 OPTIONS:
-    --language=LANG         Language selection (en|pl) [default: en]
+    --language=LANG         Language selection (en|pl|de|es|fr|it|ru) [default: en]
     --profile=PROFILE       Installation profile (minimal|standard|security|full|custom)
     --components=LIST       Comma-separated list of components to install
     --dry-run              Show what would be installed without making changes
     --verbose              Enable verbose output
     --gum-enhanced         Use gum TUI for enhanced user experience (installs gum if needed)
-    --backup-existing      Create backups of existing configurations
+    --backup-existing      Create backups of existing configurations (enabled by default)
     --select-components    Interactive component selection
     --help, -h            Show this help message
 
@@ -290,11 +279,104 @@ install_gum_if_needed() {
     fi
 }
 
+# Select additional optional components
+select_additional_components() {
+    if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
+        # Gum-enhanced selection for additional components
+        gum style --bold --foreground 75 --width 64 "Select Additional Components"
+
+        # Get currently selected components as array
+        IFS=',' read -ra current_comps <<< "$COMPONENTS"
+
+        # Build list of available optional components (not already selected)
+        local available_options=""
+        for comp in "${!COMPONENTS_DESC[@]}"; do
+            # Skip if already selected
+            if [[ " ${current_comps[*]} " =~ " $comp " ]]; then
+                continue
+            fi
+
+            case "$comp" in
+                dnscrypt|coredns|firewall) continue ;; # Skip core components
+                *) available_options+="$comp|${COMPONENTS_DESC[$comp]}\n" ;;
+            esac
+        done
+
+        if [[ -z "$available_options" ]]; then
+            info "No additional components available"
+            return
+        fi
+
+        # Use gum choose for multi-selection
+        local additional
+        additional=$(echo -e "$available_options" | gum choose --no-limit --header "Select additional components to add:" | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
+
+        if [[ -n "$additional" ]]; then
+            # Add to existing components
+            if [[ -n "$COMPONENTS" ]]; then
+                COMPONENTS="$COMPONENTS,$additional"
+            else
+                COMPONENTS="$additional"
+            fi
+            status "Added additional components: $additional"
+        else
+            info "No additional components selected"
+        fi
+
+    else
+        # Fallback to text-based selection
+        echo "Available additional components:"
+        local i=1
+        declare -a available_comps
+        IFS=',' read -ra current_comps <<< "$COMPONENTS"
+
+        for comp in "${!COMPONENTS_DESC[@]}"; do
+            # Skip if already selected or core component
+            if [[ " ${current_comps[*]} " =~ " $comp " ]] || [[ "$comp" =~ ^(dnscrypt|coredns|firewall)$ ]]; then
+                continue
+            fi
+
+            echo "  $i) $comp - ${COMPONENTS_DESC[$comp]}"
+            available_comps[$i]="$comp"
+            ((i++))
+        done
+
+        if [[ ${#available_comps[@]} -eq 0 ]]; then
+            info "No additional components available"
+            return
+        fi
+
+        echo ""
+        echo -n "Enter additional component numbers (comma-separated): "
+        read -r selection
+
+        local additional=""
+        IFS=',' read -ra selections <<< "$selection"
+        for sel in "${selections[@]}"; do
+            sel=$(echo "$sel" | xargs)
+            if [[ "$sel" =~ ^[0-9]+$ ]] && [[ -n "${available_comps[$sel]}" ]]; then
+                additional+="${available_comps[$sel]},"
+            fi
+        done
+
+        if [[ -n "$additional" ]]; then
+            additional=${additional%,}
+            # Add to existing components
+            if [[ -n "$COMPONENTS" ]]; then
+                COMPONENTS="$COMPONENTS,$additional"
+            else
+                COMPONENTS="$additional"
+            fi
+            status "Added additional components: $additional"
+        fi
+    fi
+}
+
 # Interactive component selection
 select_components_interactive() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
         # Gum-enhanced selection
-        gum style --bold --foreground 75 "Component Selection"
+        gum style --bold --foreground 75 --width 64 "${T_COMPONENT_SELECTION:-Component Selection}"
 
         local available_components=""
         for comp in "${!COMPONENTS_DESC[@]}"; do
@@ -302,11 +384,11 @@ select_components_interactive() {
         done
 
         # Use gum choose for multi-selection
-        COMPONENTS=$(echo -e "$available_components" | gum choose --no-limit --header "Select components to install:" | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
+        COMPONENTS=$(echo -e "$available_components" | gum choose --no-limit --header "${T_SELECT_COMPONENTS_TO_INSTALL:-Select components to install:}" | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
 
     else
         # Fallback to text-based selection
-        echo "Available components:"
+        echo "${T_AVAILABLE_COMPONENTS:-Available components}:"
         local i=1
         declare -a comp_list
         for comp in "${!COMPONENTS_DESC[@]}"; do
@@ -316,7 +398,7 @@ select_components_interactive() {
         done
 
         echo ""
-        echo -n "Enter component numbers (comma-separated): "
+        echo -n "${T_ENTER_COMPONENT_NUMBERS:-Enter component numbers (comma-separated):} "
         read -r selection
 
         COMPONENTS=""
@@ -355,7 +437,7 @@ determine_components() {
 # Display installation plan
 show_installation_plan() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-        gum style --bold --foreground 75 --border normal --padding "0 1" "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
+        gum style --bold --foreground 75 --border normal --width 64 --padding "0 1" "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
     else
         echo "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
         echo "================================"
@@ -393,6 +475,31 @@ show_installation_plan() {
     done
     echo ""
 
+    # Ask if user wants to add optional components
+    if [[ "$SELECT_COMPONENTS" != true ]]; then
+        if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
+            if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_ADD_OPTIONAL_COMPONENTS:-Czy chcesz dodać opcjonalne komponenty?}"; then
+                add_optional=true
+            else
+                add_optional=false
+            fi
+        else
+            echo -n "${T_ADD_OPTIONAL_COMPONENTS:-Add optional components?} [y/N]: "
+            read -r answer
+            if [[ "$answer" =~ ^[Yy]$ ]]; then
+                add_optional=true
+            else
+                add_optional=false
+            fi
+        fi
+
+        if [[ "$add_optional" == true ]]; then
+            SELECT_COMPONENTS=true
+            select_additional_components
+        fi
+        echo ""
+    fi
+
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
         if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_PROCEED_WITH_INSTALLATION:-Kontynuować instalację?}"; then
             return 0
@@ -424,8 +531,18 @@ validate_language
 # Load language file
 load_language
 
-# Validate profile
-validate_profile
+# Define components after language is loaded (so translations work)
+declare -A COMPONENTS_DESC=(
+    ["dnscrypt"]="${T_COMPONENT_DNSCRYPT:-DNS encryption and caching}"
+    ["coredns"]="${T_COMPONENT_COREDNS:-DNS server and filtering}"
+    ["adblock"]="${T_COMPONENT_ADBLOCK:-DNS-based ad blocking}"
+    ["reputation"]="${T_COMPONENT_REPUTATION:-IP reputation scoring}"
+    ["asn-blocking"]="${T_COMPONENT_ASN_BLOCKING:-Network-level blocking}"
+    ["event-logging"]="${T_COMPONENT_EVENT_LOGGING:-Structured event logging}"
+    ["honeypot"]="${T_COMPONENT_HONEYPOT:-Scanner detection traps}"
+    ["prometheus"]="${T_COMPONENT_PROMETHEUS:-Metrics collection}"
+    ["firewall"]="${T_COMPONENT_FIREWALL:-NFTables firewall rules}"
+)
 
 # Install gum if needed for enhanced UI
 install_gum_if_needed
@@ -435,7 +552,7 @@ determine_components
 
 # Enhanced welcome message
 if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-    gum style --bold --foreground 99 --border double --padding "1 2" "${T_INSTALLER_TITLE:-Citadel v3.3+ Enhanced CLI Installer}"
+    gum style --bold --foreground 99 --border double --width 64 --padding "1 2" "${T_INSTALLER_TITLE:-Citadel v3.3+ Enhanced CLI Installer}"
 else
     echo "${T_INSTALLER_TITLE:-Citadel v3.3+ Enhanced CLI Installer}"
     echo "==================================="
@@ -512,10 +629,11 @@ install_component() {
             status "${T_CONFIGURING_FIREWALL:-Configuring firewall}..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install firewall-safe"
-                if systemctl is-active --quiet nftables 2>/dev/null; then
+                # Check if firewall rules are loaded by looking for Citadel table
+                if nft list tables | grep -q "citadel_dns" 2>/dev/null; then
                     status "${T_FIREWALL_CONFIGURED:-Firewall configured}"
                 else
-                    warning "${T_FIREWALL_NOT_ACTIVE:-Firewall service not active}"
+                    warning "${T_FIREWALL_NOT_ACTIVE:-Firewall rules not loaded}"
                 fi
             else
                 status "Would ${T_CONFIGURING_FIREWALL,,}"
@@ -674,7 +792,7 @@ main_installation
 # Completion message
 echo ""
 if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-    gum style --bold --foreground 99 --border double --padding "1 2" "${T_COMPLETE_TITLE:-INSTALLATION COMPLETE}"
+    gum style --bold --foreground 99 --border double --width 64 --padding "1 2" "${T_COMPLETE_TITLE:-INSTALLATION COMPLETE}"
 else
     echo "╔══════════════════════════════════════════════════════════════╗"
     echo "║                           ${T_COMPLETE_TITLE:-INSTALLATION COMPLETE}                         ║"

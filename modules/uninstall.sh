@@ -316,8 +316,16 @@ EOF
     rm -f /usr/local/bin/citadel 2>/dev/null || true
 
     # Clean up firewall and systemd
-    nft delete table inet citadel_dns 2>/dev/null || true
-    rm -f /etc/nftables.d/citadel-dns.nft 2>/dev/null || true
+    if command -v nft >/dev/null 2>&1; then
+        # Use proper nftables uninstall if available
+        if declare -f uninstall_nftables >/dev/null 2>&1; then
+            uninstall_nftables 2>/dev/null || true
+        else
+            # Fallback basic cleanup
+            nft delete table inet citadel_dns 2>/dev/null || true
+            rm -f /etc/nftables.d/citadel-dns.nft 2>/dev/null || true
+        fi
+    fi
     rm -rf /etc/systemd/system/coredns.service.d/ 2>/dev/null || true
     rm -rf /etc/systemd/system/dnscrypt-proxy.service.d/ 2>/dev/null || true
     systemctl daemon-reload 2>/dev/null || true
