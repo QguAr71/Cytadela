@@ -387,6 +387,9 @@ main() {
     status "Language selected: $LANGUAGE"
     log "Language: $LANGUAGE"
 
+    # Load language translations
+    load_language
+
     # Check if Citadel is already installed
     local already_installed=$(check_existing_installation)
     
