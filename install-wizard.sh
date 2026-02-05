@@ -69,7 +69,7 @@ load_language() {
     if [[ -f "$lang_file" ]]; then
         # shellcheck source=/dev/null
         source "$lang_file"
-        status "Language loaded: ${LANGUAGES[$LANGUAGE]}"
+        status "Language loaded: $LANGUAGE"
     else
         warning "Language file not found: $lang_file, using English"
         LANGUAGE="en"
