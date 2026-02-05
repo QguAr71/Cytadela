@@ -17,13 +17,55 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Check if gum is available
-if ! command -v gum >/dev/null 2>&1; then
-    echo -e "${RED}❌ Gum is required for interactive installer${NC}"
-    echo -e "${YELLOW}💡 Install gum first: sudo pacman -S gum (Arch) or check your distro${NC}"
-    echo -e "${BLUE}🔄 Or use CLI installer: sudo ./scripts/citadel-install-cli.sh --help${NC}"
-    exit 1
-fi
+# Auto-install gum if not available
+install_gum_if_needed() {
+    if ! command -v gum >/dev/null 2>&1; then
+        echo -e "${YELLOW}📦 Gum not found - installing for enhanced UI...${NC}"
+        log "Installing gum for interactive installer"
+        
+        # Try different package managers
+        if command -v pacman >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Using pacman (Arch/Manjaro)...${NC}"
+            if sudo pacman -S --needed --noconfirm gum >/dev/null 2>&1; then
+                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                return 0
+            fi
+        elif command -v apt >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Using apt (Debian/Ubuntu)...${NC}"
+            if sudo apt update >/dev/null 2>&1 && sudo apt install -y gum >/dev/null 2>&1; then
+                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                return 0
+            fi
+        elif command -v dnf >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Using dnf (Fedora/RHEL)...${NC}"
+            if sudo dnf install -y gum >/dev/null 2>&1; then
+                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                return 0
+            fi
+        elif command -v zypper >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Using zypper (openSUSE)...${NC}"
+            if sudo zypper install -y gum >/dev/null 2>&1; then
+                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                return 0
+            fi
+        fi
+        
+        # If we get here, installation failed
+        echo -e "${RED}❌ Failed to install gum automatically${NC}"
+        echo -e "${YELLOW}💡 Please install gum manually:${NC}"
+        echo -e "${YELLOW}   Arch/Manjaro: sudo pacman -S gum${NC}"
+        echo -e "${YELLOW}   Debian/Ubuntu: sudo apt install gum${NC}"
+        echo -e "${YELLOW}   Fedora/RHEL: sudo dnf install gum${NC}"
+        echo -e "${YELLOW}   openSUSE: sudo zypper install gum${NC}"
+        echo ""
+        echo -e "${BLUE}🔄 Alternative: Use CLI installer instead:${NC}"
+        echo -e "${BLUE}   sudo ./scripts/citadel-install-cli.sh --help${NC}"
+        exit 1
+    fi
+}
+
+# Check if gum is available and install if needed
+install_gum_if_needed
 
 # Load frame UI utilities
 source "${SCRIPT_DIR}/lib/frame-ui.sh"
