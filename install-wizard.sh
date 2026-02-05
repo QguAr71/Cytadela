@@ -168,9 +168,9 @@ customize_components() {
         "${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}")
 
     if [[ "$customize" == "${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}" ]]; then
-        echo ""
-        echo "${T_FIREWALL_ALWAYS_INCLUDED:-Note: Firewall is always included for security}"
-        echo ""
+        echo "" >&2
+        echo "${T_FIREWALL_ALWAYS_INCLUDED:-Note: Firewall is always included for security}" >&2
+        echo "" >&2
 
         # Interactive component selection
         local selected
