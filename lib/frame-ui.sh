@@ -176,7 +176,7 @@ print_gum_success_box() {
     local width="${2:-64}"
 
     gum style \
-        --border normal \
+        --border double \
         --border-foreground 2 \
         --width "$width" \
         --padding "0 2" \
