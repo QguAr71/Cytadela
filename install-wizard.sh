@@ -201,8 +201,8 @@ confirm_backup() {
     local backup_choice
     backup_choice=$(gum choose \
         --header "${T_CREATE_BACKUPS:-Create backups of existing configurations?}" \
-        "yes|${T_YES_CREATE_BACKUPS:-Yes, create backups} ${T_BACKUP_RECOMMENDED:-(recommended)}" \
-        "no|${T_NO_DONT_CREATE_BACKUPS:-No, do not create backups}")
+        "no|${T_NO_DONT_CREATE_BACKUPS:-No, do not create backups}" \
+        "yes|${T_YES_CREATE_BACKUPS:-Yes, create backups}")
 
     if [[ "$backup_choice" == "yes" ]]; then
         echo "true"
