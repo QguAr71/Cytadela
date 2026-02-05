@@ -25,6 +25,9 @@ if ! command -v gum >/dev/null 2>&1; then
     exit 1
 fi
 
+# Load frame UI utilities
+source "./lib/frame-ui.sh"
+
 # Logging function
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG_FILE"
@@ -65,15 +68,19 @@ load_language() {
 
 # Welcome screen
 show_welcome() {
-    echo "╔════════════════════════════════════════════════════════════╗"
-    echo "║                                                            ║"
-    echo "║            ${T_WIZARD_TITLE:-Citadel Installation Wizard}            ║"
-    echo "║                                                            ║"
-    echo "║  ${T_WIZARD_DESCRIPTION_LINE1:-This wizard will guide you through the Citadel}           ║"
-    echo "║  ${T_WIZARD_DESCRIPTION_LINE2:-installation process step by step.}                       ║"
-    echo "║  ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle everything}║"
-    echo "║                                                            ║"
-    echo "╚════════════════════════════════════════════════════════════╝"
+    local welcome_text="${T_WIZARD_TITLE:-Citadel Installation Wizard}
+
+${T_WIZARD_DESCRIPTION_LINE1:-This wizard will guide you through the Citadel}
+${T_WIZARD_DESCRIPTION_LINE2:-installation process step by step.}
+${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle everything}"
+
+    gum style \
+        --border double \
+        --border-foreground 6 \
+        --width 64 \
+        --padding "1 2" \
+        "$welcome_text"
+
     echo ""
     echo "${T_WIZARD_SUBTITLE:-Let's get your DNS protection set up...}"
     echo ""
@@ -81,9 +88,7 @@ show_welcome() {
 
 # Language selection
 select_language() {
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Language Selection                                        │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_section_header "Language Selection"
 
     local lang
     lang=$(gum choose \
@@ -123,9 +128,7 @@ load_language() {
 
 # Profile selection with descriptions
 select_profile() {
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Installation Profile                                      │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_section_header "Installation Profile"
 
     local profile_desc
     profile_desc=$(gum choose \
@@ -156,9 +159,7 @@ customize_components() {
         full) components="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging,honeypot,prometheus" ;;
     esac
 
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Component Customization                                  │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_section_header "Component Customization"
 
     local customize
     customize=$(gum choose \
@@ -195,9 +196,7 @@ customize_components() {
 
 # Backup confirmation
 confirm_backup() {
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Backup Configuration                                      │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_section_header "Backup Configuration"
 
     local backup_choice
     backup_choice=$(gum choose \
@@ -219,18 +218,16 @@ confirm_installation() {
     local components="$3"
     local backup="$4"
 
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Installation Summary                                      │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    local summary_text="Installation Summary
 
-    echo "Language: $language"
-    echo "Profile: $profile"
-    echo "Components: $components"
-    echo "Backup existing: $backup"
-    echo ""
+Language: $language
+Profile: $profile
+Components: $components
+Backup existing: $backup
 
-    echo "WARNING: Installation will modify system DNS and firewall settings"
-    echo ""
+WARNING: Installation will modify system DNS and firewall settings"
+
+    print_gum_warning_box "$summary_text"
 
     local confirm
     confirm=$(gum choose \
@@ -251,9 +248,7 @@ run_installation() {
     local components="$3"
     local backup="$4"
 
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Installing Citadel...                                     │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_section_header "Installing Citadel..."
 
     # Build the CLI command
     local cmd="./scripts/citadel-install-cli.sh"
@@ -294,12 +289,10 @@ run_installation() {
 # Show completion message
 show_completion() {
     echo ""
-    echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ Installation Complete!                                    │"
-    echo "└────────────────────────────────────────────────────────────┘"
+    print_gum_success_box "Installation Complete!
 
-    echo ""
-    echo "Citadel has been successfully installed!"
+Citadel has been successfully installed!"
+
     echo ""
     echo "Useful commands:"
     echo "  Check status: sudo ./citadel.sh monitor status"
