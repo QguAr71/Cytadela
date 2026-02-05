@@ -320,11 +320,46 @@ main() {
     status "Language selected: $LANGUAGE"
     log "Language: $LANGUAGE"
 
-    # Load language file
-    load_language "$LANGUAGE"
+    # Check if Citadel is already installed
+    local already_installed=$(check_existing_installation)
+    
+    if [[ "$already_installed" == "true" ]]; then
+        print_gum_warning_box "${T_CITADEL_ALREADY_INSTALLED:-Citadel is already installed}
+        
+${T_REINSTALL_WARNING:-Reinstallation will remove existing configuration and install the new version}
+${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original system settings}"
+        
+        local action
+        action=$(gum choose \
+            --header "${T_CHOOSE_ACTION:-Choose action:}" \
+            "${T_REINSTALL_CITADEL:-Reinstall Citadel (recommended)}" \
+            "${T_UNINSTALL_CITADEL:-Uninstall Citadel}" \
+            "${T_CANCEL_INSTALLATION:-Cancel installation}")
+        
+        case "$action" in
+            "${T_REINSTALL_CITADEL:-Reinstall Citadel (recommended)}")
+                status "${T_UNINSTALLING_EXISTING:-Uninstalling existing Citadel installation...}"
+                if [[ -f "./scripts/uninstall.sh" ]]; then
+                    sudo ./scripts/uninstall.sh --yes
+                fi
+                ;;
+            "${T_UNINSTALL_CITADEL:-Uninstall Citadel}")
+                status "${T_UNINSTALLING_CITADEL:-Uninstalling Citadel...}"
+                if [[ -f "./scripts/uninstall.sh" ]]; then
+                    sudo ./scripts/uninstall.sh --yes
+                fi
+                echo ""
+                echo "${T_CITADEL_UNINSTALLED:-Citadel has been uninstalled}"
+                exit 0
+                ;;
+            "${T_CANCEL_INSTALLATION:-Cancel installation}")
+                info "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
+                exit 0
+                ;;
+        esac
+    fi
 
-    # Welcome screen in selected language
-    show_welcome
+    # Continue with normal installation flow
 
     # Profile selection
     PROFILE=$(select_profile)
@@ -354,5 +389,24 @@ main() {
     log "Interactive installation completed successfully"
 }
 
-# Run main function
-main "$@"
+# Check if Citadel is already installed
+check_existing_installation() {
+    local installed=false
+    
+    # Check if Citadel services are running
+    if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null || systemctl is-active --quiet coredns 2>/dev/null; then
+        installed=true
+    fi
+    
+    # Check for Citadel configuration files
+    if [[ -f "/etc/coredns/coredns.toml" ]] || [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+        installed=true
+    fi
+    
+    # Check for Citadel nftables rules
+    if nft list tables 2>/dev/null | grep -q "citadel_dns"; then
+        installed=true
+    fi
+    
+    echo "$installed"
+}

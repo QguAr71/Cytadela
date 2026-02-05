@@ -193,3 +193,18 @@ export T_CMD_EMERGENCY_RESTORE="Emergency internet restore"
 
 export T_CMD_SHOW_HELP="Show help"
 
+
+# Installation status check
+export T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
+export T_CHOOSE_ACTION="Choose action:"
+export T_REINSTALL_CITADEL="Reinstall Citadel (recommended)"
+export T_UNINSTALL_CITADEL="Uninstall Citadel"
+export T_CANCEL_INSTALLATION="Cancel installation"
+export T_REINSTALL_WARNING="Reinstallation will remove existing configuration and install the new version"
+export T_UNINSTALL_WARNING="Uninstallation will remove Citadel and restore original system settings"
+
+
+export T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
+export T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
+export T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
+
