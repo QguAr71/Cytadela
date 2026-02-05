@@ -82,7 +82,7 @@ show_welcome() {
 # Language selection
 select_language() {
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 🌍 Language Selection                                      │"
+    echo "│ Language Selection                                        │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     local lang
@@ -108,20 +108,22 @@ select_language() {
 load_language() {
     LANGUAGE=$1
     case "$LANGUAGE" in
-        en) ;;
-        pl) ;;
-        de) ;;
-        es) ;;
-        fr) ;;
-        it) ;;
-        ru) ;;
+        en) source "./lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
+        pl) source "./lib/i18n/uninstall/pl.sh" 2>/dev/null || true ;;
+        de) source "./lib/i18n/uninstall/de.sh" 2>/dev/null || true ;;
+        es) source "./lib/i18n/uninstall/es.sh" 2>/dev/null || true ;;
+        fr) source "./lib/i18n/uninstall/fr.sh" 2>/dev/null || true ;;
+        it) source "./lib/i18n/uninstall/it.sh" 2>/dev/null || true ;;
+        ru) source "./lib/i18n/uninstall/ru.sh" 2>/dev/null || true ;;
+        *) warning "Unknown language '$LANGUAGE', falling back to English"
+           source "./lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
     esac
 }
 
 # Profile selection with descriptions
 select_profile() {
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 📦 Installation Profile                                    │"
+    echo "│ Installation Profile                                      │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     local profile_desc
@@ -154,7 +156,7 @@ customize_components() {
     esac
 
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 🔧 Component Customization                                │"
+    echo "│ Component Customization                                  │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     local customize
@@ -193,7 +195,7 @@ customize_components() {
 # Backup confirmation
 confirm_backup() {
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 💾 Backup Configuration                                    │"
+    echo "│ Backup Configuration                                      │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     local backup_choice
@@ -217,16 +219,16 @@ confirm_installation() {
     local backup="$4"
 
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 📋 Installation Summary                                    │"
+    echo "│ Installation Summary                                      │"
     echo "└────────────────────────────────────────────────────────────┘"
 
-    echo "🌍 Language: $language"
-    echo "📦 Profile: $profile"
-    echo "🔧 Components: $components"
-    echo "💾 Backup existing: $backup"
+    echo "Language: $language"
+    echo "Profile: $profile"
+    echo "Components: $components"
+    echo "Backup existing: $backup"
     echo ""
 
-    echo "⚠️  Installation will modify system DNS and firewall settings"
+    echo "WARNING: Installation will modify system DNS and firewall settings"
     echo ""
 
     local confirm
@@ -249,7 +251,7 @@ run_installation() {
     local backup="$4"
 
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 🔄 Installing Citadel...                                   │"
+    echo "│ Installing Citadel...                                     │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     # Build the CLI command
@@ -292,18 +294,18 @@ run_installation() {
 show_completion() {
     echo ""
     echo "┌────────────────────────────────────────────────────────────┐"
-    echo "│ 🎉 Installation Complete!                                  │"
+    echo "│ Installation Complete!                                    │"
     echo "└────────────────────────────────────────────────────────────┘"
 
     echo ""
     echo "Citadel has been successfully installed!"
     echo ""
-    echo "📚 Useful commands:"
+    echo "Useful commands:"
     echo "• Check status: sudo ./citadel.sh monitor status"
     echo "• View logs: sudo ./citadel.sh logs"
     echo "• Update blocklists: sudo ./citadel.sh backup lists-update"
     echo ""
-    echo "📄 Log file: $LOG_FILE"
+    echo "Log file: $LOG_FILE"
     echo ""
     echo "Thank you for choosing Citadel!"
 }
@@ -323,7 +325,7 @@ main() {
     log "Language: $LANGUAGE"
 
     # Load language file
-    load_language
+    load_language "$LANGUAGE"
 
     # Welcome screen in selected language
     show_welcome
