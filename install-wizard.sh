@@ -163,27 +163,27 @@ customize_components() {
 
     local customize
     customize=$(gum choose \
-        --header "Want to customize components?" \
-        "no|Use recommended profile ($profile)" \
-        "yes|Customize components manually")
+        --header "${T_WANT_CUSTOMIZE_COMPONENTS:-Want to customize components?}" \
+        "no|${T_USE_RECOMMENDED_PROFILE:-Use recommended profile} ($profile)" \
+        "yes|${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}")
 
     if [[ "$customize" == "yes" ]]; then
         echo ""
-        echo "Note: Firewall is always included for security"
+        echo "${T_FIREWALL_ALWAYS_INCLUDED:-Note: Firewall is always included for security}"
         echo ""
 
         # Interactive component selection
         local selected
         selected=$(gum choose --no-limit \
-            --header "Select components to install (use SPACE to select/deselect):" \
-            "dnscrypt|DNS encryption and caching" \
-            "coredns|DNS server and filtering" \
-            "adblock|DNS-based ad blocking" \
-            "reputation|IP reputation scoring" \
-            "asn-blocking|Network-level blocking" \
-            "event-logging|Structured event logging" \
-            "honeypot|Scanner detection traps" \
-            "prometheus|Metrics collection" \
+            --header "${T_SELECT_COMPONENTS_TO_INSTALL:-Select components to install (use SPACE to select/deselect):}" \
+            "dnscrypt|${T_DNSCRYPT_DESC:-DNS encryption and caching}" \
+            "coredns|${T_COREDNS_DESC:-DNS server and filtering}" \
+            "adblock|${T_ADBLOCK_DESC:-DNS-based ad blocking}" \
+            "reputation|${T_REPUTATION_DESC:-IP reputation scoring}" \
+            "asn-blocking|${T_ASN_BLOCKING_DESC:-Network-level blocking}" \
+            "event-logging|${T_EVENT_LOGGING_DESC:-Structured event logging}" \
+            "honeypot|${T_HONEYPOT_DESC:-Scanner detection traps}" \
+            "prometheus|${T_PROMETHEUS_DESC:-Metrics collection}" \
             | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
 
         if [[ -n "$selected" ]]; then
@@ -200,9 +200,9 @@ confirm_backup() {
 
     local backup_choice
     backup_choice=$(gum choose \
-        --header "Create backups of existing configurations?" \
-        "yes|Yes, create backups ${T_BACKUP_RECOMMENDED:-(recommended)}" \
-        "no|No, don't create backups")
+        --header "${T_CREATE_BACKUPS:-Create backups of existing configurations?}" \
+        "yes|${T_YES_CREATE_BACKUPS:-Yes, create backups} ${T_BACKUP_RECOMMENDED:-(recommended)}" \
+        "no|${T_NO_DONT_CREATE_BACKUPS:-No, don't create backups}")
 
     if [[ "$backup_choice" == "yes" ]]; then
         echo "true"
@@ -231,9 +231,9 @@ WARNING: Installation will modify system DNS and firewall settings"
 
     local confirm
     confirm=$(gum choose \
-        --header "Ready to install Citadel?" \
-        "yes|Yes, install now" \
-        "no|Cancel installation")
+        --header "${T_READY_TO_INSTALL:-Ready to install Citadel?}" \
+        "yes|${T_YES_INSTALL_NOW:-Yes, install now}" \
+        "no|${T_NO_CANCEL_INSTALLATION:-No, Cancel installation}")
 
     if [[ "$confirm" != "yes" ]]; then
         gum style --foreground 196 "Installation cancelled by user"
@@ -275,7 +275,7 @@ run_installation() {
     # Always use gum enhanced
     cmd="$cmd --gum-enhanced"
 
-    status "Running installation command..."
+    status "${T_RUNNING_INSTALLATION_COMMAND:-Running installation command...}"
     info "Command: $cmd"
 
     # Execute the installation
@@ -331,15 +331,15 @@ main() {
 
     # Component customization
     COMPONENTS=$(customize_components "$PROFILE")
-    status "Components configured: $COMPONENTS"
+    status "${T_COMPONENTS_CONFIGURED:-Components configured:} $COMPONENTS"
     log "Components: $COMPONENTS"
 
     # Backup confirmation
     BACKUP=$(confirm_backup)
     if [[ "$BACKUP" == "true" ]]; then
-        status "Backups will be created"
+        status "${T_BACKUPS_WILL_BE_CREATED:-Backups will be created}"
     else
-        warning "No backups will be created"
+        warning "${T_NO_BACKUPS_WILL_BE_CREATED:-No backups will be created}"
     fi
     log "Backup: $BACKUP"
 

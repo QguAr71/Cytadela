@@ -99,3 +99,34 @@ export T_PROFILE_MINIMAL="Minimal - Core DNS only (dnscrypt, coredns)"
 export T_PROFILE_STANDARD="Standard - Basic protection (minimal + adblock)"
 export T_PROFILE_SECURITY="Security - Advanced (standard + reputation, asn-blocking, logging)"
 export T_PROFILE_FULL="Full - Everything (security + honeypot, prometheus)"
+
+# Component customization translations
+export T_WANT_CUSTOMIZE_COMPONENTS="Want to customize components?"
+export T_USE_RECOMMENDED_PROFILE="Use recommended profile"
+export T_CUSTOMIZE_COMPONENTS_MANUALLY="Customize components manually"
+export T_FIREWALL_ALWAYS_INCLUDED="Note: Firewall is always included for security"
+export T_SELECT_COMPONENTS_TO_INSTALL="Select components to install (use SPACE to select/deselect):"
+export T_DNSCRYPT_DESC="DNS encryption and caching"
+export T_COREDNS_DESC="DNS server and filtering"
+export T_ADBLOCK_DESC="DNS-based ad blocking"
+export T_REPUTATION_DESC="IP reputation scoring"
+export T_ASN_BLOCKING_DESC="Network-level blocking"
+export T_EVENT_LOGGING_DESC="Structured event logging"
+export T_HONEYPOT_DESC="Scanner detection traps"
+export T_PROMETHEUS_DESC="Metrics collection"
+
+# Backup confirmation translations
+export T_CREATE_BACKUPS="Create backups of existing configurations?"
+export T_YES_CREATE_BACKUPS="Yes, create backups"
+export T_NO_DONT_CREATE_BACKUPS="No, don't create backups"
+
+# Installation confirmation translations
+export T_READY_TO_INSTALL="Ready to install Citadel?"
+export T_YES_INSTALL_NOW="Yes, install now"
+export T_NO_CANCEL_INSTALLATION="No, Cancel installation"
+
+# Status and info messages
+export T_BACKUPS_WILL_BE_CREATED="Backups will be created"
+export T_NO_BACKUPS_WILL_BE_CREATED="No backups will be created"
+export T_COMPONENTS_CONFIGURED="Components configured:"
+export T_RUNNING_INSTALLATION_COMMAND="Running installation command..."
