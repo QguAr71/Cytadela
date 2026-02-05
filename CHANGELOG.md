@@ -6,12 +6,12 @@ All notable changes to this repository will be documented in this file.
 
 ### 🎉 **Major Release: Gateway Mode & Network Infrastructure**
 
-Citadel v4.0 transforms Citadel from a DNS resolver into a full network gateway solution, enabling complete home/office network management and advanced security monitoring.
+Enterprise Security Platform v4.0 transforms Enterprise Security Platform from a DNS resolver into a full network gateway solution, enabling complete home/office network management.
 
 ### ✨ Added
 
 #### 🚪 **Gateway Mode - Complete Network Gateway**
-- **Full Network Gateway** - Transform Citadel into a network router/gateway
+- **Full Network Gateway** - Transform Enterprise Security Platform into a network router/gateway
   - DHCP server integration (dnsmasq)
   - NAT and routing configuration
   - Network interface detection and management
