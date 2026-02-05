@@ -132,11 +132,11 @@ select_profile() {
 
     local profile_desc
     profile_desc=$(gum choose \
-        --header "Choose installation profile:" \
-        "minimal|Minimal - Core DNS only (dnscrypt, coredns)" \
-        "standard|Standard - Basic protection (minimal + adblock)" \
-        "security|Security - Advanced (standard + reputation, asn-blocking, logging)" \
-        "full|Full - Everything (security + honeypot, prometheus)" \
+        --header "${T_CHOOSE_PROFILE:-Choose installation profile:}" \
+        "minimal|${T_PROFILE_MINIMAL:-Minimal - Core DNS only (dnscrypt, coredns)}" \
+        "standard|${T_PROFILE_STANDARD:-Standard - Basic protection (minimal + adblock)}" \
+        "security|${T_PROFILE_SECURITY:-Security - Advanced (standard + reputation, asn-blocking, logging)}" \
+        "full|${T_PROFILE_FULL:-Full - Everything (security + honeypot, prometheus)}" \
         | cut -d'|' -f1)
 
     if [[ -z "$profile_desc" ]]; then

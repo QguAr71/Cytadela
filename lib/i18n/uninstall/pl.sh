@@ -96,3 +96,10 @@ export T_USEFUL_COMMANDS="Przydatne Polecenia"
 export T_LOG_FILE_LABEL="Plik dziennika:"
 export T_THANK_YOU="Dziękujemy za wybór Citadel!"
 export T_BACKUP_RECOMMENDED="(zalecane)"
+
+# Profile selection translations
+export T_CHOOSE_PROFILE="Wybierz profil instalacji:"
+export T_PROFILE_MINIMAL="Minimal - Tylko podstawowe DNS (dnscrypt, coredns)"
+export T_PROFILE_STANDARD="Standard - Podstawowa ochrona (minimal + adblock)"
+export T_PROFILE_SECURITY="Bezpieczeństwo - Zaawansowane (standard + reputacja, blokowanie ASN, logowanie)"
+export T_PROFILE_FULL="Pełne - Wszystko (bezpieczeństwo + honeypot, prometheus)"
