@@ -59,15 +59,34 @@ info() {
 
 # Load language file
 load_language() {
-    local lang_file="${SCRIPT_DIR}/lib/i18n/uninstall/${LANGUAGE}.sh"
-    if [[ -f "$lang_file" ]]; then
-        # shellcheck source=/dev/null
-        source "$lang_file"
-        status "Language loaded: $LANGUAGE"
-    else
-        warning "Language file not found: $lang_file, using English"
-        LANGUAGE="en"
+    if [[ "$LANGUAGE" == "pl" ]]; then
+        # Polish translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel jest już zainstalowany"
+        T_REINSTALL_WARNING="Przeinstalacja usunie istniejącą konfigurację i zainstaluje nową wersję"
+        T_UNINSTALL_WARNING="Odinstalacja usunie Citadel i przywróci oryginalne ustawienia systemu"
+        T_CHOOSE_ACTION="Wybierz działanie:"
+        T_REINSTALL_CITADEL="Przeinstaluj Citadel (zalecane)"
+        T_UNINSTALL_CITADEL="Odinstaluj Citadel"
+        T_CANCEL_INSTALLATION="Anuluj instalację"
+        T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel..."
+        T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
+        # Add other translations as needed
+    elif [[ "$LANGUAGE" == "en" ]]; then
+        # English translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
+        T_REINSTALL_WARNING="Reinstallation will remove existing configuration and install the new version"
+        T_UNINSTALL_WARNING="Uninstallation will remove Citadel and restore original system settings"
+        T_CHOOSE_ACTION="Choose action:"
+        T_REINSTALL_CITADEL="Reinstall Citadel (recommended)"
+        T_UNINSTALL_CITADEL="Uninstall Citadel"
+        T_CANCEL_INSTALLATION="Cancel installation"
+        T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
+        T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
+        # Add other translations as needed
     fi
+    status "Language loaded: $LANGUAGE"
 }
 
 # Welcome screen
