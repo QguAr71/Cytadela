@@ -101,7 +101,8 @@ select_language() {
         error "Language selection is required"
     fi
 
-    echo "$lang"
+    # Return only the language code, not the frame
+    printf '%s' "$lang"
 }
 
 # Load language file

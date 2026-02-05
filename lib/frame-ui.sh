@@ -111,8 +111,86 @@ print_custom_frame() {
     local padding=$((total_width - visual_len))
     [[ $padding -lt 0 ]] && padding=0
 
-    # 4. Draw frame with colors
-    echo -e "${VIO}╔════════════════════════════════════════════════════════════════╗${NC}"
-    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "$text" "$padding" ""
-    echo -e "${VIO}╚════════════════════════════════════════════════════════════════╝${NC}"
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║  GUM-BASED FRAME FUNCTIONS (NEW APPROACH)                               ║
+# ║  Using gum styling for modern UI frames                                ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+# Print next steps section with gum styling
+print_next_steps() {
+    local separator=$(printf '%.0s─' $(seq 1 60)) # Pojedyncza linia w środku
+
+    gum style \
+        --border double \
+        --border-foreground 6 \
+        --width 64 \
+        --padding "0 2" \
+        "→ NASTĘPNE KROKI:
+$(gum style --foreground 8 "$separator")
+wypróbuj to do ramek"
+}
+
+# Print a section header with gum double border
+print_gum_section_header() {
+    local title="$1"
+    local width="${2:-64}"
+
+    gum style \
+        --border double \
+        --border-foreground 6 \
+        --width "$width" \
+        --padding "0 2" \
+        "$title"
+}
+
+# Print info box with gum single border
+print_gum_info_box() {
+    local content="$1"
+    local width="${2:-64}"
+
+    gum style \
+        --border normal \
+        --border-foreground 4 \
+        --width "$width" \
+        --padding "0 2" \
+        "$content"
+}
+
+# Print warning box with yellow border
+print_gum_warning_box() {
+    local content="$1"
+    local width="${2:-64}"
+
+    gum style \
+        --border normal \
+        --border-foreground 3 \
+        --width "$width" \
+        --padding "0 2" \
+        "$content"
+}
+
+# Print success box with green border
+print_gum_success_box() {
+    local content="$1"
+    local width="${2:-64}"
+
+    gum style \
+        --border normal \
+        --border-foreground 2 \
+        --width "$width" \
+        --padding "0 2" \
+        "$content"
+}
+
+# Print error box with red border
+print_gum_error_box() {
+    local content="$1"
+    local width="${2:-64}"
+
+    gum style \
+        --border normal \
+        --border-foreground 1 \
+        --width "$width" \
+        --padding "0 2" \
+        "$content"
 }
