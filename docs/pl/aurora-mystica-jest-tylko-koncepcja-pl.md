@@ -825,3 +825,208 @@ asn_block() {
 #### **PODSUMOWANIE PODZIAŁU:**
 
 **Cytadela v3.2-v3.4 (Bash, Production)**
+
+| Feature | Priorytet | Czas | Wersja |
+|---------|-----------|------|--------|
+| Silent DROP | ⭐⭐⭐⭐⭐ | 1-2h | v3.2 |
+| Basic Reputation | ⭐⭐⭐⭐☆ | 1 dzień | v3.3 |
+| Event Logging (JSON) | ⭐⭐⭐☆☆ | 2-3h | v3.3 |
+| ASN Blocking | ⭐⭐⭐⭐☆ | 3-4h | v3.3 |
+| Honeypot | ⭐⭐⭐☆☆ | 4-6h | v3.4 |
+
+**Razem:** ~2-3 tygodnie pracy
+
+**Aurora Mystica (Rust, Experimental)**
+- Actor Model
+- Graph-based Reputation
+- Event Translator (YAML narratives)
+- Narrative Modes
+- Advanced Tarpit
+- TLS Fingerprinting
+
+**Razem:** Nowy projekt, 6-12 miesięcy
+
+#### **STRATEGIA IMPLEMENTACJI:**
+
+**Faza 1: Cytadela v3.2 (Teraz)**
+- Refaktoryzacja 29→6 modułów
+- **Dodaj:** Silent DROP
+- **Czas:** 3-4 tygodnie
+
+**Faza 2: Cytadela v3.3 (Q2 2026)**
+- **Dodaj:** Basic Reputation
+- **Dodaj:** ASN Blocking
+- **Dodaj:** Event Logging
+- **Czas:** 2-3 tygodnie
+
+**Faza 3: Cytadela v3.4 (Q3 2026)**
+- **Dodaj:** Honeypot
+- **Dodaj:** Gateway Mode
+- **Czas:** 1-2 miesiące
+
+**Faza 4: Aurora Mystica (Q4 2026+)**
+- Nowe repo
+- Rust implementation
+- Experimental features
+- **Czas:** Długoterminowy projekt
+
+#### **MOJA REKOMENDACJA:**
+
+**START Z CYTADELA v3.2:**
+1. ✅ Refaktoryzacja (29→6 modułów)
+2. ✅ Silent DROP (quick win)
+3. ✅ Commit & push
+
+**Potem v3.3:**
+1. ✅ Basic Reputation
+2. ✅ ASN Blocking
+3. ✅ Event Logging
+
+**Aurora Mystica:**
+- Osobne repo
+- Długoterminowy side project
+- Dla fun i vibe
+
+### User:
+> 1 i 2
+
+---
+
+## 6. Decyzja i Plan Działania
+
+### Cascade (AI):
+
+**Użytkownik wybrał opcje:**
+1. Dodać Silent DROP do planu refaktoryzacji v3.2
+2. Stworzyć szczegółowy plan dla v3.3 (Reputation + ASN)
+
+**Akcje wykonane:**
+
+#### **1. Zaktualizowano REFACTORING-V3.2-PLAN.md**
+
+**Dodano do celów:**
+- **Add Silent DROP:** Stealth firewall mode (no ICMP responses)
+
+**Dodano nowe komendy:**
+```bash
+citadel firewall-silent-drop <ip>
+citadel firewall-mode [reject|drop]
+```
+
+**Dodano nową funkcję:**
+- `firewall_silent_drop()` - Silent DROP for stealth mode
+
+#### **2. Utworzono REFACTORING-V3.3-PLAN.md (867 linii)**
+
+**Zawartość:**
+
+**Reputation System (~400 LOC)**
+- Scoring IP addresses (0.0-1.0)
+- Event-based updates (failed auth: -0.1, port scan: -0.2)
+- Auto-block threshold (< 0.15)
+- Plain text database (no SQLite)
+
+**Komendy:**
+```bash
+citadel reputation list [--threshold=0.15]
+citadel reputation reset <ip>
+citadel reputation cleanup [--days=30]
+citadel reputation track <ip> <event>
+```
+
+**ASN Blocking (~300 LOC)**
+- Block entire Autonomous Systems
+- Whois integration for prefix lookups
+- Cache prefixes (24h TTL)
+- Blocklist management
+
+**Komendy:**
+```bash
+citadel asn-block <AS12345>
+citadel asn-unblock <AS12345>
+citadel asn-list
+citadel asn-add <AS12345> [comment]
+citadel asn-remove <AS12345>
+```
+
+**Event Logging (~200 LOC)**
+- JSON format for easy parsing
+- Log rotation (10MB limit)
+- Query and statistics
+- Integration with all modules
+
+**Komendy:**
+```bash
+citadel events query [event_type] [--hours=24]
+citadel events stats [--hours=24]
+citadel events rotate
+```
+
+**Timeline:**
+- Week 1: Core libraries
+- Week 2: Integration & automation
+- Week 3: Testing & documentation
+
+**Estimated time:** 2-3 weeks
+
+#### **Commit i Push:**
+
+**Commit:** `1a21721`
+**Message:** "Update refactoring plans: v3.2 with Silent DROP, v3.3 with Reputation & ASN"
+
+**Pliki:**
+- `docs/REFACTORING-V3.2-PLAN.md` (zaktualizowany)
+- `docs/REFACTORING-V3.3-PLAN.md` (nowy, 867 linii)
+
+**Status:** Wypushowane do GitHub
+
+---
+
+## 📊 Podsumowanie Dyskusji
+
+### Kluczowe Decyzje:
+
+1. **Aurora Mystica** = Osobny projekt (Rust, experimental, dla fun i vibe)
+2. **Cytadela** = Praktyczne elementy (Bash, production-ready)
+
+### Podział Funkcjonalności:
+
+**Do Cytadela (v3.2-v3.4):**
+- ✅ Silent DROP (v3.2)
+- ✅ Basic Reputation System (v3.3)
+- ✅ ASN Blocking (v3.3)
+- ✅ Event Logging JSON (v3.3)
+- ✅ Honeypot (v3.4)
+
+**Do Aurora Mystica (nowe repo):**
+- Actor Model (Rust + Tokio)
+- Graph-based Reputation Engine
+- Aurora Translator (YAML narratives)
+- Multiple perception modes
+- Advanced Tarpit (eBPF)
+- TLS Fingerprinting
+
+### Timeline:
+
+- **v3.2:** Teraz → Q1 2026 (3-4 tygodnie)
+- **v3.3:** Q2 2026 (2-3 tygodnie)
+- **v3.4:** Q3 2026 (1-2 miesiące)
+- **Aurora Mystica:** Q4 2026+ (długoterminowy side project)
+
+### Filozofia Projektu:
+
+**Cytadela:**
+- Praktyczny, niezawodny, prosty
+- Dla użytkowników (home users, privacy enthusiasts)
+- Bash, production-ready
+
+**Aurora Mystica:**
+- Eksperymentalny, artystyczny, filozoficzny
+- Dla twórcy (fun, vibe, learning)
+- Rust, personal art project
+
+---
+
+**Data zakończenia dyskusji:** 2026-01-31, 20:05
+**Status:** Plany zatwierdzone i udokumentowane
+**Następne kroki:** Implementacja v3.2 (refaktoryzacja + Silent DROP)
