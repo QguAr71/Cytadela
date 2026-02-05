@@ -362,3 +362,11 @@ export T_PROMETHEUS_ENABLED="Metryki Prometheus włączone"
 export T_DNSCRYPT_INSTALLED_AND_RUNNING="DNSCrypt zainstalowany i działa"
 export T_COREDNS_INSTALLED_AND_RUNNING="CoreDNS zainstalowany i działa"
 
+
+# Additional component selection
+export T_SELECT_ADDITIONAL_COMPONENTS="Wybierz dodatkowe komponenty"
+export T_NO_ADDITIONAL_COMPONENTS="Brak dostępnych dodatkowych komponentów"
+export T_SELECT_ADDITIONAL_TO_ADD="Wybierz dodatkowe komponenty do dodania:"
+export T_ADDED_ADDITIONAL_COMPONENTS="Dodano dodatkowe komponenty:"
+export T_NO_ADDITIONAL_SELECTED="Nie wybrano dodatkowych komponentów"
+

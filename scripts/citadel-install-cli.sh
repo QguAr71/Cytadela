@@ -283,7 +283,7 @@ install_gum_if_needed() {
 select_additional_components() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
         # Gum-enhanced selection for additional components
-        gum style --bold --foreground 75 --width 64 "Select Additional Components"
+        gum style --bold --foreground 75 --width 64 "${T_SELECT_ADDITIONAL_COMPONENTS:-Select Additional Components}"
 
         # Get currently selected components as array
         IFS=',' read -ra current_comps <<< "$COMPONENTS"
@@ -303,13 +303,13 @@ select_additional_components() {
         done
 
         if [[ -z "$available_options" ]]; then
-            info "No additional components available"
+            info "${T_NO_ADDITIONAL_COMPONENTS:-No additional components available}"
             return
         fi
 
         # Use gum choose for multi-selection
         local additional
-        additional=$(echo -e "$available_options" | gum choose --no-limit --header "Select additional components to add:" | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
+        additional=$(echo -e "$available_options" | gum choose --no-limit --header "${T_SELECT_ADDITIONAL_TO_ADD:-Select additional components to add:}" | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
 
         if [[ -n "$additional" ]]; then
             # Add to existing components
@@ -318,9 +318,9 @@ select_additional_components() {
             else
                 COMPONENTS="$additional"
             fi
-            status "Added additional components: $additional"
+            status "${T_ADDED_ADDITIONAL_COMPONENTS:-Added additional components:} $additional"
         else
-            info "No additional components selected"
+            info "${T_NO_ADDITIONAL_SELECTED:-No additional components selected}"
         fi
 
     else
