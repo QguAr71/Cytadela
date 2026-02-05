@@ -475,8 +475,23 @@ show_installation_plan() {
     done
     echo ""
 
-    # Ask if user wants to add optional components
-    if [[ "$SELECT_COMPONENTS" != true ]]; then
+    # Check if there are any additional components available before asking
+    local has_additional=false
+    IFS=',' read -ra current_comps <<< "$COMPONENTS"
+    for comp in "${!COMPONENTS_DESC[@]}"; do
+        # Skip if already selected
+        if [[ " ${current_comps[*]} " =~ " $comp " ]]; then
+            continue
+        fi
+
+        case "$comp" in
+            dnscrypt|coredns|firewall) continue ;; # Skip core components
+            *) has_additional=true; break ;;
+        esac
+    done
+
+    # Ask if user wants to add optional components only if there are any available
+    if [[ "$has_additional" == true ]]; then
         if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
             if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_ADD_OPTIONAL_COMPONENTS:-Czy chcesz dodać opcjonalne komponenty?}"; then
                 add_optional=true
@@ -497,7 +512,8 @@ show_installation_plan() {
             SELECT_COMPONENTS=true
             select_additional_components
         fi
-        echo ""
+    else
+        info "${T_ALL_COMPONENTS_SELECTED:-All available components are already selected}"
     fi
 
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then

@@ -222,3 +222,6 @@ export T_SELECT_ADDITIONAL_TO_ADD="Select additional components to add:"
 export T_ADDED_ADDITIONAL_COMPONENTS="Added additional components:"
 export T_NO_ADDITIONAL_SELECTED="No additional components selected"
 
+
+export T_ALL_COMPONENTS_SELECTED="All available components are already selected"
+

@@ -370,3 +370,6 @@ export T_SELECT_ADDITIONAL_TO_ADD="Wybierz dodatkowe komponenty do dodania:"
 export T_ADDED_ADDITIONAL_COMPONENTS="Dodano dodatkowe komponenty:"
 export T_NO_ADDITIONAL_SELECTED="Nie wybrano dodatkowych komponentów"
 
+
+export T_ALL_COMPONENTS_SELECTED="Wszystkie dostępne komponenty są już wybrane"
+
