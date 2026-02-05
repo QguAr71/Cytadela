@@ -1,7 +1,7 @@
-# Citadel v3.3 - Enterprise Security Platform
+# Citadel v3.3 - Advanced Security Platform
 
 [![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/QguAr71/Cytadela)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 **Citadel v3.3** to zaawansowana platforma bezpieczeństwa dla systemów Linux, oferująca kompleksowe funkcje bezpieczeństwa, monitorowania i zarządzania dla użytkowników zaawansowanych oraz środowisk korporacyjnych.
 
