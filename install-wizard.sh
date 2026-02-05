@@ -71,7 +71,7 @@ show_welcome() {
     echo "║                                                            ║"
     echo "║  ${T_WIZARD_DESCRIPTION_LINE1:-This wizard will guide you through the Citadel}           ║"
     echo "║  ${T_WIZARD_DESCRIPTION_LINE2:-installation process step by step.}                       ║"
-    echo "║  ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'll handle everything}║"
+    echo "║  ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle everything}║"
     echo "║                                                            ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
