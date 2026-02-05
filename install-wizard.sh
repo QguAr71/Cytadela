@@ -23,7 +23,7 @@ install_gum_if_needed() {
         echo -e "${YELLOW}📦 Gum not found - installing for enhanced UI...${NC}"
         log "Installing gum for interactive installer"
         
-        # Try different package managers
+        # Try different package managers with proper repository setup
         if command -v pacman >/dev/null 2>&1; then
             echo -e "${BLUE}📦 Using pacman (Arch/Manjaro)...${NC}"
             if sudo pacman -S --needed --noconfirm gum >/dev/null 2>&1; then
@@ -31,8 +31,13 @@ install_gum_if_needed() {
                 return 0
             fi
         elif command -v apt >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Using apt (Debian/Ubuntu)...${NC}"
-            if sudo apt update >/dev/null 2>&1 && sudo apt install -y gum >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Setting up Charm repository for Debian/Ubuntu...${NC}"
+            # Add Charm repository for Debian/Ubuntu
+            if sudo mkdir -p /etc/apt/keyrings && \
+               curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg && \
+               echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list && \
+               sudo apt update >/dev/null 2>&1 && \
+               sudo apt install -y gum >/dev/null 2>&1; then
                 echo -e "${GREEN}✅ Gum installed successfully${NC}"
                 return 0
             fi
@@ -43,8 +48,11 @@ install_gum_if_needed() {
                 return 0
             fi
         elif command -v zypper >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Using zypper (openSUSE)...${NC}"
-            if sudo zypper install -y gum >/dev/null 2>&1; then
+            echo -e "${BLUE}📦 Setting up Charm repository for openSUSE...${NC}"
+            # Add Charm repository for openSUSE
+            if sudo zypper addrepo -f https://repo.charm.sh/rpm/charm.repo >/dev/null 2>&1 && \
+               sudo zypper refresh >/dev/null 2>&1 && \
+               sudo zypper install -y gum >/dev/null 2>&1; then
                 echo -e "${GREEN}✅ Gum installed successfully${NC}"
                 return 0
             fi
@@ -54,9 +62,9 @@ install_gum_if_needed() {
         echo -e "${RED}❌ Failed to install gum automatically${NC}"
         echo -e "${YELLOW}💡 Please install gum manually:${NC}"
         echo -e "${YELLOW}   Arch/Manjaro: sudo pacman -S gum${NC}"
-        echo -e "${YELLOW}   Debian/Ubuntu: sudo apt install gum${NC}"
+        echo -e "${YELLOW}   Debian/Ubuntu: curl + repository setup (see: https://github.com/charmbracelet/gum)${NC}"
         echo -e "${YELLOW}   Fedora/RHEL: sudo dnf install gum${NC}"
-        echo -e "${YELLOW}   openSUSE: sudo zypper install gum${NC}"
+        echo -e "${YELLOW}   openSUSE: sudo zypper addrepo https://repo.charm.sh/rpm/charm.repo && sudo zypper install gum${NC}"
         echo ""
         echo -e "${BLUE}🔄 Alternative: Use CLI installer instead:${NC}"
         echo -e "${BLUE}   sudo ./scripts/citadel-install-cli.sh --help${NC}"
