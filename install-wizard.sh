@@ -59,7 +59,6 @@ info() {
 
 # Load language file
 load_language() {
-    LANGUAGE=$1
     local lang_file="${SCRIPT_DIR}/lib/i18n/uninstall/${LANGUAGE}.sh"
     if [[ -f "$lang_file" ]]; then
         # shellcheck source=/dev/null
@@ -301,7 +300,6 @@ main() {
     local already_installed=$(check_existing_installation)
     
     if [[ "$already_installed" == "true" ]]; then
-        echo "DEBUG: T_CITADEL_ALREADY_INSTALLED='${T_CITADEL_ALREADY_INSTALLED:-NOT_SET}'"
         print_gum_warning_box "${T_CITADEL_ALREADY_INSTALLED:-Citadel is already installed}
         
 ${T_REINSTALL_WARNING:-Reinstallation will remove existing configuration and install the new version}
