@@ -18,19 +18,15 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Check if gum is available
-echo "DEBUG: Starting script..."
 if ! command -v gum >/dev/null 2>&1; then
     echo -e "${RED}❌ Gum is required for interactive installer${NC}"
     echo -e "${YELLOW}💡 Install gum first: sudo pacman -S gum (Arch) or check your distro${NC}"
     echo -e "${BLUE}🔄 Or use CLI installer: sudo ./scripts/citadel-install-cli.sh --help${NC}"
     exit 1
 fi
-echo "DEBUG: Gum found"
 
 # Load frame UI utilities
-echo "DEBUG: Loading frame-ui.sh..."
 source "${SCRIPT_DIR}/lib/frame-ui.sh"
-echo "DEBUG: frame-ui.sh loaded"
 
 # Logging function
 log() {
@@ -301,27 +297,20 @@ ${T_CITADEL_INSTALLED_SUCCESSFULLY:-Citadel has been successfully installed!}"
 
 # Main function
 main() {
-    echo "DEBUG: Entering main()"
     # Check if running as root
     if [[ $EUID -ne 0 ]]; then
         error "This installer must be run as root (sudo)"
     fi
-    echo "DEBUG: Root check passed"
 
     log "Starting interactive Citadel installation"
-    echo "DEBUG: Log written"
 
     # Language selection first
-    echo "DEBUG: Calling select_language"
     LANGUAGE=$(select_language)
-    echo "DEBUG: select_language returned: $LANGUAGE"
     status "Language selected: $LANGUAGE"
     log "Language: $LANGUAGE"
 
     # Check if Citadel is already installed
-    echo "DEBUG: Checking existing installation"
     local already_installed=$(check_existing_installation)
-    echo "DEBUG: already_installed = $already_installed"
     
     if [[ "$already_installed" == "true" ]]; then
         print_gum_warning_box "${T_CITADEL_ALREADY_INSTALLED:-Citadel is already installed}
