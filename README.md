@@ -2,6 +2,16 @@
 
 [![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/QguAr71/Cytadela)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/forks)
+[![GitHub Issues](https://img.shields.io/github/issues/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/pulls)
+[![GitHub Contributors](https://img.shields.io/github/contributors/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/commits/main)
+[![Languages](https://img.shields.io/github/languages/count/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela)
+[![Code Size](https://img.shields.io/github/repo-size/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela)
+[![GitHub Release](https://img.shields.io/github/v/release/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/releases)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/QguAr71/Cytadela/ci.yml?branch=main&style=flat&logo=github)](https://github.com/QguAr71/Cytadela/actions)
 
 **Citadel v3.3** to zaawansowana platforma bezpieczeństwa dla systemów Linux, oferująca kompleksowe funkcje bezpieczeństwa, monitorowania i zarządzania dla użytkowników zaawansowanych oraz środowisk korporacyjnych.
 
