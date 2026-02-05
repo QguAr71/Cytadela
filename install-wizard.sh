@@ -186,9 +186,6 @@ select_language() {
     # Default to Polish without showing menu
     LANGUAGE="pl"
 
-    # Load language file
-    load_language "$LANGUAGE"
-
     # Return the selected language
     echo "$LANGUAGE"
 }
