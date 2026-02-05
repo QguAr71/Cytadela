@@ -836,6 +836,26 @@ env | grep CITADEL
 - Ograniczaj ilość logów w pętach
 - Używaj `nice` dla zadań w tle
 
+### Najlepsze praktyki
+
+#### Kodowanie
+- Używaj `#!/bin/bash` jako shebang
+- Sprawdzaj błędy: `set -euo pipefail`
+- Używaj funkcji zamiast globalnych zmiennych
+- Dokumentuj funkcje z komentarzami `@description`
+
+#### Bezpieczeństwo
+- Sprawdzaj uprawnienia przed operacjami
+- Używaj `sudo` tylko gdy konieczne
+- Waliduj dane wejściowe
+- Unikaj injection w komendach
+
+#### Wydajność
+- Buforuj wyniki kosztownych operacji
+- Używaj `mktemp` dla plików tymczasowych
+- Ograniczaj ilość logów w pętach
+- Używaj `nice` dla zadań w tle
+
 #### Obsługa błędów
 ```bash
 error_exit() {
@@ -846,6 +866,50 @@ error_exit() {
 # Sprawdź warunki
 [[ -f "$file" ]] || error_exit "File not found: $file"
 ```
+
+### Architektura i przyszłość
+
+#### Internacjonalizacja (i18n) - planowana refaktoryzacja
+
+**Obecny stan:**
+- Tłumaczenia hardcoded w funkcjach (np. `install-wizard.sh`)
+- Problemy z sourcingiem plików pod sudo
+- Ograniczenia skalowalności
+
+**Planowana architektura (associative arrays):**
+```bash
+# Przykład przyszłej implementacji
+declare -A I18N_PL=(
+  [CITADEL_ALREADY_INSTALLED]="Citadel jest już zainstalowany"
+  [REINSTALL_WARNING]="Przeinstalacja usunie istniejącą konfigurację"
+  [CHOOSE_ACTION]="Wybierz działanie"
+)
+
+declare -A I18N_DE=(
+  [CITADEL_ALREADY_INSTALLED]="Citadel ist bereits installiert"
+  [REINSTALL_WARNING]="Die Neuinstallation entfernt die bestehende Konfiguration"
+  [CHOOSE_ACTION]="Aktion wählen"
+)
+
+# Użycie przez nameref
+load_language() {
+  case "$LANGUAGE" in
+    pl) declare -n I18N=I18N_PL ;;
+    de) declare -n I18N=I18N_DE ;;
+  esac
+}
+
+# W kodzie: ${I18N[CITADEL_ALREADY_INSTALLED]}
+```
+
+**Zalety nowej architektury:**
+- ✅ Zero problemów z sourcingiem
+- ✅ Jeden plik na wszystkie języki
+- ✅ Łatwe dodawanie nowych języków
+- ✅ Bezpieczne z sudo
+- ✅ Spójność kluczy między językami
+
+**Termin implementacji:** Gdy będzie dostępny czas na większe zmiany architektoniczne.
 
 ## 📄 Licencja
 
