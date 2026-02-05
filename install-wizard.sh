@@ -91,38 +91,17 @@ select_language() {
     print_gum_section_header "${T_LANGUAGE_SELECTION:-Language Selection}"
 
     local lang
-    lang=$(gum choose \
-        --header "Select your preferred language:" \
-        "en|English" \
-        "pl|Polski" \
-        "de|Deutsch" \
-        "es|Espanol" \
-        "fr|Francais" \
-        "it|Italiano" \
-        "ru|Русский" \
-        | cut -d'|' -f1)
-
-    if [[ -z "$lang" ]]; then
-        error "Language selection is required"
-    fi
-
-    # Return only the language code, not the frame
-    printf '%s' "$lang"
-}
-
-# Load language file
-load_language() {
     LANGUAGE=$1
     case "$LANGUAGE" in
-        en) source "./lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
-        pl) source "./lib/i18n/uninstall/pl.sh" 2>/dev/null || true ;;
-        de) source "./lib/i18n/uninstall/de.sh" 2>/dev/null || true ;;
-        es) source "./lib/i18n/uninstall/es.sh" 2>/dev/null || true ;;
-        fr) source "./lib/i18n/uninstall/fr.sh" 2>/dev/null || true ;;
-        it) source "./lib/i18n/uninstall/it.sh" 2>/dev/null || true ;;
-        ru) source "./lib/i18n/uninstall/ru.sh" 2>/dev/null || true ;;
+        en) source "${SCRIPT_DIR}/lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
+        pl) source "${SCRIPT_DIR}/lib/i18n/uninstall/pl.sh" 2>/dev/null || true ;;
+        de) source "${SCRIPT_DIR}/lib/i18n/uninstall/de.sh" 2>/dev/null || true ;;
+        es) source "${SCRIPT_DIR}/lib/i18n/uninstall/es.sh" 2>/dev/null || true ;;
+        fr) source "${SCRIPT_DIR}/lib/i18n/uninstall/fr.sh" 2>/dev/null || true ;;
+        it) source "${SCRIPT_DIR}/lib/i18n/uninstall/it.sh" 2>/dev/null || true ;;
+        ru) source "${SCRIPT_DIR}/lib/i18n/uninstall/ru.sh" 2>/dev/null || true ;;
         *) warning "Unknown language '$LANGUAGE', falling back to English"
-           source "./lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
+           source "${SCRIPT_DIR}/lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
     esac
 }
 
