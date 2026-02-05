@@ -164,10 +164,10 @@ customize_components() {
     local customize
     customize=$(gum choose \
         --header "${T_WANT_CUSTOMIZE_COMPONENTS:-Want to customize components?}" \
-        "no|${T_USE_RECOMMENDED_PROFILE:-Use recommended profile} ($profile)" \
-        "yes|${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}")
+        "${T_USE_RECOMMENDED_PROFILE:-Use recommended profile} ($profile)" \
+        "${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}")
 
-    if [[ "$customize" == "yes" ]]; then
+    if [[ "$customize" == "${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}" ]]; then
         echo ""
         echo "${T_FIREWALL_ALWAYS_INCLUDED:-Note: Firewall is always included for security}"
         echo ""
@@ -232,10 +232,10 @@ ${T_INSTALLATION_WARNING:-WARNING: Installation will modify system DNS and firew
     local confirm
     confirm=$(gum choose \
         --header "${T_READY_TO_INSTALL:-Ready to install Citadel?}" \
-        "yes|${T_YES_INSTALL_NOW:-Yes, install now}" \
-        "no|${T_NO_CANCEL_INSTALLATION:-No, Cancel installation}")
+        "${T_YES_INSTALL_NOW:-Yes, install now}" \
+        "${T_NO_CANCEL_INSTALLATION:-No, Cancel installation}")
 
-    if [[ "$confirm" != "yes" ]]; then
+    if [[ "$confirm" != "${T_YES_INSTALL_NOW:-Yes, install now}" ]]; then
         gum style --foreground 196 "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
         exit 0
     fi
