@@ -101,25 +101,16 @@ ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle 
 select_language() {
     echo "Select your preferred language:"
     echo "1) English"
-    echo "2) Polski"
+    echo "2) Polski (domyślny)"
     echo "3) Deutsch"
     echo "4) Español"
     echo "5) Français"
     echo "6) Italiano"
     echo "7) Русский"
-    echo -n "Enter choice (1-7) [1]: "
-    read -r choice
-
-    case "$choice" in
-        1|"") LANGUAGE="en" ;;
-        2) LANGUAGE="pl" ;;
-        3) LANGUAGE="de" ;;
-        4) LANGUAGE="es" ;;
-        5) LANGUAGE="fr" ;;
-        6) LANGUAGE="it" ;;
-        7) LANGUAGE="ru" ;;
-        *) echo "Invalid choice, using English"; LANGUAGE="en" ;;
-    esac
+    
+    # Default to Polish without requiring input
+    echo "Using Polish (Polski) by default..."
+    LANGUAGE="pl"
 
     # Load language file
     load_language "$LANGUAGE"
@@ -419,3 +410,6 @@ check_existing_installation() {
     
     echo "$installed"
 }
+
+# Run main function
+main "$@"
