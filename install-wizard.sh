@@ -39,22 +39,26 @@ log() {
 
 # Enhanced status output
 status() {
-    gum style --foreground 121 "✓ $1"
+    echo "✓ $1"
+    # gum style --foreground 121 "✓ $1"
 }
 
 error() {
-    gum style --foreground 196 "✗ $1"
+    echo "✗ $1"
+    # gum style --foreground 196 "✗ $1"
     log "ERROR: $1"
     exit 1
 }
 
 warning() {
-    gum style --foreground 214 "⚠ $1"
+    echo "⚠ $1"
+    # gum style --foreground 214 "⚠ $1"
     log "WARNING: $1"
 }
 
 info() {
-    gum style --foreground 39 "$1"
+    echo "$1"
+    # gum style --foreground 39 "$1"
 }
 
 # Load language file
@@ -294,20 +298,27 @@ ${T_CITADEL_INSTALLED_SUCCESSFULLY:-Citadel has been successfully installed!}"
 
 # Main function
 main() {
+    echo "DEBUG: Entering main()"
     # Check if running as root
     if [[ $EUID -ne 0 ]]; then
         error "This installer must be run as root (sudo)"
     fi
+    echo "DEBUG: Root check passed"
 
     log "Starting interactive Citadel installation"
+    echo "DEBUG: Log written"
 
     # Language selection first
+    echo "DEBUG: Calling select_language"
     LANGUAGE=$(select_language)
+    echo "DEBUG: select_language returned: $LANGUAGE"
     status "Language selected: $LANGUAGE"
     log "Language: $LANGUAGE"
 
     # Check if Citadel is already installed
+    echo "DEBUG: Checking existing installation"
     local already_installed=$(check_existing_installation)
+    echo "DEBUG: already_installed = $already_installed"
     
     if [[ "$already_installed" == "true" ]]; then
         print_gum_warning_box "${T_CITADEL_ALREADY_INSTALLED:-Citadel is already installed}
