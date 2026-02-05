@@ -18,15 +18,19 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Check if gum is available
+echo "DEBUG: Starting script..."
 if ! command -v gum >/dev/null 2>&1; then
     echo -e "${RED}❌ Gum is required for interactive installer${NC}"
     echo -e "${YELLOW}💡 Install gum first: sudo pacman -S gum (Arch) or check your distro${NC}"
     echo -e "${BLUE}🔄 Or use CLI installer: sudo ./scripts/citadel-install-cli.sh --help${NC}"
     exit 1
 fi
+echo "DEBUG: Gum found"
 
 # Load frame UI utilities
-source "./lib/frame-ui.sh"
+echo "DEBUG: Loading frame-ui.sh..."
+source "${SCRIPT_DIR}/lib/frame-ui.sh"
+echo "DEBUG: frame-ui.sh loaded"
 
 # Logging function
 log() {
@@ -55,6 +59,8 @@ info() {
 
 # Load language file
 load_language() {
+    LANGUAGE=$1
+    echo "DEBUG: Loading language file..."
     local lang_file="${SCRIPT_DIR}/lib/i18n/${LANGUAGE}.sh"
     if [[ -f "$lang_file" ]]; then
         # shellcheck source=/dev/null
@@ -64,6 +70,7 @@ load_language() {
         warning "Language file not found: $lang_file, using English"
         LANGUAGE="en"
     fi
+    echo "DEBUG: Language file loaded"
 }
 
 # Welcome screen
