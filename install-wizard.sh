@@ -60,7 +60,7 @@ info() {
 # Load language file
 load_language() {
     LANGUAGE=$1
-    local lang_file="${SCRIPT_DIR}/lib/i18n/${LANGUAGE}.sh"
+    local lang_file="${SCRIPT_DIR}/lib/i18n/uninstall/${LANGUAGE}.sh"
     if [[ -f "$lang_file" ]]; then
         # shellcheck source=/dev/null
         source "$lang_file"
