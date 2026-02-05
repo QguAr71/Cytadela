@@ -128,7 +128,7 @@ print_next_steps() {
         --padding "0 2" \
         "→ NASTĘPNE KROKI:
 $(gum style --foreground 8 "$separator")
-wypróbuj to do ramek"
+wypróbuj to do ramek" >&2
 }
 
 # Print a section header with gum double border
@@ -141,7 +141,7 @@ print_gum_section_header() {
         --border-foreground 6 \
         --width "$width" \
         --padding "0 2" \
-        "$title"
+        "$title" >&2
 }
 
 # Print info box with gum single border
@@ -154,7 +154,7 @@ print_gum_info_box() {
         --border-foreground 4 \
         --width "$width" \
         --padding "0 2" \
-        "$content"
+        "$content" >&2
 }
 
 # Print warning box with yellow border
@@ -167,7 +167,7 @@ print_gum_warning_box() {
         --border-foreground 3 \
         --width "$width" \
         --padding "0 2" \
-        "$content"
+        "$content" >&2
 }
 
 # Print success box with green border
@@ -180,7 +180,7 @@ print_gum_success_box() {
         --border-foreground 2 \
         --width "$width" \
         --padding "0 2" \
-        "$content"
+        "$content" >&2
 }
 
 # Print error box with red border
@@ -193,5 +193,5 @@ print_gum_error_box() {
         --border-foreground 1 \
         --width "$width" \
         --padding "0 2" \
-        "$content"
+        "$content" >&2
 }
