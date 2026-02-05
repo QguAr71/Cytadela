@@ -122,6 +122,14 @@ load_language() {
         T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
         T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
         
+        # Systemd detection translations (FIX: Added missing translations)
+        T_SYSTEMD_DETECTED="Systemd wykryty i zweryfikowany:"
+        T_SYSTEMD_VERSION="Wersja:"
+        T_SYSTEMD_STATUS="Status:"
+        T_SYSTEMD_FUNCTIONAL="W pełni funkcjonalny"
+        T_SYSTEMD_PATHS="Ścieżki znalezione:"
+        T_SYSTEMD_LOCATIONS="lokalizacji"
+        
         # Missing translations for installer sections
         T_INSTALLATION_PROFILE="Profil Instalacji"
         T_COMPONENT_CUSTOMIZATION="Dostosowanie Komponentów"
@@ -338,7 +346,7 @@ customize_components() {
             "event-logging|${T_EVENT_LOGGING_DESC:-Structured event logging}" \
             "honeypot|${T_HONEYPOT_DESC:-Scanner detection traps}" \
             "prometheus|${T_PROMETHEUS_DESC:-Metrics collection}" \
-            | cut -d'|' -f1 | tr '\n' ',' | sed 's/,$//')
+            | cut -d"|" -f1 | paste -sd, -)
 
         if [[ -n "$selected" ]]; then
             components="$selected"
@@ -503,6 +511,12 @@ ${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original s
                     source ./modules/uninstall.sh
                     citadel_uninstall
                 fi
+                # FIX: Add cleanup after uninstall to prevent race condition
+                sleep 2
+                systemctl stop dnscrypt-proxy coredns 2>/dev/null || true
+                rm -rf /etc/coredns /etc/dnscrypt-proxy 2>/dev/null || true
+                nft delete table inet citadel_dns 2>/dev/null || true
+                info "Cleanup completed, proceeding with fresh installation..."
                 ;;
             "${T_UNINSTALL_CITADEL:-Uninstall Citadel}")
                 status "${T_UNINSTALLING_CITADEL:-Uninstalling Citadel...}"

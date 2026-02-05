@@ -226,6 +226,68 @@ EOF
     if [[ "$dns_works" == false ]]; then
         log_error "${T_DNS_FAILED:-DNS test failed - system may lose internet after restart!}"
         echo ""
+        
+        # NEW: Offer emergency network restore option
+        log_warning "${T_EMERGENCY_OFFER:-Connectivity test failed. Would you like to run emergency network restore?}"
+        echo ""
+        log_info "${T_EMERGENCY_OPTION:-This will:}"
+        log_info "  • ${T_EMERGENCY_DNS:-Set emergency public DNS servers}"
+        log_info "  • ${T_EMERGENCY_STOP:-Stop Citadel DNS services}"  
+        log_info "  • ${T_EMERGENCY_FLUSH:-Flush firewall rules}"
+        log_info "  • ${T_EMERGENCY_RESTART:-Restart network services}"
+        echo ""
+        
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_RUN_EMERGENCY:-Run emergency network restore now?}"; then
+                run_emergency="yes"
+            else
+                run_emergency="no"
+            fi
+        else
+            echo -n "${T_RUN_EMERGENCY:-Run emergency network restore now?} [y/N]: "
+            read -r run_emergency
+            if [[ "$run_emergency" =~ ^[Yy]$ ]]; then
+                run_emergency="yes"
+            else
+                run_emergency="no"
+            fi
+        fi
+        
+        if [[ "$run_emergency" == "yes" ]]; then
+            log_info "${T_RUNNING_EMERGENCY:-Running emergency network restore...}"
+            
+            # Try to run emergency network restore
+            if [[ -f "../citadel.sh" ]]; then
+                if ../citadel.sh recovery emergency-network-restore; then
+                    log_success "${T_EMERGENCY_SUCCESS:-Emergency network restore completed successfully}"
+                    
+                    # Test connectivity again after emergency restore
+                    log_info "${T_TESTING_AGAIN:-Testing connectivity again...}"
+                    dns_works_after=false
+                    for server in "${dns_servers[@]}"; do
+                        if dig +time=2 +tries=1 @"$server" google.com >/dev/null 2>&1; then
+                            log_success "${T_DNS_OK:-DNS connectivity verified via} $server"
+                            dns_works_after=true
+                            break
+                        fi
+                    done
+                    
+                    if [[ "$dns_works_after" == true ]]; then
+                        log_success "${T_CONNECTIVITY_RESTORED:-Internet connectivity restored successfully!}"
+                        dns_works=true  # Mark as working for continuation
+                    else
+                        log_warning "${T_EMERGENCY_FAILED:-Emergency restore completed but connectivity test still fails}"
+                        log_info "${T_MANUAL_INTERVENTION:-Manual intervention may still be required}"
+                    fi
+                else
+                    log_error "${T_EMERGENCY_FAILED_RUN:-Failed to run emergency network restore}"
+                fi
+            else
+                log_error "${T_CITADEL_NOT_FOUND:-citadel.sh not found - cannot run emergency restore}"
+            fi
+        fi
+        
+        echo ""
         draw_emergency_frame "${T_EMERGENCY_RECOVERY:-EMERGENCY RECOVERY:}" \
             "${T_RUN_CMD:-Run:}" \
             "${T_RECOVERY_CMD:-  sudo ./citadel.sh emergency-network-restore}"
