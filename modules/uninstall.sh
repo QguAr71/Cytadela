@@ -1,72 +1,169 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  CYTADELA++ UNINSTALL MODULE v3.1                                         ║
+# ║  CITADEL UNINSTALL MODULE v3.3                                             ║
 # ║  Complete uninstallation of Citadel DNS Filter                            ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 citadel_uninstall() {
-    # Load i18n for uninstall module
+    # Colors (256-color palette for better contrast)
+    # Auto-disable colors if stdout is not a TTY (for CI/logs)
+    if [[ -t 1 ]]; then
+        EMR='\e[38;5;43m'  # Emerald - success/active
+        VIO='\e[38;5;99m'  # Violet - info/sections
+        MAG='\e[38;5;201m' # Magenta - accent
+        RED='\e[38;5;196m' # Bloody Red - errors/warnings
+        BOLD='\e[1m'       # Bold text
+        NC='\e[0m'         # Reset
+        RST='\e[0m'        # Reset (alias)
+    else
+        EMR=''
+        VIO=''
+        MAG=''
+        RED=''
+        BOLD=''
+        NC=''
+        RST=''
+    fi
+
+    # Legacy color aliases (for compatibility)
+    # shellcheck disable=SC2034
+    GREEN="$EMR"
+    # shellcheck disable=SC2034
+    YELLOW="$VIO"
+    # shellcheck disable=SC2034
+    BLUE="$VIO"
+    # shellcheck disable=SC2034
+    CYAN="$EMR"
+    # shellcheck disable=SC2034
+    PURPLE="$VIO"
+    NC="$RST"
+
+    # Configuration
+    SCRIPT_DIR="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
+    LOG_FILE="/tmp/citadel-uninstall-$(date +%Y%m%d-%H%M%S).log"
+
+    # Gum availability check
+    if command -v gum >/dev/null 2>&1; then
+        GUM_AVAILABLE=true
+    else
+        GUM_AVAILABLE=false
+    fi
+
+    # Logging function
+    log() {
+        echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG_FILE"
+    }
+
+    # Enhanced status output (matching installer)
+    status() {
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            gum style --foreground 121 "✓ $1"
+        else
+            echo -e "${GREEN}✓${NC} $1"
+        fi
+    }
+
+    error() {
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            gum style --foreground 196 "✗ $1"
+        else
+            echo -e "${RED}✗${NC} $1" >&2
+        fi
+        log "ERROR: $1"
+        exit 1
+    }
+
+    warning() {
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            gum style --foreground 214 "⚠ $1"
+        else
+            echo -e "${YELLOW}⚠${NC} $1" >&2
+        fi
+        log "WARNING: $1"
+    }
+
+    info() {
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            gum style --foreground 39 "$1"
+        else
+            echo -e "${BLUE}$1${NC}"
+        fi
+    }
+
+    # Load i18n
     load_i18n_module "uninstall"
 
-    log_section "󰩹  ${T_UNINSTALL_TITLE:-CITADEL++ UNINSTALLATION}"
-
-    log_warning "${T_UNINSTALL_WARNING:-This will REMOVE all Citadel components!}"
-    log_info "${T_UNINSTALL_INFO:-Services will be stopped and disabled}"
-    log_info "${T_UNINSTALL_CONFIG:-Configuration files will be deleted}"
-    echo ""
-    read -rp "${T_CONFIRM_UNINSTALL:-Are you sure? Type 'yes' to continue: }" confirm
-    if [[ "$confirm" != "yes" ]]; then
-        log_info "${T_UNINSTALL_CANCELLED:-Cancelled}"
-        return 0
+    # Enhanced welcome message (matching installer)
+    if [[ "$GUM_AVAILABLE" == true ]]; then
+        gum style --border double --width 64 --padding "1 2" --foreground 99 --bold "${T_UNINSTALL_TITLE:-Citadel Uninstallation}"
+    else
+        echo "╔═══════════════════════════════════════════════════════════════╗"
+        echo "║                                                               ║"
+        echo "║                ${T_UNINSTALL_TITLE:-Citadel Uninstallation}                ║"
+        echo "║                                                               ║"
+        echo "╚═══════════════════════════════════════════════════════════════╝"
     fi
 
-    # Check for optional packages that might be removable
+    echo -e "${VIO}${T_WORKING_DIRECTORY:-Working directory:}${NC} $SCRIPT_DIR"
+    echo -e "${VIO}${T_LOG_FILE_LABEL:-Log file:}${NC} $LOG_FILE"
     echo ""
-    log_info "Checking optional dependencies..."
-    local optional_packages=()
-    local pkg
-    for pkg in dnsperf curl jq whiptail notify-send shellcheck; do
-        if command -v "$pkg" >/dev/null 2>&1; then
-            # Check if it's a system package (not manually compiled)
-            if pacman -Qq "$pkg" 2>/dev/null | grep -q "^$pkg$"; then
-                optional_packages+=("$pkg")
-            fi
-        fi
-    done
 
-    if [[ ${#optional_packages[@]} -gt 0 ]]; then
-        log_warning "${T_OPTIONAL_PKGS_FOUND:-The following packages were possibly installed for Citadel:}"
-        printf "  • %s\n" "${optional_packages[@]}"
-        log_info "${T_REMOVE_PKGS_MANUAL:-You may want to remove them manually if no other app needs them:}"
-        log_info "  sudo pacman -R ${optional_packages[*]}"
-        echo ""
-        read -rp "${T_REMOVE_PKGS_NOW:-Remove these packages now? (y/N): }" remove_pkgs
-        if [[ "$remove_pkgs" =~ ^[Yy]$ ]]; then
-            log_info "${T_REMOVING:-Removing} packages..."
-            # Remove only if no other packages depend on them
-            for pkg in "${optional_packages[@]}"; do
-                if pacman -Qi "$pkg" 2>/dev/null | grep -q "^Required By.*None"; then
-                    log_info "${T_REMOVING:-Removing} $pkg ${T_NO_DEPS:-(no other package depends on it)}"
-                    pacman -R --noconfirm "$pkg" 2>/dev/null || log_warning "Failed to remove $pkg"
-                else
-                    log_info "${T_SKIPPING:-Skipping} $pkg ${T_REQUIRED_BY:-(required by other packages)}"
-                fi
-            done
+    log "Starting Citadel uninstallation"
+
+    # Display uninstall plan (matching installer)
+    if [[ "$GUM_AVAILABLE" == true ]]; then
+        gum style --border normal --width 64 --padding "0 1" --foreground 75 --bold "${T_UNINSTALL_PLAN_TITLE:-Citadel Uninstallation Plan}"
+    else
+        echo "┌───────────────────────────────────────────────────────────────┐"
+        echo "│                ${T_UNINSTALL_PLAN_TITLE:-Citadel Uninstallation Plan}                 │"
+        echo "└───────────────────────────────────────────────────────────────┘"
+    fi
+
+    echo -e "${VIO}${T_PLAN_WARNING:-This will REMOVE all Citadel components!}${NC}"
+    echo -e "${VIO}${T_PLAN_SERVICES:-Services will be stopped and disabled}${NC}"
+    echo -e "${VIO}${T_PLAN_CONFIG:-Configuration files will be deleted}${NC}"
+    echo ""
+
+    # Check for root
+    if [[ $EUID -ne 0 ]]; then
+        error "This script must be run as root (sudo)"
+    fi
+
+    # Confirmation prompt (matching installer)
+    if [[ "$GUM_AVAILABLE" == true ]]; then
+        if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_CONFIRM_CONTINUE:-Are you sure you want to continue?}"; then
+            confirm="yes"
+        else
+            confirm="no"
         fi
     else
-        log_info "${T_NO_OPTIONAL_PKGS:-No optional packages found (dnsperf, curl, jq, etc.)}"
+        echo -n "Are you sure you want to continue? [y/N]: "
+        read -r confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            confirm="yes"
+        else
+            confirm="no"
+        fi
     fi
 
-    echo ""
+    if [[ "$confirm" != "yes" ]]; then
+        info "${T_UNINSTALL_CANCELLED:-Uninstallation cancelled}"
+        exit 0
+    fi
 
-    # CRITICAL: Restore DNS first (before stopping services!)
-    log_info "${T_RESTORE_DNS:-Restoring original DNS configuration...}"
-    
+    # Main uninstallation logic
+    status "${T_STARTING_UNINSTALL:-Starting uninstallation process...}"
+
+    # Stop services
+    status "${T_STOPPING_SERVICES:-Stopping Citadel services...}"
+    systemctl stop coredns dnscrypt-proxy 2>/dev/null || true
+    systemctl disable coredns dnscrypt-proxy 2>/dev/null || true
+
+    # DNS restoration
+    status "${T_RESTORING_DNS:-Restoring DNS configuration...}"
     local dns_restored=false
     local dns_servers=("1.1.1.1" "8.8.8.8" "9.9.9.9")
     local backup_dir="${CYTADELA_STATE_DIR}/backups"
-    
-    # Check if backup exists in new location (install-wizard backup)
     if [[ -f "${backup_dir}/resolv.conf.pre-citadel" ]]; then
         local backup_dns
         backup_dns=$(grep "^nameserver" "${backup_dir}/resolv.conf.pre-citadel" | head -1 | awk '{print $2}')
@@ -78,7 +175,6 @@ citadel_uninstall() {
         else
             log_warning "Backup points to localhost, using fallback..."
         fi
-    # Check old location for compatibility
     elif [[ -f /etc/resolv.conf.bak ]]; then
         local backup_dns
         backup_dns=$(grep "^nameserver" /etc/resolv.conf.bak | head -1 | awk '{print $2}')
@@ -92,32 +188,29 @@ citadel_uninstall() {
             rm -f /etc/resolv.conf.bak 2>/dev/null || true
         fi
     fi
-    
-    # If no valid backup, try to detect system DNS configuration
-    if [[ "$dns_restored" == false ]]; then
-        # Try NetworkManager
-        if command -v nmcli >/dev/null 2>&1 && systemctl is-active --quiet NetworkManager; then
-            log_info "Detected NetworkManager - enabling automatic DNS..."
-            nmcli general reload 2>/dev/null || true
-            # Wait a moment for NM to configure DNS
-            sleep 2
-            if dig +time=2 +tries=1 google.com >/dev/null 2>&1; then
-                log_success "NetworkManager DNS is working"
-                dns_restored=true
-            fi
-        fi
-    fi
-    
-    # If still no DNS, use fallback servers
     if [[ "$dns_restored" == false ]]; then
         log_info "Setting fallback DNS servers..."
-        {
-            echo "# Temporary DNS configuration after Citadel uninstall"
-            echo "nameserver 1.1.1.1"
-            echo "nameserver 8.8.8.8"
-            echo "nameserver 9.9.9.9"
-        } > /etc/resolv.conf
-        log_info "Set fallback DNS (Cloudflare, Google, Quad9)"
+        chattr -i /etc/resolv.conf 2>/dev/null || true
+        cat > /etc/resolv.conf << 'EOF'
+# Temporary DNS configuration after Citadel uninstall
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+nameserver 9.9.9.9
+EOF
+        if [[ $? -eq 0 ]]; then
+            log_info "Set fallback DNS (Cloudflare, Google, Quad9)"
+        else
+            log_error "Failed to write to /etc/resolv.conf - trying alternative method"
+            if command -v resolvconf >/dev/null 2>&1; then
+                echo "nameserver 1.1.1.1" | resolvconf -a lo.dns-restore 2>/dev/null || true
+                echo "nameserver 8.8.8.8" | resolvconf -a lo.dns-restore 2>/dev/null || true
+                echo "nameserver 9.9.9.9" | resolvconf -a lo.dns-restore 2>/dev/null || true
+                log_info "Used resolvconf to set fallback DNS"
+            else
+                log_error "Could not restore DNS configuration. Manual intervention may be required."
+                log_error "Try: sudo chattr -i /etc/resolv.conf && sudo nano /etc/resolv.conf"
+            fi
+        fi
     fi
 
     # Test DNS connectivity with multiple servers
@@ -130,103 +223,132 @@ citadel_uninstall() {
             break
         fi
     done
-    
     if [[ "$dns_works" == false ]]; then
         log_error "${T_DNS_FAILED:-DNS test failed - system may lose internet after restart!}"
         echo ""
-        draw_emergency_frame "EMERGENCY RECOVERY:" \
-            "Run:" \
-            "  ${YELLOW}sudo ./citadel.sh emergency-network-restore${NC}"
+        draw_emergency_frame "${T_EMERGENCY_RECOVERY:-EMERGENCY RECOVERY:}" \
+            "${T_RUN_CMD:-Run:}" \
+            "${T_RECOVERY_CMD:-  sudo ./citadel.sh emergency-network-restore}"
         log_info "${T_MANUAL_FIX:-Manual fix options:}"
         log_info "  1. ${T_RESTART_NM:-Restart NetworkManager}: sudo systemctl restart NetworkManager"
         log_info "  2. ${T_RESTART_SD:-Or restart systemd-resolved}: sudo systemctl restart systemd-resolved"
         log_info "  3. ${T_MANUAL_EDIT:-Or manually edit}: sudo nano /etc/resolv.conf"
         log_info "     ${T_ADD_NAMESERVER:-and add}: nameserver 1.1.1.1"
         echo ""
-        read -rp "${T_CONTINUE_ANYWAY:-Continue with uninstall despite DNS issues? (yes/no): }" continue_anyway
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_CONTINUE_ANYWAY:-Continue with uninstall despite DNS issues?}"; then
+                continue_anyway="yes"
+            else
+                continue_anyway="no"
+            fi
+        else
+            read -rp "${T_CONTINUE_ANYWAY:-Continue with uninstall despite DNS issues? (yes/no): }" continue_anyway
+        fi
         if [[ "$continue_anyway" != "yes" ]]; then
             log_info "${T_UNINSTALL_CANCELLED_DNS:-Uninstall cancelled. Fix DNS first, then run uninstall again.}"
             return 0
         fi
     fi
 
-    echo ""
+    # Remove components
+    status "${T_REMOVING_COMPONENTS:-Removing Citadel components...}"
 
-    # Stop and disable services
-    log_info "${T_STOPPING_SERVICES:-Stopping services...}"
-    systemctl stop coredns dnscrypt-proxy 2>/dev/null || true
-    systemctl disable coredns dnscrypt-proxy 2>/dev/null || true
+    # Check for optional packages that might be removable
+    status "${T_CHECKING_DEPS:-Checking optional dependencies...}"
+    local optional_packages=()
+    local pkg
+    for pkg in dnsperf curl jq whiptail notify-send shellcheck; do
+        if command -v "$pkg" >/dev/null 2>&1; then
+            # Check if it's a system package (not manually compiled)
+            if pacman -Qq "$pkg" 2>/dev/null | grep -q "^$pkg$"; then
+                optional_packages+=("$pkg")
+            fi
+        fi
+    done
 
-    # Remove systemd drop-ins
-    log_info "Removing systemd configurations..."
-    rm -rf /etc/systemd/system/coredns.service.d/ 2>/dev/null || true
-    rm -rf /etc/systemd/system/dnscrypt-proxy.service.d/ 2>/dev/null || true
-    systemctl daemon-reload 2>/dev/null || true
+    if [[ ${#optional_packages[@]} -gt 0 ]]; then
+        warning "${T_FOUND_PACKAGES:-Found optional packages that may have been installed for Citadel:}"
+        printf "  • %s\n" "${optional_packages[@]}"
+        info "${T_REMOVE_PKGS_MANUAL:-You may want to remove them manually if no other app needs them:}"
+        info "  sudo pacman -R ${optional_packages[*]}"
+        echo ""
+        if [[ "$GUM_AVAILABLE" == true ]]; then
+            if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_REMOVE_PKGS_NOW:-Remove these packages now?}"; then
+                remove_pkgs="y"
+            else
+                remove_pkgs="n"
+            fi
+        else
+            echo -n "Remove these packages now? [y/N]: "
+            read -r remove_pkgs
+        fi
+        if [[ "$remove_pkgs" =~ ^[Yy]$ ]]; then
+            status "${T_REMOVING_PACKAGES:-Removing packages...}"
+            # Remove only if no other packages depend on them
+            for pkg in "${optional_packages[@]}"; do
+                if pacman -Qi "$pkg" 2>/dev/null | grep -q "^Required By.*None"; then
+                    info "${T_REMOVING:-Removing} $pkg ${T_NO_DEPS:-no other package depends on it}"
+                    pacman -R --noconfirm "$pkg" 2>/dev/null || warning "${T_FAILED_REMOVE:-Failed to remove} $pkg"
+                else
+                    info "${T_SKIPPING_PACKAGE:-Skipping} $pkg ${T_REQUIRED_BY_DEPS:-required by other packages}"
+                fi
+            done
+        fi
+    else
+        info "${T_NO_OPTIONAL_PKGS:-No optional packages found}"
+    fi
 
-    # Remove firewall rules
-    log_info "${T_REMOVING_FIREWALL:-Removing firewall rules...}"
-    nft delete table inet citadel_dns 2>/dev/null || true
-    rm -f /etc/nftables.d/citadel-dns.nft 2>/dev/null || true
-
-    # Remove configuration files
-    log_info "${T_REMOVING_CONFIG:-Removing configuration files...}"
+    # Remove Citadel components
+    status "${T_REMOVING_FILES:-Removing Citadel files and configurations...}"
     rm -rf /etc/coredns/ 2>/dev/null || true
     rm -rf /etc/dnscrypt-proxy/ 2>/dev/null || true
-
-    # Remove data directories
-    log_info "${T_REMOVING_DATA:-Removing data directories...}"
     rm -rf /var/lib/dnscrypt/ 2>/dev/null || true
     rm -rf /var/log/dnscrypt-proxy/ 2>/dev/null || true
     rm -rf /opt/cytadela/ 2>/dev/null || true
     rm -rf /var/cache/cytadela/ 2>/dev/null || true
 
-    # Remove user
-    log_info "${T_REMOVING_USER:-Removing system user...}"
+    # Remove system components
+    status "${T_REMOVING_SYSTEM:-Removing system components...}"
     userdel dnscrypt 2>/dev/null || true
-
-    # Remove dashboard if installed
-    log_info "${T_REMOVING_DASHBOARD:-Removing dashboard...}"
     rm -f /usr/local/bin/citadel-top 2>/dev/null || true
     rm -f /etc/systemd/system/citadel-dashboard.service 2>/dev/null || true
-
-    # Remove cron jobs
-    log_info "${T_REMOVING_CRON:-Removing scheduled tasks...}"
     rm -f /etc/cron.d/cytadela-* 2>/dev/null || true
-
-    # Remove scripts from /usr/local/bin
-    log_info "${T_REMOVING_SHORTCUTS:-Removing command shortcuts...}"
     rm -f /usr/local/bin/citadel 2>/dev/null || true
 
-    draw_emergency_frame "󰜝 ${T_NEXT_STEPS:-NEXT STEPS:}" \
-        "${T_REINSTALL_CMD:-Reinstall:  sudo ./citadel.sh install-wizard}" \
-        "${T_IF_ISSUES_CMD:-If issues:  sudo ./citadel.sh emergency-network-restore}"
-}
+    # Clean up firewall and systemd
+    nft delete table inet citadel_dns 2>/dev/null || true
+    rm -f /etc/nftables.d/citadel-dns.nft 2>/dev/null || true
+    rm -rf /etc/systemd/system/coredns.service.d/ 2>/dev/null || true
+    rm -rf /etc/systemd/system/dnscrypt-proxy.service.d/ 2>/dev/null || true
+    systemctl daemon-reload 2>/dev/null || true
 
-citadel_uninstall_keep_config() {
-    # Load i18n strings based on language
-    local lang="${LANG%%_*}"
-    lang="${lang:-en}"
-    local module_dir
-    module_dir="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
-    if [[ -f "${module_dir}/lib/i18n/${lang}.sh" ]]; then
-        # shellcheck source=/dev/null
-        source "${module_dir}/lib/i18n/${lang}.sh"
-    fi
-
-    log_section "󰩹  ${T_KEEP_CONFIG_TITLE:-CITADEL++ UNINSTALL (Keep Config)}"
-
-    log_warning "${T_KEEP_CONFIG_WARNING:-This will stop services but KEEP configuration files}"
+    # Completion
     echo ""
-    read -rp "${T_CONFIRM_KEEP_CONFIG:-Continue? Type 'yes': }" confirm
-    if [[ "$confirm" != "yes" ]]; then
-        log_info "${T_UNINSTALL_CANCELLED:-Cancelled}"
-        return 0
+    if [[ "$GUM_AVAILABLE" == true ]]; then
+        gum style --border double --width 64 --padding "1 2" --foreground 43 --bold "${T_UNINSTALL_COMPLETE_TITLE:-UNINSTALLATION COMPLETE}"
+    else
+        echo "╔═══════════════════════════════════════════════════════════════╗"
+        echo "║                                                               ║"
+        echo "║                 UNINSTALLATION COMPLETE                      ║"
+        echo "║                                                               ║"
+        echo "╚═══════════════════════════════════════════════════════════════╝"
     fi
 
-    log_info "${T_STOPPING_SERVICES:-Stopping services...}"
-    systemctl stop coredns dnscrypt-proxy 2>/dev/null || true
-    systemctl disable coredns dnscrypt-proxy 2>/dev/null || true
+    status "${T_UNINSTALL_SUCCESS:-Citadel has been completely uninstalled!}"
 
-    log_success "${T_SERVICES_STOPPED:-Services stopped, configuration preserved}"
-    log_info "${T_RESTART_HINT:-To restart: sudo ./citadel.sh install-wizard}"
+    # Always show emergency recovery info at the end as safety reminder
+    echo ""
+    draw_emergency_frame "${T_EMERGENCY_RECOVERY:-EMERGENCY RECOVERY:}" \
+        "${T_RUN_CMD:-Run:}" \
+        "${T_RECOVERY_CMD:-  sudo ./citadel.sh emergency-network-restore}"
+    info "${T_MANUAL_FIX:-Manual fix options:}"
+    info "  1. ${T_RESTART_NM:-Restart NetworkManager}: sudo systemctl restart NetworkManager"
+    info "  2. ${T_RESTART_SD:-Or restart systemd-resolved}: sudo systemctl restart systemd-resolved"
+    info "  3. ${T_MANUAL_EDIT:-Or manually edit}: sudo nano /etc/resolv.conf"
+    info "     ${T_ADD_NAMESERVER:-and add}: nameserver 1.1.1.1"
+
+    echo ""
+    echo -e "${VIO}${T_LOG_FILE_LABEL:-Log file:}${NC} $LOG_FILE"
+
+    log "Uninstallation completed successfully"
 }

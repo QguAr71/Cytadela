@@ -25,7 +25,7 @@ if [[ -t 1 ]]; then
     EMR='\e[38;5;43m'  # Emerald - success/active
     VIO='\e[38;5;99m'  # Violet - info/sections
     MAG='\e[38;5;201m' # Magenta - accent
-    RED='\e[38;5;160m' # Crimson - errors/warnings
+    RED='\e[38;5;196m'  # Bloody Red - emergency frames
     BOLD='\e[1m'       # Bold text
     NC='\e[0m'         # Reset
     RST='\e[0m'        # Reset (alias)
@@ -59,14 +59,14 @@ declare -gA CYTADELA_LOADED_MODULES
 # ==============================================================================
 # LOGGING FUNCTIONS (using printf for safety)
 # ==============================================================================
-log_info() { printf '%b\n' "${EMR}󰄮${RST} ${VIO}$1${RST}"; }
-log_success() { printf '%b\n' "${EMR}󰄬${RST} $1"; }
-log_warning() { printf '%b\n' "${RED}󰀨${RST} $1"; }
-log_error() { printf '%b\n' "${RED}󰅖${RST} $1" >&2; }
+log_info() { printf '%b\n' "${EMR}ℹ${RST} ${VIO}$1${RST}"; }
+log_success() { printf '%b\n' "${EMR}✓${RST} $1"; }
+log_warning() { printf '%b\n' "${RED}⚠${RST} $1"; }
+log_error() { printf '%b\n' "${RED}✗${RST} $1" >&2; }
 log_section() {
-    printf '\n%b\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
+    printf '\n%b\n' "${VIO}═══════════════════════════════════════════════════════════════${RST}"
     printf '%b\n' "${VIO}║${RST} $1"
-    printf '%b\n\n' "${VIO}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${RST}"
+    printf '%b\n\n' "${VIO}═══════════════════════════════════════════════════════════════${RST}"
 }
 log_debug() {
     [[ "${CYTADELA_DEBUG:-0}" == "1" ]] && printf '%b\n' "${VIO}[DEBUG]${RST} $1" >&2

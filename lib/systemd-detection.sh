@@ -266,10 +266,10 @@ detect_systemd() {
         return 1
     fi
 
-    log_info "Systemd detected and verified:"
-    log_info "  - Version: $SYSTEMD_VERSION"
-    log_info "  - Status: Fully functional"
-    log_info "  - Paths found: ${#SYSTEMD_PATHS[@]} locations"
+    echo "ℹ ${T_SYSTEMD_DETECTED:-Systemd detected and verified:}"
+    echo "ℹ   - ${T_SYSTEMD_VERSION:-Version:} $SYSTEMD_VERSION"
+    echo "ℹ   - ${T_SYSTEMD_STATUS:-Status:} ${T_SYSTEMD_FUNCTIONAL:-Fully functional}"
+    echo "ℹ   - ${T_SYSTEMD_PATHS:-Paths found:} ${#SYSTEMD_PATHS[@]} ${T_SYSTEMD_LOCATIONS:-locations}"
 
     return 0
 }

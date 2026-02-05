@@ -149,12 +149,7 @@ configure_system() {
     log_section "󰒓 System Configuration"
 
     log_warning "Ten krok zmienia DNS systemu (może chwilowo przerwać internet jeśli DNS nie działa)."
-    printf "Czy na pewno chcesz kontynuować? (tak/nie): "
-    read -r REPLY
-    if [[ ! $REPLY =~ ^(tak|TAK|yes|YES|y|Y)$ ]]; then
-        log_info "Anulowano"
-        return 0
-    fi
+    log_info "Automatyczne kontynuowanie instalacji..."
 
     # Create backup directory
     mkdir -p "${CYTADELA_STATE_DIR}/backups"

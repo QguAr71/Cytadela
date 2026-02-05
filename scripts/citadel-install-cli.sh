@@ -10,6 +10,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="/tmp/citadel-install-$(date +%Y%m%d-%H%M%S).log"
 
+# Language configuration
+LANGUAGE="en"
+declare -A LANGUAGES=(
+    ["en"]="English"
+    ["pl"]="Polski"
+    ["de"]="Deutsch"
+    ["es"]="Español"
+    ["fr"]="Français"
+    ["it"]="Italiano"
+    ["ru"]="Русский"
+)
+
 # Enhanced CLI options
 PROFILE="standard"
 COMPONENTS=""
@@ -43,7 +55,7 @@ declare -A COMPONENTS_DESC=(
 
 # Colors for output
 RED='\033[0;31m'
-GREEN='\033[0;32m'
+GREEN='\033[38;5;121m' # Mint green instead of regular green
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
@@ -63,7 +75,7 @@ log() {
 # Enhanced status output
 status() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-        gum style --foreground 46 "✓ $1"
+        gum style --foreground 121 "✓ $1"
     else
         echo -e "${GREEN}✓${NC} $1"
     fi
@@ -100,6 +112,14 @@ info() {
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
+            --language=*)
+                LANGUAGE="${1#*=}"
+                shift
+                ;;
+            --language)
+                LANGUAGE="$2"
+                shift 2
+                ;;
             --profile=*)
                 PROFILE="${1#*=}"
                 shift
@@ -156,14 +176,15 @@ USAGE:
     sudo ./citadel-install-cli.sh [OPTIONS]
 
 OPTIONS:
-    --profile=PROFILE      Installation profile (minimal|standard|security|full|custom)
-    --components=LIST      Comma-separated list of components to install
-    --dry-run             Show what would be installed without making changes
-    --verbose             Enable verbose output
-    --gum-enhanced        Use gum TUI for enhanced user experience
-    --backup-existing     Create backups of existing configurations
-    --select-components   Interactive component selection
-    --help, -h           Show this help message
+    --language=LANG         Language selection (en|pl) [default: en]
+    --profile=PROFILE       Installation profile (minimal|standard|security|full|custom)
+    --components=LIST       Comma-separated list of components to install
+    --dry-run              Show what would be installed without making changes
+    --verbose              Enable verbose output
+    --gum-enhanced         Use gum TUI for enhanced user experience (installs gum if needed)
+    --backup-existing      Create backups of existing configurations
+    --select-components    Interactive component selection
+    --help, -h            Show this help message
 
 PROFILES:
     minimal     - Core DNS functionality (dnscrypt, coredns)
@@ -183,8 +204,18 @@ COMPONENTS:
     prometheus      - Metrics collection
     firewall        - NFTables firewall rules
 
+LANGUAGES:
+    en              - English (default)
+    pl              - Polski
+    de              - Deutsch
+    es              - Español
+    fr              - Français
+    it              - Italiano
+    ru              - Русский
+
 EXAMPLES:
     sudo ./citadel-install-cli.sh --profile=standard
+    sudo ./citadel-install-cli.sh --language=pl --profile=standard --gum-enhanced
     sudo ./citadel-install-cli.sh --components=dnscrypt,coredns,adblock --dry-run
     sudo ./citadel-install-cli.sh --select-components --gum-enhanced
 
@@ -198,11 +229,72 @@ validate_profile() {
     fi
 }
 
+# Validate language
+validate_language() {
+    if [[ -z "${LANGUAGES[$LANGUAGE]}" ]]; then
+        error "Invalid language: $LANGUAGE. Available: ${!LANGUAGES[*]}"
+    fi
+}
+
+# Load language file
+load_language() {
+    local lang_file="${SCRIPT_DIR}/../lib/i18n/${LANGUAGE}.sh"
+    if [[ -f "$lang_file" ]]; then
+        # shellcheck source=/dev/null
+        source "$lang_file"
+        status "${T_LANGUAGE_LOADED:-Language loaded}: ${LANGUAGES[$LANGUAGE]}"
+    else
+        warning "Language file not found: $lang_file, using English"
+        LANGUAGE="en"
+    fi
+}
+
+# Install gum if needed for enhanced UI
+install_gum_if_needed() {
+    if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == false ]]; then
+        status "Installing gum for enhanced UI..."
+        if [[ "$DRY_RUN" == false ]]; then
+            # Try different package managers
+            if command -v pacman >/dev/null 2>&1; then
+                if ! pacman -S --noconfirm gum >/dev/null 2>&1; then
+                    warning "Failed to install gum with pacman"
+                fi
+            elif command -v apt >/dev/null 2>&1; then
+                if ! apt update && apt install -y gum >/dev/null 2>&1; then
+                    warning "Failed to install gum with apt"
+                fi
+            elif command -v dnf >/dev/null 2>&1; then
+                if ! dnf install -y gum >/dev/null 2>&1; then
+                    warning "Failed to install gum with dnf"
+                fi
+            elif command -v zypper >/dev/null 2>&1; then
+                if ! zypper install -y gum >/dev/null 2>&1; then
+                    warning "Failed to install gum with zypper"
+                fi
+            else
+                warning "No supported package manager found. Please install gum manually for enhanced UI."
+            fi
+
+            # Re-check if gum is now available
+            if command -v gum >/dev/null 2>&1; then
+                GUM_AVAILABLE=true
+                status "Gum installed successfully"
+            else
+                GUM_AVAILABLE=false
+                warning "Gum installation failed - falling back to plain text UI"
+                GUM_ENHANCED=false
+            fi
+        else
+            status "Would install gum for enhanced UI"
+        fi
+    fi
+}
+
 # Interactive component selection
 select_components_interactive() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
         # Gum-enhanced selection
-        gum style --bold --foreground 212 "Component Selection"
+        gum style --bold --foreground 75 "Component Selection"
 
         local available_components=""
         for comp in "${!COMPONENTS_DESC[@]}"; do
@@ -263,17 +355,17 @@ determine_components() {
 # Display installation plan
 show_installation_plan() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-        gum style --bold --foreground 212 "Citadel v3.3+ Installation Plan"
+        gum style --bold --foreground 75 --border normal --padding "0 1" "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
     else
-        echo "Citadel v3.3+ Installation Plan"
+        echo "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
         echo "================================"
     fi
 
-    echo "Profile: $PROFILE"
-    echo "Components: $COMPONENTS"
-    echo "Dry run: $DRY_RUN"
-    echo "Gum enhanced: $GUM_ENHANCED"
-    echo "Backup existing: $BACKUP_EXISTING"
+    echo "${T_PROFILE:-Profile}: $PROFILE"
+    echo "${T_COMPONENTS:-Components}: $COMPONENTS"
+    echo "${T_DRY_RUN:-Dry run}: $DRY_RUN"
+    echo "${T_GUM_ENHANCED:-Gum enhanced}: $GUM_ENHANCED"
+    echo "${T_BACKUP_EXISTING:-Backup existing}: $BACKUP_EXISTING"
     echo ""
 
     if [[ "$DRY_RUN" == true ]]; then
@@ -281,27 +373,35 @@ show_installation_plan() {
     fi
 
     # List selected components
-    echo "Selected components:"
+    echo "${T_SELECTED_COMPONENTS:-Selected components}:"
     IFS=',' read -ra comp_array <<< "$COMPONENTS"
     for comp in "${comp_array[@]}"; do
         comp=$(echo "$comp" | xargs)
-        if [[ -n "${COMPONENTS_DESC[$comp]}" ]]; then
-            echo "  • $comp - ${COMPONENTS_DESC[$comp]}"
-        else
-            warning "Unknown component: $comp"
-        fi
+        case "$comp" in
+            dnscrypt) desc="${T_COMPONENT_DNSCRYPT:-DNS encryption and caching}" ;;
+            coredns) desc="${T_COMPONENT_COREDNS:-DNS server and filtering}" ;;
+            adblock) desc="${T_COMPONENT_ADBLOCK:-DNS-based ad blocking}" ;;
+            reputation) desc="${T_COMPONENT_REPUTATION:-IP reputation scoring}" ;;
+            asn-blocking) desc="${T_COMPONENT_ASN_BLOCKING:-Network-level blocking}" ;;
+            event-logging) desc="${T_COMPONENT_EVENT_LOGGING:-Structured event logging}" ;;
+            honeypot) desc="${T_COMPONENT_HONEYPOT:-Scanner detection traps}" ;;
+            prometheus) desc="${T_COMPONENT_PROMETHEUS:-Metrics collection}" ;;
+            firewall) desc="${T_COMPONENT_FIREWALL:-NFTables firewall rules}" ;;
+            *) desc="Unknown component" ;;
+        esac
+        echo "  • $comp - $desc"
     done
     echo ""
 
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-        if gum confirm "Proceed with installation?"; then
+        if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_PROCEED_WITH_INSTALLATION:-Kontynuować instalację?}"; then
             return 0
         else
             info "Installation cancelled"
             exit 0
         fi
     else
-        echo -n "Proceed with installation? [y/N]: "
+        echo -n "${T_PROCEED_WITH_INSTALLATION:-Proceed with installation?} [y/N]: "
         read -r answer
         if [[ ! "$answer" =~ ^[Yy]$ ]]; then
             info "Installation cancelled"
@@ -318,22 +418,31 @@ fi
 # Parse arguments
 parse_args "$@"
 
+# Validate language
+validate_language
+
+# Load language file
+load_language
+
 # Validate profile
 validate_profile
+
+# Install gum if needed for enhanced UI
+install_gum_if_needed
 
 # Determine components
 determine_components
 
 # Enhanced welcome message
 if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-    gum style --bold --foreground 212 --border double --padding "1 2" "Citadel v3.3+ Enhanced CLI Installer"
+    gum style --bold --foreground 99 --border double --padding "1 2" "${T_INSTALLER_TITLE:-Citadel v3.3+ Enhanced CLI Installer}"
 else
-    echo "Citadel v3.3+ Enhanced CLI Installer"
+    echo "${T_INSTALLER_TITLE:-Citadel v3.3+ Enhanced CLI Installer}"
     echo "==================================="
 fi
 
-echo "Working directory: $SCRIPT_DIR"
-echo "Log file: $LOG_FILE"
+echo "${T_WORKING_DIRECTORY:-Working directory}: $SCRIPT_DIR"
+echo "${T_LOG_FILE_LABEL:-Log file}: $LOG_FILE"
 echo ""
 
 log "Starting Citadel v3.3+ enhanced installation"
@@ -347,8 +456,9 @@ show_installation_plan
 # Function to run citadel commands
 run_citadel() {
     local cmd="$1"
-    log "Running: citadel.sh $cmd"
-    if ! "$SCRIPT_DIR/citadel.sh" $cmd >> "$LOG_FILE" 2>&1; then
+    local citadel_path="$(dirname "$SCRIPT_DIR")/citadel.sh"
+    log "Running: $citadel_path $cmd"
+    if ! "$citadel_path" $cmd >> "$LOG_FILE" 2>&1; then
         error "Failed to run: citadel.sh $cmd"
     fi
 }
@@ -371,116 +481,116 @@ install_component() {
 
     case "$component" in
         dnscrypt)
-            status "Installing DNSCrypt..."
+            status "${T_INSTALLING:-Installing} DNSCrypt..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install dnscrypt"
                 if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null; then
-                    status "DNSCrypt installed and running"
+                    status "DNSCrypt ${T_INSTALLED:-installed} and running"
                 else
                     warning "DNSCrypt service not active (expected after config)"
                 fi
             else
-                status "Would install DNSCrypt"
+                status "Would ${T_INSTALLING,,} DNSCrypt"
             fi
             ;;
 
         coredns)
-            status "Installing CoreDNS..."
+            status "${T_INSTALLING:-Installing} CoreDNS..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install coredns"
                 if systemctl is-active --quiet coredns 2>/dev/null; then
-                    status "CoreDNS installed and running"
+                    status "CoreDNS ${T_INSTALLED:-installed} and running"
                 else
                     warning "CoreDNS service not active (expected after config)"
                 fi
             else
-                status "Would install CoreDNS"
+                status "Would ${T_INSTALLING_COREDNS,,}"
             fi
             ;;
 
         firewall)
-            status "Configuring firewall..."
+            status "${T_CONFIGURING_FIREWALL:-Configuring firewall}..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install firewall-safe"
                 if systemctl is-active --quiet nftables 2>/dev/null; then
-                    status "Firewall configured"
+                    status "${T_FIREWALL_CONFIGURED:-Firewall configured}"
                 else
-                    warning "Firewall service not active"
+                    warning "${T_FIREWALL_NOT_ACTIVE:-Firewall service not active}"
                 fi
             else
-                status "Would configure firewall"
+                status "Would ${T_CONFIGURING_FIREWALL,,}"
             fi
             ;;
 
         adblock)
-            status "Initializing blocklists..."
+            status "${T_INITIALIZING_ADBLOCK:-Initializing adblock}..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "backup lists-update"
-                status "Blocklists updated"
+                status "${T_ADBLOCK_UPDATED:-Adblock updated}"
             else
-                status "Would initialize blocklists"
+                status "Would ${T_INITIALIZING_ADBLOCK,,}"
             fi
 
-            status "Configuring adblock..."
+            status "${T_CONFIGURING_ADBLOCK:-Configuring adblock}..."
             if [[ "$DRY_RUN" == false ]]; then
-                run_citadel "adblock blocklist-switch balanced"
-                status "Adblock configured"
+                run_citadel "blocklist-switch balanced"
+                status "${T_ADBLOCK_CONFIGURED:-Adblock configured}"
             else
-                status "Would configure adblock"
+                status "Would ${T_CONFIGURING_ADBLOCK,,}"
             fi
             ;;
 
         reputation)
-            status "Initializing reputation system..."
+            status "${T_INITIALIZING_REPUTATION:-Initializing reputation system}..."
             if [[ "$DRY_RUN" == false ]]; then
                 # Enable reputation in configuration
                 log "Enabling reputation system"
-                status "Reputation system enabled"
+                status "${T_REPUTATION_ENABLED:-Reputation system enabled}"
             else
-                status "Would initialize reputation system"
+                status "Would ${T_INITIALIZING_REPUTATION,,}"
             fi
             ;;
 
         asn-blocking)
-            status "Initializing ASN blocking..."
+            status "${T_INITIALIZING_ASN:-Initializing ASN blocking}..."
             if [[ "$DRY_RUN" == false ]]; then
                 # Enable ASN blocking in configuration
                 log "Enabling ASN blocking system"
-                status "ASN blocking enabled"
+                status "${T_ASN_ENABLED:-ASN blocking enabled}"
             else
-                status "Would initialize ASN blocking"
+                status "Would ${T_INITIALIZING_ASN,,}"
             fi
             ;;
 
         event-logging)
-            status "Initializing event logging..."
+            status "${T_INITIALIZING_EVENTS:-Initializing event logging}..."
             if [[ "$DRY_RUN" == false ]]; then
                 # Enable event logging in configuration
                 log "Enabling event logging system"
-                status "Event logging enabled"
+                status "${T_EVENTS_ENABLED:-Event logging enabled}"
             else
-                status "Would initialize event logging"
+                status "Would ${T_INITIALIZING_EVENTS,,}"
             fi
             ;;
 
         honeypot)
-            status "Initializing honeypot system..."
+            status "${T_INITIALIZING_HONEYPOT:-Initializing honeypot system}..."
             if [[ "$DRY_RUN" == false ]]; then
                 # Enable honeypot in configuration
                 log "Enabling honeypot system"
-                status "Honeypot system enabled"
+                status "${T_HONEYPOT_ENABLED:-Honeypot system enabled}"
             else
-                status "Would initialize honeypot system"
+                status "Would ${T_INITIALIZING_HONEYPOT,,}"
             fi
             ;;
 
         prometheus)
-            status "Installing Prometheus metrics..."
+            status "${T_INSTALLING_PROMETHEUS:-Installing Prometheus metrics}..."
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install dashboard"
-                status "Prometheus metrics enabled"
+                status "${T_PROMETHEUS_ENABLED:-Prometheus metrics enabled}"
             else
-                status "Would install Prometheus metrics"
+                status "Would ${T_INSTALLING_PROMETHEUS,,}"
             fi
             ;;
     esac
@@ -491,12 +601,12 @@ main_installation() {
     IFS=',' read -ra comp_array <<< "$COMPONENTS"
 
     # Step 1: Check dependencies (always first)
-    status "Checking system dependencies..."
+    status "${T_CHECKING_DEPS:-Checking system dependencies...}"
     if [[ "$DRY_RUN" == false ]]; then
         run_citadel "install check-deps --install"
-        status "Dependencies OK"
+        status "${T_DEPENDENCIES_OK:-Dependencies OK}"
     else
-        status "Would check dependencies"
+        status "${T_WOULD_CHECK_DEPS:-Would check dependencies}"
     fi
 
     # Step 2: Install core components in order
@@ -509,12 +619,12 @@ main_installation() {
 
     # Step 3: Configure system DNS
     if [[ " ${comp_array[*]} " =~ " dnscrypt " ]] || [[ " ${comp_array[*]} " =~ " coredns " ]]; then
-        status "Configuring system DNS..."
+        status "${T_CONFIGURING_DNS:-Configuring system DNS...}"
         if [[ "$DRY_RUN" == false ]]; then
             run_citadel "install configure-system"
-            status "System DNS configured"
+            status "${T_DNS_CONFIGURED:-System DNS configured}"
         else
-            status "Would configure system DNS"
+            status "${T_WOULD_CONFIGURE_DNS:-Would configure system DNS}"
         fi
     fi
 
@@ -533,28 +643,28 @@ main_installation() {
 
     # Step 6: Enable auto-updates
     if [[ " ${comp_array[*]} " =~ " adblock " ]]; then
-        status "Enabling auto-updates..."
+        status "${T_ENABLING_AUTO_UPDATES:-Enabling auto-updates...}"
         if [[ "$DRY_RUN" == false ]]; then
             run_citadel "backup auto-update-enable"
-            status "Auto-updates enabled"
+            status "${T_AUTO_UPDATES_ENABLED:-Auto-updates enabled}"
         else
-            status "Would enable auto-updates"
+            status "${T_WOULD_ENABLE_AUTO_UPDATES:-Would enable auto-updates}"
         fi
     fi
 
     # Step 7: Final verification
-    status "Running final verification..."
+    status "${T_RUNNING_VERIFICATION:-Running final verification...}"
     if [[ "$DRY_RUN" == false ]]; then
         run_citadel "monitor status" >/dev/null 2>&1
 
         # Test DNS resolution
         if dig @127.0.0.1 google.com +short +time=5 >/dev/null 2>&1; then
-            status "DNS resolution working"
+            status "${T_DNS_WORKING:-DNS resolution working}"
         else
-            warning "DNS resolution test failed"
+            warning "${T_DNS_TEST_FAILED:-DNS resolution test failed}"
         fi
     else
-        status "Would run final verification"
+        status "${T_WOULD_RUN_VERIFICATION:-Would run final verification}"
     fi
 }
 
@@ -564,27 +674,27 @@ main_installation
 # Completion message
 echo ""
 if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-    gum style --bold --foreground 212 --border double --padding "1 2" "INSTALLATION COMPLETE"
+    gum style --bold --foreground 99 --border double --padding "1 2" "${T_COMPLETE_TITLE:-INSTALLATION COMPLETE}"
 else
-    echo "╔═══════════════════════════════════════════════════════════════════════════╗"
-    echo "║                           INSTALLATION COMPLETE                         ║"
-    echo "╚═══════════════════════════════════════════════════════════════════════════╝"
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║                           ${T_COMPLETE_TITLE:-INSTALLATION COMPLETE}                         ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
 fi
 
 echo ""
 if [[ "$DRY_RUN" == true ]]; then
-    status "Dry run completed - no changes made"
+    status "${T_DRY_RUN_COMPLETE:-Dry run completed - no changes made}"
 else
-    status "Citadel v3.3+ successfully installed!"
+    status "${T_ALL_SUCCESS:-Citadel v3.3+ successfully installed!}"
 fi
 
 echo ""
-echo "Next steps:"
-echo "• Start monitoring: ./citadel-top"
-echo "• Check status: sudo ./citadel.sh monitor status"
-echo "• View logs: sudo ./citadel.sh logs"
-echo "• Update blocklists: sudo ./citadel.sh backup lists-update"
+echo "${T_NEXT_STEPS:-Next steps}:"
+echo "• ${T_STEP_MONITOR:-Start monitoring}: ./citadel-top"
+echo "• ${T_STEP_STATUS:-Check status}: sudo ./citadel.sh monitor status"
+echo "• ${T_STEP_LOGS:-View logs}: sudo ./citadel.sh logs"
+echo "• ${T_STEP_UPDATE:-Update blocklists}: sudo ./citadel.sh backup lists-update"
 echo ""
-echo "Log file: $LOG_FILE"
+echo "${T_LOG_FILE:-Log file}: $LOG_FILE"
 
 log "Installation completed successfully"

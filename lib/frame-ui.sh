@@ -8,7 +8,7 @@
 print_frame_line() {
     local text="$1"
     local frame_color="${2:-$VIO}"
-    local total_width=60
+    local total_width=62
     
     # Strip ANSI colors for length calculation  
     local visible_text
@@ -16,24 +16,33 @@ print_frame_line() {
     local visible_len=${#visible_text}
     local padding=$((total_width - visible_len))
     
-    printf "${frame_color}║${NC} %b%*s ${frame_color}║${NC}\n" "$text" "$padding" ""
+    printf "${frame_color}│${NC} %b%*s ${frame_color}│${NC}\n" "$text" "$padding" ""
 }
 
 # Draw section header with purple frame
 draw_section_header() {
     local title="$1"
-    local total_width=60
-    
-    # Calculate display width - simple version without external tools
+    local total_width=62
+
+    # Calculate display width with emoji awareness
     local visible_title
     visible_title=$(echo -e "$title" | sed 's/\x1b\[[0-9;]*m//g')
-    local visible_len=${#visible_title}
-    local padding=$((total_width - visible_len))
     
+    # Calculate visual width (emoji = 2 columns)
+    local visual_len
+    if command -v python3 &>/dev/null; then
+        visual_len=$(python3 -c "import unicodedata; print(sum(2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in '$visible_title'))")
+    else
+        # Fallback to simple counting
+        visual_len=${#visible_title}
+    fi
+    
+    local padding=$((total_width - visual_len))
+
     echo ""
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${VIO}╔════════════════════════════════════════════════════════════════╗${NC}"
     printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "${BOLD}${title}${NC}" "$padding" ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${VIO}╚════════════════════════════════════════════════════════════════╝${NC}"
 }
 
 # Draw emergency frame with red color
@@ -41,16 +50,27 @@ draw_emergency_frame() {
     local title="$1"
     shift
     local text="${BOLD}${title}${NC}"
-    local total_width=60
+    local total_width=62
+    
+    # Calculate display width with emoji awareness
     local visible_text
     visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
-    local visible_len=${#visible_text}
-    local padding=$((total_width - visible_len))
+    
+    # Calculate visual width (emoji = 2 columns)
+    local visual_len
+    if command -v python3 &>/dev/null; then
+        visual_len=$(python3 -c "import unicodedata; print(sum(2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in '$visible_text'))")
+    else
+        # Fallback to simple counting
+        visual_len=${#visible_text}
+    fi
+    
+    local padding=$((total_width - visual_len))
     
     echo ""
-    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
     printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$text" "$padding" ""
-    echo -e "${RED}╠══════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${RED}╠════════════════════════════════════════════════════════════════╣${NC}"
     
     for line in "$@"; do
         local line_text="$line"
@@ -61,7 +81,7 @@ draw_emergency_frame() {
         printf "${RED}║${NC} %b%*s ${RED}║${NC}\n" "$line_text" "$line_padding" ""
     done
     
-    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${RED}╚════════════════════════════════════════════════════════════════╝${NC}"
 }
 
 # Backward compatibility - log_section now uses frames
@@ -72,7 +92,7 @@ log_section() {
 # Improved frame drawing with proper emoji width handling
 print_custom_frame() {
     local text="$1"
-    local total_width=60  # Internal frame width
+    local total_width=62  # Internal frame width
     
     # 1. Remove ANSI color codes for calculation
     local clean_text
@@ -92,7 +112,7 @@ print_custom_frame() {
     [[ $padding -lt 0 ]] && padding=0
 
     # 4. Draw frame with colors
-    echo -e "${VIO}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${VIO}╔════════════════════════════════════════════════════════════════╗${NC}"
     printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "$text" "$padding" ""
-    echo -e "${VIO}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${VIO}╚════════════════════════════════════════════════════════════════╝${NC}"
 }

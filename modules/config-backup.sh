@@ -248,3 +248,23 @@ config_delete() {
         log_info "Cancelled"
     fi
 }
+
+# Handle lists-update command (delegate to unified-backup module)
+lists_update() {
+    log_section "󰇚 LISTS UPDATE"
+
+    # Load unified backup module which contains the lists_update function
+    if [[ -f "modules/unified/unified-backup.sh" ]]; then
+        source "modules/unified/unified-backup.sh"
+        # Call the function from the unified module (avoid recursion)
+        if declare -f lists_update >/dev/null 2>&1; then
+            lists_update
+        else
+            log_error "lists_update function not found in unified-backup module"
+            return 1
+        fi
+    else
+        log_error "Unified backup module not found"
+        return 1
+    fi
+}

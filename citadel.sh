@@ -1,6 +1,6 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  CITADEL++ v3.1 - FORTIFIED DNS INFRASTRUCTURE                           ║
+# ║  Citadel v3.1 - Fortified DNS Infrastructure                          ║
 # ║  Advanced Hardened Resolver with Full Privacy Stack                      ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
@@ -68,14 +68,16 @@ source_lib "${CYTADELA_LIB}/unified-core.sh"
 # Initialize unified core
 unified_core_init "$@"
 
+# Early i18n loading for uninstall module (needed for systemd messages)
+# Load i18n module early to ensure systemd detection messages are translated
+load_i18n_module "uninstall"
+
 # Detect and verify systemd (required for Citadel)
 if ! detect_systemd; then
     log_error "Citadel v3.2 requires a systemd-based Linux distribution."
     log_error "Please ensure you're running on a systemd-compatible system."
     exit 1
 fi
-
-# Note: i18n is now loaded modularly - each module calls load_i18n_module() when needed
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
 call_fn() {
@@ -93,18 +95,11 @@ call_fn() {
         exit 3
     fi
 }
-
-# ==============================================================================
 # ROOT CHECK
 # ==============================================================================
 if [[ "${EUID:-}" -ne 0 ]]; then
     log_error "Ten skrypt wymaga uprawnień root. Uruchom: sudo $0"
     exit 1
-fi
-
-# Developer mode banner (defensywne ekspansje)
-if [[ "${CYTADELA_MODE:-}" == "developer" ]]; then
-    echo -e "${YELLOW:-}[!] Cytadela running in DEVELOPER MODE - integrity checks relaxed${NC:-}"
 fi
 
 # ==============================================================================
@@ -124,8 +119,16 @@ if [[ "$TRANSLATED_ACTION" != "$ACTION" ]]; then
     ACTION="$TRANSLATED_ACTION"
 fi
 
-# Parse --silent and --verbose flags
-parse_silent_flag "$@"
+# Early i18n loading for uninstall module (needed for systemd messages)
+if [[ "$ACTION" == "uninstall" ]] || [[ "$ACTION" == "uninstall-keep-config" ]]; then
+    # Load i18n for uninstall module early
+    load_i18n_module "uninstall"
+fi
+
+# Developer mode banner (defensywne ekspansje)
+if [[ "${CYTADELA_MODE:-}" == "developer" ]]; then
+    echo -e "${YELLOW:-}[!] Cytadela running in DEVELOPER MODE - integrity checks relaxed${NC:-}"
+fi
 
 case "$ACTION" in
     # Help
@@ -153,21 +156,46 @@ case "$ACTION" in
         ;;
 
     # Config Backup/Restore - now uses unified-backup
-    config-backup | config-restore | config-list | config-delete)
-        smart_load_module "backup"
-        call_fn "$ACTION" "$@"
-        ;;
-
-    # LKG - now uses unified-backup
-    lkg-save | lkg-restore | lkg-status | lists-update)
-        smart_load_module "backup"
-        call_fn "$ACTION"
-        ;;
-
-    # Auto-update - now uses unified-backup
-    auto-update-enable | auto-update-disable | auto-update-status | auto-update-now | auto-update-configure)
-        smart_load_module "backup"
-        call_fn "$ACTION"
+    backup)
+        # Dispatch to backup subcommand based on $1
+        case "${1:-}" in
+            config-backup | config-restore | config-list | config-delete | lists-update)
+                smart_load_module "backup"
+                ACTION="$1"
+                shift
+                call_fn "$ACTION" "$@"
+                ;;
+            lkg-save | lkg-restore | lkg-status)
+                smart_load_module "backup"
+                ACTION="$1"
+                shift
+                call_fn "$ACTION"
+                ;;
+            auto-update-enable | auto-update-disable | auto-update-status | auto-update-now | auto-update-configure)
+                smart_load_module "backup"
+                ACTION="$1"
+                shift
+                call_fn "$ACTION"
+                ;;
+            *)
+                log_error "Nieznana komenda backup: backup $1"
+                echo "Dostępne komendy backup:"
+                echo "  backup config-backup         - utwórz backup konfiguracji"
+                echo "  backup config-restore        - przywróć konfigurację z backupu"
+                echo "  backup config-list           - lista dostępnych backupów"
+                echo "  backup config-delete         - usuń backup"
+                echo "  backup lists-update          - zaktualizuj listy blokad"
+                echo "  backup lkg-save              - zapisz LKG (Last Known Good)"
+                echo "  backup lkg-restore           - przywróć z LKG"
+                echo "  backup lkg-status            - status LKG"
+                echo "  backup auto-update-enable    - włącz auto-aktualizację"
+                echo "  backup auto-update-disable   - wyłącz auto-aktualizację"
+                echo "  backup auto-update-status    - status auto-aktualizacji"
+                echo "  backup auto-update-now       - ręczna aktualizacja teraz"
+                echo "  backup auto-update-configure - skonfiguruj harmonogram"
+                exit 1
+                ;;
+        esac
         ;;
 
     # Emergency (Panic Mode) - now uses unified-recovery
@@ -439,7 +467,7 @@ case "$ACTION" in
         ;;
 
     # Config Backup/Restore
-    config-backup | config-restore | config-list | config-delete)
+    config-backup | config-restore | config-list | config-delete | lists-update)
         load_module "config-backup"
         call_fn "$ACTION" "$@"
         ;;
