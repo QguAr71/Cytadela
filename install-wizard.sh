@@ -71,7 +71,6 @@ load_language() {
         T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel..."
         T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
         T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
-        # Add other translations as needed
     elif [[ "$LANGUAGE" == "en" ]]; then
         # English translations
         T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
@@ -84,7 +83,80 @@ load_language() {
         T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
         T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
         T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
-        # Add other translations as needed
+    elif [[ "$LANGUAGE" == "de" ]]; then
+        # German translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel ist bereits installiert"
+        T_REINSTALL_WARNING="Die Neuinstallation entfernt die bestehende Konfiguration und installiert die neue Version"
+        T_UNINSTALL_WARNING="Die Deinstallation entfernt Citadel und stellt die ursprünglichen Systemeinstellungen wieder her"
+        T_CHOOSE_ACTION="Aktion wählen:"
+        T_REINSTALL_CITADEL="Citadel neu installieren (empfohlen)"
+        T_UNINSTALL_CITADEL="Citadel deinstallieren"
+        T_CANCEL_INSTALLATION="Installation abbrechen"
+        T_UNINSTALLING_EXISTING="Deinstalliere bestehende Citadel-Installation..."
+        T_UNINSTALLING_CITADEL="Deinstalliere Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel wurde deinstalliert"
+    elif [[ "$LANGUAGE" == "es" ]]; then
+        # Spanish translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel ya está instalado"
+        T_REINSTALL_WARNING="La reinstalación eliminará la configuración existente e instalará la nueva versión"
+        T_UNINSTALL_WARNING="La desinstalación eliminará Citadel y restaurará la configuración original del sistema"
+        T_CHOOSE_ACTION="Elegir acción:"
+        T_REINSTALL_CITADEL="Reinstalar Citadel (recomendado)"
+        T_UNINSTALL_CITADEL="Desinstalar Citadel"
+        T_CANCEL_INSTALLATION="Cancelar instalación"
+        T_UNINSTALLING_EXISTING="Desinstalando instalación existente de Citadel..."
+        T_UNINSTALLING_CITADEL="Desinstalando Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel ha sido desinstalado"
+    elif [[ "$LANGUAGE" == "fr" ]]; then
+        # French translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel est déjà installé"
+        T_REINSTALL_WARNING="La réinstallation supprimera la configuration existante et installera la nouvelle version"
+        T_UNINSTALL_WARNING="La désinstallation supprimera Citadel et restaurera les paramètres système originaux"
+        T_CHOOSE_ACTION="Choisir l'action:"
+        T_REINSTALL_CITADEL="Réinstaller Citadel (recommandé)"
+        T_UNINSTALL_CITADEL="Désinstaller Citadel"
+        T_CANCEL_INSTALLATION="Annuler l'installation"
+        T_UNINSTALLING_EXISTING="Désinstallation de l'installation Citadel existante..."
+        T_UNINSTALLING_CITADEL="Désinstallation de Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel a été désinstallé"
+    elif [[ "$LANGUAGE" == "it" ]]; then
+        # Italian translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel è già installato"
+        T_REINSTALL_WARNING="La reinstallazione rimuoverà la configurazione esistente e installerà la nuova versione"
+        T_UNINSTALL_WARNING="La disinstallazione rimuoverà Citadel e ripristinerà le impostazioni originali del sistema"
+        T_CHOOSE_ACTION="Scegli azione:"
+        T_REINSTALL_CITADEL="Reinstalla Citadel (consigliato)"
+        T_UNINSTALL_CITADEL="Disinstalla Citadel"
+        T_CANCEL_INSTALLATION="Annulla installazione"
+        T_UNINSTALLING_EXISTING="Disinstallazione dell'installazione Citadel esistente..."
+        T_UNINSTALLING_CITADEL="Disinstallazione di Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel è stato disinstallato"
+    elif [[ "$LANGUAGE" == "ru" ]]; then
+        # Russian translations
+        T_CITADEL_ALREADY_INSTALLED="Citadel уже установлен"
+        T_REINSTALL_WARNING="Переустановка удалит существующую конфигурацию и установит новую версию"
+        T_UNINSTALL_WARNING="Удаление удалит Citadel и восстановит оригинальные настройки системы"
+        T_CHOOSE_ACTION="Выбрать действие:"
+        T_REINSTALL_CITADEL="Переустановить Citadel (рекомендуется)"
+        T_UNINSTALL_CITADEL="Удалить Citadel"
+        T_CANCEL_INSTALLATION="Отменить установку"
+        T_UNINSTALLING_EXISTING="Удаление существующей установки Citadel..."
+        T_UNINSTALLING_CITADEL="Удаление Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel был удален"
+    else
+        # Fallback to English
+        warning "Unknown language '$LANGUAGE', falling back to English"
+        LANGUAGE="en"
+        T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
+        T_REINSTALL_WARNING="Reinstallation will remove existing configuration and install the new version"
+        T_UNINSTALL_WARNING="Uninstallation will remove Citadel and restore original system settings"
+        T_CHOOSE_ACTION="Choose action:"
+        T_REINSTALL_CITADEL="Reinstall Citadel (recommended)"
+        T_UNINSTALL_CITADEL="Uninstall Citadel"
+        T_CANCEL_INSTALLATION="Cancel installation"
+        T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
+        T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
+        T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
     fi
     status "Language loaded: $LANGUAGE"
 }
