@@ -437,7 +437,7 @@ determine_components() {
 # Display installation plan
 show_installation_plan() {
     if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
-        gum style --bold --foreground 75 --border normal --width 64 --padding "0 1" "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
+        gum style --bold --foreground 75 --border double --width 64 --padding "0 1" "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
     else
         echo "${T_INSTALLATION_PLAN:-Citadel v3.3+ Installation Plan}"
         echo "================================"
