@@ -187,3 +187,10 @@ export T_WOULD_CHECK_DEPS="Sprawdziłoby zależności"
 export T_WOULD_CONFIGURE_DNS="Skonfigurowałoby system DNS"
 export T_WOULD_ENABLE_AUTO_UPDATES="Włączyłoby auto-aktualizacje"
 export T_WOULD_RUN_VERIFICATION="Uruchomiłoby ostateczną weryfikację"
+
+# Useful commands descriptions
+export T_CMD_CHECK_STATUS="Sprawdź status"
+export T_CMD_VIEW_LOGS="Zobacz logi"
+export T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokad"
+export T_CMD_EMERGENCY_RESTORE="Przywracanie awaryjne internetu"
+

@@ -183,3 +183,10 @@ export T_WOULD_CHECK_DEPS="Would check dependencies"
 export T_WOULD_CONFIGURE_DNS="Would configure system DNS"
 export T_WOULD_ENABLE_AUTO_UPDATES="Would enable auto-updates"
 export T_WOULD_RUN_VERIFICATION="Would run final verification"
+
+# Useful commands descriptions
+export T_CMD_CHECK_STATUS="Check status"
+export T_CMD_VIEW_LOGS="View logs"
+export T_CMD_UPDATE_BLOCKLISTS="Update blocklists"
+export T_CMD_EMERGENCY_RESTORE="Emergency internet restore"
+
