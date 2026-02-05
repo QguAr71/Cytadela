@@ -78,13 +78,12 @@ Cytadela (Citadel) is built on top of exceptional open-source projects. We are d
 **Maintainers:** GNU Project  
 **Why we use it:** Bash provides the scripting foundation for Cytadela's modular architecture.
 
-### whiptail (newt)
-**Project:** https://pagure.io/newt  
-**License:** LGPL-2.0  
-**Description:** A programming library for color text mode, widget-based user interfaces.
-
-**Maintainers:** Red Hat and contributors  
-**Why we use it:** Powers our interactive installation wizard with a user-friendly TUI interface.
+### Gum (Charm)
+**Project:** https://github.com/charmbracelet/gum  
+**License:** MIT License  
+**Description:** A tool for glamorous shell scripts.  
+**Maintainers:** Charm (https://charm.sh)  
+**Why we use it:** Gum provides our interactive terminal user interface, replacing traditional tools with a modern, responsive experience.
 
 ---
 
@@ -169,8 +168,8 @@ If Cytadela has been useful to you, please consider supporting the upstream proj
 
 ---
 
-**Last Updated:** 2026-02-01  
-**Cytadela Version:** v3.1.0
+**Last Updated:** 2026-02-05  
+**Cytadela Version:** v3.3.0
 
 ---
 

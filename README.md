@@ -1,4 +1,4 @@
-# Citadel v3.3 - Advanced Security Platform
+# Citadel v3.3 - Enterprise Security Platform
 
 [![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/QguAr71/Cytadela)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
