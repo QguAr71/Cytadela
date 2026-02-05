@@ -602,7 +602,7 @@ install_component() {
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install dnscrypt"
                 if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null; then
-                    status "DNSCrypt ${T_INSTALLED:-installed} and running"
+                    status "${T_DNSCRYPT_INSTALLED_AND_RUNNING:-DNSCrypt installed and running}"
                 else
                     warning "DNSCrypt service not active (expected after config)"
                 fi
@@ -616,7 +616,7 @@ install_component() {
             if [[ "$DRY_RUN" == false ]]; then
                 run_citadel "install coredns"
                 if systemctl is-active --quiet coredns 2>/dev/null; then
-                    status "CoreDNS ${T_INSTALLED:-installed} and running"
+                    status "${T_COREDNS_INSTALLED_AND_RUNNING:-CoreDNS installed and running}"
                 else
                     warning "CoreDNS service not active (expected after config)"
                 fi
