@@ -111,10 +111,11 @@ print_custom_frame() {
     local padding=$((total_width - visual_len))
     [[ $padding -lt 0 ]] && padding=0
 
-# ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  GUM-BASED FRAME FUNCTIONS (NEW APPROACH)                               ║
-# ║  Using gum styling for modern UI frames                                ║
-# ╚═══════════════════════════════════════════════════════════════════════════╝
+    # 4. Draw frame with colors
+    echo -e "${VIO}╔════════════════════════════════════════════════════════════════╗${NC}"
+    printf "${VIO}║${NC} %b%*s ${VIO}║${NC}\n" "$text" "$padding" ""
+    echo -e "${VIO}╚════════════════════════════════════════════════════════════════╝${NC}"
+}
 
 # Print next steps section with gum styling
 print_next_steps() {
