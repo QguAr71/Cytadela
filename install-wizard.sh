@@ -99,21 +99,33 @@ ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle 
 
 # Language selection
 select_language() {
-    print_gum_section_header "${T_LANGUAGE_SELECTION:-Language Selection}"
+    echo "Select your preferred language:"
+    echo "1) English"
+    echo "2) Polski"
+    echo "3) Deutsch"
+    echo "4) Español"
+    echo "5) Français"
+    echo "6) Italiano"
+    echo "7) Русский"
+    echo -n "Enter choice (1-7) [1]: "
+    read -r choice
 
-    local lang
-    LANGUAGE=$1
-    case "$LANGUAGE" in
-        en) source "${SCRIPT_DIR}/lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
-        pl) source "${SCRIPT_DIR}/lib/i18n/uninstall/pl.sh" 2>/dev/null || true ;;
-        de) source "${SCRIPT_DIR}/lib/i18n/uninstall/de.sh" 2>/dev/null || true ;;
-        es) source "${SCRIPT_DIR}/lib/i18n/uninstall/es.sh" 2>/dev/null || true ;;
-        fr) source "${SCRIPT_DIR}/lib/i18n/uninstall/fr.sh" 2>/dev/null || true ;;
-        it) source "${SCRIPT_DIR}/lib/i18n/uninstall/it.sh" 2>/dev/null || true ;;
-        ru) source "${SCRIPT_DIR}/lib/i18n/uninstall/ru.sh" 2>/dev/null || true ;;
-        *) warning "Unknown language '$LANGUAGE', falling back to English"
-           source "${SCRIPT_DIR}/lib/i18n/uninstall/en.sh" 2>/dev/null || true ;;
+    case "$choice" in
+        1|"") LANGUAGE="en" ;;
+        2) LANGUAGE="pl" ;;
+        3) LANGUAGE="de" ;;
+        4) LANGUAGE="es" ;;
+        5) LANGUAGE="fr" ;;
+        6) LANGUAGE="it" ;;
+        7) LANGUAGE="ru" ;;
+        *) echo "Invalid choice, using English"; LANGUAGE="en" ;;
     esac
+
+    # Load language file
+    load_language "$LANGUAGE"
+
+    # Return the selected language
+    echo "$LANGUAGE"
 }
 
 # Profile selection with descriptions
