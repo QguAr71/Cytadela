@@ -3,7 +3,7 @@
 # Ten plik pokazuje zaawansowaną konfigurację Citadel dla środowiska korporacyjnego
 # Zawiera wszystkie funkcje enterprise włączone i skonfigurowane
 
-# Citadel v3.3 Configuration - Enterprise Setup
+# Citadel v3.3 Configuration - Advanced Setup
 version: "3.3.0"
 profile: "enterprise"
 
@@ -37,7 +37,7 @@ security:
     ports: [22, 80, 443, 3389, 5900, 8080]
     log_connections: true
 
-# Enterprise Features - Full Configuration
+# Advanced Features - Full Configuration
 enterprise:
   prometheus:
     enabled: true
@@ -58,7 +58,7 @@ enterprise:
     compose_file: "/etc/citadel/docker-compose.yml"
     restart_policy: "unless-stopped"
 
-# Network Configuration - Enterprise
+# Network Configuration - Advanced
 network:
   interfaces: ["eth0", "eth1", "wlan0"]
   firewall_backend: "nftables"

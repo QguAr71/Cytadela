@@ -38,7 +38,7 @@ network:
   firewall_backend: "nftables"
   geo_blocking: false
 
-# Enterprise Features (disabled for basic setup)
+# Advanced Features (disabled for basic setup)
 enterprise:
   prometheus:
     enabled: false

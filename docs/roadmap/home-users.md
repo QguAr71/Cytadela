@@ -434,7 +434,7 @@ nslookup google.com  # Test DNS (powinno pokazać 192.168.1.1)
 - Wymóg nowego sprzętu
 - Płatne funkcje
 - Telemetria
-- "Enterprise features"
+- "Advanced features"
 
 ---
 

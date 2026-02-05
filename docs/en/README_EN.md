@@ -1,4 +1,4 @@
-# Citadel v3.3 - Enterprise Security Platform
+# Citadel v3.3 - Advanced Security Platform
 
 [![Version](https://img.shields.io/badge/version-3.3.0-blue.svg)](https://github.com/QguAr71/Cytadela)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -34,7 +34,7 @@ Citadel v3.3
 ├── Unified Modules
 │   ├── Security Features
 │   ├── Advanced Management
-│   └── Enterprise Features
+│   └── Advanced Features
 ├── Configuration Management
 ├── Module Management
 └── Service Integration
@@ -166,7 +166,7 @@ security:
     ports: [22, 80, 443, 3389]
     log_connections: true
 
-# Enterprise Features
+# Advanced Features
 enterprise:
   prometheus:
     enabled: true

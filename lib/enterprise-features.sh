@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Citadel Enterprise Features
+# Citadel Advanced Features
 # Advanced integrations, enterprise-grade security, and scalability enhancements
 
-# Enterprise constants
+# Advanced constants
 PROMETHEUS_CONFIG_DIR="/etc/prometheus"
 GRAFANA_CONFIG_DIR="/etc/grafana"
 DOCKER_COMPOSE_FILE="/etc/citadel/docker-compose.yml"
@@ -11,7 +11,7 @@ NETWORK_CONFIG_DIR="/etc/citadel/network"
 
 # Initialize enterprise features
 enterprise_init() {
-    echo "Initializing Citadel Enterprise Features..."
+    echo "Initializing Citadel Advanced Features..."
 
     # Create enterprise directories
     create_enterprise_directories
@@ -27,7 +27,7 @@ enterprise_init() {
     # Setup scalability features
     scalability_init
 
-    echo "Enterprise features initialized"
+    echo "Advanced features initialized"
 }
 
 # Create enterprise directories
@@ -44,7 +44,7 @@ create_enterprise_directories() {
     sudo chmod -R 755 "/var/lib/citadel/enterprise"
     sudo chmod -R 755 "/var/log/citadel/enterprise"
 
-    echo "Enterprise directories created"
+    echo "Advanced directories created"
 }
 
 # Prometheus/Grafana Integration
@@ -226,7 +226,7 @@ EOF
     echo "Docker integration configured"
 }
 
-# Enterprise Security Features
+# Advanced Security Features
 enterprise_security_init() {
     echo "Initializing enterprise security features..."
 
@@ -239,7 +239,7 @@ enterprise_security_init() {
     # Setup audit logging
     setup_audit_logging
 
-    echo "Enterprise security initialized"
+    echo "Advanced security initialized"
 }
 
 setup_enterprise_firewall() {
@@ -251,7 +251,7 @@ setup_enterprise_firewall() {
     cat << 'EOF' | sudo tee "/etc/citadel/nftables/enterprise-rules.nft" > /dev/null
 #!/usr/sbin/nft -f
 
-# Enterprise-grade firewall rules for Citadel
+# Advanced-grade firewall rules for Citadel
 
 table inet citadel-enterprise {
     # Rate limiting chains
@@ -308,7 +308,7 @@ table inet citadel-enterprise {
 }
 EOF
 
-    echo "Enterprise firewall rules created"
+    echo "Advanced firewall rules created"
 }
 
 setup_threat_intelligence() {
@@ -497,9 +497,9 @@ EOF
     echo "Performance monitoring configured"
 }
 
-# Enterprise Commands
+# Advanced Commands
 enterprise_status() {
-    echo "Citadel Enterprise Features Status"
+    echo "Citadel Advanced Features Status"
     echo "==================================="
 
     # Check Prometheus
@@ -539,7 +539,7 @@ enterprise_status() {
 }
 
 enterprise_metrics() {
-    echo "Citadel Enterprise Metrics"
+    echo "Citadel Advanced Metrics"
     echo "=========================="
 
     # System metrics

@@ -203,7 +203,7 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 
 ## 🚀 Advanced Features (v3.5+ - Daleka przyszłość)
 
-### Enterprise-grade (opcjonalnie, niska priorytet)
+### Advanced-grade (opcjonalnie, niska priorytet)
 
 - **Grafana / Prometheus Integration** (Issue #19) - **v3.5+**
   - Historyczne dane, dashboardy
@@ -266,7 +266,7 @@ This file tracks planned changes and feature ideas. It is intentionally short an
 1. Web UI (opcjonalnie)
 
 **v3.5+ (Daleka przyszłość):**
-1. Advanced features (Issues #19-24) - Enterprise-grade, niska priorytet
+1. Advanced features (Issues #19-24) - Advanced-grade, niska priorytet
 
 ---
 

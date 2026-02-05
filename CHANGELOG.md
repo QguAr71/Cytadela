@@ -176,7 +176,7 @@ Citadel v4.0 transforms Citadel from a DNS resolver into a full network gateway 
   - Service lifecycle management (start/stop/restart/enable/disable)
   - Health monitoring and auto-recovery
 
-#### 🏢 **Enterprise Features**
+#### 🏢 **Advanced Features**
 - **Prometheus/Grafana Integration** - Advanced monitoring and visualization
   - Real-time metrics collection
   - Pre-configured dashboards
@@ -185,7 +185,7 @@ Citadel v4.0 transforms Citadel from a DNS resolver into a full network gateway 
   - docker-compose orchestration
   - Multi-service container management
   - Production-ready container configurations
-- **Enterprise Security** - Corporate-grade security features
+- **Advanced Security** - Corporate-grade security features
   - Advanced firewall rules (nftables-based)
   - Threat intelligence feeds integration
   - Audit logging and compliance features

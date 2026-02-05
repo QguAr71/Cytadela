@@ -511,7 +511,7 @@ IP: 1.2.3.4
   └─ FINAL SCORE: 0.6 → ALLOW (threshold: 0.15)
 ```
 
-**Verdict:** 🔥 **Enterprise-grade threat intelligence!**
+**Verdict:** 🔥 **Advanced-grade threat intelligence!**
 
 #### **3. DE-COUPLING SEMANTYCZNY (Tłumacz Zdarzeń)** 🎭
 
@@ -602,7 +602,7 @@ nft add rule inet filter input ip saddr 1.2.3.4 drop
 | Komponent | Ocena | Komentarz |
 |-----------|-------|-----------|
 | **Actor Model** | ⭐⭐⭐⭐⭐ | Perfect dla real-time |
-| **Reputation Engine** | ⭐⭐⭐⭐⭐ | Enterprise-grade |
+| **Reputation Engine** | ⭐⭐⭐⭐⭐ | Advanced-grade |
 | **Event Translator** | ⭐⭐⭐⭐⭐ | Architektonicznie piękne |
 | **Tarpit/Stealth** | ⭐⭐⭐⭐⭐ | Brutal i efektywne |
 

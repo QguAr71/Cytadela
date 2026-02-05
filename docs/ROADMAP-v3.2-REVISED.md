@@ -103,7 +103,7 @@ Existing v3.2 plan (`REFACTORING-V3.2-PLAN.md`) was written **before** v3.1 comp
 ---
 
 ### v3.5+ (2027+) - Advanced Features
-**Goal:** Enterprise features (low priority)
+**Goal:** Advanced features (low priority)
 
 - Grafana/Prometheus (#19)
 - IDS DNS (#20)

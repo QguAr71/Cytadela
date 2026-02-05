@@ -368,13 +368,13 @@ case "$ACTION" in
             monitoring-system-info) call_fn "monitoring_system_info" ;;
         esac
         ;;
-    # Enterprise Features (v3.3)
+    # Advanced Features (v3.3)
     enterprise-init | enterprise-status | enterprise-metrics | enterprise-security-init)
         # Load enterprise features system
         if [[ -f "lib/enterprise-features.sh" ]]; then
             source "lib/enterprise-features.sh"
         else
-            log_error "Enterprise features system not found"
+            log_error "Advanced features system not found"
             exit 1
         fi
 

@@ -4,7 +4,7 @@
 
 Przepisanie Citadel w Rust z modelem Open Core:
 - **Community Edition** (GPL v3) - podstawowe funkcje, open source
-- **Enterprise Edition** (Paid) - zaawansowane funkcje dla firm
+- **Advanced Edition** (Paid) - zaawansowane funkcje dla firm
 - **Cloud Edition** (SaaS) - w pełni zarządzana usługa
 
 ---
@@ -18,7 +18,7 @@ Przepisanie Citadel w Rust z modelem Open Core:
 - Single machine deployment
 - Community support (GitHub Issues)
 
-### Enterprise Edition ($99/year per server)
+### Advanced Edition ($99/year per server)
 - ✅ Wszystko z Community +
 - 🎨 Web Dashboard (Tauri/Leptos)
 - 📊 Advanced analytics & metrics
@@ -29,7 +29,7 @@ Przepisanie Citadel w Rust z modelem Open Core:
 - 📝 SLA 99.9%
 
 ### Cloud Edition ($9-99/month)
-- ✅ Wszystko z Enterprise +
+- ✅ Wszystko z Advanced +
 - ☁️ Fully managed hosting
 - 🔄 Auto-updates
 - 💾 Automated backups
@@ -65,11 +65,11 @@ cytadela-core/
 │   ├── metrics/
 │   │   ├── prometheus.rs    # Prometheus exporter
 │   │   └── collector.rs     # Metrics collector
-│   ├── api/                 # REST API (Enterprise)
+│   ├── api/                 # REST API (Advanced)
 │   │   ├── server.rs        # Axum/Actix server
 │   │   ├── routes.rs        # API routes
 │   │   └── auth.rs          # Authentication
-│   └── ui/                  # Web UI (Enterprise)
+│   └── ui/                  # Web UI (Advanced)
 │       └── tauri/           # Tauri app
 ├── Cargo.toml
 └── README.md
@@ -94,18 +94,18 @@ hickory-dns = "0.24"
 nftnl = "0.6"
 netlink-packet-core = "0.7"
 
-# HTTP/API (Enterprise)
+# HTTP/API (Advanced)
 axum = "0.7"
 tower = "0.4"
 tower-http = "0.5"
 
-# Database (Enterprise)
+# Database (Advanced)
 sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio"] }
 
 # Metrics
 prometheus = "0.13"
 
-# UI (Enterprise)
+# UI (Advanced)
 tauri = "1.5"
 leptos = "0.6"
 
@@ -160,8 +160,8 @@ clap = { version = "4.4", features = ["derive"] }
 
 ---
 
-### Phase 3: Enterprise Features (Months 7-9)
-**Goal:** Monetizable Enterprise Edition
+### Phase 3: Advanced Features (Months 7-9)
+**Goal:** Monetizable Advanced Edition
 
 **Milestones:**
 - ✅ REST API (Axum)
@@ -172,7 +172,7 @@ clap = { version = "4.4", features = ["derive"] }
 - ✅ RBAC & authentication
 - ✅ Email notifications
 
-**Deliverable:** `cytadela++ 4.0 Enterprise Edition`
+**Deliverable:** `cytadela++ 4.0 Advanced Edition`
 - Web UI
 - API
 - Advanced features
@@ -208,7 +208,7 @@ clap = { version = "4.4", features = ["derive"] }
 
 ## 🎨 Feature Comparison
 
-| Feature | Community | Enterprise | Cloud |
+| Feature | Community | Advanced | Cloud |
 |---------|-----------|------------|-------|
 | **Core DNS** | ✅ | ✅ | ✅ |
 | DNSCrypt/DoH | ✅ | ✅ | ✅ |
@@ -276,8 +276,8 @@ You: *approve, commit*
 - ✅ HackerNews launch
 - **Goal:** 1000 GitHub stars, 500 active users
 
-### Month 7-9: Launch Enterprise
-- ✅ Release Enterprise Edition
+### Month 7-9: Launch Advanced
+- ✅ Release Advanced Edition
 - ✅ Landing page + pricing
 - ✅ Email marketing to community
 - ✅ Direct outreach to companies
@@ -310,7 +310,7 @@ You: *approve, commit*
 - **Revenue:** $20000-50000/month
 - **Costs:** $3000-10000/month
 - **Profit:** $200000-500000
-- **Focus:** Enterprise sales, team expansion
+- **Focus:** Advanced sales, team expansion
 
 ---
 
@@ -325,7 +325,7 @@ You: *approve, commit*
 
 ### Business KPIs:
 - 👥 Users: 1000+ (Community)
-- 💼 Customers: 50+ (Enterprise)
+- 💼 Customers: 50+ (Advanced)
 - ☁️ Subscribers: 200+ (Cloud)
 - 💰 MRR: $10000+ (Monthly Recurring Revenue)
 - ⭐ GitHub Stars: 5000+
@@ -424,7 +424,7 @@ You: *approve, commit*
 ## 📝 License
 
 - **Community Edition:** GPL v3
-- **Enterprise Edition:** Proprietary (Commercial License)
+- **Advanced Edition:** Proprietary (Commercial License)
 - **Cloud Edition:** SaaS (Terms of Service)
 
 ---
