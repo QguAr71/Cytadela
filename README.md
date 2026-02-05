@@ -6,7 +6,6 @@
 [![GitHub Forks](https://img.shields.io/github/forks/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/forks)
 [![GitHub Issues](https://img.shields.io/github/issues/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/pulls)
-[![GitHub Contributors](https://img.shields.io/github/contributors/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/graphs/contributors)
 [![Last Commit](https://img.shields.io/github/last-commit/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela/commits/main)
 [![Languages](https://img.shields.io/github/languages/count/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela)
 [![Code Size](https://img.shields.io/github/repo-size/QguAr71/Cytadela?style=flat&logo=github)](https://github.com/QguAr71/Cytadela)
