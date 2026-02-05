@@ -118,7 +118,7 @@ export T_PROMETHEUS_DESC="Metrics collection"
 # Backup confirmation translations
 export T_CREATE_BACKUPS="Create backups of existing configurations?"
 export T_YES_CREATE_BACKUPS="Yes, create backups"
-export T_NO_DONT_CREATE_BACKUPS="No, don't create backups"
+export T_NO_DONT_CREATE_BACKUPS="No, do not create backups"
 
 # Installation confirmation translations
 export T_READY_TO_INSTALL="Ready to install Citadel?"
@@ -130,3 +130,17 @@ export T_BACKUPS_WILL_BE_CREATED="Backups will be created"
 export T_NO_BACKUPS_WILL_BE_CREATED="No backups will be created"
 export T_COMPONENTS_CONFIGURED="Components configured:"
 export T_RUNNING_INSTALLATION_COMMAND="Running installation command..."
+
+# Installation summary translations
+export T_SUMMARY_LANGUAGE="Language:"
+export T_SUMMARY_PROFILE="Profile:"
+export T_SUMMARY_COMPONENTS="Components:"
+export T_SUMMARY_BACKUP="Backup existing:"
+export T_INSTALLATION_WARNING="WARNING: Installation will modify system DNS and firewall settings"
+
+# Error messages
+export T_INSTALLATION_CANCELLED="Installation cancelled by user"
+export T_INSTALLATION_FAILED="Installation failed"
+
+# Success messages
+export T_CITADEL_INSTALLED_SUCCESSFULLY="Citadel has been successfully installed!"

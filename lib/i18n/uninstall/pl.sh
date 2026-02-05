@@ -134,3 +134,17 @@ export T_BACKUPS_WILL_BE_CREATED="Kopie zapasowe zostaną utworzone"
 export T_NO_BACKUPS_WILL_BE_CREATED="Kopie zapasowe nie zostaną utworzone"
 export T_COMPONENTS_CONFIGURED="Komponenty skonfigurowane:"
 export T_RUNNING_INSTALLATION_COMMAND="Uruchamianie polecenia instalacji..."
+
+# Installation summary translations
+export T_SUMMARY_LANGUAGE="Język:"
+export T_SUMMARY_PROFILE="Profil:"
+export T_SUMMARY_COMPONENTS="Komponenty:"
+export T_SUMMARY_BACKUP="Kopia zapasowa istniejących:"
+export T_INSTALLATION_WARNING="OSTRZEŻENIE: Instalacja zmodyfikuje ustawienia DNS systemu i firewalla"
+
+# Error messages
+export T_INSTALLATION_CANCELLED="Instalacja anulowana przez użytkownika"
+export T_INSTALLATION_FAILED="Instalacja nie powiodła się"
+
+# Success messages
+export T_CITADEL_INSTALLED_SUCCESSFULLY="Citadel został pomyślnie zainstalowany!"

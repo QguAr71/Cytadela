@@ -202,7 +202,7 @@ confirm_backup() {
     backup_choice=$(gum choose \
         --header "${T_CREATE_BACKUPS:-Create backups of existing configurations?}" \
         "yes|${T_YES_CREATE_BACKUPS:-Yes, create backups} ${T_BACKUP_RECOMMENDED:-(recommended)}" \
-        "no|${T_NO_DONT_CREATE_BACKUPS:-No, don't create backups}")
+        "no|${T_NO_DONT_CREATE_BACKUPS:-No, do not create backups}")
 
     if [[ "$backup_choice" == "yes" ]]; then
         echo "true"
@@ -220,12 +220,12 @@ confirm_installation() {
 
     local summary_text="${T_INSTALLATION_SUMMARY:-Installation Summary}
 
-Language: $language
-Profile: $profile
-Components: $components
-Backup existing: $backup
+${T_SUMMARY_LANGUAGE:-Language:} $language
+${T_SUMMARY_PROFILE:-Profile:} $profile
+${T_SUMMARY_COMPONENTS:-Components:} $components
+${T_SUMMARY_BACKUP:-Backup existing:} $backup
 
-WARNING: Installation will modify system DNS and firewall settings"
+${T_INSTALLATION_WARNING:-WARNING: Installation will modify system DNS and firewall settings}"
 
     print_gum_warning_box "$summary_text"
 
@@ -236,7 +236,7 @@ WARNING: Installation will modify system DNS and firewall settings"
         "no|${T_NO_CANCEL_INSTALLATION:-No, Cancel installation}")
 
     if [[ "$confirm" != "yes" ]]; then
-        gum style --foreground 196 "Installation cancelled by user"
+        gum style --foreground 196 "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
         exit 0
     fi
 }
@@ -282,7 +282,7 @@ run_installation() {
     if eval "sudo $cmd"; then
         show_completion
     else
-        error "Installation failed. Check the log file: $LOG_FILE"
+        error "${T_INSTALLATION_FAILED:-Installation failed}. Check the log file: $LOG_FILE"
     fi
 }
 
@@ -291,7 +291,7 @@ show_completion() {
     echo ""
     print_gum_success_box "${T_INSTALLATION_COMPLETE:-Installation Complete!}
 
-Citadel has been successfully installed!"
+${T_CITADEL_INSTALLED_SUCCESSFULLY:-Citadel has been successfully installed!}"
 
     echo ""
     echo "${T_USEFUL_COMMANDS:-Useful Commands}:"
