@@ -83,3 +83,16 @@ export T_WIZARD_DESCRIPTION_LINE1="Ten kreator poprowadzi Cię przez instalację
 export T_WIZARD_DESCRIPTION_LINE2="krok po kroku."
 export T_WIZARD_DESCRIPTION_LINE3="Nie wymaga wiedzy technicznej - zajmiemy się wszystkim"
 export T_WIZARD_SUBTITLE="Zabezpieczmy Twoją ochronę DNS..."
+
+# Frame headers and UI messages
+export T_LANGUAGE_SELECTION="Wybór Języka"
+export T_INSTALLATION_PROFILE="Profil Instalacji"
+export T_COMPONENT_CUSTOMIZATION="Dostosowanie Komponentów"
+export T_BACKUP_CONFIGURATION="Konfiguracja Kopii Zapasowej"
+export T_INSTALLATION_SUMMARY="Podsumowanie Instalacji"
+export T_INSTALLING_CITADEL="Instalowanie Citadel..."
+export T_INSTALLATION_COMPLETE="Instalacja Zakończona!"
+export T_USEFUL_COMMANDS="Przydatne Polecenia"
+export T_LOG_FILE_LABEL="Plik dziennika:"
+export T_THANK_YOU="Dziękujemy za wybór Citadel!"
+export T_BACKUP_RECOMMENDED="(zalecane)"

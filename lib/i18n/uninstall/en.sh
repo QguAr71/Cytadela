@@ -79,3 +79,16 @@ export T_WIZARD_DESCRIPTION_LINE1="This wizard will guide you through the Citade
 export T_WIZARD_DESCRIPTION_LINE2="installation process step by step."
 export T_WIZARD_DESCRIPTION_LINE3="No technical knowledge required - we'll handle everything"
 export T_WIZARD_SUBTITLE="Let's get your DNS protection set up..."
+
+# Frame headers and UI messages
+export T_LANGUAGE_SELECTION="Language Selection"
+export T_INSTALLATION_PROFILE="Installation Profile"
+export T_COMPONENT_CUSTOMIZATION="Component Customization"
+export T_BACKUP_CONFIGURATION="Backup Configuration"
+export T_INSTALLATION_SUMMARY="Installation Summary"
+export T_INSTALLING_CITADEL="Installing Citadel..."
+export T_INSTALLATION_COMPLETE="Installation Complete!"
+export T_USEFUL_COMMANDS="Useful Commands"
+export T_LOG_FILE_LABEL="Log file:"
+export T_THANK_YOU="Thank you for choosing Citadel!"
+export T_BACKUP_RECOMMENDED="(recommended)"

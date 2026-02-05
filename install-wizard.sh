@@ -88,7 +88,7 @@ ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle 
 
 # Language selection
 select_language() {
-    print_gum_section_header "Language Selection"
+    print_gum_section_header "${T_LANGUAGE_SELECTION:-Language Selection}"
 
     local lang
     lang=$(gum choose \
@@ -128,7 +128,7 @@ load_language() {
 
 # Profile selection with descriptions
 select_profile() {
-    print_gum_section_header "Installation Profile"
+    print_gum_section_header "${T_INSTALLATION_PROFILE:-Installation Profile}"
 
     local profile_desc
     profile_desc=$(gum choose \
@@ -159,7 +159,7 @@ customize_components() {
         full) components="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging,honeypot,prometheus" ;;
     esac
 
-    print_gum_section_header "Component Customization"
+    print_gum_section_header "${T_COMPONENT_CUSTOMIZATION:-Component Customization}"
 
     local customize
     customize=$(gum choose \
@@ -196,12 +196,12 @@ customize_components() {
 
 # Backup confirmation
 confirm_backup() {
-    print_gum_section_header "Backup Configuration"
+    print_gum_section_header "${T_BACKUP_CONFIGURATION:-Backup Configuration}"
 
     local backup_choice
     backup_choice=$(gum choose \
         --header "Create backups of existing configurations?" \
-        "yes|Yes, create backups (recommended)" \
+        "yes|Yes, create backups ${T_BACKUP_RECOMMENDED:-(recommended)}" \
         "no|No, don't create backups")
 
     if [[ "$backup_choice" == "yes" ]]; then
@@ -218,7 +218,7 @@ confirm_installation() {
     local components="$3"
     local backup="$4"
 
-    local summary_text="Installation Summary
+    local summary_text="${T_INSTALLATION_SUMMARY:-Installation Summary}
 
 Language: $language
 Profile: $profile
@@ -248,7 +248,7 @@ run_installation() {
     local components="$3"
     local backup="$4"
 
-    print_gum_section_header "Installing Citadel..."
+    print_gum_section_header "${T_INSTALLING_CITADEL:-Installing Citadel...}"
 
     # Build the CLI command
     local cmd="./scripts/citadel-install-cli.sh"
@@ -289,19 +289,19 @@ run_installation() {
 # Show completion message
 show_completion() {
     echo ""
-    print_gum_success_box "Installation Complete!
+    print_gum_success_box "${T_INSTALLATION_COMPLETE:-Installation Complete!}
 
 Citadel has been successfully installed!"
 
     echo ""
-    echo "Useful commands:"
+    echo "${T_USEFUL_COMMANDS:-Useful Commands}:"
     echo "  Check status: sudo ./citadel.sh monitor status"
     echo "  View logs: sudo ./citadel.sh logs"
     echo "  Update blocklists: sudo ./citadel.sh backup lists-update"
     echo ""
-    echo "Log file: $LOG_FILE"
+    echo "${T_LOG_FILE_LABEL:-Log file:}: $LOG_FILE"
     echo ""
-    echo "Thank you for choosing Citadel!"
+    echo "${T_THANK_YOU:-Thank you for choosing Citadel!}"
 }
 
 # Main function
