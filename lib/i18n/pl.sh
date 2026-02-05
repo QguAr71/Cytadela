@@ -373,3 +373,36 @@ export T_NO_ADDITIONAL_SELECTED="Nie wybrano dodatkowych komponentów"
 
 export T_ALL_COMPONENTS_SELECTED="Wszystkie dostępne komponenty są już wybrane"
 
+# Missing translations for CLI installer completion
+export T_USEFUL_COMMANDS="Przydatne Polecenia"
+export T_CMD_SHOW_HELP="Pokaż pomoc"
+export T_CMD_CHECK_STATUS="Sprawdź status"
+export T_CMD_VIEW_LOGS="Wyświetl logi"
+export T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
+export T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
+
+# Missing translations for installer sections (added for CLI installer compatibility)
+export T_INSTALLATION_PROFILE="Profil Instalacji"
+export T_COMPONENT_CUSTOMIZATION="Dostosowanie Komponentów"
+export T_BACKUP_CONFIGURATION="Konfiguracja Kopii Zapasowej"
+export T_BACKUPS_WILL_BE_CREATED="Kopie zapasowe będą utworzone"
+export T_NO_BACKUPS_WILL_BE_CREATED="Kopie zapasowe nie będą utworzone"
+export T_INSTALLATION_SUMMARY="Podsumowanie Instalacji"
+export T_INSTALLATION_WARNING="OSTRZEŻENIE: Instalacja zmodyfikuje ustawienia systemu DNS i firewall"
+export T_INSTALLING_CITADEL="Instalowanie Citadel..."
+export T_INSTALLATION_COMPLETE="Instalacja Zakończona!"
+export T_CITADEL_INSTALLED_SUCCESSFULLY="Citadel został pomyślnie zainstalowany!"
+export T_USEFUL_COMMANDS="Przydatne Polecenia"
+export T_LOG_FILE_LABEL="Plik logu"
+export T_THANK_YOU="Dziękujemy za wybór Citadel!"
+
+# Command descriptions
+export T_CMD_SHOW_HELP="Pokaż pomoc"
+export T_CMD_CHECK_STATUS="Sprawdź status"
+export T_CMD_VIEW_LOGS="Wyświetl logi"
+export T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
+export T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
+
+# Other missing translations
+export T_COMPONENTS_CONFIGURED="Skonfigurowane komponenty:"
+

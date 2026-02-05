@@ -121,6 +121,46 @@ load_language() {
         T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel..."
         T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
         T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
+        
+        # Missing translations for installer sections
+        T_INSTALLATION_PROFILE="Profil Instalacji"
+        T_COMPONENT_CUSTOMIZATION="Dostosowanie Komponentów"
+        T_BACKUP_CONFIGURATION="Konfiguracja Kopii Zapasowej"
+        T_BACKUPS_WILL_BE_CREATED="Kopie zapasowe będą utworzone"
+        T_NO_BACKUPS_WILL_BE_CREATED="Kopie zapasowe nie będą utworzone"
+        T_INSTALLATION_SUMMARY="Podsumowanie Instalacji"
+        T_INSTALLATION_WARNING="OSTRZEŻENIE: Instalacja zmodyfikuje ustawienia systemu DNS i firewall"
+        T_INSTALLING_CITADEL="Instalowanie Citadel..."
+        T_INSTALLATION_COMPLETE="Instalacja Zakończona!"
+        T_CITADEL_INSTALLED_SUCCESSFULLY="Citadel został pomyślnie zainstalowany!"
+        T_USEFUL_COMMANDS="Przydatne Polecenia"
+        T_LOG_FILE_LABEL="Plik logu"
+        T_THANK_YOU="Dziękujemy za wybór Citadel!"
+        
+        # Missing translations for component customization
+        T_WANT_CUSTOMIZE_COMPONENTS="Czy chcesz dostosować komponenty?"
+        T_USE_RECOMMENDED_PROFILE="Użyj zalecanego profilu"
+        T_CUSTOMIZE_COMPONENTS_MANUALLY="Dostosuj komponenty ręcznie"
+        
+        # Missing translations for backup configuration
+        T_CREATE_BACKUPS="Utworzyć kopie zapasowe istniejących konfiguracji?"
+        T_YES_CREATE_BACKUPS="Tak, utwórz kopie zapasowe"
+        T_NO_DONT_CREATE_BACKUPS="Nie, nie twórz kopii zapasowych"
+        
+        # Missing translations for final confirmation
+        T_READY_TO_INSTALL="Czy jesteś gotowy do zainstalowania Citadel?"
+        T_YES_INSTALL_NOW="Tak, zainstaluj teraz"
+        T_NO_CANCEL_INSTALLATION="Nie, anuluj instalację"
+        
+        # Command descriptions
+        T_CMD_SHOW_HELP="Pokaż pomoc"
+        T_CMD_CHECK_STATUS="Sprawdź status"
+        T_CMD_VIEW_LOGS="Wyświetl logi"
+        T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
+        T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
+        
+        # Other missing translations
+        T_COMPONENTS_CONFIGURED="Components configured:"
     elif [[ "$LANGUAGE" == "en" ]]; then
         # English translations
         T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
@@ -456,14 +496,22 @@ ${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original s
         case "$action" in
             "${T_REINSTALL_CITADEL:-Reinstall Citadel (recommended)}")
                 status "${T_UNINSTALLING_EXISTING:-Uninstalling existing Citadel installation...}"
-                if [[ -f "./scripts/uninstall.sh" ]]; then
-                    sudo ./scripts/uninstall.sh --yes
+                if [[ -f "./citadel.sh" ]]; then
+                    sudo ./citadel.sh uninstall --yes
+                elif [[ -f "./modules/uninstall.sh" ]]; then
+                    # Fallback to direct module call
+                    source ./modules/uninstall.sh
+                    citadel_uninstall
                 fi
                 ;;
             "${T_UNINSTALL_CITADEL:-Uninstall Citadel}")
                 status "${T_UNINSTALLING_CITADEL:-Uninstalling Citadel...}"
-                if [[ -f "./scripts/uninstall.sh" ]]; then
-                    sudo ./scripts/uninstall.sh --yes
+                if [[ -f "./citadel.sh" ]]; then
+                    sudo ./citadel.sh uninstall --yes
+                elif [[ -f "./modules/uninstall.sh" ]]; then
+                    # Fallback to direct module call
+                    source ./modules/uninstall.sh
+                    citadel_uninstall
                 fi
                 echo ""
                 echo "${T_CITADEL_UNINSTALLED:-Citadel has been uninstalled}"
