@@ -190,3 +190,6 @@ export T_CMD_VIEW_LOGS="View logs"
 export T_CMD_UPDATE_BLOCKLISTS="Update blocklists"
 export T_CMD_EMERGENCY_RESTORE="Emergency internet restore"
 
+
+export T_CMD_SHOW_HELP="Show help"
+

@@ -295,6 +295,7 @@ ${T_CITADEL_INSTALLED_SUCCESSFULLY:-Citadel has been successfully installed!}"
 
     echo ""
     echo "${T_USEFUL_COMMANDS:-Useful Commands}:"
+    echo "  ${T_CMD_SHOW_HELP:-Show help}: sudo ./citadel.sh help"
     echo "  ${T_CMD_CHECK_STATUS:-Check status}: sudo ./citadel.sh monitor status"
     echo "  ${T_CMD_VIEW_LOGS:-View logs}: sudo ./citadel.sh logs"
     echo "  ${T_CMD_UPDATE_BLOCKLISTS:-Update blocklists}: sudo ./citadel.sh backup lists-update"

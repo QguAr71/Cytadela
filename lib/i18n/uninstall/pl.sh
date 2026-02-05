@@ -194,3 +194,6 @@ export T_CMD_VIEW_LOGS="Zobacz logi"
 export T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokad"
 export T_CMD_EMERGENCY_RESTORE="Przywracanie awaryjne internetu"
 
+
+export T_CMD_SHOW_HELP="Pokaż pomoc"
+
