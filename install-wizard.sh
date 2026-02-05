@@ -60,7 +60,6 @@ info() {
 # Load language file
 load_language() {
     LANGUAGE=$1
-    echo "DEBUG: Loading language file..."
     local lang_file="${SCRIPT_DIR}/lib/i18n/${LANGUAGE}.sh"
     if [[ -f "$lang_file" ]]; then
         # shellcheck source=/dev/null
@@ -70,7 +69,6 @@ load_language() {
         warning "Language file not found: $lang_file, using English"
         LANGUAGE="en"
     fi
-    echo "DEBUG: Language file loaded"
 }
 
 # Welcome screen
@@ -95,17 +93,7 @@ ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle 
 
 # Language selection
 select_language() {
-    echo "Select your preferred language:"
-    echo "1) English"
-    echo "2) Polski (domyślny)"
-    echo "3) Deutsch"
-    echo "4) Español"
-    echo "5) Français"
-    echo "6) Italiano"
-    echo "7) Русский"
-    
-    # Default to Polish without requiring input
-    echo "Using Polish (Polski) by default..."
+    # Default to Polish without showing menu
     LANGUAGE="pl"
 
     # Load language file
