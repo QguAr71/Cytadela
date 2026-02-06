@@ -119,5 +119,8 @@
   "T_WIZARD_SUBTITLE": "Lassen Sie uns Ihren DNS-Schutz einrichten...",
   "T_WIZARD_DESCRIPTION_LINE1": "Dieser Assistent führt Sie durch den Citadel-",
   "T_WIZARD_DESCRIPTION_LINE2": "Installationsprozess Schritt für Schritt.",
-  "T_WIZARD_DESCRIPTION_LINE3": "Keine technischen Kenntnisse erforderlich - wir kümmern uns um alles"
+  "T_WIZARD_DESCRIPTION_LINE3": "Keine technischen Kenntnisse erforderlich - wir kümmern uns um alles",
+  "T_OPTIMIZE_KERNEL_DESC": "Kernel-Prioritätsoptimierung (CPU/IO-Boost)",
+  "T_DOH_PARALLEL_DESC": "DoH Parallel Racing (schnelleres DNS)",
+  "T_EDITOR_INTEGRATION_DESC": "Micro Editor + citadel Befehl"
 }

@@ -200,3 +200,21 @@ export T_VERIFY_HELP_SERVICES="Solo mostrar estado de servicios"
 export T_VERIFY_HELP_FILES="Solo mostrar archivos de configuración"
 export T_VERIFY_HELP_ALL="Todas las pruebas incluyendo DNS"
 export T_VERIFY_HELP_HELP="Mostrar esta ayuda"
+
+# Componentes avanzados
+export T_OPTIMIZING_KERNEL="Optimizando prioridades del kernel"
+export T_KERNEL_OPTIMIZED="Prioridades del kernel optimizadas"
+export T_ENABLING_DOH_PARALLEL="Habilitando DoH parallel racing"
+export T_DOH_PARALLEL_ENABLED="DoH parallel racing habilitado"
+export T_INSTALLING_EDITOR="Instalando integración del editor"
+export T_EDITOR_INSTALLED="Integración del editor instalada"
+
+# Descripciones de componentes
+export T_COMPONENT_OPTIMIZE_KERNEL="Optimización de prioridades del kernel (CPU/IO boost)"
+export T_COMPONENT_DOH_PARALLEL="DoH parallel racing (DNS más rápido)"
+export T_COMPONENT_EDITOR_INTEGRATION="Editor Micro + comando citadel"
+
+# Descripciones de componentes del asistente de instalación
+export T_OPTIMIZE_KERNEL_DESC="Optimización de prioridades del kernel (CPU/IO boost)"
+export T_DOH_PARALLEL_DESC="DoH parallel racing (DNS más rápido)"
+export T_EDITOR_INTEGRATION_DESC="Editor Micro + comando citadel"

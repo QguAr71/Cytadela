@@ -114,7 +114,7 @@
   "T_CANCEL_INSTALLATION_ACTION": "Anuluj instalację",
   "T_UNINSTALLING_EXISTING": "Odinstalowywanie istniejącej instalacji Citadel...",
   "T_UNINSTALLING_CITADEL": "Odinstalowywanie Citadel...",
-  "T_CITADEL_UNINSTALLED": "Citadel został odinstalowany",
+  "T_CITADEL_UNINSTALLED": "Citadel zostało odinstalowane",
   "T_COMPONENTS_CONFIGURED": "Skonfigurowane komponenty:",
   "T_WIZARD_SUBTITLE": "Skonfigurujmy ochronę DNS...",
   "T_WIZARD_DESCRIPTION_LINE1": "Ten kreator przeprowadzi Cię przez proces instalacji Citadel",
@@ -134,5 +134,8 @@
   "T_NEXT_STEPS": "Następne kroki:",
   "T_TEST_DNS": "Test DNS:",
   "T_CONFIGURE_SYSTEM": "Konfiguracja systemu:",
-  "T_VERIFY": "Weryfikacja:"
+  "T_VERIFY": "Weryfikacja:",
+  "T_OPTIMIZE_KERNEL_DESC": "Optymalizacja priorytetów kernela (CPU/IO boost)",
+  "T_DOH_PARALLEL_DESC": "Równoległy DoH (szybszy DNS)",
+  "T_EDITOR_INTEGRATION_DESC": "Edytor Micro + komenda citadel"
 }

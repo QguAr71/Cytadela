@@ -119,5 +119,8 @@
   "T_WIZARD_SUBTITLE": "Configuriamo la tua protezione DNS...",
   "T_WIZARD_DESCRIPTION_LINE1": "Questo assistente ti guiderà attraverso il processo di installazione di Citadel",
   "T_WIZARD_DESCRIPTION_LINE2": "passo dopo passo.",
-  "T_WIZARD_DESCRIPTION_LINE3": "Non sono richieste conoscenze tecniche - ci occupiamo noi di tutto"
+  "T_WIZARD_DESCRIPTION_LINE3": "Non sono richieste conoscenze tecniche - ci occupiamo noi di tutto",
+  "T_OPTIMIZE_KERNEL_DESC": "Kernel priority optimization (CPU/IO boost)",
+  "T_DOH_PARALLEL_DESC": "DoH parallel racing (faster DNS)",
+  "T_EDITOR_INTEGRATION_DESC": "Micro editor + citadel command"
 }
