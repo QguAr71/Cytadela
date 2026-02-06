@@ -212,3 +212,19 @@ export T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel
 export T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
 export T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
 
+# Emergency network restore translations
+export T_EMERGENCY_OFFER="Test łączności nie powiódł się. Czy chcesz uruchomić awaryjne przywracanie sieci?"
+export T_EMERGENCY_OPTION="To wykona:"
+export T_EMERGENCY_DNS="Ustawi awaryjne publiczne serwery DNS"
+export T_EMERGENCY_STOP="Zatrzyma usługi DNS Citadel"
+export T_EMERGENCY_FLUSH="Wyczyści reguły firewalla"
+export T_EMERGENCY_RESTART="Restartuje usługi sieciowe"
+export T_RUN_EMERGENCY="Uruchomić awaryjne przywracanie sieci teraz?"
+export T_RUNNING_EMERGENCY="Uruchamianie awaryjnego przywracania sieci..."
+export T_EMERGENCY_SUCCESS="Awaryjne przywracanie sieci zostało pomyślnie zakończone"
+export T_TESTING_AGAIN="Ponowne testowanie łączności..."
+export T_CONNECTIVITY_RESTORED="Łączność z internetem została pomyślnie przywrócona!"
+export T_EMERGENCY_FAILED="Przywracanie awaryjne zakończone, ale test łączności nadal zawodzi"
+export T_EMERGENCY_FAILED_RUN="Nie udało się uruchomić awaryjnego przywracania sieci"
+export T_CITADEL_NOT_FOUND="Nie znaleziono citadel.sh - nie można uruchomić przywracania awaryjnego"
+
