@@ -466,24 +466,24 @@ config_reset() {
 
 # List available profiles
 config_list_profiles() {
-    echo "Available Citadel configuration profiles:"
+    echo "${T_AVAILABLE_PROFILES:-Available Citadel configuration profiles:}"
     echo ""
-    echo "minimal     - Core DNS functionality only"
+    echo "minimal     - ${T_PROFILE_MINIMAL:-Core DNS functionality only}"
     echo "  • DNSCrypt + CoreDNS"
     echo "  • Basic firewall"
     echo "  • No security features"
     echo ""
-    echo "standard    - Standard protection (recommended)"
+    echo "standard    - ${T_PROFILE_STANDARD:-Standard protection (recommended)}"
     echo "  • DNS + Adblock"
     echo "  • Basic monitoring"
     echo "  • Event logging"
     echo ""
-    echo "security    - Advanced security features"
+    echo "security    - ${T_PROFILE_SECURITY:-Advanced security features}"
     echo "  • Standard + Reputation system"
     echo "  • ASN blocking"
     echo "  • Honeypot detection"
     echo ""
-    echo "full        - Everything enabled"
+    echo "full        - ${T_PROFILE_FULL:-Everything enabled}"
     echo "  • Security + Prometheus metrics"
     echo "  • Maximum protection"
     echo ""
@@ -494,7 +494,7 @@ config_list_profiles() {
     local current_profile
     current_profile=$(config_get "profile")
     if [[ -n "$current_profile" ]]; then
-        echo "Current profile: $current_profile"
+        echo "${T_CURRENT_PROFILE:-Current profile}: $current_profile"
     fi
 }
 

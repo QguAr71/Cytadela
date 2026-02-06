@@ -208,3 +208,5 @@ export T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
 export T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
 export T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
 
+export T_AVAILABLE_PROFILES="Available Citadel configuration profiles:"
+export T_CURRENT_PROFILE="Current profile"

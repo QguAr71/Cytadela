@@ -259,3 +259,5 @@ export T_NO_DNS_SERVICE="Nie wykryto lokalnej usługi DNS (systemd-resolved, dns
 # Final results
 export T_DNS_TEST_FAILED="Test łączności DNS nie powiódł się - internet może nie działać prawidłowo"
 
+export T_AVAILABLE_PROFILES="Dostępne profile konfiguracji Citadel:"
+export T_CURRENT_PROFILE="Aktualny profil"
