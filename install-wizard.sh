@@ -167,7 +167,14 @@ load_language() {
         T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
         T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
         
-        # Emergency network restore translations
+        # Profile selection translations
+        T_CHOOSE_PROFILE="Wybierz profil instalacji:"
+        T_PROFILE_MINIMAL="Minimal - Tylko podstawowe DNS (dnscrypt, coredns)"
+        T_PROFILE_STANDARD="Standard - Podstawowa ochrona (minimal + adblock)"
+        T_PROFILE_SECURITY="Bezpieczeństwo - Zaawansowane (standard + reputacja, blokowanie ASN, logowanie)"
+        T_PROFILE_FULL="Pełne - Wszystko (bezpieczeństwo + honeypot, prometheus)"
+        
+        # Component selection translations
         T_EMERGENCY_OFFER="Test łączności nie powiódł się. Czy chcesz uruchomić awaryjne przywracanie sieci?"
         T_EMERGENCY_OPTION="To wykona:"
         T_EMERGENCY_DNS="Ustawi awaryjne publiczne serwery DNS"
@@ -197,6 +204,13 @@ load_language() {
         T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
         T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
         T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
+        
+        # Profile selection translations
+        T_CHOOSE_PROFILE="Choose installation profile:"
+        T_PROFILE_MINIMAL="Minimal - Core DNS only (dnscrypt, coredns)"
+        T_PROFILE_STANDARD="Standard - Basic protection (minimal + adblock)"
+        T_PROFILE_SECURITY="Security - Advanced (standard + reputation, asn-blocking, logging)"
+        T_PROFILE_FULL="Full - Everything (security + honeypot, prometheus)"
     elif [[ "$LANGUAGE" == "de" ]]; then
         # German translations
         T_CITADEL_ALREADY_INSTALLED="Citadel ist bereits installiert"
