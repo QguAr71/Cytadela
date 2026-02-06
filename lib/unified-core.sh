@@ -131,45 +131,6 @@ log_verbose() {
 }
 
 # ==============================================================================
-# RATE LIMITING
-# ==============================================================================
-
-# Rate limiting for sensitive operations
-# Usage: rate_limit_check "operation_name" max_attempts time_window
-rate_limit_check() {
-    local operation="$1"
-    local max_attempts="${2:-3}"
-    local time_window="${3:-60}"  # seconds
-
-    local rate_file="${CYTADELA_STATE_DIR}/rate_limit_${operation}"
-    local current_time
-    current_time=$(date +%s)
-
-    # Create rate file if doesn't exist
-    [[ ! -f "$rate_file" ]] && echo "0:0" > "$rate_file"
-
-    # Read current attempts and timestamp
-    local attempts timestamp
-    IFS=':' read -r attempts timestamp < "$rate_file"
-
-    # Reset if time window passed
-    if [[ $((current_time - timestamp)) -gt $time_window ]]; then
-        attempts=0
-    fi
-
-    # Check limit
-    if [[ $attempts -ge $max_attempts ]]; then
-        local remaining=$((time_window - (current_time - timestamp)))
-        log_error "Rate limit exceeded for $operation. Try again in ${remaining}s"
-        return 1
-    fi
-
-    # Increment attempts
-    echo "$((attempts + 1)):$current_time" > "$rate_file"
-    return 0
-}
-
-# ==============================================================================
 # MODULE LOADING HELPERS
 # ==============================================================================
 
@@ -262,7 +223,6 @@ export -f translate_command
 export -f parse_silent_flag
 export -f log_silent
 export -f log_verbose
-export -f rate_limit_check
 export -f unified_module_exists
 export -f load_unified_module
 export -f safe_write_file

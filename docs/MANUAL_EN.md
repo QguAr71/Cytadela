@@ -173,6 +173,25 @@ sudo ./citadel.sh install check-deps
 
 # Interactive installation wizard
 sudo ./citadel.sh install wizard
+
+### Dry-Run Preview
+Test installation without making any changes:
+
+```bash
+# Use the install wizard with dry-run option
+sudo ./install-wizard.sh
+# Then select "Show preview (dry-run)" at the final confirmation step
+
+# Or use CLI installer with dry-run flag
+sudo ./scripts/citadel-install-cli.sh --profile=standard --dry-run
+```
+
+The dry-run mode shows exactly what would be installed without modifying your system. Perfect for:
+- Previewing what components will be installed
+- Testing different profile configurations
+- Verifying dependencies before actual installation
+
+After the dry-run preview, you can choose to proceed with the actual installation or cancel.
 ```
 
 ---

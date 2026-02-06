@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "name": "Core Module",
+    "description": "Core Citadel commands for DNS configuration, status monitoring, and basic operations",
+    "version": "1.0.0",
+    "category": "core",
+    "tags": ["core", "dns", "status", "monitoring", "configuration"]
+  },
+  "commands": [
+    {
+      "name": "configure-system",
+      "description": "Switch system DNS to Citadel++",
+      "usage": "citadel configure-system",
+      "category": "configuration",
+      "examples": [
+        "sudo ./citadel.sh configure-system"
+      ],
+      "notes": "Configures system to use Citadel as DNS resolver, requires root privileges"
+    },
+    {
+      "name": "restore-system",
+      "description": "Restore systemd-resolved",
+      "usage": "citadel restore-system",
+      "category": "configuration",
+      "examples": [
+        "sudo ./citadel.sh restore-system"
+      ],
+      "notes": "Restores original systemd-resolved configuration, disables Citadel DNS"
+    },
+    {
+      "name": "firewall-safe",
+      "description": "SAFE mode (won't break connectivity)",
+      "usage": "citadel firewall-safe",
+      "category": "security",
+      "examples": [
+        "sudo ./citadel.sh firewall-safe"
+      ],
+      "notes": "Applies safe firewall rules that block malicious traffic but preserve connectivity"
+    },
+    {
+      "name": "firewall-strict",
+      "description": "STRICT mode (DNS leak protection)",
+      "usage": "citadel firewall-strict",
+      "category": "security",
+      "examples": [
+        "sudo ./citadel.sh firewall-strict"
+      ],
+      "notes": "Applies strict firewall rules that prevent DNS leaks, may break some applications"
+    },
+    {
+      "name": "status",
+      "description": "Show service status",
+      "usage": "citadel status",
+      "category": "monitoring",
+      "examples": [
+        "citadel status",
+        "citadel status --detailed"
+      ],
+      "notes": "Shows status of all Citadel services and components"
+    },
+    {
+      "name": "diagnostics",
+      "description": "Full system diagnostics",
+      "usage": "citadel diagnostics",
+      "category": "monitoring",
+      "examples": [
+        "citadel diagnostics",
+        "citadel diagnostics --verbose"
+      ],
+      "notes": "Runs comprehensive diagnostics on DNS, network, and Citadel components"
+    },
+    {
+      "name": "verify",
+      "description": "Verify full stack",
+      "usage": "citadel verify",
+      "category": "monitoring",
+      "examples": [
+        "citadel verify"
+      ],
+      "notes": "Verifies that all Citadel components are working correctly"
+    },
+    {
+      "name": "verify-config",
+      "description": "Verify config and DNS",
+      "usage": "citadel verify-config",
+      "category": "monitoring",
+      "examples": [
+        "citadel verify-config"
+      ],
+      "notes": "Verifies configuration files and DNS resolution"
+    },
+    {
+      "name": "test-all",
+      "description": "Smoke test + leak test",
+      "usage": "citadel test-all",
+      "category": "testing",
+      "examples": [
+        "citadel test-all"
+      ],
+      "notes": "Runs both smoke tests and DNS leak tests"
+    },
+    {
+      "name": "check-deps",
+      "description": "Check dependencies",
+      "usage": "citadel check-deps",
+      "category": "maintenance",
+      "examples": [
+        "citadel check-deps"
+      ],
+      "notes": "Checks if all required system dependencies are installed"
+    },
+    {
+      "name": "check-deps-install",
+      "description": "Install missing deps",
+      "usage": "citadel check-deps-install",
+      "category": "maintenance",
+      "examples": [
+        "sudo ./citadel.sh check-deps-install"
+      ],
+      "notes": "Automatically installs missing system dependencies"
+    }
+  ]
+}

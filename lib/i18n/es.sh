@@ -129,7 +129,8 @@ export T_INSTALL_CANCELLED="Instalación cancelada"
 export T_INSTALLING_PACKAGES="Instalando paquetes..."
 export T_INSTALL_SUCCESS="¡Dependencias instaladas exitosamente!"
 export T_INSTALL_FAILED="La instalación falló con código de salida"
-export T_VERIFY_HINT="Ejecuta 'sudo cytadela++ check-deps' para verificar la instalación"
+export T_DRY_RUN="Ejecución en seco"
+export T_DRY_RUN_MODE_WARNING="MODO DE EJECUCIÓN EN SECO - No se realizarán cambios"
 
 # Traducciones de ayuda de check-deps
 export T_CHECK_DEPS_DESC="Verificador de Dependencias"

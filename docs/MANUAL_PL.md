@@ -173,6 +173,25 @@ sudo ./citadel.sh install check-deps
 
 # Interaktywny kreator instalacji
 sudo ./citadel.sh install wizard
+
+### Podgląd Próbny (Dry-Run)
+Test instalacji bez wprowadzania zmian:
+
+```bash
+# Użyj kreatora instalacji z opcją podglądu próbnego
+sudo ./install-wizard.sh
+# Następnie wybierz "Pokaż podgląd (dry-run)" w kroku finalnego potwierdzenia
+
+# Lub użyj instalatora CLI z flagą dry-run
+sudo ./scripts/citadel-install-cli.sh --profile=standard --dry-run
+```
+
+Tryb podglądu próbnego pokazuje dokładnie, co zostanie zainstalowane bez modyfikowania systemu. Idealny do:
+- Podglądu jakie komponenty zostaną zainstalowane
+- Testowania różnych konfiguracji profili
+- Weryfikacji zależności przed faktyczną instalacją
+
+Po podglądzie próbnym możesz wybrać kontynuację z faktyczną instalacją lub anulowanie.
 ```
 
 ---

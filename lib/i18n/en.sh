@@ -18,6 +18,7 @@ export T_MOD_DNSCRYPT="Encrypted DNS resolver (DNSCrypt/DoH)"
 export T_MOD_COREDNS="Local DNS server with adblock + cache"
 export T_MOD_NFTABLES="Firewall rules (DNS leak prevention)"
 export T_MOD_HEALTH="Auto-restart services on failure"
+export T_DRY_RUN_MODE_WARNING="DRY RUN MODE - No changes will be made"
 export T_MOD_SUPPLY="Binary verification (checksums)"
 export T_MOD_LKG="Last Known Good blocklist cache"
 export T_MOD_IPV6="IPv6 privacy extensions management"
@@ -209,6 +210,24 @@ export T_INITIALIZING_HONEYPOT="Initializing honeypot system"
 export T_HONEYPOT_ENABLED="Honeypot system enabled"
 export T_INSTALLING_PROMETHEUS="Installing Prometheus metrics"
 export T_PROMETHEUS_ENABLED="Prometheus metrics enabled"
+
+# Advanced components
+export T_OPTIMIZING_KERNEL="Optimizing kernel priorities"
+export T_KERNEL_OPTIMIZED="Kernel priorities optimized"
+export T_ENABLING_DOH_PARALLEL="Enabling DoH parallel racing"
+export T_DOH_PARALLEL_ENABLED="DoH parallel racing enabled"
+export T_INSTALLING_EDITOR="Installing editor integration"
+export T_EDITOR_INSTALLED="Editor integration installed"
+
+# Component descriptions
+export T_COMPONENT_OPTIMIZE_KERNEL="Kernel priority optimization (CPU/IO boost)"
+export T_COMPONENT_DOH_PARALLEL="DoH parallel racing (faster DNS)"
+export T_COMPONENT_EDITOR_INTEGRATION="Micro editor + citadel command"
+
+# Install-wizard component descriptions
+export T_OPTIMIZE_KERNEL_DESC="Kernel priority optimization (CPU/IO boost)"
+export T_DOH_PARALLEL_DESC="DoH parallel racing (faster DNS)"
+export T_EDITOR_INTEGRATION_DESC="Micro editor + citadel command"
 
 # Complete status messages (to avoid mixing languages)
 export T_DNSCRYPT_INSTALLED_AND_RUNNING="DNSCrypt installed and running"

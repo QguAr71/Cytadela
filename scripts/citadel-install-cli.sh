@@ -183,15 +183,18 @@ PROFILES:
     custom      - Custom component selection
 
 COMPONENTS:
-    dnscrypt        - DNS encryption and caching
-    coredns         - DNS server and filtering
-    adblock         - DNS-based ad blocking
-    reputation      - IP reputation scoring
-    asn-blocking    - Network-level blocking
-    event-logging   - Structured event logging
-    honeypot        - Scanner detection traps
-    prometheus      - Metrics collection
-    firewall        - NFTables firewall rules
+    dnscrypt           - DNS encryption and caching
+    coredns            - DNS server and filtering
+    adblock            - DNS-based ad blocking
+    reputation         - IP reputation scoring
+    asn-blocking       - Network-level blocking
+    event-logging      - Structured event logging
+    honeypot           - Scanner detection traps
+    prometheus         - Metrics collection
+    firewall           - NFTables firewall rules
+    optimize-kernel    - Kernel priority optimization (CPU/IO boost for DNS)
+    doh-parallel       - DoH parallel racing (faster DNS responses)
+    editor-integration - Micro editor + citadel helper command
 
 LANGUAGES:
     en              - English (default)
@@ -451,7 +454,7 @@ show_installation_plan() {
     echo ""
 
     if [[ "$DRY_RUN" == true ]]; then
-        warning "DRY RUN MODE - No changes will be made"
+        warning "${T_DRY_RUN_MODE_WARNING:-DRY RUN MODE - No changes will be made}"
     fi
 
     # List selected components
@@ -469,6 +472,9 @@ show_installation_plan() {
             honeypot) desc="${T_COMPONENT_HONEYPOT:-Scanner detection traps}" ;;
             prometheus) desc="${T_COMPONENT_PROMETHEUS:-Metrics collection}" ;;
             firewall) desc="${T_COMPONENT_FIREWALL:-NFTables firewall rules}" ;;
+            optimize-kernel) desc="${T_COMPONENT_OPTIMIZE_KERNEL:-Kernel priority optimization}" ;;
+            doh-parallel) desc="${T_COMPONENT_DOH_PARALLEL:-DoH parallel racing}" ;;
+            editor-integration) desc="${T_COMPONENT_EDITOR_INTEGRATION:-Editor integration}" ;;
             *) desc="Unknown component" ;;
         esac
         echo "  • $comp - $desc"
@@ -558,6 +564,9 @@ declare -A COMPONENTS_DESC=(
     ["honeypot"]="${T_COMPONENT_HONEYPOT:-Scanner detection traps}"
     ["prometheus"]="${T_COMPONENT_PROMETHEUS:-Metrics collection}"
     ["firewall"]="${T_COMPONENT_FIREWALL:-NFTables firewall rules}"
+    ["optimize-kernel"]="${T_COMPONENT_OPTIMIZE_KERNEL:-Kernel priority optimization (CPU/IO boost)}"
+    ["doh-parallel"]="${T_COMPONENT_DOH_PARALLEL:-DoH parallel racing (faster DNS)}"
+    ["editor-integration"]="${T_COMPONENT_EDITOR_INTEGRATION:-Micro editor + citadel command}"
 )
 
 # Install gum if needed for enhanced UI
@@ -727,6 +736,36 @@ install_component() {
                 status "Would ${T_INSTALLING_PROMETHEUS,,}"
             fi
             ;;
+
+        optimize-kernel)
+            status "${T_OPTIMIZING_KERNEL:-Optimizing kernel priorities}..."
+            if [[ "$DRY_RUN" == false ]]; then
+                run_citadel "optimize-kernel"
+                status "${T_KERNEL_OPTIMIZED:-Kernel priorities optimized}"
+            else
+                status "Would ${T_OPTIMIZING_KERNEL,,}"
+            fi
+            ;;
+
+        doh-parallel)
+            status "${T_ENABLING_DOH_PARALLEL:-Enabling DoH parallel racing}..."
+            if [[ "$DRY_RUN" == false ]]; then
+                run_citadel "install-doh-parallel"
+                status "${T_DOH_PARALLEL_ENABLED:-DoH parallel racing enabled}"
+            else
+                status "Would ${T_ENABLING_DOH_PARALLEL,,}"
+            fi
+            ;;
+
+        editor-integration)
+            status "${T_INSTALLING_EDITOR:-Installing editor integration}..."
+            if [[ "$DRY_RUN" == false ]]; then
+                run_citadel "install-editor"
+                status "${T_EDITOR_INSTALLED:-Editor integration installed}"
+            else
+                status "Would ${T_INSTALLING_EDITOR,,}"
+            fi
+            ;;
     esac
 }
 
@@ -737,7 +776,7 @@ main_installation() {
     # Step 1: Check dependencies (always first)
     status "${T_CHECKING_DEPS:-Checking system dependencies...}"
     if [[ "$DRY_RUN" == false ]]; then
-        run_citadel "install check-deps --install"
+        run_citadel "check-deps --install"
         status "${T_DEPENDENCIES_OK:-Dependencies OK}"
     else
         status "${T_WOULD_CHECK_DEPS:-Would check dependencies}"
@@ -775,7 +814,15 @@ main_installation() {
         install_component "prometheus"
     fi
 
-    # Step 6: Enable auto-updates
+    # Step 6: Install advanced optimizations
+    local advanced_components=("optimize-kernel" "doh-parallel" "editor-integration")
+    for comp in "${advanced_components[@]}"; do
+        if [[ " ${comp_array[*]} " =~ " $comp " ]]; then
+            install_component "$comp"
+        fi
+    done
+
+    # Step 7: Enable auto-updates
     if [[ " ${comp_array[*]} " =~ " adblock " ]]; then
         status "${T_ENABLING_AUTO_UPDATES:-Enabling auto-updates...}"
         if [[ "$DRY_RUN" == false ]]; then
@@ -786,7 +833,7 @@ main_installation() {
         fi
     fi
 
-    # Step 7: Final verification
+    # Step 8: Final verification
     status "${T_RUNNING_VERIFICATION:-Running final verification...}"
     if [[ "$DRY_RUN" == false ]]; then
         run_citadel "monitor status" >/dev/null 2>&1

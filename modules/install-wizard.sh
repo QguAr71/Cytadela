@@ -330,21 +330,12 @@ fullscale=brightgreen,black
 
     # Check for whiptail
     if ! command -v whiptail &>/dev/null; then
-        if [[ "$WIZARD_LANG" == "pl" ]]; then
-            log_error "whiptail nie znaleziony. Zainstaluj najpierw:"
-            echo "  Arch/Manjaro: sudo pacman -S libnewt"
-            echo "  Debian/Ubuntu: sudo apt install whiptail"
-            echo "  Fedora: sudo dnf install newt"
-            echo ""
-            log_info "Lub uruchom: sudo Citadel check-deps --install"
-        else
-            log_error "whiptail not found. Install it first:"
-            echo "  Arch/Manjaro: sudo pacman -S libnewt"
-            echo "  Debian/Ubuntu: sudo apt install whiptail"
-            echo "  Fedora: sudo dnf install newt"
-            echo ""
-            log_info "Or run: sudo Citadel check-deps --install"
-        fi
+        log_error "${T_WHIPTAIL_NOT_FOUND:-whiptail not found. Install it first:}"
+        echo "  Arch/Manjaro: sudo pacman -S libnewt"
+        echo "  Debian/Ubuntu: sudo apt install whiptail"
+        echo "  Fedora: sudo dnf install newt"
+        echo ""
+        log_info "${T_OR_RUN:-Or run:} sudo citadel check-deps --install"
         return 1
     fi
 
@@ -406,13 +397,13 @@ fullscale=brightgreen,black
         3>&1 1>&2 2>&3) || exit_code=$?
 
     if [[ $exit_code -ne 0 ]]; then
-        log_warning "Instalacja anulowana przez użytkownika"
+        log_warning "${T_CANCELLED:-Installation cancelled by user}"
         return 0
     fi
 
     # Validate selection is not empty
     if [[ -z "${selected// /}" ]]; then
-        log_warning "Nie wybrano żadnych modułów"
+        log_warning "${T_NO_MODULES_SELECTED:-No modules selected}"
         return 1
     fi
 
@@ -456,11 +447,7 @@ fullscale=brightgreen,black
         IFS='|' read -r name desc default required <<<"${MODULES[$module]}"
 
         echo ""
-        if [[ "$WIZARD_LANG" == "pl" ]]; then
-            log_info "Instalowanie: $name"
-        else
-            log_info "Installing: $name"
-        fi
+        log_info "${T_INSTALLING:-Installing}: $name"
 
         case "$module" in
             dnscrypt)
@@ -468,17 +455,9 @@ fullscale=brightgreen,black
                     load_module "install-dnscrypt"
                 fi
                 if install_dnscrypt; then
-                    if [[ "$WIZARD_LANG" == "pl" ]]; then
-                        log_success "$name zainstalowany"
-                    else
-                        log_success "$name installed"
-                    fi
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    if [[ "$WIZARD_LANG" == "pl" ]]; then
-                        log_error "Instalacja $name nie powiodła się"
-                    else
-                        log_error "$name installation failed"
-                    fi
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -488,9 +467,9 @@ fullscale=brightgreen,black
                     load_module "install-coredns"
                 fi
                 if install_coredns; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -500,9 +479,9 @@ fullscale=brightgreen,black
                     load_module "install-nftables"
                 fi
                 if install_nftables; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -512,9 +491,9 @@ fullscale=brightgreen,black
                     load_module "health"
                 fi
                 if install_health_watchdog; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -524,9 +503,9 @@ fullscale=brightgreen,black
                     load_module "supply-chain"
                 fi
                 if supply_chain_init; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainicjalizowany" || log_success "$name initialized"
+                    log_success "$name ${T_INITIALIZED:-initialized}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Inicjalizacja $name nie powiodła się" || log_error "$name initialization failed"
+                    log_error "$name ${T_INITIALIZATION_FAILED:-initialization failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -536,9 +515,9 @@ fullscale=brightgreen,black
                     load_module "lkg"
                 fi
                 if lkg_save_blocklist; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "Cache $name zapisany" || log_success "$name cache saved"
+                    log_success "${T_CACHE_SAVED:-$name cache saved}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Cache $name nie zapisany (zostanie utworzony przy pierwszej aktualizacji)" || log_warning "$name cache not saved (will be created on first update)"
+                    log_warning "${T_CACHE_NOT_SAVED:-$name cache not saved (will be created on first update)}"
                 fi
                 ;;
 
@@ -547,9 +526,9 @@ fullscale=brightgreen,black
                     load_module "ipv6"
                 fi
                 if ipv6_privacy_auto_ensure; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name skonfigurowany" || log_success "$name configured"
+                    log_success "$name ${T_CONFIGURED:-configured}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Konfiguracja $name pominięta" || log_warning "$name configuration skipped"
+                    log_warning "${T_CONFIGURATION_SKIPPED:-$name configuration skipped}"
                 fi
                 ;;
 
@@ -557,14 +536,14 @@ fullscale=brightgreen,black
                 if ! declare -f location_status >/dev/null 2>&1; then
                     load_module "location"
                 fi
-                [[ "$WIZARD_LANG" == "pl" ]] && log_info "Moduł $name załadowany (użyj: location-add-trusted <SSID>)" || log_info "$name module loaded (use: location-add-trusted <SSID>)"
+                log_info "${T_MODULE_LOADED:-$name module loaded (use: location-add-trusted <SSID>)}"
                 ;;
 
             nft-debug)
                 if ! declare -f nft_debug_on >/dev/null 2>&1; then
                     load_module "nft-debug"
                 fi
-                [[ "$WIZARD_LANG" == "pl" ]] && log_info "Moduł $name załadowany (użyj: nft-debug-on aby włączyć)" || log_info "$name module loaded (use: nft-debug-on to enable)"
+                log_info "${T_MODULE_LOADED_USE:-$name module loaded (use: nft-debug-on to enable)}"
                 ;;
 
             dashboard)
@@ -572,9 +551,9 @@ fullscale=brightgreen,black
                     load_module "install-dashboard"
                 fi
                 if install_citadel_top; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -584,9 +563,9 @@ fullscale=brightgreen,black
                     load_module "advanced-install"
                 fi
                 if install_editor_integration; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowana" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
@@ -596,49 +575,33 @@ fullscale=brightgreen,black
                     load_module "advanced-install"
                 fi
                 if install_doh_parallel; then
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_success "$name zainstalowany" || log_success "$name installed"
+                    log_success "$name ${T_INSTALLED:-installed}"
                 else
-                    [[ "$WIZARD_LANG" == "pl" ]] && log_error "Instalacja $name nie powiodła się" || log_error "$name installation failed"
+                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
                     ((failed++)) || true
                 fi
                 ;;
 
             *)
-                [[ "$WIZARD_LANG" == "pl" ]] && log_warning "Nieznany moduł: $module" || log_warning "Unknown module: $module"
+                log_warning "${T_UNKNOWN_MODULE:-Unknown module}: $module"
                 ;;
         esac
     done
 
     # Final summary
-    if [[ "$WIZARD_LANG" == "pl" ]]; then
-        draw_section_header "󰄬 INSTALACJA ZAKOŃCZONA"
+    draw_section_header "${T_INSTALLATION_COMPLETE:-INSTALLATION COMPLETE}"
 
-        if [[ $failed -eq 0 ]]; then
-            log_success "Wszystkie moduły zainstalowane pomyślnie!"
-        else
-            log_warning "Instalacja $failed modułu/ów nie powiodła się"
-        fi
-
-        echo ""
-        log_info "Następne kroki:"
-        echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-        echo "  2. Konfiguracja systemu: sudo Citadel configure-system"
-        echo "  3. Weryfikacja: sudo Citadel verify"
+    if [[ $failed -eq 0 ]]; then
+        log_success "${T_ALL_MODULES_INSTALLED:-All modules installed successfully!}"
     else
-        draw_section_header "󰄬 INSTALLATION COMPLETE"
-
-        if [[ $failed -eq 0 ]]; then
-            log_success "All modules installed successfully!"
-        else
-            log_warning "$failed module(s) failed to install"
-        fi
-
-        echo ""
-        log_info "Next steps:"
-        echo "  1. Test DNS: dig +short google.com @127.0.0.1"
-        echo "  2. Configure system: sudo Citadel configure-system"
-        echo "  3. Verify: sudo Citadel verify"
+        log_warning "${T_MODULES_FAILED:-$failed module(s) failed to install}"
     fi
+
+    echo ""
+    log_info "${T_NEXT_STEPS:-Next steps:}"
+    echo "  1. ${T_TEST_DNS:-Test DNS:} dig +short google.com @127.0.0.1"
+    echo "  2. ${T_CONFIGURE_SYSTEM:-Configure system:} sudo citadel configure-system"
+    echo "  3. ${T_VERIFY:-Verify:} sudo citadel verify"
 
     if ! declare -f diagnostics >/dev/null 2>&1; then
         load_module "diagnostics"

@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "name": "Advanced Module",
+    "description": "Advanced Citadel features for power users, developers, and system administrators",
+    "version": "1.0.0",
+    "category": "advanced",
+    "tags": ["advanced", "development", "system", "monitoring", "debugging"]
+  },
+  "commands": [
+    {
+      "name": "lkg-save",
+      "description": "Save blocklist to cache",
+      "usage": "citadel lkg-save",
+      "category": "cache",
+      "examples": [
+        "sudo ./citadel.sh lkg-save"
+      ],
+      "notes": "Saves current blocklist to Last Known Good cache for recovery"
+    },
+    {
+      "name": "lkg-restore",
+      "description": "Restore blocklist from cache",
+      "usage": "citadel lkg-restore",
+      "category": "cache",
+      "examples": [
+        "sudo ./citadel.sh lkg-restore"
+      ],
+      "notes": "Restores blocklist from Last Known Good cache"
+    },
+    {
+      "name": "lkg-status",
+      "description": "Show LKG cache status",
+      "usage": "citadel lkg-status",
+      "category": "cache",
+      "examples": [
+        "citadel lkg-status"
+      ],
+      "notes": "Shows status and timestamp of Last Known Good cache"
+    },
+    {
+      "name": "auto-update-enable",
+      "description": "Enable automatic updates",
+      "usage": "citadel auto-update-enable",
+      "category": "updates",
+      "examples": [
+        "sudo ./citadel.sh auto-update-enable"
+      ],
+      "notes": "Enables automatic blocklist updates via systemd timer"
+    },
+    {
+      "name": "auto-update-disable",
+      "description": "Disable automatic updates",
+      "usage": "citadel auto-update-disable",
+      "category": "updates",
+      "examples": [
+        "sudo ./citadel.sh auto-update-disable"
+      ],
+      "notes": "Disables automatic blocklist updates"
+    },
+    {
+      "name": "auto-update-status",
+      "description": "Show auto-update status",
+      "usage": "citadel auto-update-status",
+      "category": "updates",
+      "examples": [
+        "citadel auto-update-status"
+      ],
+      "notes": "Shows current auto-update configuration and status"
+    },
+    {
+      "name": "auto-update-now",
+      "description": "Run update now",
+      "usage": "citadel auto-update-now",
+      "category": "updates",
+      "examples": [
+        "sudo ./citadel.sh auto-update-now"
+      ],
+      "notes": "Manually triggers blocklist update process"
+    },
+    {
+      "name": "cache-stats",
+      "description": "Show DNS cache statistics",
+      "usage": "citadel cache-stats",
+      "category": "monitoring",
+      "examples": [
+        "citadel cache-stats",
+        "citadel cache-stats --top 10"
+      ],
+      "notes": "Shows DNS cache hit/miss statistics and top cached domains"
+    },
+    {
+      "name": "health-status",
+      "description": "Show health status",
+      "usage": "citadel health-status",
+      "category": "monitoring",
+      "examples": [
+        "citadel health-status"
+      ],
+      "notes": "Shows system health and watchdog status"
+    },
+    {
+      "name": "health-install",
+      "description": "Install health watchdog",
+      "usage": "citadel health-install",
+      "category": "monitoring",
+      "examples": [
+        "sudo ./citadel.sh health-install"
+      ],
+      "notes": "Installs health monitoring watchdog service"
+    },
+    {
+      "name": "config-backup",
+      "description": "Create backup",
+      "usage": "citadel config-backup",
+      "category": "backup",
+      "examples": [
+        "sudo ./citadel.sh config-backup"
+      ],
+      "notes": "Creates backup of all Citadel configuration files"
+    },
+    {
+      "name": "supply-init",
+      "description": "Initialize checksums",
+      "usage": "citadel supply-init",
+      "category": "security",
+      "examples": [
+        "sudo ./citadel.sh supply-init"
+      ],
+      "notes": "Initializes cryptographic checksums for supply chain verification"
+    },
+    {
+      "name": "location-status",
+      "description": "Show current SSID",
+      "usage": "citadel location-status",
+      "category": "location",
+      "examples": [
+        "citadel location-status"
+      ],
+      "notes": "Shows current WiFi SSID for location-aware features"
+    }
+  ]
+}

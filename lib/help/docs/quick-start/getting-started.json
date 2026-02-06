@@ -1,0 +1,50 @@
+{
+  "title": "Citadel Quick Start Guide",
+  "description": "Get started with Citadel DNS protection in 5 minutes",
+  "sections": [
+    {
+      "title": "1. Quick Installation",
+      "content": [
+        "For most users, run the interactive installer:",
+        "sudo ./citadel.sh install wizard",
+        "",
+        "Choose 'Standard' profile for balanced protection and compatibility.",
+        "The installer will guide you through all necessary steps."
+      ]
+    },
+    {
+      "title": "2. Basic Usage",
+      "content": [
+        "Switch your system to use Citadel DNS:",
+        "sudo ./citadel.sh configure-system",
+        "",
+        "Check that everything is working:",
+        "citadel status",
+        "",
+        "Test DNS resolution:",
+        "dig google.com"
+      ]
+    },
+    {
+      "title": "3. Essential Commands",
+      "content": [
+        "• citadel status           - System status overview",
+        "• citadel diagnostics      - Detailed system check",
+        "• citadel firewall-safe    - Enable basic protection",
+        "• citadel help             - Interactive help system"
+      ]
+    },
+    {
+      "title": "4. Next Steps",
+      "content": [
+        "Explore additional features:",
+        "• citadel help --tui       - Browse all commands interactively",
+        "• citadel blocklist-list   - See available adblock profiles",
+        "• citadel prometheus-status - Enable monitoring",
+        "",
+        "For detailed documentation:",
+        "citadel help --context workflow first_install"
+      ]
+    }
+  ]
+}

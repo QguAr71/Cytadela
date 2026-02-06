@@ -1,0 +1,45 @@
+{
+  "title": "Installation Problems",
+  "description": "Common installation issues and their solutions",
+  "common_issues": [
+    {
+      "issue": "Permission denied during installation",
+      "symptoms": ["sudo required errors", "cannot write to system directories"],
+      "solution": "Run installation as root/sudo",
+      "commands": ["sudo ./citadel.sh install wizard"]
+    },
+    {
+      "issue": "Missing system dependencies",
+      "symptoms": ["command not found errors", "package installation failures"],
+      "solution": "Install missing dependencies",
+      "commands": [
+        "citadel check-deps",
+        "sudo ./citadel.sh check-deps-install"
+      ]
+    },
+    {
+      "issue": "Port conflicts",
+      "symptoms": ["bind: address already in use", "service startup failures"],
+      "solution": "Resolve port conflicts automatically",
+      "commands": ["sudo ./citadel.sh fix-ports"]
+    },
+    {
+      "issue": "Installation interrupted",
+      "symptoms": ["partial installation", "inconsistent system state"],
+      "solution": "Run clean reinstall",
+      "commands": ["sudo ./citadel.sh install wizard --reinstall"]
+    }
+  ],
+  "verification_steps": [
+    "Check service status: citadel status",
+    "Verify DNS configuration: citadel verify-config",
+    "Test basic functionality: citadel test-all",
+    "Run diagnostics: citadel diagnostics"
+  ],
+  "support_resources": [
+    "Documentation: citadel help --tui",
+    "Installation guide: citadel help --context workflow first_install",
+    "Community forum: https://github.com/citadel/citadel/discussions",
+    "Bug reports: https://github.com/citadel/citadel/issues"
+  ]
+}

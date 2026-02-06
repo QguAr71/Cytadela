@@ -1,0 +1,132 @@
+{
+  "metadata": {
+    "name": "Addons Module",
+    "description": "Additional Citadel features and extensions for enhanced functionality",
+    "version": "1.0.0",
+    "category": "addons",
+    "tags": ["addons", "extensions", "blocklist", "notifications", "adblock"]
+  },
+  "commands": [
+    {
+      "name": "blocklist-list",
+      "description": "Show available blocklist profiles",
+      "usage": "citadel blocklist-list",
+      "category": "blocklist",
+      "examples": [
+        "citadel blocklist-list"
+      ],
+      "notes": "Displays all available blocklist profiles with descriptions"
+    },
+    {
+      "name": "blocklist-switch",
+      "description": "Switch blocklist profile",
+      "usage": "citadel blocklist-switch <profile>",
+      "category": "blocklist",
+      "examples": [
+        "sudo ./citadel.sh blocklist-switch security",
+        "sudo ./citadel.sh blocklist-switch family"
+      ],
+      "notes": "Switches to specified blocklist profile (minimal, standard, security, family)"
+    },
+    {
+      "name": "lists-update",
+      "description": "Update blocklist with LKG fallback",
+      "usage": "citadel lists-update",
+      "category": "blocklist",
+      "examples": [
+        "sudo ./citadel.sh lists-update"
+      ],
+      "notes": "Updates blocklists from remote sources with Last Known Good fallback"
+    },
+    {
+      "name": "adblock-status",
+      "description": "Show adblock status",
+      "usage": "citadel adblock-status",
+      "category": "adblock",
+      "examples": [
+        "citadel adblock-status"
+      ],
+      "notes": "Shows current adblock configuration and statistics"
+    },
+    {
+      "name": "adblock-add",
+      "description": "Add domain to adblock",
+      "usage": "citadel adblock-add <domain>",
+      "category": "adblock",
+      "examples": [
+        "sudo ./citadel.sh adblock-add bad-site.com"
+      ],
+      "notes": "Adds domain to custom adblock list"
+    },
+    {
+      "name": "adblock-remove",
+      "description": "Remove domain from adblock",
+      "usage": "citadel adblock-remove <domain>",
+      "category": "adblock",
+      "examples": [
+        "sudo ./citadel.sh adblock-remove good-site.com"
+      ],
+      "notes": "Removes domain from custom adblock list"
+    },
+    {
+      "name": "adblock-query",
+      "description": "Check domain in adblock",
+      "usage": "citadel adblock-query <domain>",
+      "category": "adblock",
+      "examples": [
+        "citadel adblock-query suspicious-site.com"
+      ],
+      "notes": "Checks if domain is blocked by adblock rules"
+    },
+    {
+      "name": "allowlist-add",
+      "description": "Add domain to allowlist",
+      "usage": "citadel allowlist-add <domain>",
+      "category": "adblock",
+      "examples": [
+        "sudo ./citadel.sh allowlist-add trusted-site.com"
+      ],
+      "notes": "Adds domain to allowlist (bypasses all blocking rules)"
+    },
+    {
+      "name": "notify-enable",
+      "description": "Enable desktop notifications",
+      "usage": "citadel notify-enable",
+      "category": "notifications",
+      "examples": [
+        "sudo ./citadel.sh notify-enable"
+      ],
+      "notes": "Enables desktop notifications for Citadel events"
+    },
+    {
+      "name": "notify-disable",
+      "description": "Disable notifications",
+      "usage": "citadel notify-disable",
+      "category": "notifications",
+      "examples": [
+        "sudo ./citadel.sh notify-disable"
+      ],
+      "notes": "Disables desktop notifications"
+    },
+    {
+      "name": "notify-status",
+      "description": "Show notification status",
+      "usage": "citadel notify-status",
+      "category": "notifications",
+      "examples": [
+        "citadel notify-status"
+      ],
+      "notes": "Shows current notification configuration"
+    },
+    {
+      "name": "notify-test",
+      "description": "Send test notification",
+      "usage": "citadel notify-test",
+      "category": "notifications",
+      "examples": [
+        "citadel notify-test"
+      ],
+      "notes": "Sends test notification to verify configuration"
+    }
+  ]
+}

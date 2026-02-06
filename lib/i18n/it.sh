@@ -108,6 +108,8 @@ export T_MANUAL_EDIT="O modifica manualmente"
 export T_ADD_NAMESERVER="e aggiungi"
 export T_CONTINUE_ANYWAY="Continuare con la disinstallazione nonostante i problemi DNS? (yes/no): "
 export T_UNINSTALL_CANCELLED_DNS="Disinstallazione annullata. Ripara prima il DNS, poi esegui nuovamente la disinstallazione."
+export T_DRY_RUN="Esecuzione a secco"
+export T_DRY_RUN_MODE_WARNING="MODALITÀ ESECUZIONE A SECCO - Non verranno apportate modifiche"
 
 # Sezione verifica dipendenze
 export T_CHECK_DEPS_TITLE="VERIFICA DIPENDENZE"

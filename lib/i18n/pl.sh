@@ -301,6 +301,7 @@ export T_INSTALLATION_PLAN="Plan instalacji Citadel v3.3+"
 export T_PROFILE="Profil"
 export T_COMPONENTS="Komponenty"
 export T_DRY_RUN="Suchy bieg"
+export T_DRY_RUN_MODE_WARNING="TRYB PRÓBNY - Nie zostaną wprowadzone żadne zmiany"
 export T_GUM_ENHANCED="Rozszerzony gum"
 export T_BACKUP_EXISTING="Kopia zapasowa istniejących"
 export T_SELECTED_COMPONENTS="Wybrane komponenty"
@@ -357,6 +358,24 @@ export T_INITIALIZING_HONEYPOT="Inicjalizowanie systemu honeypot"
 export T_HONEYPOT_ENABLED="System honeypot włączony"
 export T_INSTALLING_PROMETHEUS="Instalowanie metryk Prometheus"
 export T_PROMETHEUS_ENABLED="Metryki Prometheus włączone"
+
+# Zaawansowane komponenty
+export T_OPTIMIZING_KERNEL="Optymalizowanie priorytetów kernela"
+export T_KERNEL_OPTIMIZED="Priorytety kernela zoptymalizowane"
+export T_ENABLING_DOH_PARALLEL="Włączanie równoległego DoH"
+export T_DOH_PARALLEL_ENABLED="Równoległy DoH włączony"
+export T_INSTALLING_EDITOR="Instalowanie integracji edytora"
+export T_EDITOR_INSTALLED="Integracja edytora zainstalowana"
+
+# Opisy komponentów
+export T_COMPONENT_OPTIMIZE_KERNEL="Optymalizacja priorytetów kernela (CPU/IO boost)"
+export T_COMPONENT_DOH_PARALLEL="Równoległy DoH (szybszy DNS)"
+export T_COMPONENT_EDITOR_INTEGRATION="Edytor Micro + komenda citadel"
+
+# Install-wizard opisy komponentów
+export T_OPTIMIZE_KERNEL_DESC="Optymalizacja priorytetów kernela (CPU/IO boost)"
+export T_DOH_PARALLEL_DESC="Równoległy DoH (szybszy DNS)"
+export T_EDITOR_INTEGRATION_DESC="Edytor Micro + komenda citadel"
 
 # Complete status messages (to avoid mixing languages)
 export T_DNSCRYPT_INSTALLED_AND_RUNNING="DNSCrypt zainstalowany i działa"

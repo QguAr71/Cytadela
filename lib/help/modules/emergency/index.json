@@ -1,0 +1,121 @@
+{
+  "metadata": {
+    "name": "Emergency Module",
+    "description": "Emergency recovery and panic mode commands for system restoration and troubleshooting",
+    "version": "1.0.0",
+    "category": "emergency",
+    "tags": ["emergency", "recovery", "panic", "troubleshooting", "debug"]
+  },
+  "commands": [
+    {
+      "name": "panic-bypass",
+      "description": "Disable protection + auto-rollback",
+      "usage": "citadel panic-bypass",
+      "category": "panic",
+      "examples": [
+        "sudo ./citadel.sh panic-bypass"
+      ],
+      "notes": "Temporarily disables Citadel protection with automatic rollback timer"
+    },
+    {
+      "name": "panic-restore",
+      "description": "Restore protected mode",
+      "usage": "citadel panic-restore",
+      "category": "panic",
+      "examples": [
+        "sudo ./citadel.sh panic-restore"
+      ],
+      "notes": "Manually restores Citadel protection from panic mode"
+    },
+    {
+      "name": "panic-status",
+      "description": "Show panic status",
+      "usage": "citadel panic-status",
+      "category": "panic",
+      "examples": [
+        "citadel panic-status"
+      ],
+      "notes": "Shows current panic mode status and remaining time"
+    },
+    {
+      "name": "emergency-refuse",
+      "description": "Refuse all DNS queries",
+      "usage": "citadel emergency-refuse",
+      "category": "emergency",
+      "examples": [
+        "sudo ./citadel.sh emergency-refuse"
+      ],
+      "notes": "Emergency mode that refuses all DNS queries (complete blocking)"
+    },
+    {
+      "name": "emergency-restore",
+      "description": "Restore normal operation",
+      "usage": "citadel emergency-restore",
+      "category": "emergency",
+      "examples": [
+        "sudo ./citadel.sh emergency-restore"
+      ],
+      "notes": "Restores normal DNS operation from emergency mode"
+    },
+    {
+      "name": "killswitch-on",
+      "description": "Activate DNS kill-switch",
+      "usage": "citadel killswitch-on",
+      "category": "emergency",
+      "examples": [
+        "sudo ./citadel.sh killswitch-on"
+      ],
+      "notes": "Activates emergency kill-switch that blocks all DNS traffic"
+    },
+    {
+      "name": "killswitch-off",
+      "description": "Deactivate kill-switch",
+      "usage": "citadel killswitch-off",
+      "category": "emergency",
+      "examples": [
+        "sudo ./citadel.sh killswitch-off"
+      ],
+      "notes": "Deactivates emergency kill-switch"
+    },
+    {
+      "name": "nft-debug-on",
+      "description": "Enable debug chain",
+      "usage": "citadel nft-debug-on",
+      "category": "debug",
+      "examples": [
+        "sudo ./citadel.sh nft-debug-on"
+      ],
+      "notes": "Enables NFTables debug chain for troubleshooting firewall rules"
+    },
+    {
+      "name": "nft-debug-off",
+      "description": "Disable debug chain",
+      "usage": "citadel nft-debug-off",
+      "category": "debug",
+      "examples": [
+        "sudo ./citadel.sh nft-debug-off"
+      ],
+      "notes": "Disables NFTables debug chain"
+    },
+    {
+      "name": "nft-debug-status",
+      "description": "Show debug status",
+      "usage": "citadel nft-debug-status",
+      "category": "debug",
+      "examples": [
+        "citadel nft-debug-status"
+      ],
+      "notes": "Shows status of NFTables debug chain"
+    },
+    {
+      "name": "nft-debug-logs",
+      "description": "Show recent logs",
+      "usage": "citadel nft-debug-logs",
+      "category": "debug",
+      "examples": [
+        "citadel nft-debug-logs"
+      ],
+      "notes": "Shows recent debug logs from NFTables"
+    }
+  ]
+}

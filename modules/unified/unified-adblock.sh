@@ -25,39 +25,6 @@ BLOCKLIST_CUSTOM_URLS="/var/lib/cytadela/blocklist-custom-urls.txt"
 
 # Rebuild combined blocklist from sources
 adblock_rebuild() {
-adblock_status() {
-    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
-    
-    if systemctl is-active --quiet coredns; then
-        echo "  󰄬 coredns: running"
-    else
-        echo "  󰅖 coredns: not running"
-    fi
-    
-    if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined.hosts' /etc/coredns/Corefile; then
-        echo "  󰄬 Corefile: uses combined.hosts"
-    else
-        echo "  󰅖 Corefile: missing combined.hosts"
-    fi
-    
-    if [[ -f "$CUSTOM_HOSTS" ]]; then
-        echo "  󰄬 custom.hosts:   $(wc -l <"$CUSTOM_HOSTS")"
-    else
-        echo "  󰅖 custom.hosts: missing"
-    fi
-    
-    if [[ -f "$BLOCKLIST_FILE" ]]; then
-        echo "  󰄬 blocklist.hosts: $(wc -l <"$BLOCKLIST_FILE")"
-    else
-        echo "  󰅖 blocklist.hosts: missing"
-    fi
-    
-    if [[ -f "$COMBINED_FILE" ]]; then
-        echo "  󰄬 combined.hosts:  $(wc -l <"$COMBINED_FILE")"
-    else
-        echo "  󰅖 combined.hosts: missing"
-    fi
-}
     local custom="$CUSTOM_HOSTS"
     local allowlist="$ALLOWLIST_FILE"
     local blocklist="$BLOCKLIST_FILE"
@@ -202,39 +169,6 @@ adblock_add() {
     chown root:root "$CUSTOM_HOSTS"
 
     adblock_rebuild
-adblock_status() {
-    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
-    
-    if systemctl is-active --quiet coredns; then
-        echo "  󰄬 coredns: running"
-    else
-        echo "  󰅖 coredns: not running"
-    fi
-    
-    if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined.hosts' /etc/coredns/Corefile; then
-        echo "  󰄬 Corefile: uses combined.hosts"
-    else
-        echo "  󰅖 Corefile: missing combined.hosts"
-    fi
-    
-    if [[ -f "$CUSTOM_HOSTS" ]]; then
-        echo "  󰄬 custom.hosts:   $(wc -l <"$CUSTOM_HOSTS")"
-    else
-        echo "  󰅖 custom.hosts: missing"
-    fi
-    
-    if [[ -f "$BLOCKLIST_FILE" ]]; then
-        echo "  󰄬 blocklist.hosts: $(wc -l <"$BLOCKLIST_FILE")"
-    else
-        echo "  󰅖 blocklist.hosts: missing"
-    fi
-    
-    if [[ -f "$COMBINED_FILE" ]]; then
-        echo "  󰄬 combined.hosts:  $(wc -l <"$COMBINED_FILE")"
-    else
-        echo "  󰅖 combined.hosts: missing"
-    fi
-}
     adblock_reload
 }
 
@@ -261,39 +195,6 @@ adblock_remove() {
     log_success "Usunięto z custom.hosts (jeśli istniało): $domain"
 
     adblock_rebuild
-adblock_status() {
-    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
-    
-    if systemctl is-active --quiet coredns; then
-        echo "  󰄬 coredns: running"
-    else
-        echo "  󰅖 coredns: not running"
-    fi
-    
-    if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined.hosts' /etc/coredns/Corefile; then
-        echo "  󰄬 Corefile: uses combined.hosts"
-    else
-        echo "  󰅖 Corefile: missing combined.hosts"
-    fi
-    
-    if [[ -f "$CUSTOM_HOSTS" ]]; then
-        echo "  󰄬 custom.hosts:   $(wc -l <"$CUSTOM_HOSTS")"
-    else
-        echo "  󰅖 custom.hosts: missing"
-    fi
-    
-    if [[ -f "$BLOCKLIST_FILE" ]]; then
-        echo "  󰄬 blocklist.hosts: $(wc -l <"$BLOCKLIST_FILE")"
-    else
-        echo "  󰅖 blocklist.hosts: missing"
-    fi
-    
-    if [[ -f "$COMBINED_FILE" ]]; then
-        echo "  󰄬 combined.hosts:  $(wc -l <"$COMBINED_FILE")"
-    else
-        echo "  󰅖 combined.hosts: missing"
-    fi
-}
     adblock_reload
 }
 
@@ -382,39 +283,6 @@ allowlist_add() {
     fi
 
     adblock_rebuild
-adblock_status() {
-    log_section "󰁣 CITADEL++ ADBLOCK STATUS"
-    
-    if systemctl is-active --quiet coredns; then
-        echo "  󰄬 coredns: running"
-    else
-        echo "  󰅖 coredns: not running"
-    fi
-    
-    if [[ -f /etc/coredns/Corefile ]] && grep -q '/etc/coredns/zones/combined.hosts' /etc/coredns/Corefile; then
-        echo "  󰄬 Corefile: uses combined.hosts"
-    else
-        echo "  󰅖 Corefile: missing combined.hosts"
-    fi
-    
-    if [[ -f "$CUSTOM_HOSTS" ]]; then
-        echo "  󰄬 custom.hosts:   $(wc -l <"$CUSTOM_HOSTS")"
-    else
-        echo "  󰅖 custom.hosts: missing"
-    fi
-    
-    if [[ -f "$BLOCKLIST_FILE" ]]; then
-        echo "  󰄬 blocklist.hosts: $(wc -l <"$BLOCKLIST_FILE")"
-    else
-        echo "  󰅖 blocklist.hosts: missing"
-    fi
-    
-    if [[ -f "$COMBINED_FILE" ]]; then
-        echo "  󰄬 combined.hosts:  $(wc -l <"$COMBINED_FILE")"
-    else
-        echo "  󰅖 combined.hosts: missing"
-    fi
-}
     adblock_reload
 }
 

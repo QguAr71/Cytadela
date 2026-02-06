@@ -138,7 +138,7 @@ citadel_uninstall() {
 
     # Confirmation prompt (matching installer)
     if [[ "$GUM_AVAILABLE" == true ]]; then
-        if gum confirm --affirmative="Tak" --negative="Nie" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_CONFIRM_CONTINUE:-Are you sure you want to continue?}"; then
+        if gum confirm --affirmative="${T_YES:-Yes}" --negative="${T_NO:-No}" --selected.foreground 46 --selected.background 27 --unselected.foreground 196 --unselected.background 250 "${T_CONFIRM_CONTINUE:-Are you sure you want to continue?}"; then
             confirm="yes"
         else
             confirm="no"

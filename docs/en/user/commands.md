@@ -27,7 +27,7 @@ Each section displays relevant commands with descriptions in your language.
 
 | Command | Description |
 |---------|-------------|
-| `install-wizard` | Interactive installation wizard (recommended) |
+| `install-wizard` | Interactive installation wizard (recommended) with dry-run preview option |
 | `install-all` | Install all components |
 | `install-dnscrypt` | Install DNSCrypt-Proxy only |
 | `install-coredns` | Install CoreDNS only |

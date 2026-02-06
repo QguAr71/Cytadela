@@ -1,0 +1,72 @@
+{
+  "title": "DNS Connectivity Issues",
+  "description": "Troubleshooting guide for DNS resolution problems",
+  "symptoms": [
+    "Websites not loading",
+    "DNS resolution failures",
+    "Slow internet connection",
+    "dig/nslookup commands failing"
+  ],
+  "diagnostic_steps": [
+    {
+      "step": "Check Citadel service status",
+      "command": "citadel status",
+      "expected": "All services should be active (running)"
+    },
+    {
+      "step": "Test basic DNS resolution",
+      "command": "dig @127.0.0.1 google.com",
+      "expected": "Should return valid IP addresses"
+    },
+    {
+      "step": "Check system DNS configuration",
+      "command": "cat /etc/resolv.conf",
+      "expected": "Should contain 'nameserver 127.0.0.1'"
+    },
+    {
+      "step": "Run full diagnostics",
+      "command": "citadel diagnostics",
+      "expected": "Should identify specific issues"
+    }
+  ],
+  "solutions": [
+    {
+      "problem": "Citadel services not running",
+      "solution": "Restart Citadel services",
+      "commands": [
+        "sudo systemctl restart coredns",
+        "sudo systemctl restart dnscrypt-proxy",
+        "citadel status"
+      ]
+    },
+    {
+      "problem": "Firewall blocking DNS",
+      "solution": "Reset to safe firewall mode",
+      "commands": [
+        "sudo ./citadel.sh firewall-safe",
+        "citadel verify"
+      ]
+    },
+    {
+      "problem": "Port conflicts",
+      "solution": "Fix port conflicts automatically",
+      "commands": [
+        "sudo ./citadel.sh fix-ports",
+        "citadel status"
+      ]
+    },
+    {
+      "problem": "Emergency recovery",
+      "solution": "Use emergency network restore",
+      "commands": [
+        "sudo ./citadel.sh emergency-restore",
+        "citadel configure-system"
+      ]
+    }
+  ],
+  "prevention": [
+    "Run regular diagnostics: citadel diagnostics",
+    "Keep Citadel updated: citadel auto-update-enable",
+    "Monitor system health: citadel health-status"
+  ]
+}

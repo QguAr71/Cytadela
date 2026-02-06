@@ -44,6 +44,8 @@ export T_CONFIG_SKIPPED="настройка пропущена"
 export T_MODULE_LOADED="модуль загружен"
 export T_USE_COMMAND="используйте"
 export T_TO_ENABLE="для включения"
+export T_DRY_RUN="Пробный запуск"
+export T_DRY_RUN_MODE_WARNING="РЕЖИМ ПРОБНОГО ЗАПУСКА - Изменения не будут внесены"
 
 # Completion section
 export T_COMPLETE_TITLE="УСТАНОВКА ЗАВЕРШЕНА"

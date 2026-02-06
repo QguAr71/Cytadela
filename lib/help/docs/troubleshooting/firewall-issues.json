@@ -1,0 +1,64 @@
+{
+  "title": "Firewall Configuration Issues",
+  "description": "Troubleshooting Citadel firewall (NFTables) problems",
+  "firewall_modes": {
+    "safe": "Allows all traffic, basic DNS protection",
+    "strict": "Blocks DNS leaks, may break some apps"
+  },
+  "common_problems": [
+    {
+      "problem": "Cannot access websites in strict mode",
+      "symptoms": ["Sites load in safe mode but not strict", "VPN disconnections"],
+      "solution": "Some applications bypass local DNS",
+      "workarounds": [
+        "Use safe mode: citadel firewall-safe",
+        "Add exceptions for problematic apps",
+        "Use split tunneling for VPN"
+      ]
+    },
+    {
+      "problem": "Firewall blocking legitimate traffic",
+      "symptoms": ["Services not accessible", "Port connection failures"],
+      "solution": "Check NFTables rules",
+      "commands": [
+        "sudo nft list ruleset",
+        "citadel nft-debug-on",
+        "citadel nft-debug-logs"
+      ]
+    },
+    {
+      "problem": "Firewall not loading on boot",
+      "symptoms": ["Rules lost after restart", "Protection disabled"],
+      "solution": "Check systemd service",
+      "commands": [
+        "systemctl status nftables",
+        "systemctl enable nftables",
+        "citadel verify"
+      ]
+    }
+  ],
+  "debugging_steps": [
+    "Check firewall status: citadel status",
+    "View current rules: sudo nft list ruleset",
+    "Enable debug logging: citadel nft-debug-on",
+    "Check recent logs: citadel nft-debug-logs",
+    "Test connectivity: citadel test-all"
+  ],
+  "recovery_options": [
+    {
+      "name": "Safe mode",
+      "command": "citadel firewall-safe",
+      "description": "Basic protection, maximum compatibility"
+    },
+    {
+      "name": "Emergency restore",
+      "command": "citadel emergency-restore",
+      "description": "Disable firewall temporarily"
+    },
+    {
+      "name": "Reset firewall",
+      "command": "citadel firewall-safe && citadel verify",
+      "description": "Clean restart of firewall rules"
+    }
+  ]
+}

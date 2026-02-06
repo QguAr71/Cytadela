@@ -10,6 +10,34 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="/tmp/citadel-interactive-install-$(date +%Y%m%d-%H%M%S).log"
 
+# Load Citadel core library for logging functions
+if [[ -f "lib/cytadela-core.sh" ]]; then
+    # Set required environment variables before loading core library
+    export CYTADELA_LIB="${SCRIPT_DIR}/lib"
+    export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
+    export CYTADELA_STATE_DIR="/var/run/citadel"
+    export CYTADELA_MANIFEST="${CYTADELA_LIB}/manifest.sha256"
+
+    source "lib/cytadela-core.sh"
+    
+    # Load new i18n engine if available (after core library)
+    if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+        source "modules/i18n-engine/i18n-engine.sh"
+        i18n_engine_init
+    fi
+else
+    echo "ERROR: Citadel core library not found. Please run from Citadel root directory."
+    exit 1
+fi
+
+# Load frame UI utilities
+if [[ -f "lib/frame-ui.sh" ]]; then
+    source "lib/frame-ui.sh"
+else
+    echo "ERROR: Frame UI library not found. Please run from Citadel root directory."
+    exit 1
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[38;5;121m'
@@ -20,53 +48,53 @@ NC='\033[0m'
 # Auto-install gum if not available
 install_gum_if_needed() {
     if ! command -v gum >/dev/null 2>&1; then
-        echo -e "${YELLOW}📦 Gum not found - installing for enhanced UI...${NC}"
+        echo -e "${YELLOW}Gum not found - installing for enhanced UI...${NC}"
         log "Installing gum for interactive installer"
         
         # Try different package managers with proper repository setup
         if command -v pacman >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Using pacman (Arch/Manjaro)...${NC}"
+            echo -e "${BLUE}Using pacman (Arch/Manjaro)...${NC}"
             if sudo pacman -S --needed --noconfirm gum >/dev/null 2>&1; then
-                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                echo -e "${GREEN}Gum installed successfully${NC}"
                 return 0
             fi
         elif command -v apt >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Setting up Charm repository for Debian/Ubuntu...${NC}"
+            echo -e "${BLUE}Setting up Charm repository for Debian/Ubuntu...${NC}"
             # Add Charm repository for Debian/Ubuntu
             if sudo mkdir -p /etc/apt/keyrings && \
                curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg && \
                echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list && \
                sudo apt update >/dev/null 2>&1 && \
                sudo apt install -y gum >/dev/null 2>&1; then
-                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                echo -e "${GREEN}Gum installed successfully${NC}"
                 return 0
             fi
         elif command -v dnf >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Using dnf (Fedora/RHEL)...${NC}"
+            echo -e "${BLUE}Using dnf (Fedora/RHEL)...${NC}"
             if sudo dnf install -y gum >/dev/null 2>&1; then
-                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                echo -e "${GREEN}Gum installed successfully${NC}"
                 return 0
             fi
         elif command -v zypper >/dev/null 2>&1; then
-            echo -e "${BLUE}📦 Setting up Charm repository for openSUSE...${NC}"
+            echo -e "${BLUE}Setting up Charm repository for openSUSE...${NC}"
             # Add Charm repository for openSUSE
             if sudo zypper addrepo -f https://repo.charm.sh/rpm/charm.repo >/dev/null 2>&1 && \
                sudo zypper refresh >/dev/null 2>&1 && \
                sudo zypper install -y gum >/dev/null 2>&1; then
-                echo -e "${GREEN}✅ Gum installed successfully${NC}"
+                echo -e "${GREEN}Gum installed successfully${NC}"
                 return 0
             fi
         fi
         
         # If we get here, installation failed
-        echo -e "${RED}❌ Failed to install gum automatically${NC}"
-        echo -e "${YELLOW}💡 Please install gum manually:${NC}"
+        echo -e "${RED}Failed to install gum automatically${NC}"
+        echo -e "${YELLOW}Please install gum manually:${NC}"
         echo -e "${YELLOW}   Arch/Manjaro: sudo pacman -S gum${NC}"
         echo -e "${YELLOW}   Debian/Ubuntu: curl + repository setup (see: https://github.com/charmbracelet/gum)${NC}"
         echo -e "${YELLOW}   Fedora/RHEL: sudo dnf install gum${NC}"
         echo -e "${YELLOW}   openSUSE: sudo zypper addrepo https://repo.charm.sh/rpm/charm.repo && sudo zypper install gum${NC}"
         echo ""
-        echo -e "${BLUE}🔄 Alternative: Use CLI installer instead:${NC}"
+        echo -e "${BLUE}Alternative: Use CLI installer instead:${NC}"
         echo -e "${BLUE}   sudo ./scripts/citadel-install-cli.sh --help${NC}"
         exit 1
     fi
@@ -109,90 +137,22 @@ info() {
 
 # Load language file
 load_language() {
-    if [[ "$LANGUAGE" == "pl" ]]; then
-        # Polish translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel jest już zainstalowany"
-        T_REINSTALL_WARNING="Przeinstalacja usunie istniejącą konfigurację i zainstaluje nową wersję"
-        T_UNINSTALL_WARNING="Odinstalacja usunie Citadel i przywróci oryginalne ustawienia systemu"
-        T_CHOOSE_ACTION="Wybierz działanie:"
-        T_REINSTALL_CITADEL="Przeinstaluj Citadel (zalecane)"
-        T_UNINSTALL_CITADEL="Odinstaluj Citadel"
-        T_CANCEL_INSTALLATION="Anuluj instalację"
-        T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel..."
-        T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
-        
-        # Systemd detection translations (FIX: Added missing translations)
-        T_SYSTEMD_DETECTED="Systemd wykryty i zweryfikowany:"
-        T_SYSTEMD_VERSION="Wersja:"
-        T_SYSTEMD_STATUS="Status:"
-        T_SYSTEMD_FUNCTIONAL="W pełni funkcjonalny"
-        T_SYSTEMD_PATHS="Ścieżki znalezione:"
-        T_SYSTEMD_LOCATIONS="lokalizacji"
-        
-        # Missing translations for installer sections
-        T_INSTALLATION_PROFILE="Profil Instalacji"
-        T_COMPONENT_CUSTOMIZATION="Dostosowanie Komponentów"
-        T_BACKUP_CONFIGURATION="Konfiguracja Kopii Zapasowej"
-        T_BACKUPS_WILL_BE_CREATED="Kopie zapasowe będą utworzone"
-        T_NO_BACKUPS_WILL_BE_CREATED="Kopie zapasowe nie będą utworzone"
-        T_INSTALLATION_SUMMARY="Podsumowanie Instalacji"
-        T_INSTALLATION_WARNING="OSTRZEŻENIE: Instalacja zmodyfikuje ustawienia systemu DNS i firewall"
-        T_INSTALLING_CITADEL="Instalowanie Citadel..."
-        T_INSTALLATION_COMPLETE="Instalacja Zakończona!"
-        T_CITADEL_INSTALLED_SUCCESSFULLY="Citadel został pomyślnie zainstalowany!"
-        T_USEFUL_COMMANDS="Przydatne Polecenia"
-        T_LOG_FILE_LABEL="Plik logu"
-        T_THANK_YOU="Dziękujemy za wybór Citadel!"
-        
-        # Missing translations for component customization
-        T_WANT_CUSTOMIZE_COMPONENTS="Czy chcesz dostosować komponenty?"
-        T_USE_RECOMMENDED_PROFILE="Użyj zalecanego profilu"
-        T_CUSTOMIZE_COMPONENTS_MANUALLY="Dostosuj komponenty ręcznie"
-        
-        # Missing translations for backup configuration
-        T_CREATE_BACKUPS="Utworzyć kopie zapasowe istniejących konfiguracji?"
-        T_YES_CREATE_BACKUPS="Tak, utwórz kopie zapasowe"
-        T_NO_DONT_CREATE_BACKUPS="Nie, nie twórz kopii zapasowych"
-        
-        # Missing translations for final confirmation
-        T_READY_TO_INSTALL="Czy jesteś gotowy do zainstalowania Citadel?"
-        T_YES_INSTALL_NOW="Tak, zainstaluj teraz"
-        T_NO_CANCEL_INSTALLATION="Nie, anuluj instalację"
-        
-        # Command descriptions
-        T_CMD_SHOW_HELP="Pokaż pomoc"
-        T_CMD_CHECK_STATUS="Sprawdź status"
-        T_CMD_VIEW_LOGS="Wyświetl logi"
-        T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
-        T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
-        
-        # Profile selection translations
-        T_CHOOSE_PROFILE="Wybierz profil instalacji:"
-        T_PROFILE_MINIMAL="Minimal - Tylko podstawowe DNS (dnscrypt, coredns)"
-        T_PROFILE_STANDARD="Standard - Podstawowa ochrona (minimal + adblock)"
-        T_PROFILE_SECURITY="Bezpieczeństwo - Zaawansowane (standard + reputacja, blokowanie ASN, logowanie)"
-        T_PROFILE_FULL="Pełne - Wszystko (bezpieczeństwo + honeypot, prometheus)"
-        
-        # Component selection translations
-        T_EMERGENCY_OFFER="Test łączności nie powiódł się. Czy chcesz uruchomić awaryjne przywracanie sieci?"
-        T_EMERGENCY_OPTION="To wykona:"
-        T_EMERGENCY_DNS="Ustawi awaryjne publiczne serwery DNS"
-        T_EMERGENCY_STOP="Zatrzyma usługi DNS Citadel"
-        T_EMERGENCY_FLUSH="Wyczyści reguły firewalla"
-        T_EMERGENCY_RESTART="Restartuje usługi sieciowe"
-        T_RUN_EMERGENCY="Uruchomić awaryjne przywracanie sieci teraz?"
-        T_RUNNING_EMERGENCY="Uruchamianie awaryjnego przywracania sieci..."
-        T_EMERGENCY_SUCCESS="Awaryjne przywracanie sieci zostało pomyślnie zakończone"
-        T_TESTING_AGAIN="Ponowne testowanie łączności..."
-        T_CONNECTIVITY_RESTORED="Łączność z internetem została pomyślnie przywrócona!"
-        T_EMERGENCY_FAILED="Przywracanie awaryjne zakończone, ale test łączności nadal zawodzi"
-        T_EMERGENCY_FAILED_RUN="Nie udało się uruchomić awaryjnego przywracania sieci"
-        T_CITADEL_NOT_FOUND="Nie znaleziono citadel.sh - nie można uruchomić przywracania awaryjnego"
-        
-        # Other missing translations
-        T_COMPONENTS_CONFIGURED="Components configured:"
-    elif [[ "$LANGUAGE" == "en" ]]; then
+    # Try new i18n engine first (if available)
+    if command -v i18n_engine_load >/dev/null 2>&1; then
+        log_debug "Using new i18n engine for install-wizard module"
+        # Set language in i18n engine
+        if command -v i18n_engine_set_language >/dev/null 2>&1; then
+            i18n_engine_set_language "$LANGUAGE" 2>/dev/null || true
+        fi
+        i18n_engine_load "install-wizard" 2>/dev/null || {
+            log_debug "i18n engine load failed, using fallback"
+            _load_english_fallback
+        }
+        return 0
+    fi
+    
+    # Fall back to legacy translations (English only)
+    log_debug "Using legacy translations (English fallback)"
         # English translations
         T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
         T_REINSTALL_WARNING="Reinstallation will remove existing configuration and install the new version"
@@ -205,88 +165,32 @@ load_language() {
         T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
         T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
         
-        # Profile selection translations
-        T_CHOOSE_PROFILE="Choose installation profile:"
+        # Missing translations for final confirmation
+        T_READY_TO_INSTALL="Ready to install Citadel?"
+        T_YES_INSTALL_NOW="Yes, install now"
+        T_SHOW_DRY_RUN="Show preview (dry-run)"
+        T_NO_CANCEL_INSTALLATION="No, cancel installation"
+        
+        # Dry-run specific translations
+        T_RUNNING_DRY_RUN="Running dry-run preview..."
+        T_PROCEED_AFTER_DRY_RUN="Would you like to proceed with the actual installation?"
+        T_DRY_RUN_FAILED="Dry-run failed"
         T_PROFILE_MINIMAL="Minimal - Core DNS only (dnscrypt, coredns)"
         T_PROFILE_STANDARD="Standard - Basic protection (minimal + adblock)"
         T_PROFILE_SECURITY="Security - Advanced (standard + reputation, asn-blocking, logging)"
         T_PROFILE_FULL="Full - Everything (security + honeypot, prometheus)"
-    elif [[ "$LANGUAGE" == "de" ]]; then
-        # German translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel ist bereits installiert"
-        T_REINSTALL_WARNING="Die Neuinstallation entfernt die bestehende Konfiguration und installiert die neue Version"
-        T_UNINSTALL_WARNING="Die Deinstallation entfernt Citadel und stellt die ursprünglichen Systemeinstellungen wieder her"
-        T_CHOOSE_ACTION="Aktion wählen:"
-        T_REINSTALL_CITADEL="Citadel neu installieren (empfohlen)"
-        T_UNINSTALL_CITADEL="Citadel deinstallieren"
-        T_CANCEL_INSTALLATION="Installation abbrechen"
-        T_UNINSTALLING_EXISTING="Deinstalliere bestehende Citadel-Installation..."
-        T_UNINSTALLING_CITADEL="Deinstalliere Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel wurde deinstalliert"
-    elif [[ "$LANGUAGE" == "es" ]]; then
-        # Spanish translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel ya está instalado"
-        T_REINSTALL_WARNING="La reinstalación eliminará la configuración existente e instalará la nueva versión"
-        T_UNINSTALL_WARNING="La desinstalación eliminará Citadel y restaurará la configuración original del sistema"
-        T_CHOOSE_ACTION="Elegir acción:"
-        T_REINSTALL_CITADEL="Reinstalar Citadel (recomendado)"
-        T_UNINSTALL_CITADEL="Desinstalar Citadel"
-        T_CANCEL_INSTALLATION="Cancelar instalación"
-        T_UNINSTALLING_EXISTING="Desinstalando instalación existente de Citadel..."
-        T_UNINSTALLING_CITADEL="Desinstalando Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel ha sido desinstalado"
-    elif [[ "$LANGUAGE" == "fr" ]]; then
-        # French translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel est déjà installé"
-        T_REINSTALL_WARNING="La réinstallation supprimera la configuration existante et installera la nouvelle version"
-        T_UNINSTALL_WARNING="La désinstallation supprimera Citadel et restaurera les paramètres système originaux"
-        T_CHOOSE_ACTION="Choisir l'action:"
-        T_REINSTALL_CITADEL="Réinstaller Citadel (recommandé)"
-        T_UNINSTALL_CITADEL="Désinstaller Citadel"
-        T_CANCEL_INSTALLATION="Annuler l'installation"
-        T_UNINSTALLING_EXISTING="Désinstallation de l'installation Citadel existante..."
-        T_UNINSTALLING_CITADEL="Désinstallation de Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel a été désinstallé"
-    elif [[ "$LANGUAGE" == "it" ]]; then
-        # Italian translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel è già installato"
-        T_REINSTALL_WARNING="La reinstallazione rimuoverà la configurazione esistente e installerà la nuova versione"
-        T_UNINSTALL_WARNING="La disinstallazione rimuoverà Citadel e ripristinerà le impostazioni originali del sistema"
-        T_CHOOSE_ACTION="Scegli azione:"
-        T_REINSTALL_CITADEL="Reinstalla Citadel (consigliato)"
-        T_UNINSTALL_CITADEL="Disinstalla Citadel"
-        T_CANCEL_INSTALLATION="Annulla installazione"
-        T_UNINSTALLING_EXISTING="Disinstallazione dell'installazione Citadel esistente..."
-        T_UNINSTALLING_CITADEL="Disinstallazione di Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel è stato disinstallato"
-    elif [[ "$LANGUAGE" == "ru" ]]; then
-        # Russian translations
-        T_CITADEL_ALREADY_INSTALLED="Citadel уже установлен"
-        T_REINSTALL_WARNING="Переустановка удалит существующую конфигурацию и установит новую версию"
-        T_UNINSTALL_WARNING="Удаление удалит Citadel и восстановит оригинальные настройки системы"
-        T_CHOOSE_ACTION="Выбрать действие:"
-        T_REINSTALL_CITADEL="Переустановить Citadel (рекомендуется)"
-        T_UNINSTALL_CITADEL="Удалить Citadel"
-        T_CANCEL_INSTALLATION="Отменить установку"
-        T_UNINSTALLING_EXISTING="Удаление существующей установки Citadel..."
-        T_UNINSTALLING_CITADEL="Удаление Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel был удален"
-    else
-        # Fallback to English
-        warning "Unknown language '$LANGUAGE', falling back to English"
-        LANGUAGE="en"
-        T_CITADEL_ALREADY_INSTALLED="Citadel is already installed"
-        T_REINSTALL_WARNING="Reinstallation will remove existing configuration and install the new version"
-        T_UNINSTALL_WARNING="Uninstallation will remove Citadel and restore original system settings"
-        T_CHOOSE_ACTION="Choose action:"
-        T_REINSTALL_CITADEL="Reinstall Citadel (recommended)"
-        T_UNINSTALL_CITADEL="Uninstall Citadel"
-        T_CANCEL_INSTALLATION="Cancel installation"
-        T_UNINSTALLING_EXISTING="Uninstalling existing Citadel installation..."
-        T_UNINSTALLING_CITADEL="Uninstalling Citadel..."
-        T_CITADEL_UNINSTALLED="Citadel has been uninstalled"
-    fi
-    status "Language loaded: $LANGUAGE"
+        
+        # Dry-run translations
+        T_DRY_RUN_AVAILABLE="Tip: Use --dry-run to see what would be installed without making changes"
+        T_DRY_RUN_TITLE="DRY RUN - Preview of Installation"
+        T_DRY_RUN_SUMMARY="This is a DRY RUN - nothing will be installed.
+
+The following configuration would be applied:"
+        T_DRY_RUN_COMMANDS="Commands that would be executed:"
+        T_DRY_RUN_WARNING="This is a preview only. No changes will be made to your system."
+        T_DRY_RUN_INSTEAD="Show dry-run preview instead"
+    
+    status "Language loaded: $LANGUAGE (English fallback)"
 }
 
 # Welcome screen
@@ -311,8 +215,17 @@ ${T_WIZARD_DESCRIPTION_LINE3:-No technical knowledge required - we'\''ll handle 
 
 # Language selection
 select_language() {
-    # Default to Polish without showing menu
-    LANGUAGE="pl"
+    # Auto-detect from system locale
+    local sys_lang="${LANG:-en}"
+    case "$sys_lang" in
+        pl*) LANGUAGE="pl" ;;
+        de*) LANGUAGE="de" ;;
+        es*) LANGUAGE="es" ;;
+        fr*) LANGUAGE="fr" ;;
+        it*) LANGUAGE="it" ;;
+        ru*) LANGUAGE="ru" ;;
+        *)   LANGUAGE="en" ;;
+    esac
 
     # Return the selected language
     echo "$LANGUAGE"
@@ -325,6 +238,9 @@ select_profile() {
     local profile_desc
     profile_desc=$(gum choose \
         --header "${T_CHOOSE_PROFILE:-Choose installation profile:}" \
+        --cursor.foreground "#00d7ff" \
+        --selected.foreground "#00d7ff" \
+        --selected.background "#003366" \
         "minimal|${T_PROFILE_MINIMAL:-Minimal - Core DNS only (dnscrypt, coredns)}" \
         "standard|${T_PROFILE_STANDARD:-Standard - Basic protection (minimal + adblock)}" \
         "security|${T_PROFILE_SECURITY:-Security - Advanced (standard + reputation, asn-blocking, logging)}" \
@@ -356,6 +272,9 @@ customize_components() {
     local customize
     customize=$(gum choose \
         --header "${T_WANT_CUSTOMIZE_COMPONENTS:-Want to customize components?}" \
+        --cursor.foreground "#00d7ff" \
+        --selected.foreground "#00d7ff" \
+        --selected.background "#003366" \
         "${T_USE_RECOMMENDED_PROFILE:-Use recommended profile} ($profile)" \
         "${T_CUSTOMIZE_COMPONENTS_MANUALLY:-Customize components manually}")
 
@@ -368,6 +287,9 @@ customize_components() {
         local selected
         selected=$(gum choose --no-limit \
             --header "${T_SELECT_COMPONENTS_TO_INSTALL:-Select components to install (use SPACE to select/deselect):}" \
+            --cursor.foreground "#00d7ff" \
+            --selected.foreground "#00d7ff" \
+            --selected.background "#003366" \
             "dnscrypt|${T_DNSCRYPT_DESC:-DNS encryption and caching}" \
             "coredns|${T_COREDNS_DESC:-DNS server and filtering}" \
             "adblock|${T_ADBLOCK_DESC:-DNS-based ad blocking}" \
@@ -376,6 +298,9 @@ customize_components() {
             "event-logging|${T_EVENT_LOGGING_DESC:-Structured event logging}" \
             "honeypot|${T_HONEYPOT_DESC:-Scanner detection traps}" \
             "prometheus|${T_PROMETHEUS_DESC:-Metrics collection}" \
+            "optimize-kernel|${T_OPTIMIZE_KERNEL_DESC:-Kernel priority optimization (CPU/IO boost)}" \
+            "doh-parallel|${T_DOH_PARALLEL_DESC:-DoH parallel racing (faster DNS)}" \
+            "editor-integration|${T_EDITOR_INTEGRATION_DESC:-Micro editor + citadel command}" \
             | cut -d"|" -f1 | paste -sd, -)
 
         if [[ -n "$selected" ]]; then
@@ -393,6 +318,9 @@ confirm_backup() {
     local backup_choice
     backup_choice=$(gum choose \
         --header "${T_CREATE_BACKUPS:-Create backups of existing configurations?}" \
+        --cursor.foreground "#00d7ff" \
+        --selected.foreground "#00d7ff" \
+        --selected.background "#003366" \
         "${T_YES_CREATE_BACKUPS:-Yes, create backups}" \
         "${T_NO_DONT_CREATE_BACKUPS:-No, do not create backups}")
 
@@ -419,64 +347,143 @@ ${T_SUMMARY_BACKUP:-Backup existing:} $backup
 
 ${T_INSTALLATION_WARNING:-WARNING: Installation will modify system DNS and firewall settings}"
 
-    print_gum_warning_box "$summary_text"
+        print_gum_warning_box "$summary_text"
 
-    local confirm
-    confirm=$(gum choose \
-        --header "${T_READY_TO_INSTALL:-Ready to install Citadel?}" \
-        "${T_YES_INSTALL_NOW:-Yes, install now}" \
-        "${T_NO_CANCEL_INSTALLATION:-No, Cancel installation}")
+        local confirm
+        confirm=$(gum choose \
+            --header "${T_READY_TO_INSTALL:-Ready to install Citadel?}" \
+            --cursor.foreground "#00d7ff" \
+            --selected.foreground "#00d7ff" \
+            --selected.background "#003366" \
+            "${T_YES_INSTALL_NOW:-Yes, install now}" \
+            "${T_SHOW_DRY_RUN:-Show preview (dry-run)}" \
+            "${T_NO_CANCEL_INSTALLATION:-No, cancel installation}")
 
-    if [[ "$confirm" != "${T_YES_INSTALL_NOW:-Yes, install now}" ]]; then
-        gum style --foreground 196 "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
-        exit 0
-    fi
-}
+        if [[ "$confirm" == "${T_SHOW_DRY_RUN:-Show preview (dry-run)}" ]]; then
+            echo "dry-run"
+        elif [[ "$confirm" != "${T_YES_INSTALL_NOW:-Yes, install now}" ]]; then
+            gum style --foreground 196 "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
+            exit 0
+        else
+            echo "install"
+        fi
+    }
 
-# Run the actual installation
-run_installation() {
-    local language="$1"
-    local profile="$2"
-    local components="$3"
-    local backup="$4"
+    # Run the actual installation
+    run_installation() {
+        local language="$1"
+        local profile="$2"
+        local components="$3"
+        local backup="$4"
 
-    print_gum_section_header "${T_INSTALLING_CITADEL:-Installing Citadel...}"
+        print_gum_section_header "${T_INSTALLING_CITADEL:-Installing Citadel...}"
 
-    # Build the CLI command
-    local cmd="./scripts/citadel-install-cli.sh"
-    cmd="$cmd --language=$language"
-    cmd="$cmd --profile=$profile"
+        # Build the CLI command
+        local cmd="./scripts/citadel-install-cli.sh"
+        cmd="$cmd --language=$language"
+        cmd="$cmd --profile=$profile"
 
-    # Add components if customized
-    case "$profile" in
-        minimal) default_comps="dnscrypt,coredns" ;;
-        standard) default_comps="dnscrypt,coredns,adblock" ;;
-        security) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging" ;;
-        full) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging,honeypot,prometheus" ;;
-    esac
+        # Add components if customized
+        case "$profile" in
+            minimal) default_comps="dnscrypt,coredns" ;;
+            standard) default_comps="dnscrypt,coredns,adblock" ;;
+            security) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging" ;;
+            full) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging,honeypot,prometheus" ;;
+        esac
 
-    if [[ "$components" != "$default_comps" ]]; then
-        cmd="$cmd --components=$components"
-    fi
+        if [[ "$components" != "$default_comps" ]]; then
+            cmd="$cmd --components=$components"
+        fi
 
-    # Add backup flag if enabled
-    if [[ "$backup" == "true" ]]; then
-        cmd="$cmd --backup-existing"
-    fi
+        # Add backup flag if enabled
+        if [[ "$backup" == "true" ]]; then
+            cmd="$cmd --backup-existing"
+        fi
 
-    # Always use gum enhanced
-    cmd="$cmd --gum-enhanced"
+        # Always use gum enhanced
+        cmd="$cmd --gum-enhanced"
 
-    status "${T_RUNNING_INSTALLATION_COMMAND:-Running installation command...}"
-    info "Command: $cmd"
+        status "${T_RUNNING_INSTALLATION_COMMAND:-Running installation command...}"
+        info "Command: $cmd"
 
-    # Execute the installation
-    if eval "sudo $cmd"; then
-        show_completion
-    else
-        error "${T_INSTALLATION_FAILED:-Installation failed}. Check the log file: $LOG_FILE"
-    fi
-}
+        # Execute the installation
+        if eval "sudo $cmd"; then
+            show_completion
+        else
+            error "${T_INSTALLATION_FAILED:-Installation failed}. Check the log file: $LOG_FILE"
+        fi
+    }
+
+    # Run dry-run preview
+    run_dry_run() {
+        local language="$1"
+        local profile="$2"
+        local components="$3"
+        local backup="$4"
+
+        print_gum_section_header "${T_DRY_RUN_TITLE:-DRY RUN - Preview of Installation}"
+
+        # Build the CLI command with dry-run flag
+        local cmd="./scripts/citadel-install-cli.sh"
+        cmd="$cmd --language=$language"
+        cmd="$cmd --profile=$profile"
+
+        # Add components if customized
+        case "$profile" in
+            minimal) default_comps="dnscrypt,coredns" ;;
+            standard) default_comps="dnscrypt,coredns,adblock" ;;
+            security) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging" ;;
+            full) default_comps="dnscrypt,coredns,adblock,reputation,asn-blocking,event-logging,honeypot,prometheus" ;;
+        esac
+
+        if [[ "$components" != "$default_comps" ]]; then
+            cmd="$cmd --components=$components"
+        fi
+
+        # Add backup flag if enabled
+        if [[ "$backup" == "true" ]]; then
+            cmd="$cmd --backup-existing"
+        fi
+
+        # Always use gum enhanced
+        cmd="$cmd --gum-enhanced"
+
+        # Add dry-run flag
+        cmd="$cmd --dry-run"
+
+        status "${T_RUNNING_DRY_RUN:-Running dry-run preview...}"
+        info "Command: $cmd"
+
+        echo ""
+        print_gum_info_box "${T_DRY_RUN_WARNING:-This is a preview only. No changes will be made to your system.}"
+        echo ""
+
+        # Execute the dry-run
+        if eval "sudo $cmd"; then
+            echo ""
+            print_gum_success_box "${T_DRY_RUN_COMPLETE:-Dry-run completed successfully!}"
+            echo ""
+            
+            # Ask if user wants to proceed with actual installation
+            local proceed
+            proceed=$(gum choose \
+                --header "${T_PROCEED_AFTER_DRY_RUN:-Would you like to proceed with the actual installation?}" \
+                --cursor.foreground "#00d7ff" \
+                --selected.foreground "#00d7ff" \
+                --selected.background "#003366" \
+                "${T_YES_INSTALL_NOW:-Yes, install now}" \
+                "${T_NO_CANCEL_INSTALLATION:-No, cancel installation}")
+            
+            if [[ "$proceed" == "${T_YES_INSTALL_NOW:-Yes, install now}" ]]; then
+                run_installation "$language" "$profile" "$components" "$backup"
+            else
+                info "${T_INSTALLATION_CANCELLED:-Installation cancelled by user}"
+                exit 0
+            fi
+        else
+            error "${T_DRY_RUN_FAILED:-Dry-run failed}. Check the log file: $LOG_FILE"
+        fi
+    }
 
 # Show completion message
 show_completion() {
@@ -527,6 +534,9 @@ ${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original s
         local action
         action=$(gum choose \
             --header "${T_CHOOSE_ACTION:-Choose action:}" \
+            --cursor.foreground "#00d7ff" \
+            --selected.foreground "#00d7ff" \
+            --selected.background "#003366" \
             "${T_REINSTALL_CITADEL:-Reinstall Citadel (recommended)}" \
             "${T_UNINSTALL_CITADEL:-Uninstall Citadel}" \
             "${T_CANCEL_INSTALLATION:-Cancel installation}")
@@ -589,11 +599,16 @@ ${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original s
     fi
     log "Backup: $BACKUP"
 
-    # Final confirmation
-    confirm_installation "$LANGUAGE" "$PROFILE" "$COMPONENTS" "$BACKUP"
+    # Final confirmation - get user choice
+    local user_choice
+    user_choice=$(confirm_installation "$LANGUAGE" "$PROFILE" "$COMPONENTS" "$BACKUP")
 
-    # Run installation
-    run_installation "$LANGUAGE" "$PROFILE" "$COMPONENTS" "$BACKUP"
+    # Handle user choice
+    if [[ "$user_choice" == "dry-run" ]]; then
+        run_dry_run "$LANGUAGE" "$PROFILE" "$COMPONENTS" "$BACKUP"
+    else
+        run_installation "$LANGUAGE" "$PROFILE" "$COMPONENTS" "$BACKUP"
+    fi
 
     log "Interactive installation completed successfully"
 }

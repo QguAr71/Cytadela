@@ -31,11 +31,11 @@ export CYTADELA_MODULES="${SCRIPT_DIR}/modules"
 
 # Early-fail: verify lib/modules directories exist
 if [[ ! -d "${CYTADELA_LIB}" ]]; then
-    printf 'ERROR: brak katalogu biblioteki: %s\n' "${CYTADELA_LIB}" >&2
+    printf '%s: %s\n' "${T_ERROR:-ERROR}: ${T_ERROR_MISSING_LIB:-Missing library directory}" "${CYTADELA_LIB}" >&2
     exit 2
 fi
 if [[ ! -d "${CYTADELA_MODULES}" ]]; then
-    printf 'ERROR: brak katalogu modułów: %s\n' "${CYTADELA_MODULES}" >&2
+    printf '%s: %s\n' "${T_ERROR:-ERROR}: ${T_ERROR_MISSING_MODULE:-Missing module directory}" "${CYTADELA_MODULES}" >&2
     exit 2
 fi
 
@@ -48,14 +48,24 @@ source_lib() {
         # shellcheck disable=SC1090
         source "$libfile"
     else
-        printf 'ERROR: brak pliku biblioteki: %s\n' "$libfile" >&2
+        printf '%s: %s\n' "${T_ERROR:-ERROR}: ${T_ERROR_MISSING_FILE:-Missing library file}" "$libfile" >&2
         exit 2
     fi
 }
 
-# Load core library (bezpiecznie)
-# Jeśli chcesz, dodaj nad liniami source:  "# shellcheck source=lib/cytadela-core.sh"
+# Load core library FIRST (defines log_debug needed by other modules)
 source_lib "${CYTADELA_LIB}/cytadela-core.sh"
+
+# Load new i18n engine if available (after core library)
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh"
+    i18n_engine_init
+    # Load common translations
+    load_i18n_module "common" 2>/dev/null || true
+else
+    echo "Warning: i18n engine not available, using legacy translations" >&2
+fi
+
 source_lib "${CYTADELA_LIB}/network-utils.sh"
 source_lib "${CYTADELA_LIB}/module-loader.sh"
 
@@ -74,16 +84,15 @@ load_i18n_module "uninstall"
 
 # Detect and verify systemd (required for Citadel)
 if ! detect_systemd; then
-    log_error "Citadel v3.2 requires a systemd-based Linux distribution."
-    log_error "Please ensure you're running on a systemd-compatible system."
-    exit 1
+    log_warning "Systemd detection issues - some features may be limited"
+    # Don't exit here, allow check-deps to run anyway
 fi
 
 # Helper do bezpiecznego wywoływania funkcji dynamicznej (zamiana '-' -> '_')
 call_fn() {
     local act="${1:-}"
     if [[ -z "$act" ]]; then
-        log_error "Brak nazwy akcji w call_fn"
+        log_error "${T_ERROR_ACTION_REQUIRED:-Missing action name in call_fn}"
         return 2
     fi
     shift || true
@@ -98,7 +107,7 @@ call_fn() {
 # ROOT CHECK
 # ==============================================================================
 if [[ "${EUID:-}" -ne 0 ]]; then
-    log_error "Ten skrypt wymaga uprawnień root. Uruchom: sudo $0"
+    log_error "${T_ERROR_REQUIRES_ROOT:-This script requires root privileges}. ${T_RUN_WITH_SUDO:-Run with}: sudo \$0"
     exit 1
 fi
 
@@ -178,8 +187,8 @@ case "$ACTION" in
                 call_fn "$ACTION"
                 ;;
             *)
-                log_error "Nieznana komenda backup: backup $1"
-                echo "Dostępne komendy backup:"
+                log_error "${T_ERROR_COMMAND_NOT_FOUND:-Unknown command}: backup \$1"
+                echo "${T_AVAILABLE_COMMANDS:-Available commands}:"
                 echo "  backup config-backup         - utwórz backup konfiguracji"
                 echo "  backup config-restore        - przywróć konfigurację z backupu"
                 echo "  backup config-list           - lista dostępnych backupów"
@@ -333,6 +342,8 @@ case "$ACTION" in
 
     # Dependency checker
     check-deps | check-dependencies)
+        # Load systemd detection module first (needed for SYSTEMD_DETECTED variables)
+        source_lib "${CYTADELA_LIB}/systemd-detection.sh"
         load_module "check-dependencies"
         # po wcześniejszym shift, argument --install znajduje się w $1
         if [[ "${1:-}" == "--install" ]]; then
@@ -348,7 +359,7 @@ case "$ACTION" in
         if [[ -f "lib/advanced-management.sh" ]]; then
             source "lib/advanced-management.sh"
         else
-            log_error "Advanced management system not found"
+            log_error "${T_ERROR_MODULE_NOT_FOUND:-Module not found}: advanced-management"
             exit 1
         fi
 
@@ -374,7 +385,7 @@ case "$ACTION" in
         if [[ -f "lib/enterprise-features.sh" ]]; then
             source "lib/enterprise-features.sh"
         else
-            log_error "Advanced features system not found"
+            log_error "${T_ERROR_MODULE_NOT_FOUND:-Module not found}: enterprise-features"
             exit 1
         fi
 
@@ -422,8 +433,8 @@ case "$ACTION" in
                 install_citadel_top
                 ;;
             *)
-                log_error "Nieznana komenda instalacji: install $1"
-                echo "Dostępne komendy instalacji:"
+                log_error "${T_ERROR_COMMAND_NOT_FOUND:-Unknown command}: install \$1"
+                echo "${T_AVAILABLE_COMMANDS:-Available commands}:"
                 echo "  install check-deps        - sprawdź zależności"
                 echo "  install wizard           - kreator instalacji"
                 echo "  install dnscrypt         - zainstaluj DNSCrypt"
@@ -623,7 +634,7 @@ case "$ACTION" in
         if [[ -f "lib/config-management.sh" ]]; then
             source "lib/config-management.sh"
         else
-            log_error "Configuration management module not found"
+            log_error "${T_ERROR_MODULE_NOT_FOUND:-Module not found}: config-management"
             exit 1
         fi
 
@@ -650,7 +661,7 @@ case "$ACTION" in
             # Initialize module management system
             module_management_init
         else
-            log_error "Module management system not found"
+            log_error "${T_ERROR_MODULE_NOT_FOUND:-Module not found}: module-management"
             exit 1
         fi
 
@@ -737,8 +748,8 @@ case "$ACTION" in
                 monitor_prometheus_status
                 ;;
             *)
-                log_error "Nieznana komenda monitor: monitor $1"
-                echo "Dostępne komendy monitor:"
+                log_error "${T_ERROR_COMMAND_NOT_FOUND:-Unknown command}: monitor \$1"
+                echo "${T_AVAILABLE_COMMANDS:-Available commands}:"
                 echo "  monitor status              - ogólny status systemu"
                 echo "  monitor diagnostics         - szczegółowa diagnostyka"
                 echo "  monitor verify              - weryfikacja konfiguracji"
@@ -754,10 +765,57 @@ case "$ACTION" in
                 ;;
         esac
         ;;
-    *)
-        log_error "Nieznana komenda: $ACTION"
-        echo ""
-        echo "Użyj: $0 help"
-        exit 1
+    # Help System - Modular help with TUI and CLI interfaces
+    help)
+        # Load new help system
+        if [[ -f "lib/help/framework/help-core.sh" ]]; then
+            source "lib/help/framework/help-core.sh"
+
+            # Parse help arguments and dispatch to appropriate interface
+            case "${1:-}" in
+                --tui|--interactive|--menu|"")
+                    # Default TUI interface
+                    citadel_help_main --tui "${@:2}"
+                    ;;
+                --cli|--command|--text)
+                    # CLI interface for scripts/advanced users
+                    citadel_help_main --cli "${@:2}"
+                    ;;
+                --context|--specific)
+                    # Contextual help for specific commands
+                    citadel_help_main --context "${@:2}"
+                    ;;
+                --language|--lang|-l)
+                    # Set language for help system
+                    export HELP_LANGUAGE="$2"
+                    citadel_help_main "${@:3}"
+                    ;;
+                *)
+                    # Try CLI interface first (command/module lookup)
+                    if citadel_help_main --cli "$1" "${@:2}" 2>/dev/null; then
+                        :
+                    else
+                        # Fallback to TUI
+                        citadel_help_main --tui "$@"
+                    fi
+                    ;;
+            esac
+        else
+            # Fallback to old help system if new one not available
+            echo "Citadel Help System"
+            echo "==================="
+            echo ""
+            echo "Available commands:"
+            echo "  install wizard           - Interactive installer"
+            echo "  install all              - Install all components"
+            echo "  configure-system         - Switch DNS to Citadel"
+            echo "  status                   - Show system status"
+            echo "  diagnostics              - Run diagnostics"
+            echo "  verify                   - Verify configuration"
+            echo "  firewall-safe            - Safe firewall mode"
+            echo "  firewall-strict          - Strict firewall mode"
+            echo ""
+            echo "For detailed help, use: citadel help --tui"
+        fi
         ;;
 esac

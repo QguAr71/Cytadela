@@ -38,7 +38,7 @@ citadel_help() {
         clear 2>/dev/null || echo ""
         
         # Display menu with purple frame using template
-        draw_section_header "${T_HELP_MENU_TITLE:-CITADEL++ HELP}"
+        draw_section_header "${T_HELP_MENU_TITLE:-CITADEL HELP}"
         echo -e "${VIO}╠══════════════════════════════════════════════════════════════╣${NC}"
         print_frame_line "${GREEN}[1]${NC} ${T_HELP_MENU_1:-1. Installation}"
         print_frame_line "${GREEN}[2]${NC} ${T_HELP_MENU_2:-2. Main Program}"

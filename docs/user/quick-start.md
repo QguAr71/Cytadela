@@ -27,6 +27,7 @@ sudo ./citadel.sh setup-wizard
 - **Auto-detects** if Citadel is installed
 - **Install mode**: Full installation with checklist
 - **Manage mode**: Reinstall, uninstall, or modify (when installed)
+- **Dry-run preview**: Test installation without changes
 - 7 languages support (auto-detect from $LANG): PL, EN, DE, ES, IT, FR, RU
 
 > **Tip:** Use `setup-wizard` for both fresh install and uninstall - it automatically detects the system state!
