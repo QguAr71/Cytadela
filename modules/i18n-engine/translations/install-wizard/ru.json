@@ -120,7 +120,7 @@
   "T_WIZARD_DESCRIPTION_LINE1": "Этот мастер проведет вас через процесс установки Citadel",
   "T_WIZARD_DESCRIPTION_LINE2": "шаг за шагом.",
   "T_WIZARD_DESCRIPTION_LINE3": "Технические знания не требуются - мы позаботимся обо всем",
-  "T_OPTIMIZE_KERNEL_DESC": "Kernel priority optimization (CPU/IO boost)",
-  "T_DOH_PARALLEL_DESC": "DoH parallel racing (faster DNS)",
-  "T_EDITOR_INTEGRATION_DESC": "Micro editor + citadel command"
+  "T_OPTIMIZE_KERNEL_DESC": "Оптимизация приоритетов ядра (CPU/IO boost)",
+  "T_DOH_PARALLEL_DESC": "DoH parallel racing (быстрый DNS)",
+  "T_EDITOR_INTEGRATION_DESC": "Редактор Micro + команда citadel"
 }
