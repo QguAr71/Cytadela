@@ -93,6 +93,13 @@ citadel_uninstall() {
     # Load i18n
     load_i18n_module "uninstall"
 
+    # Load DNS testing module
+    if [[ -f "modules/dns-testing.sh" ]]; then
+        source "modules/dns-testing.sh"
+    else
+        log_warning "DNS testing module not found, using fallback test"
+    fi
+
     # Enhanced welcome message (matching installer)
     if [[ "$GUM_AVAILABLE" == true ]]; then
         gum style --border double --width 64 --padding "1 2" --foreground 99 --bold "${T_UNINSTALL_TITLE:-Citadel Uninstallation}"
@@ -213,19 +220,8 @@ EOF
         fi
     fi
 
-    # Test DNS connectivity with multiple servers
-    log_info "${T_TESTING_DNS:-Testing DNS connectivity...}"
-    local dns_works=false
-    for server in "${dns_servers[@]}"; do
-        if dig +time=2 +tries=1 @"$server" google.com >/dev/null 2>&1; then
-            log_success "${T_DNS_OK:-DNS connectivity verified via} $server"
-            dns_works=true
-            break
-        fi
-    done
-    if [[ "$dns_works" == false ]]; then
-        log_error "${T_DNS_FAILED:-DNS test failed - system may lose internet after restart!}"
-        echo ""
+    # Test DNS connectivity using multi-level testing module
+    if ! test_dns_connectivity; then
         
         # NEW: Offer emergency network restore option
         log_warning "${T_EMERGENCY_OFFER:-Connectivity test failed. Would you like to run emergency network restore?}"
@@ -263,18 +259,8 @@ EOF
                     
                     # Test connectivity again after emergency restore
                     log_info "${T_TESTING_AGAIN:-Testing connectivity again...}"
-                    dns_works_after=false
-                    for server in "${dns_servers[@]}"; do
-                        if dig +time=2 +tries=1 @"$server" google.com >/dev/null 2>&1; then
-                            log_success "${T_DNS_OK:-DNS connectivity verified via} $server"
-                            dns_works_after=true
-                            break
-                        fi
-                    done
-                    
-                    if [[ "$dns_works_after" == true ]]; then
+                    if test_dns_connectivity; then
                         log_success "${T_CONNECTIVITY_RESTORED:-Internet connectivity restored successfully!}"
-                        dns_works=true  # Mark as working for continuation
                     else
                         log_warning "${T_EMERGENCY_FAILED:-Emergency restore completed but connectivity test still fails}"
                         log_info "${T_MANUAL_INTERVENTION:-Manual intervention may still be required}"
