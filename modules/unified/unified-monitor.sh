@@ -154,11 +154,21 @@ monitor_verify() {
 
 # Run all diagnostic tests
 monitor_test_all() {
-    # Load i18n strings based on language
-    local lang="${LANG%%_*}"
+    # Load i18n strings - try new i18n-engine first, fallback to legacy
+    local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
     lang="${lang:-en}"
+    
+    # Try new i18n-engine
+    if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+        source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+            i18n_engine_init 2>/dev/null || true
+            i18n_engine_load "diagnostics" "$lang" 2>/dev/null || true
+        }
+    fi
+    
+    # Fallback to legacy i18n if available
     if [[ -f "lib/i18n/${lang}.sh" ]]; then
-        source "lib/i18n/${lang}.sh"
+        source "lib/i18n/${lang}.sh" 2>/dev/null || true
     fi
 
     log_section "󰙨 ${T_TEST_ALL_TITLE:-CITADEL++ TEST-ALL}"
@@ -187,6 +197,116 @@ monitor_test_all() {
         fi
     else
         echo "  (ping6 not installed)"
+    fi
+
+    # Test optimize-kernel (priority optimization)
+    echo ""
+    echo -e "${CYAN}${T_TEST_OPTIMIZE_KERNEL:-Kernel Priority Optimization (optimize-kernel):}${NC}"
+    local priority_ok=true
+    
+    # Check if timer exists and is active
+    if systemctl list-timers --all 2>/dev/null | grep -q "citadel-dns-priority"; then
+        if systemctl is-active --quiet citadel-dns-priority.timer 2>/dev/null; then
+            echo "  󰄬 ${T_TEST_PRIORITY_TIMER:-Priority timer}: ACTIVE"
+        else
+            echo "  󰀨 ${T_TEST_PRIORITY_TIMER:-Priority timer}: inactive (enabled but not running)"
+        fi
+    else
+        echo "  󰅖 ${T_TEST_PRIORITY_TIMER:-Priority timer}: NOT FOUND"
+        priority_ok=false
+    fi
+    
+    # Check if priority script exists
+    if [[ -f "/usr/local/bin/citadel-dns-priority.sh" ]]; then
+        echo "  󰄬 ${T_TEST_PRIORITY_SCRIPT:-Priority script}: EXISTS"
+    else
+        echo "  󰅖 ${T_TEST_PRIORITY_SCRIPT:-Priority script}: NOT FOUND"
+        priority_ok=false
+    fi
+    
+    # Check if DNS processes have elevated priorities
+    local dnscrypt_nice=$(ps -o nice= -p $(pgrep -x dnscrypt-proxy 2>/dev/null || echo 0) 2>/dev/null || echo "N/A")
+    if [[ "$dnscrypt_nice" != "N/A" && "$dnscrypt_nice" -lt 0 ]]; then
+        echo "  󰄬 ${T_TEST_DNSCRYPT_PRIORITY:-DNSCrypt priority}: ELEVATED (nice: $dnscrypt_nice)"
+    else
+        echo "  󰀨 ${T_TEST_DNSCRYPT_PRIORITY:-DNSCrypt priority}: normal (nice: ${dnscrypt_nice:-N/A})"
+    fi
+    
+    if [[ "$priority_ok" == true ]]; then
+        log_success "${T_TEST_OPTIMIZE_KERNEL_OK:-Kernel priority optimization: CONFIGURED}"
+    else
+        log_warning "${T_TEST_OPTIMIZE_KERNEL_NA:-Kernel priority optimization: NOT DETECTED}"
+    fi
+
+    # Test doh-parallel (DoH parallel racing)
+    echo ""
+    echo -e "${CYAN}${T_TEST_DOH_PARALLEL:-DNS-over-HTTPS Parallel (doh-parallel):}${NC}"
+    local doh_ok=false
+    local doh_port=""
+    
+    # Check if DoH config exists
+    if [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml" ]]; then
+        echo "  󰄬 ${T_TEST_DOH_CONFIG:-DoH config}: EXISTS"
+        
+        # Extract port from config
+        doh_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' || echo "")
+        if [[ -n "$doh_port" ]]; then
+            echo "  󰄬 ${T_TEST_DOH_PORT:-DoH port}: $doh_port"
+            
+            # Test DNS on DoH port
+            if dig +time=2 +tries=1 @127.0.0.1 -p "$doh_port" whoami.cloudflare +short >/dev/null 2>&1; then
+                echo "  󰄬 ${T_TEST_DOH_DNS:-DoH DNS test}: WORKING (port $doh_port)"
+                doh_ok=true
+            else
+                echo "  󰀨 ${T_TEST_DOH_DNS:-DoH DNS test}: FAILED (port $doh_port)"
+            fi
+        else
+            echo "  󰀨 ${T_TEST_DOH_PORT:-DoH port}: NOT DETECTED in config"
+        fi
+    else
+        echo "  󰅖 ${T_TEST_DOH_CONFIG:-DoH config}: NOT FOUND"
+    fi
+    
+    # Check if current DNSCrypt config has DoH settings
+    if [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+        if grep -q "doh_servers.*=.*true" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            echo "  󰄬 ${T_TEST_DOH_ENABLED:-DoH enabled}: YES (in active config)"
+            doh_ok=true
+        else
+            echo "  󰀨 ${T_TEST_DOH_ENABLED:-DoH enabled}: NO (in active config)"
+        fi
+        
+        if grep -q "lb_strategy.*=.*'p2'" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            echo "  󰄬 ${T_TEST_PARALLEL_RACING:-Parallel racing (p2)}: ENABLED"
+        else
+            echo "  󰀨 ${T_TEST_PARALLEL_RACING:-Parallel racing (p2)}: NOT ENABLED"
+        fi
+    fi
+    
+    if [[ "$doh_ok" == true ]]; then
+        log_success "${T_TEST_DOH_OK:-DoH Parallel Racing: ACTIVE}"
+    else
+        log_warning "${T_TEST_DOH_NA:-DoH Parallel Racing: NOT DETECTED}"
+    fi
+
+    # Test editor-integration
+    echo ""
+    echo -e "${CYAN}${T_TEST_EDITOR:-Editor Integration (editor-integration):}${NC}"
+    if [[ -f "/usr/local/bin/citadel" ]]; then
+        echo "  󰄬 ${T_TEST_EDITOR_CMD:-citadel command}: EXISTS"
+        if /usr/local/bin/citadel help >/dev/null 2>&1; then
+            echo "  󰄬 ${T_TEST_EDITOR_HELP:-citadel help}: WORKING"
+        else
+            echo "  󰀨 ${T_TEST_EDITOR_HELP:-citadel help}: NOT RESPONDING"
+        fi
+    else
+        echo "  󰅖 ${T_TEST_EDITOR_CMD:-citadel command}: NOT FOUND"
+    fi
+    
+    if command -v micro >/dev/null 2>&1; then
+        echo "  󰄬 ${T_TEST_MICRO_EDITOR:-Micro editor}: INSTALLED"
+    else
+        echo "  󰀨 ${T_TEST_MICRO_EDITOR:-Micro editor}: NOT INSTALLED"
     fi
 }
 
