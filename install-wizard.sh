@@ -167,6 +167,22 @@ load_language() {
         T_CMD_UPDATE_BLOCKLISTS="Zaktualizuj listy blokowania"
         T_CMD_EMERGENCY_RESTORE="Przywracanie internetu w trybie awaryjnym"
         
+        # Emergency network restore translations
+        T_EMERGENCY_OFFER="Test łączności nie powiódł się. Czy chcesz uruchomić awaryjne przywracanie sieci?"
+        T_EMERGENCY_OPTION="To wykona:"
+        T_EMERGENCY_DNS="Ustawi awaryjne publiczne serwery DNS"
+        T_EMERGENCY_STOP="Zatrzyma usługi DNS Citadel"
+        T_EMERGENCY_FLUSH="Wyczyści reguły firewalla"
+        T_EMERGENCY_RESTART="Restartuje usługi sieciowe"
+        T_RUN_EMERGENCY="Uruchomić awaryjne przywracanie sieci teraz?"
+        T_RUNNING_EMERGENCY="Uruchamianie awaryjnego przywracania sieci..."
+        T_EMERGENCY_SUCCESS="Awaryjne przywracanie sieci zostało pomyślnie zakończone"
+        T_TESTING_AGAIN="Ponowne testowanie łączności..."
+        T_CONNECTIVITY_RESTORED="Łączność z internetem została pomyślnie przywrócona!"
+        T_EMERGENCY_FAILED="Przywracanie awaryjne zakończone, ale test łączności nadal zawodzi"
+        T_EMERGENCY_FAILED_RUN="Nie udało się uruchomić awaryjnego przywracania sieci"
+        T_CITADEL_NOT_FOUND="Nie znaleziono citadel.sh - nie można uruchomić przywracania awaryjnego"
+        
         # Other missing translations
         T_COMPONENTS_CONFIGURED="Components configured:"
     elif [[ "$LANGUAGE" == "en" ]]; then
