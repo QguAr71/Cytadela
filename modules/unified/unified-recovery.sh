@@ -448,7 +448,7 @@ _verify_final_connectivity() {
     log_info "Step 7: Verifying final connectivity..."
 
     if _test_full_connectivity; then
-        log_success "🎉 INTERNET CONNECTIVITY RESTORED!"
+        log_success "[SUCCESS] INTERNET CONNECTIVITY RESTORED!"
         echo ""
         log_info "Next steps:"
         log_info "  1. Your internet is working now"
@@ -456,7 +456,7 @@ _verify_final_connectivity() {
         log_info "  3. To restore Citadel: sudo ./citadel.sh install-wizard"
         return 0
     else
-        log_error "❌ Could not restore connectivity automatically"
+        log_error "[ERROR] Could not restore connectivity automatically"
         echo ""
         log_info "Manual troubleshooting steps:"
         log_info "  1. Check cable/WiFi connection"

@@ -364,7 +364,7 @@ _verify_final_connectivity() {
     echo ""
 
     if [[ "$icmp_final" == true ]] && [[ "$dns_final" == true ]]; then
-        log_success "🎉 ${T_CONNECTIVITY_RESTORED:-INTERNET CONNECTIVITY RESTORED!}"
+        log_success "[SUCCESS] ${T_CONNECTIVITY_RESTORED:-INTERNET CONNECTIVITY RESTORED!}"
         echo ""
         log_info "${T_NEXT_STEPS:-Next steps:}"
         log_info "  1. ${T_INTERNET_WORKING:-Your internet is working now}"
@@ -373,12 +373,12 @@ _verify_final_connectivity() {
         log_info "  4. ${T_KEEP_EMERGENCY:-Or keep using emergency DNS}"
         return 0
     elif [[ "$icmp_final" == true ]]; then
-        log_warning "⚠ ${T_ICMP_OK_DNS_ISSUES:-Basic connectivity works but DNS may have issues}"
+        log_warning "[WARNING] ${T_ICMP_OK_DNS_ISSUES:-Basic connectivity works but DNS may have issues}"
         log_info "${T_TEST_DNS_MANUAL:-Try:} dig @1.1.1.1 google.com"
         log_info "${T_EDIT_MANUAL:-Or manually edit:} sudo nano /etc/resolv.conf"
         return 0
     else
-        log_error "❌ ${T_CONNECTIVITY_FAILED:-Could not restore connectivity automatically}"
+        log_error "[ERROR] ${T_CONNECTIVITY_FAILED:-Could not restore connectivity automatically}"
         echo ""
         log_info "${T_MANUAL_STEPS:-Manual steps to try:}"
         log_info "  1. ${T_CHECK_CABLE:-Check cable/WiFi connection}"
@@ -591,7 +591,7 @@ restore_system_default() {
 # ============================================================================
 
 emergency_network_restore() {
-    log_section "${T_EMERGENCY_NETWORK_RESTORE:-🌐 EMERGENCY NETWORK RESTORE}"
+    log_section "${T_EMERGENCY_NETWORK_RESTORE:-[NETWORK] EMERGENCY NETWORK RESTORE}"
     log_warning "${T_EMERGENCY_WARNING:-This will attempt to restore internet connectivity}"
     log_warning "${T_EMERGENCY_PROTECTION_OFF:-Citadel protection will be temporarily disabled}"
     echo ""
@@ -629,7 +629,7 @@ emergency_network_restore() {
 }
 
 emergency_network_fix() {
-    log_section "${T_EMERGENCY_FIX:-🔧 EMERGENCY NETWORK FIX}"
+    log_section "${T_EMERGENCY_FIX:-[FIX] EMERGENCY NETWORK FIX}"
     log_info "${T_EMERGENCY_FIX_DESC:-Quick DNS fix without full firewall reset}"
 
     # Set emergency DNS

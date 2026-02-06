@@ -188,7 +188,7 @@
 sudo cytadela++ install-wizard
 # Wybierz moduły SPACE, potwierdź ENTER
 
-# 2. Przełącz system na Cytadel++ DNS
+# 2. Przełącz system na Citadel DNS
 sudo cytadela++ configure-system
 ```
 
@@ -204,7 +204,7 @@ sudo ./cytadela++.sh firewall-safe
 # 3. Test lokalnego DNS
 dig +short google.com @127.0.0.1
 
-# 4. Przełącz system na Cytadel++ DNS
+# 4. Przełącz system na Citadel DNS
 sudo ./cytadela++.sh configure-system
 
 # 5. Test internetu

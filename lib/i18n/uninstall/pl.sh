@@ -212,19 +212,50 @@ export T_UNINSTALLING_EXISTING="Odinstalowywanie istniejącej instalacji Citadel
 export T_UNINSTALLING_CITADEL="Odinstalowywanie Citadel..."
 export T_CITADEL_UNINSTALLED="Citadel został odinstalowany"
 
-# Emergency network restore translations
-export T_EMERGENCY_OFFER="Test łączności nie powiódł się. Czy chcesz uruchomić awaryjne przywracanie sieci?"
-export T_EMERGENCY_OPTION="To wykona:"
-export T_EMERGENCY_DNS="Ustawi awaryjne publiczne serwery DNS"
-export T_EMERGENCY_STOP="Zatrzyma usługi DNS Citadel"
-export T_EMERGENCY_FLUSH="Wyczyści reguły firewalla"
-export T_EMERGENCY_RESTART="Restartuje usługi sieciowe"
-export T_RUN_EMERGENCY="Uruchomić awaryjne przywracanie sieci teraz?"
-export T_RUNNING_EMERGENCY="Uruchamianie awaryjnego przywracania sieci..."
-export T_EMERGENCY_SUCCESS="Awaryjne przywracanie sieci zostało pomyślnie zakończone"
-export T_TESTING_AGAIN="Ponowne testowanie łączności..."
-export T_CONNECTIVITY_RESTORED="Łączność z internetem została pomyślnie przywrócona!"
-export T_EMERGENCY_FAILED="Przywracanie awaryjne zakończone, ale test łączności nadal zawodzi"
-export T_EMERGENCY_FAILED_RUN="Nie udało się uruchomić awaryjnego przywracania sieci"
-export T_CITADEL_NOT_FOUND="Nie znaleziono citadel.sh - nie można uruchomić przywracania awaryjnego"
+# DNS Testing Module Translations
+export T_STARTING_DNS_TEST="Rozpoczynanie kompleksowego testu łączności DNS..."
+export T_TESTING_SYSTEM_DNS="Testowanie rozwiązywania nazw przez system..."
+export T_TESTING_SYSTEM_SERVICES="Testowanie usług DNS systemu..."
+export T_TESTING_DIRECT_SERVERS="Testowanie bezpośrednich serwerów DNS..."
+export T_DIAGNOSING_ISSUES="Diagnozowanie problemów z łącznością DNS..."
+
+# System DNS tests
+export T_NSLOOKUP_WORKS="nslookup działa z resolverem systemowym"
+export T_GETENT_WORKS="getent hosts działa"
+export T_HOST_WORKS="polecenie host działa"
+export T_SYSTEM_DNS_FAILED="Rozwiązywanie nazw przez system nie powiodło się"
+
+# System services tests
+export T_TESTING_RESOLVED="Testowanie systemd-resolved..."
+export T_RESOLVED_WORKS="systemd-resolved działa"
+export T_RESOLVED_FAILED="zapytanie systemd-resolved nie powiodło się"
+export T_TESTING_NM="Testowanie DNS NetworkManager..."
+export T_NM_WORKS="DNS NetworkManager działa"
+export T_NM_FAILED="DNS NetworkManager nie powiódł się"
+export T_NM_NO_DNS="NetworkManager nie ma skonfigurowanego DNS"
+export T_TESTING_DHCPCD="Testowanie DNS dhcpcd..."
+export T_DHCPCD_WORKS="DNS dhcpcd działa"
+export T_DHCPCD_FAILED="DNS dhcpcd nie powiódł się"
+export T_SYSTEM_SERVICES_FAILED="Nie znaleziono działających usług DNS systemu"
+
+# Direct server tests
+export T_TESTING_SERVER="Testowanie serwera:"
+export T_SERVER_WORKS="Bezpośredni serwer DNS działa:"
+export T_SERVER_FAILED="Bezpośredni serwer DNS nie powiódł się:"
+export T_DIRECT_SERVERS_FAILED="Wszystkie bezpośrednie serwery DNS zawiodły"
+
+# Success messages
+export T_DNS_WORKING_VIA_SYSTEM="Łączność DNS zweryfikowana przez resolver systemowy"
+export T_DNS_WORKING_VIA_SERVICES="Łączność DNS zweryfikowana przez usługi systemowe"
+export T_DNS_WORKING_VIA_DIRECT="Łączność DNS zweryfikowana przez bezpośrednie serwery"
+
+# Diagnostic messages
+export T_FIREWALL_BLOCKING="Firewall może blokować zapytania DNS (port UDP 53)"
+export T_IPV6_ISSUES="Wykryto problemy z łącznością IPv6 - DNS może działać tylko z IPv4"
+export T_ROUTING_ISSUE="Brak trasy do serwera DNS:"
+export T_RESOLV_CONF_ISSUE="/etc/resolv.conf może być nieprawidłowo skonfigurowany lub brak nameserver"
+export T_NO_DNS_SERVICE="Nie wykryto lokalnej usługi DNS (systemd-resolved, dnsmasq, bind, unbound)"
+
+# Final results
+export T_DNS_TEST_FAILED="Test łączności DNS nie powiódł się - internet może nie działać prawidłowo"
 
