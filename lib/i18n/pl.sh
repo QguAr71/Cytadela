@@ -23,7 +23,7 @@ ${GREEN}󱓞 Instalacja (ZALECANE):${NC}
   ${CYAN}install-nftables${NC}      Instaluj tylko reguły NFTables
 
 ${YELLOW}󰒓  Konfiguracja systemu:${NC}
-  ${CYAN}configure-system${NC}      Przełącz system na Citadel++ DNS
+  ${CYAN}configure-system${NC}      Przełącz system na Citadel DNS
   ${CYAN}restore-system${NC}        Przywróć systemd-resolved
   ${CYAN}firewall-safe${NC}         Tryb bezpieczny (nie zrywa internetu)
   ${CYAN}firewall-strict${NC}       Tryb ścisły (pełna blokada DNS-leak)
@@ -216,7 +216,7 @@ export T_MOST_IMPORTANT="najważniejsze"
 export T_EXAMPLES="PRZYKŁADY"
 export T_CHECK_ONLY="Sprawdź zależności"
 export T_AUTO_INSTALL_CMD="Automatyczna instalacja brakujących"
-export T_WIZARD_SETUP_TITLE="Citadel++ Setup"
+export T_WIZARD_SETUP_TITLE="Citadel Setup"
 export T_WIZARD_INSTALLED_MSG="Citadel jest już zainstalowany. Wybierz akcję:"
 export T_WIZARD_REINSTALL="Reinstaluj z backupem"
 export T_WIZARD_UNINSTALL="Usuń Citadel"

@@ -38,7 +38,7 @@ export T_HELP_CMD_INSTALL_EDITOR="Instaluj integrację edytora"
 export T_HELP_CMD_INSTALL_DOH_PARALLEL="Instaluj równoległe DoH"
 
 # Main
-export T_HELP_CMD_CONFIGURE_SYSTEM="Przełącz system na Citadel++"
+export T_HELP_CMD_CONFIGURE_SYSTEM="Przełącz system na Citadel"
 export T_HELP_CMD_RESTORE_SYSTEM="Przywróć systemd-resolved"
 export T_HELP_CMD_FIREWALL_SAFE="Tryb BEZPIECZNY"
 export T_HELP_CMD_FIREWALL_STRICT="Tryb ŚCISŁY"

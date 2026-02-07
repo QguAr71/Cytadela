@@ -79,7 +79,7 @@ install_all() {
     echo "  6. Leak test:       dig @8.8.8.8 test.com (powinno być zablokowane)"
     echo ""
 
-    log_info "Aby przełączyć system na Citadel++ (wyłączyć resolved):"
+    log_info "Aby przełączyć system na Citadel (wyłączyć resolved):"
     echo "  sudo ./Citadel.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
     echo "  sudo ./Citadel.sh restore-system"

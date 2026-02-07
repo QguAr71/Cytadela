@@ -4,7 +4,7 @@
 MODULE_NAME="help"
 MODULE_VERSION="2.0.0"
 MODULE_DESCRIPTION="Interactive multi-language help system"
-MODULE_AUTHOR="Citadel++ Team"
+MODULE_AUTHOR="Citadel Team"
 MODULE_DEPENDS=()
 MODULE_TAGS=("help" "i18n" "documentation" "interactive")
 
@@ -97,7 +97,7 @@ show_help_section_install() {
 show_help_section_main() {
     draw_section_header "${T_HELP_SECTION_MAIN:-2. MAIN PROGRAM}"
     echo ""
-    echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel++}"
+    echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel}"
     echo -e "${CYAN}restore-system${NC}     - ${T_HELP_CMD_RESTORE_SYSTEM:-Restore systemd-resolved}"
     echo -e "${CYAN}firewall-safe${NC}      - ${T_HELP_CMD_FIREWALL_SAFE:-SAFE mode (won\'t break connectivity)}"
     echo -e "${CYAN}firewall-strict${NC}    - ${T_HELP_CMD_FIREWALL_STRICT:-STRICT mode (DNS leak protection)}"
@@ -175,7 +175,7 @@ show_help_full() {
     echo -e "${CYAN}install-doh-parallel${NC} - ${T_HELP_CMD_INSTALL_DOH_PARALLEL:-Install DNS-over-HTTPS parallel}"
     echo ""
     echo -e "${EMR}=== ${T_HELP_SECTION_MAIN:-2. MAIN PROGRAM} ===${NC}"
-    echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel++}"
+    echo -e "${CYAN}configure-system${NC}   - ${T_HELP_CMD_CONFIGURE_SYSTEM:-Switch system DNS to Citadel}"
     echo -e "${CYAN}restore-system${NC}     - ${T_HELP_CMD_RESTORE_SYSTEM:-Restore systemd-resolved}"
     echo -e "${CYAN}firewall-safe${NC}      - ${T_HELP_CMD_FIREWALL_SAFE:-SAFE mode (won\'t break connectivity)}"
     echo -e "${CYAN}firewall-strict${NC}    - ${T_HELP_CMD_FIREWALL_STRICT:-STRICT mode (DNS leak protection)}"

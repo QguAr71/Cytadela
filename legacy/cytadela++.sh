@@ -1623,7 +1623,7 @@ EOF
     # Advanced configuration file for future upgrades (with anonymization)
     log_info "Tworzenie zaawansowanej konfiguracji (opcjonalnie)..."
     tee /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml >/dev/null <<'EOF'
-# Citadel++ DNSCrypt ADVANCED Configuration
+# Citadel DNSCrypt ADVANCED Configuration
 # USE ONLY IF YOUR dnscrypt-proxy VERSION SUPPORTS IT
 # To activate: sudo cp /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml /etc/dnscrypt-proxy/dnscrypt-proxy.toml
 
@@ -1852,18 +1852,18 @@ EOF
     log_info "Konfiguracja automatycznej aktualizacji blocklist..."
     tee /etc/systemd/system/citadel-update-blocklist.service >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ Blocklist Auto-Update
+Description=Citadel Blocklist Auto-Update
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; allowlist="/etc/coredns/zones/allowlist.txt"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u | awk -v AL="$allowlist" "BEGIN{while((getline l < AL)>0){sub(/\\r$/,\"\",l); gsub(/^[[:space:]]+|[[:space:]]+$/,\"\",l); if(l!=\"\" && l !~ /^#/){k=tolower(l); a[k]=1; esc=k; gsub(/\\./,\"\\\\.\",esc); r[k]=\"\\\\.\" esc \"$\"}}} {d=\\$2; if(d==\"\") next; dl=tolower(d); for(k in a){ if(dl==k || dl ~ r[k]) next } print}" > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel++ blocklist updated successfully"'
+ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; allowlist="/etc/coredns/zones/allowlist.txt"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u | awk -v AL="$allowlist" "BEGIN{while((getline l < AL)>0){sub(/\\r$/,\"\",l); gsub(/^[[:space:]]+|[[:space:]]+$/,\"\",l); if(l!=\"\" && l !~ /^#/){k=tolower(l); a[k]=1; esc=k; gsub(/\\./,\"\\\\.\",esc); r[k]=\"\\\\.\" esc \"$\"}}} {d=\\$2; if(d==\"\") next; dl=tolower(d); for(k in a){ if(dl==k || dl ~ r[k]) next } print}" > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; rm -f "$tmp_raw"; systemctl reload coredns; logger "Citadel blocklist updated successfully"'
 EOF
 
     tee /etc/systemd/system/citadel-update-blocklist.timer >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ Daily Blocklist Update
+Description=Citadel Daily Blocklist Update
 
 [Timer]
 OnCalendar=daily
@@ -2261,7 +2261,7 @@ EOF
     log_info "Blokowanie /etc/resolv.conf..."
     chattr -i /etc/resolv.conf 2>/dev/null || true
     tee /etc/resolv.conf >/dev/null <<'EOF'
-# Citadel++ DNS Configuration
+# Citadel DNS Configuration
 nameserver 127.0.0.1
 options edns0 trust-ad
 EOF
@@ -2362,7 +2362,7 @@ install_all() {
     echo "  6. Leak test:       dig @8.8.8.8 test.com (powinno być zablokowane)"
     echo ""
 
-    log_info "Aby przełączyć system na Citadel++ (wyłączyć resolved):"
+    log_info "Aby przełączyć system na Citadel (wyłączyć resolved):"
     echo "  sudo ./cytadela++.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
     echo "  sudo ./cytadela++.sh restore-system"
@@ -2648,7 +2648,7 @@ install_citadel_top() {
     # Create citadel-top script
     sudo tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Terminal Dashboard v1.0
+# Citadel Terminal Dashboard v1.0
 
 clear
 echo "╔═══════════════════════════════════════════════════════════════╗"
@@ -2732,7 +2732,7 @@ install_editor_integration() {
     # Create citadel edit command
     sudo tee /usr/local/bin/citadel >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Editor Integration v1.0
+# Citadel Editor Integration v1.0
 
 ACTION=${1:-help}
 CONFIG_DIR="/etc/coredns"
@@ -2740,7 +2740,7 @@ DNSCRYPT_CONFIG="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
 case "$ACTION" in
     edit)
-        echo "📝 Opening Citadel++ configuration in micro editor..."
+        echo "📝 Opening Citadel configuration in micro editor..."
         sudo micro "$CONFIG_DIR/Corefile"
         echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
@@ -2754,7 +2754,7 @@ case "$ACTION" in
         echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
-        echo "📊 Citadel++ Status:"
+        echo "📊 Citadel Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
@@ -2767,7 +2767,7 @@ case "$ACTION" in
         ;;
     help|--help|-h)
         cat <<HELP
-Citadel++ Editor Integration
+Citadel Editor Integration
 
 Commands:
   citadel edit         Edit CoreDNS config and auto-restart
@@ -2808,7 +2808,7 @@ optimize_kernel_priority() {
     # Create systemd service for DNS priority optimization
     sudo tee /etc/systemd/system/citadel-dns-priority.service >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Optimization
+Description=Citadel DNS Priority Optimization
 After=network.target
 
 [Service]
@@ -2818,13 +2818,13 @@ renice -10 $(pgrep dnscrypt-proxy) 2>/dev/null || true
 renice -10 $(pgrep coredns) 2>/dev/null || true
 ionice -c 2 -n 0 $(pgrep dnscrypt-proxy) 2>/dev/null || true
 ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true
-logger "Citadel++: Applied priority tuning to DNS processes"
+logger "Citadel: Applied priority tuning to DNS processes"
 '
 EOF
 
     sudo tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Timer
+Description=Citadel DNS Priority Timer
 Requires=citadel-dns-priority.service
 
 [Timer]
@@ -2852,7 +2852,7 @@ install_doh_parallel() {
     
     # Create advanced DNSCrypt config with DoH parallel racing
     sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
-# Citadel++ DNSCrypt with DoH Parallel Racing
+# Citadel DNSCrypt with DoH Parallel Racing
 listen_addresses = ['127.0.0.1:5353', '[::1]:5353']
 user_name = 'dnscrypt'
 
@@ -2952,7 +2952,7 @@ ${YELLOW}NEW FEATURES v3.0:${NC}
   fix-ports            Resolve port conflicts with avahi/chromium
 
 ${YELLOW}System Configuration (UWAGA - wyłącza systemd-resolved):${NC}
-  configure-system      Przełącz system na Citadel++ DNS (z potwierdzeniem)
+  configure-system      Przełącz system na Citadel DNS (z potwierdzeniem)
   restore-system        Przywróć systemd-resolved + DNS (rollback)
 
 ${CYAN}Emergency Commands:${NC}
@@ -3142,7 +3142,7 @@ install_citadel_top() {
     # Create citadel-top script
     tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Terminal Dashboard v1.0
+# Citadel Terminal Dashboard v1.0
 
 COREDNS_PORT=53
 if [[ -f /etc/coredns/Corefile ]]; then
@@ -3225,7 +3225,7 @@ install_editor_integration() {
     # Create citadel edit command
     tee /usr/local/bin/citadel >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Editor Integration v1.0
+# Citadel Editor Integration v1.0
 
 ACTION=${1:-help}
 CONFIG_DIR="/etc/coredns"
@@ -3233,7 +3233,7 @@ DNSCRYPT_CONFIG="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
 case "$ACTION" in
     edit)
-        echo "📝 Opening Citadel++ configuration in micro editor..."
+        echo "📝 Opening Citadel configuration in micro editor..."
         micro "$CONFIG_DIR/Corefile"
         echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
@@ -3247,7 +3247,7 @@ case "$ACTION" in
         echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
-        echo "📊 Citadel++ Status:"
+        echo "📊 Citadel Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
@@ -3260,7 +3260,7 @@ case "$ACTION" in
         ;;
     help|--help|-h)
         cat <<HELP
-Citadel++ Editor Integration
+Citadel Editor Integration
 
 Commands:
   citadel edit         Edit CoreDNS config and auto-restart
@@ -3301,17 +3301,17 @@ optimize_kernel_priority() {
     # Create systemd service for DNS priority optimization
     tee /etc/systemd/system/citadel-dns-priority.service >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Optimization
+Description=Citadel DNS Priority Optimization
 After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'renice -10 $(pgrep coredns) 2>/dev/null || true; ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true; logger "Citadel++: Applied priority tuning to DNS processes"'
+ExecStart=/bin/bash -c 'renice -10 $(pgrep coredns) 2>/dev/null || true; ionice -c 2 -n 0 $(pgrep coredns) 2>/dev/null || true; logger "Citadel: Applied priority tuning to DNS processes"'
 EOF
 
     tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Timer
+Description=Citadel DNS Priority Timer
 Requires=citadel-dns-priority.service
 
 [Timer]
@@ -3339,7 +3339,7 @@ install_doh_parallel() {
     
     # Create advanced DNSCrypt config with DoH parallel racing
     tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<'EOF'
-# Citadel++ DNSCrypt with DoH Parallel Racing
+# Citadel DNSCrypt with DoH Parallel Racing
 listen_addresses = ['127.0.0.1:5353']
 user_name = 'dnscrypt'
 

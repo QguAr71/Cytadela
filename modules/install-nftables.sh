@@ -198,7 +198,7 @@ EOF
     log_info "Blokowanie /etc/resolv.conf..."
     chattr -i /etc/resolv.conf 2>/dev/null || true
     tee /etc/resolv.conf >/dev/null <<'EOF'
-# Citadel++ DNS Configuration
+# Citadel DNS Configuration
 nameserver 127.0.0.1
 options edns0 trust-ad
 EOF
@@ -269,7 +269,7 @@ restore_system() {
     rm -f /etc/NetworkManager/conf.d/citadel-dns.conf
     systemctl restart NetworkManager 2>/dev/null || true
 
-    log_success "System przywrócony do stanu przed Citadel++"
+    log_success "System przywrócony do stanu przed Citadel"
 }
 
 restore_system_default() {

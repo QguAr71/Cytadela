@@ -4,6 +4,23 @@
 # ║  Unified installation system for all components                       ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "install" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
@@ -51,8 +68,8 @@ install_component() {
             check_dependencies_install "$@"
             ;;
         *)
-            log_error "Unknown component: $component"
-            log_info "Available components: dnscrypt, coredns, nftables, dashboard, all, wizard, check-deps"
+            log_error "${T_INSTALL_UNKNOWN_COMPONENT:-Unknown component: $component}"
+            log_info "${T_INSTALL_AVAILABLE_COMPONENTS:-Available components: dnscrypt, coredns, nftables, dashboard, all, wizard, check-deps}"
             return 1
             ;;
     esac
@@ -121,7 +138,7 @@ EOF
 
     log_info "Tworzenie zaawansowanej konfiguracji (opcjonalnie)..."
     tee /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml >/dev/null <<'EOF'
-# Citadel++ DNSCrypt ADVANCED Configuration
+# Citadel DNSCrypt ADVANCED Configuration
 # USE ONLY IF YOUR dnscrypt-proxy VERSION SUPPORTS IT
 # To activate: sudo cp /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml /etc/dnscrypt-proxy/dnscrypt-proxy.toml
 
@@ -351,21 +368,21 @@ EOF
     # Grant network capabilities to CoreDNS (bind to port 53)
     if command -v setcap &>/dev/null; then
         setcap 'cap_net_bind_service=+ep' /usr/bin/coredns 2>/dev/null || {
-            log_warning "Could not set capabilities on CoreDNS binary"
-            log_warning "CoreDNS may need to run as root or with systemd CapabilityBoundingSet"
+            log_warning "${T_COREDNS_CAPABILITIES_FAIL:-Could not set capabilities on CoreDNS binary}"
+            log_warning "${T_COREDNS_CAPABILITIES_HINT:-CoreDNS may need to run as root or with systemd CapabilityBoundingSet}"
         }
     fi
 
     # Create auto-update blocklist service
     tee /etc/systemd/system/citadel-update-blocklist.service >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ Blocklist Auto-Update
+Description=Citadel Blocklist Auto-Update
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; allowlist="/etc/coredns/zones/allowlist.txt"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel++ blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u | awk -v AL="$allowlist" "BEGIN{while((getline l < AL)>0){sub(/\\r$/,\"\",l); gsub(/^[[:space:]]+|[[:space:]]+$/,\"\",l); if(l!=\"\" && l !~ /^#/){k=tolower(l); a[k]=1; esc=k; gsub(/\\./,\"\\\\.\",esc); r[k]=\"\\\\.\" esc \"$\"}}} {d=\\$2; if(d==\"\") next; dl=tolower(d); for(k in a){ if(dl==k || dl ~ r[k]) next } print}" > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; logger "Citadel++ blocklist updated ($(wc -l < /etc/coredns/zones/blocklist.hosts) entries)"'
+ExecStart=/bin/bash -c 'set -e; tmp_raw="$(mktemp)"; tmp_block="$(mktemp)"; tmp_combined="$(mktemp)"; allowlist="/etc/coredns/zones/allowlist.txt"; curl -fsSL https://big.oisd.nl | grep -v "^#" > "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/FiltersHeroes/KADhosts/master/KADhosts.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://raw.githubusercontent.com/PolishFiltersTeam/PolishAnnoyanceFilters/master/PPB.txt | grep -v "^#" >> "$tmp_raw"; curl -fsSL https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/hosts/light.txt | grep -v "^#" >> "$tmp_raw"; awk "function emit(d){gsub(/^[*.]+/,\"\",d); gsub(/[[:space:]]+$/,\"\",d); if(d ~ /^[A-Za-z0-9.-]+$/ && d ~ /\\./) print \"0.0.0.0 \" d} {line=\\$0; sub(/\\r$/,\"\",line); if(line ~ /^[[:space:]]*$/) next; if(line ~ /^[[:space:]]*!/) next; if(line ~ /^(0\\.0\\.0\\.0|127\\.0\\.0\\.1|::)[[:space:]]+/){n=split(line,a,/[[:space:]]+/); if(n>=2){d=a[2]; sub(/^\\|\\|/,\"\",d); sub(/[\\^\\/].*$/,\"\",d); emit(d)}; next} if(line ~ /^\\|\\|/){sub(/^\\|\\|/,\"\",line); sub(/[\\^\\/].*$/,\"\",line); emit(line); next} if(line ~ /^[A-Za-z0-9.*-]+(\\\\.[A-Za-z0-9.-]+)+$/){emit(line); next}}" "$tmp_raw" | sort -u > "$tmp_block"; if [ "$(wc -l < \"$tmp_block\")" -lt 1000 ]; then rm -f "$tmp_raw" "$tmp_block" "$tmp_combined"; logger "Citadel blocklist update failed (too few entries)"; exit 0; fi; mv "$tmp_block" /etc/coredns/zones/blocklist.hosts; cat /etc/coredns/zones/custom.hosts /etc/coredns/zones/blocklist.hosts | sort -u | awk -v AL="$allowlist" "BEGIN{while((getline l < AL)>0){sub(/\\r$/,\"\",l); gsub(/^[[:space:]]+|[[:space:]]+$/,\"\",l); if(l!=\"\" && l !~ /^#/){k=tolower(l); a[k]=1; esc=k; gsub(/\\./,\"\\\\.\",esc); r[k]=\"\\\\.\" esc \"$\"}}} {d=\\$2; if(d==\"\") next; dl=tolower(d); for(k in a){ if(dl==k || dl ~ r[k]) next } print}" > "$tmp_combined"; mv "$tmp_combined" /etc/coredns/zones/combined.hosts; chown root:coredns /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; chmod 0640 /etc/coredns/zones/blocklist.hosts /etc/coredns/zones/combined.hosts || true; logger "Citadel blocklist updated ($(wc -l < /etc/coredns/zones/blocklist.hosts) entries)"'
 
 [Install]
 WantedBy=multi-user.target
@@ -373,7 +390,7 @@ EOF
 
     tee /etc/systemd/system/citadel-update-blocklist.timer >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ Daily Blocklist Update
+Description=Citadel Daily Blocklist Update
 
 [Timer]
 OnCalendar=daily
@@ -613,7 +630,7 @@ EOF
     log_info "Blokowanie /etc/resolv.conf..."
     chattr -i /etc/resolv.conf 2>/dev/null || true
     tee /etc/resolv.conf >/dev/null <<'EOF'
-# Citadel++ DNS Configuration
+# Citadel DNS Configuration
 nameserver 127.0.0.1
 options edns0 trust-ad
 EOF
@@ -657,7 +674,7 @@ install_dashboard() {
     # Create citadel-top script
     sudo tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Terminal Dashboard v1.0
+# Citadel Terminal Dashboard v1.0
 
 COREDNS_PORT=53
 if [[ -f /etc/coredns/Corefile ]]; then
@@ -805,7 +822,7 @@ install_all() {
     echo "  6. Leak test:       dig @8.8.8.8 test.com (powinno być zablokowane)"
     echo ""
 
-    log_info "Aby przełączyć system na Citadel++ (wyłączyć resolved):"
+    log_info "Aby przełączyć system na Citadel (wyłączyć resolved):"
     echo "  sudo ./Citadel.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
     echo "  sudo ./Citadel.sh restore-system"
@@ -823,14 +840,14 @@ install_wizard() {
 
     # Simplified wizard - just ask for confirmation and run install_all
     echo ""
-    log_warning "This will install all Citadel components with default settings."
-    echo -n "Continue? [y/N]: "
+    log_warning "${T_WIZARD_WARNING:-This will install all Citadel components with default settings.}"
+    echo -n "${T_WIZARD_CONTINUE_PROMPT:-Continue? [y/N]: }"
     read -r answer
 
     if [[ "$answer" =~ ^[Yy]$ ]]; then
         install_all
     else
-        log_info "Installation cancelled."
+        log_info "${T_WIZARD_CANCELLED:-Installation cancelled.}"
         return 1
     fi
 }
@@ -927,18 +944,18 @@ check_dependencies_install() {
 
     for pkg in "${packages[@]}"; do
         echo ""
-        log_info "Installing: $pkg"
+        log_info "${T_INSTALLING_PACKAGE:-Installing:} $pkg"
         local exit_code=0
 
         case "$pkg_manager" in
             pacman)
                 # Try official repos first
                 if ! sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null; then
-                    log_warning "󰀨 Package '$pkg' not found in official repositories"
+                    log_warning "${T_PACKAGE_NOT_FOUND:-Package '$pkg' not found in official repositories}"
 
                     # For Arch - try AUR
                     if [[ "$distro_family" == "arch" ]]; then
-                        echo -n "  Try to install from AUR? [y/N]: "
+                        echo -n "  ${T_TRY_AUR:-Try to install from AUR? [y/N]: }"
                         read -r aur_answer
 
                         if [[ "$aur_answer" =~ ^[Yy]$ ]]; then
@@ -951,22 +968,22 @@ check_dependencies_install() {
                             fi
 
                             if [[ -n "$aur_helper" ]]; then
-                                log_info "  Using AUR helper: $aur_helper"
+                                log_info "  ${T_USING_AUR_HELPER:-Using AUR helper:} $aur_helper"
                                 if ! $aur_helper -S --needed --noconfirm "$pkg" 2>/dev/null; then
-                                    log_error "  󰅖 AUR installation failed for '$pkg'"
+                                    log_error "  ${T_AUR_INSTALL_FAILED:-AUR installation failed for '$pkg'}"
                                     aur_failed+=("$pkg")
                                 else
-                                    log_success "  󰄬 Installed from AUR: $pkg"
+                                    log_success "  ${T_INSTALLED_FROM_AUR:-Installed from AUR: $pkg}"
                                     ((success_count++))
                                     continue
                                 fi
                             else
-                                log_warning "  No AUR helper found (yay/paru)"
-                                echo "  Manual installation required:"
+                                log_warning "${T_NO_AUR_HELPER:-No AUR helper found (yay/paru)}"
+                                echo "  ${T_MANUAL_INSTALL_REQUIRED:-Manual installation required:}"
                                 echo "    git clone https://aur.archlinux.org/${pkg}.git"
                                 echo "    cd ${pkg} && makepkg -si"
                                 echo ""
-                                read -rp "  Press Enter to continue to next package..."
+                                read -rp "  ${T_PRESS_ENTER_CONTINUE:-Press Enter to continue to next package...}"
                                 aur_failed+=("$pkg")
                             fi
                         else
@@ -976,37 +993,37 @@ check_dependencies_install() {
                         failed_packages+=("$pkg")
                     fi
                 else
-                    log_success "  󰄬 Installed: $pkg"
+                    log_success "  ${T_PACKAGE_INSTALLED:-Installed: $pkg}"
                     ((success_count++))
                 fi
                 ;;
             apt)
                 if ! sudo apt install -y "$pkg" 2>/dev/null; then
-                    log_warning "󰀨 Package '$pkg' not found in official repositories"
-                    echo "  Alternative sources:"
-                    echo "    - Check third-party PPAs"
-                    echo "    - Build from source"
-                    echo "    - Download .deb package manually"
+                    log_warning "${T_PACKAGE_NOT_FOUND:-Package '$pkg' not found in official repositories}"
+                    echo "  ${T_ALTERNATIVE_SOURCES:-Alternative sources:}"
+                    echo "    - ${T_CHECK_PPAS:-Check third-party PPAs}"
+                    echo "    - ${T_BUILD_FROM_SOURCE:-Build from source}"
+                    echo "    - ${T_DOWNLOAD_DEB:-Download .deb package manually}"
                     echo ""
-                    read -rp "  Press Enter to continue to next package..."
+                    read -rp "  ${T_PRESS_ENTER_CONTINUE:-Press Enter to continue to next package...}"
                     failed_packages+=("$pkg")
                 else
-                    log_success "  󰄬 Installed: $pkg"
+                    log_success "  ${T_PACKAGE_INSTALLED:-Installed: $pkg}"
                     ((success_count++))
                 fi
                 ;;
             dnf)
                 if ! sudo dnf install -y "$pkg" 2>/dev/null; then
-                    log_warning "󰀨 Package '$pkg' not found in official repositories"
-                    echo "  Alternative sources:"
-                    echo "    - Enable EPEL: sudo dnf install epel-release"
-                    echo "    - Enable RPM Fusion: sudo dnf install ..."
-                    echo "    - COPR repositories"
+                    log_warning "${T_PACKAGE_NOT_FOUND:-Package '$pkg' not found in official repositories}"
+                    echo "  ${T_ALTERNATIVE_SOURCES:-Alternative sources:}"
+                    echo "    - ${T_ENABLE_EPEL:-Enable EPEL: sudo dnf install epel-release}"
+                    echo "    - ${T_ENABLE_RPM_FUSION:-Enable RPM Fusion: sudo dnf install ...}"
+                    echo "    - ${T_COPR_REPOSITORIES:-COPR repositories}"
                     echo ""
-                    read -rp "  Press Enter to continue to next package..."
+                    read -rp "  ${T_PRESS_ENTER_CONTINUE:-Press Enter to continue to next package...}"
                     failed_packages+=("$pkg")
                 else
-                    log_success "  󰄬 Installed: $pkg"
+                    log_success "  ${T_PACKAGE_INSTALLED:-Installed: $pkg}"
                     ((success_count++))
                 fi
                 ;;
@@ -1016,15 +1033,15 @@ check_dependencies_install() {
     echo ""
     echo "=== ${T_SUMMARY:-INSTALLATION SUMMARY} ==="
     echo ""
-    log_success "Successfully installed: $success_count packages"
+    log_success "${T_SUCCESSFULLY_INSTALLED:-Successfully installed:} $success_count packages"
 
     if [[ ${#failed_packages[@]} -gt 0 ]]; then
-        log_warning "Failed to install: ${failed_packages[*]}"
+        log_warning "${T_FAILED_TO_INSTALL:-Failed to install:} ${failed_packages[*]}"
     fi
 
     if [[ ${#aur_failed[@]} -gt 0 ]]; then
-        log_info "AUR packages need manual install: ${aur_failed[*]}"
-        echo "  Install manually:"
+        log_info "${T_AUR_NEEDS_MANUAL:-AUR packages need manual install:} ${aur_failed[*]}"
+        echo "  ${T_INSTALL_MANUALLY:-Install manually:}"
         for pkg in "${aur_failed[@]}"; do
             echo "    git clone https://aur.archlinux.org/${pkg}.git && cd ${pkg} && makepkg -si"
         done

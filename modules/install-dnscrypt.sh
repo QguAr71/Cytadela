@@ -64,7 +64,7 @@ EOF
 
     log_info "Tworzenie zaawansowanej konfiguracji (opcjonalnie)..."
     tee /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml >/dev/null <<'EOF'
-# Citadel++ DNSCrypt ADVANCED Configuration
+# Citadel DNSCrypt ADVANCED Configuration
 # USE ONLY IF YOUR dnscrypt-proxy VERSION SUPPORTS IT
 # To activate: sudo cp /etc/dnscrypt-proxy/dnscrypt-proxy-advanced.toml /etc/dnscrypt-proxy/dnscrypt-proxy.toml
 

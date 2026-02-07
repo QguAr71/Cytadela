@@ -124,7 +124,7 @@ sudo ./citadel.sh configure-system
 
 **Zawartość backupu:**
 ```
-# Citadel++ DNS Configuration
+# Citadel DNS Configuration
 nameserver 127.0.0.1
 options edns0 trust-ad
 
@@ -137,7 +137,7 @@ disabled
 ⬥ Przywracanie /etc/resolv.conf z backupu...
 ⬥ Przywracanie systemd-resolved (stan: disabled)...
 ✔ Przywrócono oryginalną konfigurację z backupu
-✔ System przywrócony do stanu przed Citadel++
+✔ System przywrócony do stanu przed Citadel
 ```
 
 **Werdykt:** PASSED ✅

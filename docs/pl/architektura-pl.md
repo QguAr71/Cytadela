@@ -178,7 +178,7 @@ esac
 
 ```bash
 #!/bin/bash
-# Citadel++ v3.1 - English Wrapper
+# Citadel v3.1 - English Wrapper
 set -euo pipefail
 
 # === PATHS ===

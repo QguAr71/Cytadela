@@ -39,7 +39,7 @@ export T_HELP_CMD_INSTALL_EDITOR="Install editor integration"
 export T_HELP_CMD_INSTALL_DOH_PARALLEL="Install DNS-over-HTTPS parallel"
 
 # Main
-export T_HELP_CMD_CONFIGURE_SYSTEM="Switch system DNS to Citadel++"
+export T_HELP_CMD_CONFIGURE_SYSTEM="Switch system DNS to Citadel"
 export T_HELP_CMD_RESTORE_SYSTEM="Restore systemd-resolved"
 export T_HELP_CMD_FIREWALL_SAFE="SAFE mode (won't break connectivity)"
 export T_HELP_CMD_FIREWALL_STRICT="STRICT mode (DNS leak protection)"

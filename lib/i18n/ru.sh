@@ -148,7 +148,7 @@ export T_CHECK_ONLY="Проверить зависимости"
 export T_AUTO_INSTALL_CMD="Автоматическая установка недостающих"
 
 # Меню настройки мастера
-export T_WIZARD_SETUP_TITLE="Citadel++ Setup"
+export T_WIZARD_SETUP_TITLE="Citadel Setup"
 export T_WIZARD_INSTALLED_MSG="Citadel уже установлен. Выберите действие:"
 export T_WIZARD_REINSTALL="Переустановить с резервной копией"
 export T_WIZARD_UNINSTALL="Удалить Citadel"

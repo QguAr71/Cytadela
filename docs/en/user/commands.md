@@ -6,7 +6,7 @@ Complete list of all Citadel commands.
 
 ## ❓ Interactive Help System
 
-Citadel++ now includes an interactive help system accessible via:
+Citadel now includes an interactive help system accessible via:
 
 ```bash
 sudo cytadela.sh help

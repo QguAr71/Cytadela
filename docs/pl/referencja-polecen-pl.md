@@ -6,7 +6,7 @@ Kompletna lista wszystkich poleceń Citadel.
 
 ## ❓ Interaktywny System Pomocy
 
-Citadel++ zawiera teraz interaktywny system pomocy dostępny poprzez:
+Citadel zawiera teraz interaktywny system pomocy dostępny poprzez:
 
 ```bash
 sudo cytadela.sh help

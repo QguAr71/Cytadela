@@ -1,4 +1,4 @@
-# Citadel++ – notatki / jak używać (żeby nie stracić internetu)
+# Citadel – notatki / jak używać (żeby nie stracić internetu)
 
 Ten dokument opisuje:
 - co zostało zmienione w `cytadela++.sh` w porównaniu do wcześniejszej wersji,
@@ -99,7 +99,7 @@ Jest to ten sam typ wyniku, jaki zobaczysz na: Qubes `sys-firewall`, Whonix gate
 
 ---
 
-## Pełna lista funkcji / komend (co potrafi Citadel++)
+## Pełna lista funkcji / komend (co potrafi Citadel)
 
 Komendy uruchamiasz jako:
 
@@ -139,7 +139,7 @@ Komendy panelu (uruchamiane przez `sudo ./cytadela++.sh <komenda>`):
 
 ### DNS systemu (przełączanie / rollback)
 
-- **`configure-system`**: przełącza DNS systemu na Citadel++ (z zabezpieczeniem: SAFE → test DNS → STRICT).
+- **`configure-system`**: przełącza DNS systemu na Citadel (z zabezpieczeniem: SAFE → test DNS → STRICT).
 - **`restore-system`**: przywraca `systemd-resolved` i ustawienia DNS (rollback).
 
 ### Firewall modes (DNS leak prevention)

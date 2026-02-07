@@ -42,7 +42,7 @@ install_wizard() {
     print_frame_line "${CYAN}CITADEL INSTALL WIZARD${NC}"
     echo "╠══════════════════════════════════════════════════════════════╣"
     print_frame_line ""
-    print_frame_line "This wizard will install Citadel++ DNS system"
+    print_frame_line "This wizard will install Citadel DNS system"
     print_frame_line ""
     print_frame_line "${PURPLE_BOLD}Required:${NC} Root privileges"
     print_frame_line "${PURPLE_BOLD}Time:${NC} ~5 minutes"

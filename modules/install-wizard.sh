@@ -201,7 +201,7 @@ checkbox=brightgreen,black
 actcheckbox=black,brightgreen
 '
         local choice
-        choice=$(whiptail --title "${T_WIZARD_SETUP_TITLE:-Citadel++ Setup}" \
+        choice=$(whiptail --title "${T_WIZARD_SETUP_TITLE:-Citadel Setup}" \
             --menu "${T_WIZARD_INSTALLED_MSG:-Citadel is already installed. Choose action:}" 15 60 4 \
             "reinstall" "${T_WIZARD_REINSTALL:-Reinstall with backup}" \
             "uninstall" "${T_WIZARD_UNINSTALL:-Remove Citadel}" \

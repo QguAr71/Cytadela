@@ -37,7 +37,7 @@ optimize_kernel_priority() {
     log_info "Tworzenie skryptu optymalizacji priorytetów..."
     sudo tee /usr/local/bin/citadel-dns-priority.sh >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ DNS Priority Optimization Script
+# Citadel DNS Priority Optimization Script
 # Universal version - works on any Linux distribution
 
 # Function to set priority if process exists
@@ -48,8 +48,8 @@ set_priority() {
     if [[ -n "$pid" ]] && [[ "$pid" =~ ^[0-9]+$ ]]; then
         # Check if process still exists
         if kill -0 "$pid" 2>/dev/null; then
-            renice -10 "$pid" 2>/dev/null && logger "Citadel++: renice -10 $name (PID: $pid)"
-            ionice -c 2 -n 0 -p "$pid" 2>/dev/null && logger "Citadel++: ionice set for $name"
+            renice -10 "$pid" 2>/dev/null && logger "Citadel: renice -10 $name (PID: $pid)"
+            ionice -c 2 -n 0 -p "$pid" 2>/dev/null && logger "Citadel: ionice set for $name"
         fi
     fi
 }
@@ -61,7 +61,7 @@ if [[ -n "$DNSCRYPT_PIDS" ]]; then
         set_priority "$pid" "dnscrypt-proxy"
     done
 else
-    logger "Citadel++: dnscrypt-proxy not running"
+    logger "Citadel: dnscrypt-proxy not running"
 fi
 
 # Apply to CoreDNS
@@ -71,14 +71,14 @@ if [[ -n "$COREDNS_PIDS" ]]; then
         set_priority "$pid" "coredns"
     done
 else
-    logger "Citadel++: coredns not running"
+    logger "Citadel: coredns not running"
 fi
 
 # Summary log
 if [[ -n "$DNSCRYPT_PIDS" ]] || [[ -n "$COREDNS_PIDS" ]]; then
-    logger "Citadel++: DNS priority optimization applied"
+    logger "Citadel: DNS priority optimization applied"
 else
-    logger "Citadel++: No DNS processes found to optimize"
+    logger "Citadel: No DNS processes found to optimize"
 fi
 EOF
     sudo chmod +x /usr/local/bin/citadel-dns-priority.sh
@@ -88,7 +88,7 @@ EOF
     log_info "Tworzenie systemd service..."
     sudo tee /etc/systemd/system/citadel-dns-priority.service >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Optimization
+Description=Citadel DNS Priority Optimization
 After=network.target dnscrypt-proxy.service coredns.service
 Wants=dnscrypt-proxy.service coredns.service
 
@@ -103,7 +103,7 @@ EOF
     log_info "Tworzenie systemd timer (co minutę)..."
     sudo tee /etc/systemd/system/citadel-dns-priority.timer >/dev/null <<'EOF'
 [Unit]
-Description=Citadel++ DNS Priority Timer
+Description=Citadel DNS Priority Timer
 
 [Timer]
 OnBootSec=30
@@ -193,7 +193,7 @@ install_doh_parallel() {
 
     # Create advanced DNSCrypt config with DoH parallel racing
     sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<EOF
-# Citadel++ DNSCrypt with DoH Parallel Racing
+# Citadel DNSCrypt with DoH Parallel Racing
 listen_addresses = ['127.0.0.1:${doh_port}', '[::1]:${doh_port}']
 user_name = 'dnscrypt'
 
@@ -296,7 +296,7 @@ install_editor_integration() {
     # Create citadel edit command
     sudo tee /usr/local/bin/citadel >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Editor Integration v1.0
+# Citadel Editor Integration v1.0
 
 ACTION=${1:-help}
 CONFIG_DIR="/etc/coredns"
@@ -304,7 +304,7 @@ DNSCRYPT_CONFIG="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 
 case "$ACTION" in
     edit)
-        echo "󰗉 Opening Citadel++ configuration in micro editor..."
+        echo "󰗉 Opening Citadel configuration in micro editor..."
         sudo micro "$CONFIG_DIR/Corefile"
         echo "󰜝 Restarting CoreDNS..."
         sudo systemctl restart coredns
@@ -318,7 +318,7 @@ case "$ACTION" in
         echo "󰄬 DNSCrypt reloaded with new configuration"
         ;;
     status)
-        echo "󰄬 Citadel++ Status:"
+        echo "󰄬 Citadel Status:"
         systemctl status --no-pager dnscrypt-proxy coredns nftables
         ;;
     logs)
@@ -331,7 +331,7 @@ case "$ACTION" in
         ;;
     help|--help|-h)
         cat <<HELP
-Citadel++ Editor Integration
+Citadel Editor Integration
 
 Commands:
   citadel edit         Edit CoreDNS config and auto-restart

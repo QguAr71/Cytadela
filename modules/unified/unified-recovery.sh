@@ -4,6 +4,23 @@
 # ║  Centralized Recovery & Emergency Network Functions                    ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "recovery" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -61,13 +78,13 @@ _test_connectivity() {
 _test_ping_connectivity() {
     icmp_works=false
     for host in "${TEST_PING_HOSTS[@]}"; do
-        log_info "Testing ping to $host..."
+        log_info "${T_TESTING_PING:-Testing ping to} $host..."
         if ping -c 2 -W 3 "$host" >/dev/null 2>&1; then
-            log_success "✓ ICMP connectivity to $host works"
+            log_success "✓ ${T_ICMP_SUCCESS:-ICMP connectivity to} $host ${T_WORKS:-works}"
             icmp_works=true
             break
         else
-            log_warning "✗ Cannot reach $host via ICMP"
+            log_warning "✗ ${T_CANNOT_REACH:-Cannot reach} $host ${T_VIA_ICMP:-via ICMP}"
         fi
     done
 }
@@ -76,14 +93,14 @@ _test_ping_connectivity() {
 _test_dns_resolution() {
     dns_works=false
     for host in "${TEST_DNS_HOSTS[@]}"; do
-        log_info "Testing DNS resolution for $host..."
+        log_info "${T_TESTING_DNS:-Testing DNS resolution for} $host..."
         if dig +time=5 +tries=2 "$host" @1.1.1.1 +short >/dev/null 2>&1 || \
            dig +time=5 +tries=2 "$host" @8.8.8.8 +short >/dev/null 2>&1; then
-            log_success "✓ DNS resolution for $host works"
+            log_success "✓ ${T_DNS_SUCCESS:-DNS resolution for} $host ${T_WORKS:-works}"
             dns_works=true
             break
         else
-            log_warning "✗ DNS resolution for $host failed"
+            log_warning "✗ ${T_DNS_FAILED:-DNS resolution for} $host ${T_FAILED:-failed}"
         fi
     done
 }
@@ -91,12 +108,12 @@ _test_dns_resolution() {
 # Test IPv6 connectivity
 _test_ipv6_connectivity() {
     ipv6_works=false
-    log_info "Testing IPv6 connectivity..."
+    log_info "${T_TESTING_IPV6:-Testing IPv6 connectivity...}"
     if ping -6 -c 3 -W 2 2001:4860:4860::8888 >/dev/null 2>&1; then
-        log_success "✓ IPv6 connectivity works"
+        log_success "✓ ${T_IPV6_SUCCESS:-IPv6 connectivity works}"
         ipv6_works=true
     else
-        log_warning "✗ IPv6 connectivity failed"
+        log_warning "✗ ${T_IPV6_FAILED:-IPv6 connectivity failed}"
     fi
 }
 

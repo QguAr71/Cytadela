@@ -146,7 +146,7 @@ export T_CHECK_ONLY="Abhängigkeiten prüfen"
 export T_AUTO_INSTALL_CMD="Automatisch fehlende installieren"
 
 # Wizard-Setup-Menü
-export T_WIZARD_SETUP_TITLE="Citadel++ Setup"
+export T_WIZARD_SETUP_TITLE="Citadel Setup"
 export T_WIZARD_INSTALLED_MSG="Citadel ist bereits installiert. Wählen Sie eine Aktion:"
 export T_WIZARD_REINSTALL="Mit Backup neu installieren"
 export T_WIZARD_UNINSTALL="Citadel entfernen"

@@ -28,7 +28,7 @@
 
 ### Interactive Help System
 
-Citadel++ includes an interactive help system:
+Citadel includes an interactive help system:
 
 ```bash
 sudo cytadela.sh help

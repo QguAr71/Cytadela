@@ -4,6 +4,23 @@
 # ║  Unified backup, restore, and auto-update functionality               ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "backup" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
@@ -26,7 +43,7 @@ AUTO_UPDATE_TIMER="/etc/systemd/system/cytadela-auto-update.timer"
 
 # Create configuration backup
 config_backup() {
-    log_section "󰇉 CONFIG BACKUP"
+    log_section "󰇉 ${T_BACKUP_CONFIG_BACKUP:-CONFIG BACKUP}"
 
     mkdir -p "$BACKUP_DIR"
 
@@ -34,14 +51,14 @@ config_backup() {
     local tmp_dir
     tmp_dir=$(mktemp -d)
 
-    log_info "Creating backup: $backup_file"
+    log_info "${T_BACKUP_CREATING:-Creating backup:} $backup_file"
 
     # DNSCrypt config
     if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
         mkdir -p "${tmp_dir}/dnscrypt-proxy"
         cp /etc/dnscrypt-proxy/dnscrypt-proxy.toml "${tmp_dir}/dnscrypt-proxy/"
         [[ -f /etc/dnscrypt-proxy/cloaking-rules.txt ]] && cp /etc/dnscrypt-proxy/cloaking-rules.txt "${tmp_dir}/dnscrypt-proxy/"
-        log_info "󰄬 DNSCrypt config"
+        log_info "󰄬 ${T_BACKUP_DNSCRYPT_CONFIG:-DNSCrypt config}"
     fi
 
     # CoreDNS config
@@ -49,7 +66,7 @@ config_backup() {
         mkdir -p "${tmp_dir}/coredns"
         cp /etc/coredns/Corefile "${tmp_dir}/coredns/"
         [[ -f /etc/coredns/Corefile.citadel ]] && cp /etc/coredns/Corefile.citadel "${tmp_dir}/coredns/"
-        log_info "󰄬 CoreDNS config"
+        log_info "󰄬 ${T_BACKUP_COREDNS_CONFIG:-CoreDNS config}"
     fi
 
     # CoreDNS zones
@@ -57,7 +74,7 @@ config_backup() {
         mkdir -p "${tmp_dir}/coredns/zones"
         cp /etc/coredns/zones/custom.hosts "${tmp_dir}/coredns/zones/" 2>/dev/null || true
         cp /etc/coredns/zones/allowlist.txt "${tmp_dir}/coredns/zones/" 2>/dev/null || true
-        log_info "󰄬 CoreDNS zones (custom.hosts, allowlist.txt)"
+        log_info "󰄬 ${T_BACKUP_COREDNS_ZONES:-CoreDNS zones (custom.hosts, allowlist.txt)}"
     fi
 
     # NFTables config
@@ -65,14 +82,14 @@ config_backup() {
         mkdir -p "${tmp_dir}/nftables.d"
         cp /etc/nftables.d/citadel-*.nft "${tmp_dir}/nftables.d/" 2>/dev/null || true
         [[ -f /etc/nftables.conf ]] && cp /etc/nftables.conf "${tmp_dir}/"
-        log_info "󰄬 NFTables config"
+        log_info "󰄬 ${T_BACKUP_NFTABLES_CONFIG:-NFTables config}"
     fi
 
     # NetworkManager config
     if [[ -f /etc/NetworkManager/conf.d/citadel-dns.conf ]]; then
         mkdir -p "${tmp_dir}/NetworkManager/conf.d"
         cp /etc/NetworkManager/conf.d/citadel-dns.conf "${tmp_dir}/NetworkManager/conf.d/"
-        log_info "󰄬 NetworkManager config"
+        log_info "󰄬 ${T_BACKUP_NETWORKMANAGER_CONFIG:-NetworkManager config}"
     fi
 
     # Cytadela state
@@ -81,7 +98,7 @@ config_backup() {
         cp /var/lib/cytadela/manifest.sha256 "${tmp_dir}/cytadela-state/" 2>/dev/null || true
         cp /var/lib/cytadela/panic.state "${tmp_dir}/cytadela-state/" 2>/dev/null || true
         cp /var/lib/cytadela/location-trusted.txt "${tmp_dir}/cytadela-state/" 2>/dev/null || true
-        log_info "󰄬 Cytadela state files"
+        log_info "󰄬 ${T_BACKUP_CYTADELA_STATE:-Cytadela state files}"
     fi
 
     # Systemd services
@@ -90,7 +107,7 @@ config_backup() {
     cp /etc/systemd/system/cytadela-*.timer "${tmp_dir}/systemd/" 2>/dev/null || true
     cp /etc/systemd/system/citadel-*.service "${tmp_dir}/systemd/" 2>/dev/null || true
     cp /etc/systemd/system/citadel-*.timer "${tmp_dir}/systemd/" 2>/dev/null || true
-    log_info "󰄬 Systemd units"
+    log_info "󰄬 ${T_BACKUP_SYSTEMD_UNITS:-Systemd units}"
 
     # Create metadata
     cat >"${tmp_dir}/backup-metadata.txt" <<EOF
@@ -115,41 +132,41 @@ EOF
 
 # Restore configuration from backup
 config_restore() {
-    log_section "󰜸  CONFIG RESTORE"
+    log_section "󰜸  ${T_BACKUP_CONFIG_RESTORE:-CONFIG RESTORE}"
 
     local backup_file="$1"
 
     if [[ -z "$backup_file" ]]; then
-        log_error "Usage: config-restore <backup-file>"
+        log_error "${T_BACKUP_USAGE:-Usage: config-restore <backup-file>}"
         echo ""
-        echo "Available backups:"
+        echo "${T_BACKUP_AVAILABLE_BACKUPS:-Available backups:}"
         config_list
         return 1
     fi
 
     if [[ ! -f "$backup_file" ]]; then
-        log_error "Backup file not found: $backup_file"
+        log_error "${T_BACKUP_FILE_NOT_FOUND:-Backup file not found:} $backup_file"
         return 1
     fi
 
-    log_warning "This will restore configuration from backup."
-    log_warning "Current config will be backed up first."
+    log_warning "${T_BACKUP_RESTORE_WARNING:-This will restore configuration from backup.}"
+    log_warning "${T_BACKUP_CURRENT_BACKUP_WARNING:-Current config will be backed up first.}"
     echo ""
-    read -p "Continue? [y/N]: " answer
+    read -p "${T_BACKUP_CONTINUE_PROMPT:-Continue? [y/N]: }" answer
 
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-        log_info "Cancelled"
+        log_info "${T_BACKUP_CANCELLED:-Cancelled}"
         return 0
     fi
 
     # Backup current config first
-    log_info "Backing up current config..."
+    log_info "${T_BACKUP_BACKING_UP_CURRENT:-Backing up current config...}"
     config_backup
 
-    log_info "Creating backup archive..."
+    log_info "${T_BACKUP_CREATING_BACKUP_ARCHIVE:-Creating backup archive...}"
     local tmp_dir
     tmp_dir=$(mktemp -d)
-    log_info "Extracting backup..."
+    log_info "${T_BACKUP_EXTRACTING_BACKUP:-Extracting backup...}"
     tar -xzf "$backup_file" -C "$tmp_dir"
 
     # Show metadata
@@ -160,73 +177,73 @@ config_restore() {
     fi
 
     # Restore files
-    log_info "Restoring configuration files..."
+    log_info "${T_BACKUP_RESTORING_FILES:-Restoring configuration files...}"
 
     # DNSCrypt
     if [[ -d "${tmp_dir}/dnscrypt-proxy" ]]; then
         cp "${tmp_dir}/dnscrypt-proxy"/* /etc/dnscrypt-proxy/ 2>/dev/null || true
-        log_info "󰄬 DNSCrypt config restored"
+        log_info "󰄬 ${T_BACKUP_DNSCRYPT_RESTORED:-DNSCrypt config restored}"
     fi
 
     # CoreDNS
     if [[ -d "${tmp_dir}/coredns" ]]; then
         cp "${tmp_dir}/coredns/Corefile" /etc/coredns/ 2>/dev/null || true
         cp "${tmp_dir}/coredns/Corefile.citadel" /etc/coredns/ 2>/dev/null || true
-        log_info "󰄬 CoreDNS config restored"
+        log_info "󰄬 ${T_BACKUP_COREDNS_RESTORED:-CoreDNS config restored}"
     fi
 
     # CoreDNS zones
     if [[ -d "${tmp_dir}/coredns/zones" ]]; then
         cp "${tmp_dir}/coredns/zones"/* /etc/coredns/zones/ 2>/dev/null || true
-        log_info "󰄬 CoreDNS zones restored"
+        log_info "󰄬 ${T_BACKUP_COREDNS_ZONES_RESTORED:-CoreDNS zones restored}"
     fi
 
     # NFTables
     if [[ -d "${tmp_dir}/nftables.d" ]]; then
         cp "${tmp_dir}/nftables.d"/* /etc/nftables.d/ 2>/dev/null || true
         [[ -f "${tmp_dir}/nftables.conf" ]] && cp "${tmp_dir}/nftables.conf" /etc/
-        log_info "󰄬 NFTables config restored"
+        log_info "󰄬 ${T_BACKUP_NFTABLES_RESTORED:-NFTables config restored}"
     fi
 
     # NetworkManager
     if [[ -d "${tmp_dir}/NetworkManager" ]]; then
         mkdir -p /etc/NetworkManager/conf.d
         cp "${tmp_dir}/NetworkManager/conf.d"/* /etc/NetworkManager/conf.d/ 2>/dev/null || true
-        log_info "󰄬 NetworkManager config restored"
+        log_info "󰄬 ${T_BACKUP_NETWORKMANAGER_RESTORED:-NetworkManager config restored}"
     fi
 
     # Cytadela state
     if [[ -d "${tmp_dir}/cytadela-state" ]]; then
         mkdir -p /var/lib/cytadela
         cp "${tmp_dir}/cytadela-state"/* /var/lib/cytadela/ 2>/dev/null || true
-        log_info "󰄬 Cytadela state restored"
+        log_info "󰄬 ${T_BACKUP_CYTADELA_STATE_RESTORED:-Cytadela state restored}"
     fi
 
     # Systemd units
     if [[ -d "${tmp_dir}/systemd" ]]; then
         cp "${tmp_dir}/systemd"/* /etc/systemd/system/ 2>/dev/null || true
         systemctl daemon-reload
-        log_info "󰄬 Systemd units restored"
+        log_info "󰄬 ${T_BACKUP_SYSTEMD_UNITS_RESTORED:-Systemd units restored}"
     fi
 
     # Cleanup
     rm -rf "$tmp_dir"
 
-    log_success "Configuration restored from: $backup_file"
-    log_warning "Restart services to apply changes:"
+    log_success "${T_BACKUP_RESTORE_SUCCESS:-Configuration restored from:} $backup_file"
+    log_warning "${T_BACKUP_RESTART_SERVICES:-Restart services to apply changes:}"
     echo "  sudo systemctl restart dnscrypt-proxy coredns"
 }
 
 # List available backups
 config_list() {
-    log_section "󰓍 AVAILABLE BACKUPS"
+    log_section "󰓍 ${T_BACKUP_AVAILABLE_BACKUPS_TITLE:-AVAILABLE BACKUPS}"
 
     if [[ ! -d "$BACKUP_DIR" ]] || [[ -z "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]]; then
-        echo "No backups found in $BACKUP_DIR"
+        echo "${T_BACKUP_NO_BACKUPS_FOUND:-No backups found in $BACKUP_DIR}"
         return 0
     fi
 
-    echo "Backups in $BACKUP_DIR:"
+    echo "${T_BACKUP_BACKUPS_IN_DIR:-Backups in $BACKUP_DIR}:"
     echo ""
 
     for file in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
@@ -237,63 +254,36 @@ config_list() {
         date=$(stat -c %y "$file" | cut -d'.' -f1)
 
         printf "  ${GREEN}%s${NC}\n" "$(basename "$file")"
-        printf "    Date: %s\n" "$date"
-        printf "    Size: %s\n" "$size"
+        printf "    ${T_BACKUP_DATE_LABEL:-Date}: %s\n" "$date"
+        printf "    ${T_BACKUP_SIZE_LABEL:-Size}: %s\n" "$size"
         echo ""
     done
 }
 
 # Delete backup file
 config_delete() {
-config_list() {
-    log_section "󰓍 AVAILABLE BACKUPS"
-    
-    if [[ ! -d "$BACKUP_DIR" ]] || [[ -z "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]]; then
-        echo "No backups found in $BACKUP_DIR"
-        return 0
-    fi
-    
-    echo "Backups in $BACKUP_DIR:"
-    echo ""
-    
-    for file in "$BACKUP_DIR"/cytadela-backup-*.tar.gz; do
-        [[ ! -f "$file" ]] && continue
-        local size
-        size=$(du -h "$file" | cut -f1)
-        local date
-        date=$(stat -c %y "$file" | cut -d'.' -f1)
-        
-        printf "  ${GREEN}%s${NC}
-" "$(basename "$file")"
-        printf "    Date: %s
-" "$date"
-        printf "    Size: %s
-" "$size"
-        echo ""
-    done
-}
-    log_section "󰩹  DELETE BACKUP"
+    log_section "󰩹  ${T_BACKUP_DELETE_BACKUP:-DELETE BACKUP}"
 
     local backup_file="$1"
 
     if [[ -z "$backup_file" ]]; then
-        log_error "Usage: config-delete <backup-file>"
+        log_error "${T_BACKUP_DELETE_USAGE:-Usage: config-delete <backup-file>}"
         return 1
     fi
 
     if [[ ! -f "$backup_file" ]]; then
-        log_error "Backup file not found: $backup_file"
+        log_error "${T_BACKUP_FILE_NOT_FOUND:-Backup file not found:} $backup_file"
         return 1
     fi
 
-    log_warning "Delete backup: $backup_file"
-    read -p "Are you sure? [y/N]: " answer
+    log_warning "${T_BACKUP_DELETE_WARNING:-Delete backup:} $backup_file"
+    read -p "${T_BACKUP_DELETE_CONFIRM:-Are you sure? [y/N]: }" answer
 
     if [[ "$answer" =~ ^[Yy]$ ]]; then
         rm -f "$backup_file"
-        log_success "Backup deleted"
+        log_success "${T_BACKUP_DELETE_SUCCESS:-Backup deleted}"
     else
-        log_info "Cancelled"
+        log_info "${T_BACKUP_CANCELLED:-Cancelled}"
     fi
 }
 
@@ -311,17 +301,17 @@ lkg_validate_blocklist() {
     local lines
     lines=$(wc -l <"$file")
     [[ $lines -lt $min_lines ]] && {
-        log_warning "LKG: File too small ($lines lines, min $min_lines): $file"
+        log_warning "${T_LKG_FILE_TOO_SMALL:-LKG: File too small ($lines lines, min $min_lines): $file}"
         return 1
     }
 
     if grep -qiE '<html|<!DOCTYPE|AccessDenied|404 Not Found|403 Forbidden' "$file" 2>/dev/null; then
-        log_warning "LKG: File looks like error page: $file"
+        log_warning "${T_LKG_FILE_ERROR_PAGE:-LKG: File looks like error page: $file}"
         return 1
     fi
 
     if ! head -100 "$file" | grep -qE '^(0\.0\.0\.0|127\.0\.0\.1)[[:space:]]' 2>/dev/null; then
-        log_warning "LKG: File doesn't look like hosts format: $file"
+        log_warning "${T_LKG_FILE_NOT_HOSTS:-LKG: File doesn't look like hosts format: $file}"
         return 1
     fi
 
@@ -333,12 +323,12 @@ lkg_save_blocklist() {
     local source="/etc/coredns/zones/blocklist.hosts"
 
     [[ ! -f "$source" ]] && {
-        log_warning "LKG: No blocklist to save"
+        log_warning "${T_LKG_NO_BLOCKLIST_TO_SAVE:-LKG: No blocklist to save}"
         return 1
     }
 
     if ! lkg_validate_blocklist "$source"; then
-        log_warning "LKG: Current blocklist failed validation, not saving"
+        log_warning "${T_LKG_CURRENT_FAILED_VALIDATION:-LKG: Current blocklist failed validation, not saving}"
         return 1
     fi
 
@@ -348,7 +338,7 @@ lkg_save_blocklist() {
     echo "lines=$(wc -l <"$LKG_BLOCKLIST")" >>"$LKG_BLOCKLIST_META"
     echo "sha256=$(sha256sum "$LKG_BLOCKLIST" | awk '{print $1}')" >>"$LKG_BLOCKLIST_META"
 
-    log_success "LKG: Blocklist saved ($(wc -l <"$LKG_BLOCKLIST") lines)"
+    log_success "${T_LKG_BLOCKLIST_SAVED:-LKG: Blocklist saved ($(wc -l <"$LKG_BLOCKLIST") lines)}"
 }
 
 # Restore blocklist from LKG
@@ -356,12 +346,12 @@ lkg_restore_blocklist() {
     local target="/etc/coredns/zones/blocklist.hosts"
 
     [[ ! -f "$LKG_BLOCKLIST" ]] && {
-        log_warning "LKG: No saved blocklist to restore"
+        log_warning "${T_LKG_NO_SAVED_BLOCKLIST:-LKG: No saved blocklist to restore}"
         return 1
     }
 
     if ! lkg_validate_blocklist "$LKG_BLOCKLIST"; then
-        log_error "LKG: Saved blocklist failed validation"
+        log_error "${T_LKG_SAVED_FAILED_VALIDATION:-LKG: Saved blocklist failed validation}"
         return 1
     fi
 
@@ -369,22 +359,22 @@ lkg_restore_blocklist() {
     chown root:coredns "$target" 2>/dev/null || true
     chmod 0640 "$target" 2>/dev/null || true
 
-    log_success "LKG: Blocklist restored from cache"
+    log_success "${T_LKG_BLOCKLIST_RESTORED:-LKG: Blocklist restored from cache}"
 }
 
 # Show LKG status
 lkg_status() {
-    log_section "󰏗 LKG (Last Known Good) STATUS"
+    log_section "󰏗 ${T_LKG_STATUS_TITLE:-LKG (Last Known Good) STATUS}"
 
-    echo "LKG Directory: $CYTADELA_LKG_DIR"
+    echo "${T_LKG_DIRECTORY_LABEL:-LKG Directory:} $CYTADELA_LKG_DIR"
 
     if [[ -f "$LKG_BLOCKLIST" ]]; then
-        echo "Blocklist cache: EXISTS"
-        echo "  Lines: $(wc -l <"$LKG_BLOCKLIST")"
+        echo "${T_LKG_BLOCKLIST_EXISTS:-Blocklist cache: EXISTS}"
+        echo "  ${T_LKG_LINES_LABEL:-Lines:} $(wc -l <"$LKG_BLOCKLIST")"
         [[ -f "$LKG_BLOCKLIST_META" ]] && cat "$LKG_BLOCKLIST_META" | sed 's/^/  /'
     else
-        echo "Blocklist cache: NOT FOUND"
-        echo "  Run: sudo $0 lkg-save"
+        echo "${T_LKG_BLOCKLIST_NOT_FOUND:-Blocklist cache: NOT FOUND}"
+        echo "  ${T_LKG_RUN_SAVE_COMMAND:-Run: sudo $0 lkg-save}"
     fi
 }
 
@@ -500,7 +490,7 @@ lists_update() {
 
 # Enable automatic updates
 auto_update_enable() {
-    log_section "󰜝 ENABLING AUTO-UPDATE"
+    log_section "󰜝 ${T_AUTO_UPDATE_ENABLING:-ENABLING AUTO-UPDATE}"
 
     # Check if LKG module is available
     if ! declare -f lists_update >/dev/null 2>&1; then
@@ -508,7 +498,7 @@ auto_update_enable() {
     fi
 
     # Create systemd service
-    log_info "Creating systemd service..."
+    log_info "${T_AUTO_UPDATE_CREATING_SERVICE:-Creating systemd service...}"
     tee "$AUTO_UPDATE_SERVICE" >/dev/null <<'EOF'
 [Unit]
 Description=Citadel Automatic Blocklist Update
@@ -532,7 +522,7 @@ WantedBy=multi-user.target
 EOF
 
     # Create systemd timer
-    log_info "Creating systemd timer (daily updates)..."
+    log_info "${T_AUTO_UPDATE_CREATING_TIMER:-Creating systemd timer (daily updates)...}"
     tee "$AUTO_UPDATE_TIMER" >/dev/null <<'EOF'
 [Unit]
 Description=Citadel Daily Blocklist Update Timer
@@ -554,7 +544,7 @@ EOF
     systemctl enable cytadela-auto-update.timer
     systemctl start cytadela-auto-update.timer
 
-    log_success "Auto-update enabled (daily updates with 1h random delay)"
+    log_success "${T_AUTO_UPDATE_ENABLED:-Auto-update enabled (daily updates with 1h random delay)}"
 
     # Show status
     auto_update_status
@@ -562,13 +552,13 @@ EOF
 
 # Disable automatic updates
 auto_update_disable() {
-    log_section "🛑 DISABLING AUTO-UPDATE"
+    log_section "🛑 ${T_AUTO_UPDATE_DISABLING:-DISABLING AUTO-UPDATE}"
 
     # Stop and disable timer
     systemctl stop cytadela-auto-update.timer 2>/dev/null || true
     systemctl disable cytadela-auto-update.timer 2>/dev/null || true
 
-    log_success "Auto-update disabled"
+    log_success "${T_AUTO_UPDATE_DISABLED:-Auto-update disabled}"
 }
 
 # Show auto-update status

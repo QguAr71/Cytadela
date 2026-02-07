@@ -63,7 +63,7 @@
 
 | Solution | DNS Protection | Adblock | Leak Prevention | Ease of Use |
 | --- | --- | --- | --- | --- |
-| **Citadel++** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Citadel** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | Pi-hole | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
 | AdGuard Home | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | DNSCrypt Only | ⭐⭐⭐⭐⭐ | ❌ | ⭐⭐ | ⭐⭐⭐ |
@@ -84,7 +84,7 @@
 
 ## 🎯 Summary
 
-**Citadel++ is a solid, comprehensive DNS security solution for advanced Linux users.**
+**Citadel is a solid, comprehensive DNS security solution for advanced Linux users.**
 
 -   **Protection:** Very good for DNS/adblock, requires VPN for full privacy
 -   **Usefulness:** High, especially thanks to diagnostics and recovery
@@ -192,7 +192,7 @@ text
 sudo citadela install-wizard
 # Select modules with SPACE, confirm with ENTER
 
-# 2. Switch system to Citadel++ DNS
+# 2. Switch system to Citadel DNS
 sudo citadela configure-system
 ```
 
@@ -208,7 +208,7 @@ sudo citadela install-all
     # 3. Test local DNS
     dig +short google.com @127.0.0.1
     
-    # 4. Switch system to Citadel++ DNS
+    # 4. Switch system to Citadel DNS
     sudo ./cytadela++.sh configure-system
     
     # 5. Test internet
@@ -924,7 +924,7 @@ Bash
 
 # GLOBAL ERROR TRAP
 
-Citadel++ has a built-in global error trap that shows:
+Citadel has a built-in global error trap that shows:
 
 -   Function where error occurred
 -   Line number

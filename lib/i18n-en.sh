@@ -35,7 +35,7 @@ ${YELLOW}NEW FEATURES v3.1:${NC}
   fix-ports            Resolve port conflicts with avahi/chromium
 
 ${YELLOW}System Configuration (WARNING - disables systemd-resolved):${NC}
-  configure-system      Switch system DNS to Citadel++ (with confirmation)
+  configure-system      Switch system DNS to Citadel (with confirmation)
   restore-system        Restore systemd-resolved + DNS (rollback)
 
 ${CYAN}Emergency Commands:${NC}

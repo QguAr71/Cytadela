@@ -9,7 +9,7 @@
   "commands": [
     {
       "name": "configure-system",
-      "description": "Switch system DNS to Citadel++",
+      "description": "Switch system DNS to Citadel",
       "usage": "citadel configure-system",
       "category": "configuration",
       "examples": [

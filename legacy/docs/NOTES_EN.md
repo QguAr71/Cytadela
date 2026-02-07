@@ -1,4 +1,4 @@
-# Citadel++ — notes / how to use it (without losing internet)
+# Citadel — notes / how to use it (without losing internet)
 
 This document explains:
 - what was changed in `cytadela++.sh` compared to earlier iterations,
@@ -94,7 +94,7 @@ If an application uses built-in **DoH** (DNS-over-HTTPS) over port `443`, that i
 
 ### Security property (audit conclusion)
 
-Based on `tcpdump` traffic analysis, Citadel++ meets the requirements of a **secure DNS gateway at the kernel level**: the system physically has no external DNS path (DNS `:53`) to the Internet outside the local stack (localhost).
+Based on `tcpdump` traffic analysis, Citadel meets the requirements of a **secure DNS gateway at the kernel level**: the system physically has no external DNS path (DNS `:53`) to the Internet outside the local stack (localhost).
 This is the same kind of outcome you would expect from: Qubes `sys-firewall`, Whonix Gateway, hardened VPN gateway setups.
 
 ---
@@ -116,7 +116,7 @@ sudo ./cytadela++.sh <command>
 
 ### System DNS (switch / rollback)
 
-- **`configure-system`**: switches system DNS to Citadel++ (SAFE → test DNS → STRICT).
+- **`configure-system`**: switches system DNS to Citadel (SAFE → test DNS → STRICT).
 - **`restore-system`**: restores `systemd-resolved` and system DNS settings (rollback).
 
 ### Firewall modes (DNS leak prevention)

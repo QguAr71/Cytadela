@@ -148,7 +148,7 @@ export T_CHECK_ONLY="Vérifier les dépendances"
 export T_AUTO_INSTALL_CMD="Installation automatique des manquantes"
 
 # Menu de configuration de l'assistant
-export T_WIZARD_SETUP_TITLE="Citadel++ Setup"
+export T_WIZARD_SETUP_TITLE="Citadel Setup"
 export T_WIZARD_INSTALLED_MSG="Citadel est déjà installé. Choisissez une action :"
 export T_WIZARD_REINSTALL="Réinstaller avec sauvegarde"
 export T_WIZARD_UNINSTALL="Supprimer Citadel"

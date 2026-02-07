@@ -116,5 +116,17 @@
   "IPV6_OK": "IPv6 connectivity: OK",
   "IPV6_FAILED": "IPv6 connectivity: FAILED",
   "ATTEMPTING_AUTO": "Attempting auto-reconfiguration...",
-  "NO_ACTIVE_INTERFACE": "No active interface"
+  "NO_ACTIVE_INTERFACE": "No active interface",
+  "T_TESTING_PING": "Testing ping to",
+  "T_ICMP_SUCCESS": "ICMP connectivity to",
+  "T_WORKS": "works",
+  "T_CANNOT_REACH": "Cannot reach",
+  "T_VIA_ICMP": "via ICMP",
+  "T_TESTING_DNS": "Testing DNS resolution for",
+  "T_DNS_SUCCESS": "DNS resolution for",
+  "T_FAILED": "failed",
+  "T_DNS_FAILED": "DNS resolution for",
+  "T_TESTING_IPV6": "Testing IPv6 connectivity...",
+  "T_IPV6_SUCCESS": "IPv6 connectivity works",
+  "T_IPV6_FAILED": "IPv6 connectivity failed"
 }

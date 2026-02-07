@@ -20,7 +20,7 @@ install_citadel_top() {
     # Create citadel-top script
     sudo tee /usr/local/bin/citadel-top >/dev/null <<'EOF'
 #!/bin/bash
-# Citadel++ Terminal Dashboard v1.0
+# Citadel Terminal Dashboard v1.0
 
 COREDNS_PORT=53
 if [[ -f /etc/coredns/Corefile ]]; then

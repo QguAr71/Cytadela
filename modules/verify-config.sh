@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════════════╗
 # ║  CYTADELA++ VERIFY-CONFIG MODULE                                          ║
-# ║  Verifies Citadel++ configuration files and service status                ║
+# ║  Verifies Citadel configuration files and service status                ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 # =============================================================================
@@ -11,7 +11,7 @@
 MODULE_NAME="verify-config"
 MODULE_VERSION="1.0.0"
 MODULE_DESCRIPTION="Verifies Citadel configuration, services, and DNS functionality"
-MODULE_AUTHOR="Citadel++ Team"
+MODULE_AUTHOR="Citadel Team"
 MODULE_DEPENDS=("systemctl" "dig" "ip" "nft")
 MODULE_TAGS=("config" "verify" "diagnostics")
 
