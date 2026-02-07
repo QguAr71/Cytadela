@@ -3,8 +3,23 @@
 # ║  CYTADELA++ AUTO-UPDATE MODULE v3.1                                       ║
 # ║  Automatic blocklist updates with systemd timer (Issue #13)               ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
+#
+# DEPRECATED: This module has been unified into unified-backup.sh
+#
+# Functions moved to unified-backup.sh:
+# - auto_update_enable() → unified-backup.sh (auto-update management)
+# - auto_update_disable() → unified-backup.sh (auto-update management)
+# - auto_update_status() → unified-backup.sh (auto-update management)
+# - auto_update_now() → unified-backup.sh (manual update trigger)
+# - auto_update_configure() → unified-backup.sh (update configuration)
+#
+# This file is kept for backward compatibility but should not be used.
+# Use: unified-backup.sh instead.
+#
 
-AUTO_UPDATE_SERVICE="/etc/systemd/system/cytadela-auto-update.service"
+log_warning "DEPRECATED: auto-update.sh has been unified into unified-backup.sh"
+log_info "Please use: citadel.sh unified-backup [auto-update-function]"
+return 0
 AUTO_UPDATE_TIMER="/etc/systemd/system/cytadela-auto-update.timer"
 
 auto_update_enable() {
