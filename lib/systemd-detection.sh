@@ -4,6 +4,23 @@
 # ║  Cross-distribution systemd compatibility and path detection            ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings with fallback to English
+_load_systemd_i18n() {
+    local lang="${LANG%%_*}"
+    lang="${lang:-en}"
+    
+    # Try language-specific file first
+    if [[ -f "${BASH_SOURCE%/*}/i18n/systemd/${lang}.sh" ]]; then
+        source "${BASH_SOURCE%/*}/i18n/systemd/${lang}.sh"
+    elif [[ -f "${BASH_SOURCE%/*}/i18n/uninstall/${lang}.sh" ]]; then
+        # Fallback to uninstall translations which has systemd strings
+        source "${BASH_SOURCE%/*}/i18n/uninstall/${lang}.sh"
+    fi
+    # If no translation file found, use hardcoded English fallback
+}
+
+_load_systemd_i18n
+
 # ==============================================================================
 # SYSTEMD DETECTION & PATH VERIFICATION
 # ==============================================================================
