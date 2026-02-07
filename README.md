@@ -768,6 +768,47 @@ Citadel v3.3 jest dostępny na licencji MIT. Zobacz plik `LICENSE` dla szczegó�
 - **Łącznie tłumaczeń:** 1000+ stringów per język × 7 języków
 - **Jakość:** Wszystkie stringi używają wzorca `${T_KEY:-fallback}`
 
+### 🏗️ **Kompletna unifikacja modułów - czyszczenie architektury**
+
+**Przeprowadzono kompleksową unifikację systemu modułów Citadel z zachowaniem pełnej kompatybilności wstecznej:**
+
+#### 🗂️ **Moduły zunifikowane:**
+- **benchmark.sh** → `lib/benchmark.sh` + integracja z `unified-monitor.sh`
+- **cache-stats.sh** → `lib/cache-stats.sh` + integracja z `unified-monitor.sh`
+- **verify-config.sh** → `lib/verify-config.sh` + integracja z `unified-monitor.sh`
+
+#### 📦 **Moduły zdeprecjonowane (zachowano kompatybilność):**
+- **advanced-install.sh** - funkcje przeniesione do `unified-install.sh`
+- **auto-update.sh** - funkcje przeniesione do `unified-backup.sh`
+
+#### 🔧 **Nowe funkcje w zunifikowanych modułach:**
+- `unified-monitor.sh` - dodano funkcje benchmark: `monitor_benchmark_dns()`, `monitor_benchmark_cache()`, `monitor_benchmark_all()`, etc.
+- Wszystkie funkcje dostępne przez standardowe komendy Citadel
+
+#### 🛡️ **Zachowana kompatybilność wsteczna:**
+- Oryginalne pliki modułów pozostały bez zmian
+- Wszystkie stare komendy nadal działają
+- Nowe funkcje dostępne przez zunifikowane interfejsy
+- Brak przerwania istniejących instalacji i konfiguracji
+
+### 🌍 **Rozszerzenie internacjonalizacji - 7 języków kompletne**
+
+**Rozszerzenie wsparcia językowego z 2 do 7 języków dla wszystkich modułów Citadel:**
+
+#### ✨ **Nowe języki dodane:**
+- **Niemiecki (de)** - pełne tłumaczenie wszystkich modułów
+- **Hiszpański (es)** - kompletna lokalizacja hiszpańska
+- **Francuski (fr)** - kompleksowe tłumaczenia francuskie
+- **Włoski (it)** - pełne wsparcie języka włoskiego
+- **Rosyjski (ru)** - kompletne tłumaczenia rosyjskie
+
+#### 📊 **Statystyki rozszerzenia:**
+- **Przed:** 2 języki (polski, angielski) - częściowe pokrycie
+- **Po:** 7 języków (pl, en, de, es, fr, it, ru) - kompletne pokrycie
+- **Moduły objęte:** common, install, uninstall, recovery, help
+- **Łącznie tłumaczeń:** 1000+ stringów per język × 7 języków
+- **Jakość:** Wszystkie stringi używają wzorca `${T_KEY:-fallback}`
+
 ### 🏗️ **Kompletny modularny system pomocy**
 
 **Całkowita przebudowa systemu pomocy Citadel z nowoczesnymi interfejsami dla wszystkich poziomów użytkowników:**
