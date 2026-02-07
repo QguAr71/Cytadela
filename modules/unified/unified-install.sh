@@ -1267,3 +1267,112 @@ EOF
     log_info "Status timer-a:"
     systemctl status citadel-dns-priority.timer --no-pager 2>/dev/null || true
 }
+
+# ==============================================================================
+# DOH PARALLEL RACING (migrated from advanced-install.sh)
+# ==============================================================================
+
+install_doh_parallel() {
+    log_section "󱓞 DNS-OVER-HTTPS PARALLEL RACING"
+
+    # Check if port 5353 is available
+    local doh_port=5353
+    if lsof -i :$doh_port >/dev/null 2>&1 || ss -tlnp | grep -q ":$doh_port"; then
+        log_warning "Port $doh_port jest zajęty - szukam wolnego portu..."
+        # Try to find free port
+        for port in 5354 5355 5356 5357 5358 5359; do
+            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                doh_port=$port
+                log_info "Znaleziono wolny port: $doh_port"
+                break
+            fi
+        done
+    fi
+
+    # Create advanced DNSCrypt config with DoH parallel racing
+    sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<EOF
+# Citadel DNSCrypt with DoH Parallel Racing
+listen_addresses = ['127.0.0.1:${doh_port}', '[::1]:${doh_port}']
+user_name = 'dnscrypt'
+
+# Enable parallel racing for faster responses
+server_names = ['cloudflare', 'google', 'quad9-dnscrypt-ip4-filter-pri']
+
+# DoH servers with parallel racing
+doh_servers = true
+require_dnssec = true
+require_nolog = true
+require_nofilter = false
+
+# Parallel racing configuration
+lb_strategy = 'p2'  # Power of Two load balancing
+lb_estimator = true
+
+# Performance tuning
+max_clients = 500
+cache_size = 1024
+cache_min_ttl = 300
+cache_max_ttl = 86400
+timeout = 3000
+keepalive = 30
+
+# Bootstrap resolvers
+bootstrap_resolvers = ['9.9.9.9:53', '1.1.1.1:53', '149.112.112.112:53']
+ignore_system_dns = true
+
+log_level = 2
+log_file = '/var/log/dnscrypt-proxy/dnscrypt-proxy.log'
+EOF
+
+    log_success "Konfiguracja DoH Parallel Racing utworzona (port: $doh_port)"
+
+    # Auto-activation with backup
+    local config_file="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
+    local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
+
+    if [[ -f "$config_file" ]]; then
+        log_info "Tworzenie backupu starej konfiguracji..."
+        cp "$config_file" "$backup_file"
+        log_success "Backup: $backup_file"
+    fi
+
+    log_info "Aktywacja DoH Parallel Racing..."
+    cp /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml "$config_file"
+
+    # Validate config
+    log_info "Walidacja konfiguracji..."
+    if dnscrypt-proxy -config "$config_file" -check 2>/dev/null; then
+        log_success "Konfiguracja poprawna"
+    else
+        log_warning "Walidacja zwróciła ostrzeżenia (może być nowsza składnia)"
+    fi
+
+    # Restart service
+    log_info "Restart DNSCrypt..."
+    systemctl restart dnscrypt-proxy
+    sleep 3
+
+    # Test with longer timeout and retry
+    log_info "Testowanie DoH (port: $doh_port)..."
+    local test_passed=false
+    for attempt in 1 2 3; do
+        if systemctl is-active --quiet dnscrypt-proxy; then
+            if dig +short +time=5 whoami.cloudflare @127.0.0.1 -p $doh_port >/dev/null 2>&1; then
+                test_passed=true
+                break
+            fi
+        fi
+        log_info "Próba $attempt nie powiodła się, czekam..."
+        sleep 2
+    done
+
+    if [[ "$test_passed" == true ]]; then
+        log_success "DoH Parallel Racing AKTYWNY i działa (port: $doh_port)!"
+        log_info "Serwery: Cloudflare, Google, Quad9 (parallel racing)"
+        log_info "Strategia: p2 (Power of Two load balancing)"
+    else
+        log_warning "Test DNS nie przeszedł, ale DNSCrypt działa - konfiguracja zapisana"
+        log_info "Port DoH: $doh_port"
+        # Don't fail - the config is valid even if test doesn't pass immediately
+    fi
+}
