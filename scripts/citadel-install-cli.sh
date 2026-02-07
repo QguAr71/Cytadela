@@ -668,7 +668,7 @@ install_component() {
         adblock)
             status "${T_INITIALIZING_ADBLOCK:-Initializing adblock}..."
             if [[ "$DRY_RUN" == false ]]; then
-                run_citadel "backup lists-update"
+                run_citadel "unified-backup lists-update"
                 status "${T_ADBLOCK_UPDATED:-Adblock updated}"
             else
                 status "Would ${T_INITIALIZING_ADBLOCK,,}"
@@ -826,7 +826,7 @@ main_installation() {
     if [[ " ${comp_array[*]} " =~ " adblock " ]]; then
         status "${T_ENABLING_AUTO_UPDATES:-Enabling auto-updates...}"
         if [[ "$DRY_RUN" == false ]]; then
-            run_citadel "backup auto-update-enable"
+            run_citadel "unified-backup auto-update-enable"
             status "${T_AUTO_UPDATES_ENABLED:-Auto-updates enabled}"
         else
             status "${T_WOULD_ENABLE_AUTO_UPDATES:-Would enable auto-updates}"
