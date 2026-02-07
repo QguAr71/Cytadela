@@ -1384,3 +1384,67 @@ _benchmark_blocklist() {
     printf "  Blocklist size:    %'d entries\n" "$entries"
     printf "  Block lookup time: %d ms avg\n" "$avg_time"
 }
+
+# ==============================================================================
+# BENCHMARK FUNCTIONS (integrated from benchmark.sh)
+# ==============================================================================
+
+# Run DNS performance benchmark
+monitor_benchmark_dns() {
+    if declare -f benchmark_dns_performance >/dev/null 2>&1; then
+        benchmark_dns_performance "$@"
+    else
+        log_error "Benchmark library not loaded - cannot run DNS benchmark"
+        return 1
+    fi
+}
+
+# Run cache performance test
+monitor_benchmark_cache() {
+    if declare -f _benchmark_cache >/dev/null 2>&1; then
+        _benchmark_cache "$@"
+    else
+        log_error "Benchmark library not loaded - cannot run cache benchmark"
+        return 1
+    fi
+}
+
+# Run blocklist performance test
+monitor_benchmark_blocklist() {
+    if declare -f _benchmark_blocklist >/dev/null 2>&1; then
+        _benchmark_blocklist "$@"
+    else
+        log_error "Benchmark library not loaded - cannot run blocklist benchmark"
+        return 1
+    fi
+}
+
+# Run comprehensive benchmark suite
+monitor_benchmark_all() {
+    if declare -f _benchmark_all >/dev/null 2>&1; then
+        _benchmark_all "$@"
+    else
+        log_error "Benchmark library not loaded - cannot run comprehensive benchmark"
+        return 1
+    fi
+}
+
+# Show benchmark reports
+monitor_benchmark_show_report() {
+    if declare -f benchmark_show_report >/dev/null 2>&1; then
+        benchmark_show_report "$@"
+    else
+        log_error "Benchmark library not loaded - cannot show benchmark report"
+        return 1
+    fi
+}
+
+# Compare benchmark results
+monitor_benchmark_compare() {
+    if declare -f benchmark_compare >/dev/null 2>&1; then
+        benchmark_compare "$@"
+    else
+        log_error "Benchmark library not loaded - cannot compare benchmarks"
+        return 1
+    fi
+}
