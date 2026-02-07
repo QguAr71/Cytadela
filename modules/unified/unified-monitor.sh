@@ -171,6 +171,11 @@ monitor_test_all() {
         source "lib/i18n/${lang}.sh" 2>/dev/null || true
     fi
 
+    # Load benchmark library for unified functionality
+    if [[ -f "lib/benchmark.sh" ]]; then
+        source "lib/benchmark.sh" 2>/dev/null || true
+    fi
+
     log_section "󰙨 ${T_TEST_ALL_TITLE:-CITADEL++ TEST-ALL}"
 
     monitor_verify
