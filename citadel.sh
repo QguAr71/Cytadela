@@ -567,7 +567,7 @@ case "$ACTION" in
 
     # Advanced Install
     optimize-kernel)
-        load_module "advanced-install"
+        smart_load_module "install"
         optimize_kernel_priority
         ;;
 
