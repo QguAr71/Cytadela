@@ -576,11 +576,6 @@ case "$ACTION" in
         install_doh_parallel
         ;;
 
-    install-editor)
-        smart_load_module "install"
-        install_editor_integration
-        ;;
-
     fix-ports)
         smart_load_module "install"
         fix_dns_ports

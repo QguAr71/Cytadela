@@ -353,7 +353,6 @@ fullscale=brightgreen,black
         [location]="Location-aware|${T_MOD_LOCATION}|0|0"
         [nft-debug]="NFT Debug|${T_MOD_DEBUG}|0|0"
         [dashboard]="Dashboard|${T_MOD_DASHBOARD}|0|0"
-        [editor]="Editor Integration|${T_MOD_EDITOR}|0|0"
         [doh-parallel]="DoH Parallel|${T_MOD_DOH_PARALLEL}|0|0"
     )
 
@@ -361,7 +360,7 @@ fullscale=brightgreen,black
     local options=()
 
     # Sort keys for consistent order
-    local sorted_keys=(dnscrypt coredns nftables lkg health supply-chain ipv6 location nft-debug dashboard editor doh-parallel)
+    local sorted_keys=(dnscrypt coredns nftables lkg health supply-chain ipv6 location nft-debug dashboard doh-parallel)
 
     for key in "${sorted_keys[@]}"; do
         [[ -z "${MODULES[$key]}" ]] && continue
@@ -551,18 +550,6 @@ fullscale=brightgreen,black
                     load_module "install-dashboard"
                 fi
                 if install_citadel_top; then
-                    log_success "$name ${T_INSTALLED:-installed}"
-                else
-                    log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"
-                    ((failed++)) || true
-                fi
-                ;;
-
-            editor)
-                if ! declare -f install_editor_integration >/dev/null 2>&1; then
-                    load_module "advanced-install"
-                fi
-                if install_editor_integration; then
                     log_success "$name ${T_INSTALLED:-installed}"
                 else
                     log_error "$name ${T_INSTALLATION_FAILED:-installation failed}"

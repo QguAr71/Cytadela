@@ -300,7 +300,6 @@ customize_components() {
             "prometheus|${T_PROMETHEUS_DESC:-Metrics collection}" \
             "optimize-kernel|${T_OPTIMIZE_KERNEL_DESC:-Kernel priority optimization (CPU/IO boost)}" \
             "doh-parallel|${T_DOH_PARALLEL_DESC:-DoH parallel racing (faster DNS)}" \
-            "editor-integration|${T_EDITOR_INTEGRATION_DESC:-Micro editor + citadel command}" \
             | cut -d"|" -f1 | paste -sd, -)
 
         if [[ -n "$selected" ]]; then

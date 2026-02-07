@@ -216,18 +216,14 @@ export T_OPTIMIZING_KERNEL="Optimizing kernel priorities"
 export T_KERNEL_OPTIMIZED="Kernel priorities optimized"
 export T_ENABLING_DOH_PARALLEL="Enabling DoH parallel racing"
 export T_DOH_PARALLEL_ENABLED="DoH parallel racing enabled"
-export T_INSTALLING_EDITOR="Installing editor integration"
-export T_EDITOR_INSTALLED="Editor integration installed"
 
 # Component descriptions
 export T_COMPONENT_OPTIMIZE_KERNEL="Kernel priority optimization (CPU/IO boost)"
 export T_COMPONENT_DOH_PARALLEL="DoH parallel racing (faster DNS)"
-export T_COMPONENT_EDITOR_INTEGRATION="Micro editor + citadel command"
 
 # Install-wizard component descriptions
 export T_OPTIMIZE_KERNEL_DESC="Kernel priority optimization (CPU/IO boost)"
 export T_DOH_PARALLEL_DESC="DoH parallel racing (faster DNS)"
-export T_EDITOR_INTEGRATION_DESC="Micro editor + citadel command"
 
 # Complete status messages (to avoid mixing languages)
 export T_DNSCRYPT_INSTALLED_AND_RUNNING="DNSCrypt installed and running"

@@ -90,7 +90,6 @@ show_help_section_install() {
     echo -e "${CYAN}install-location${NC}     - ${T_HELP_CMD_INSTALL_LOCATION:-Load location-aware module}"
     echo -e "${CYAN}install-nft-debug${NC}    - ${T_HELP_CMD_INSTALL_NFT_DEBUG:-Load NFT debug module}"
     echo -e "${CYAN}install-dashboard${NC}    - ${T_HELP_CMD_INSTALL_DASHBOARD:-Install terminal dashboard}"
-    echo -e "${CYAN}install-editor${NC}       - ${T_HELP_CMD_INSTALL_EDITOR:-Install editor integration}"
     echo -e "${CYAN}install-doh-parallel${NC} - ${T_HELP_CMD_INSTALL_DOH_PARALLEL:-Install DNS-over-HTTPS parallel}"
 }
 
@@ -177,7 +176,6 @@ show_help_full() {
     echo -e "${CYAN}install-coredns${NC}      - ${T_HELP_CMD_INSTALL_COREDNS:-Install CoreDNS only}"
     echo -e "${CYAN}install-nftables${NC}     - ${T_HELP_CMD_INSTALL_NFTABLES:-Install NFTables rules only}"
     echo -e "${CYAN}install-dashboard${NC}    - ${T_HELP_CMD_INSTALL_DASHBOARD:-Install terminal dashboard}"
-    echo -e "${CYAN}install-editor${NC}       - ${T_HELP_CMD_INSTALL_EDITOR:-Install editor integration}"
     echo -e "${CYAN}install-doh-parallel${NC} - ${T_HELP_CMD_INSTALL_DOH_PARALLEL:-Install DNS-over-HTTPS parallel}"
     echo ""
     echo -e "${EMR}=== ${T_HELP_SECTION_MAIN:-2. MAIN PROGRAM} ===${NC}"

@@ -194,7 +194,6 @@ COMPONENTS:
     firewall           - NFTables firewall rules
     optimize-kernel    - Kernel priority optimization (CPU/IO boost for DNS)
     doh-parallel       - DoH parallel racing (faster DNS responses)
-    editor-integration - Micro editor + citadel helper command
 
 LANGUAGES:
     en              - English (default)
@@ -474,7 +473,6 @@ show_installation_plan() {
             firewall) desc="${T_COMPONENT_FIREWALL:-NFTables firewall rules}" ;;
             optimize-kernel) desc="${T_COMPONENT_OPTIMIZE_KERNEL:-Kernel priority optimization}" ;;
             doh-parallel) desc="${T_COMPONENT_DOH_PARALLEL:-DoH parallel racing}" ;;
-            editor-integration) desc="${T_COMPONENT_EDITOR_INTEGRATION:-Editor integration}" ;;
             *) desc="Unknown component" ;;
         esac
         echo "  • $comp - $desc"
@@ -566,7 +564,6 @@ declare -A COMPONENTS_DESC=(
     ["firewall"]="${T_COMPONENT_FIREWALL:-NFTables firewall rules}"
     ["optimize-kernel"]="${T_COMPONENT_OPTIMIZE_KERNEL:-Kernel priority optimization (CPU/IO boost)}"
     ["doh-parallel"]="${T_COMPONENT_DOH_PARALLEL:-DoH parallel racing (faster DNS)}"
-    ["editor-integration"]="${T_COMPONENT_EDITOR_INTEGRATION:-Micro editor + citadel command}"
 )
 
 # Install gum if needed for enhanced UI
@@ -756,16 +753,6 @@ install_component() {
                 status "Would ${T_ENABLING_DOH_PARALLEL,,}"
             fi
             ;;
-
-        editor-integration)
-            status "${T_INSTALLING_EDITOR:-Installing editor integration}..."
-            if [[ "$DRY_RUN" == false ]]; then
-                run_citadel "install-editor"
-                status "${T_EDITOR_INSTALLED:-Editor integration installed}"
-            else
-                status "Would ${T_INSTALLING_EDITOR,,}"
-            fi
-            ;;
     esac
 }
 
@@ -815,7 +802,7 @@ main_installation() {
     fi
 
     # Step 6: Install advanced optimizations
-    local advanced_components=("optimize-kernel" "doh-parallel" "editor-integration")
+    local advanced_components=("optimize-kernel" "doh-parallel")
     for comp in "${advanced_components[@]}"; do
         if [[ " ${comp_array[*]} " =~ " $comp " ]]; then
             install_component "$comp"
