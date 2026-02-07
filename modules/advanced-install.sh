@@ -3,8 +3,21 @@
 # ║  CYTADELA++ ADVANCED-INSTALL MODULE v3.1                                  ║
 # ║  Kernel Optimization, DoH Parallel, Editor Integration                    ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
+#
+# DEPRECATED: This module has been unified into unified-install.sh
+#
+# Functions moved to unified-install.sh:
+# - optimize_kernel_priority() → unified-install.sh (advanced features)
+# - install_doh_parallel() → unified-install.sh (DoH parallel racing)
+# - install_editor_integration() → unified-install.sh (editor integration)
+#
+# This file is kept for backward compatibility but should not be used.
+# Use: unified-install.sh instead.
+#
 
-optimize_kernel_priority() {
+log_warning "DEPRECATED: advanced-install.sh has been unified into unified-install.sh"
+log_info "Please use: citadel.sh unified-install [function]"
+return 0
     log_section "󱐋 KERNEL PRIORITY OPTIMIZATION"
 
     # Check if systemd is available (required for timer)
