@@ -31,5 +31,11 @@
   "T_BACKUP": "Kopia zapasowa",
   "T_RESTORE": "Przywróć",
   "T_AVAILABLE_COMMANDS": "Dostępne polecenia",
-  "T_FOR_DETAILED_HELP": "Aby uzyskać szczegółową pomoc, użyj"
+  "T_FOR_DETAILED_HELP": "Aby uzyskać szczegółową pomoc, użyj",
+  "T_SYSTEMD_DETECTED": "Systemd wykryty i zweryfikowany:",
+  "T_SYSTEMD_VERSION": "Wersja:",
+  "T_SYSTEMD_STATUS": "Status:",
+  "T_SYSTEMD_FUNCTIONAL": "W pełni funkcjonalny",
+  "T_SYSTEMD_PATHS": "Ścieżki znalezione:",
+  "T_SYSTEMD_LOCATIONS": "lokalizacji"
 }

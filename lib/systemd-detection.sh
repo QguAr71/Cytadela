@@ -4,19 +4,27 @@
 # ║  Cross-distribution systemd compatibility and path detection            ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-# Load i18n strings with fallback to English
+# Load i18n strings using new JSON-based engine with fallback to English
 _load_systemd_i18n() {
     local lang="${LANG%%_*}"
     lang="${lang:-en}"
     
-    # Try language-specific file first
-    if [[ -f "${BASH_SOURCE%/*}/i18n/systemd/${lang}.sh" ]]; then
-        source "${BASH_SOURCE%/*}/i18n/systemd/${lang}.sh"
-    elif [[ -f "${BASH_SOURCE%/*}/i18n/uninstall/${lang}.sh" ]]; then
-        # Fallback to uninstall translations which has systemd strings
-        source "${BASH_SOURCE%/*}/i18n/uninstall/${lang}.sh"
+    # Try to use new i18n engine if available
+    if [[ -f "${CYTADELA_ROOT}/modules/i18n-engine/i18n-engine.sh" ]]; then
+        source "${CYTADELA_ROOT}/modules/i18n-engine/i18n-engine.sh"
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "common" "$lang" 2>/dev/null || {
+            # Fallback to English
+            i18n_engine_load "common" "en" 2>/dev/null || true
+        }
+    elif [[ -f "${BASH_SOURCE%/*}/../modules/i18n-engine/i18n-engine.sh" ]]; then
+        source "${BASH_SOURCE%/*}/../modules/i18n-engine/i18n-engine.sh"
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "common" "$lang" 2>/dev/null || {
+            i18n_engine_load "common" "en" 2>/dev/null || true
+        }
     fi
-    # If no translation file found, use hardcoded English fallback
+    # If engine not available, variables will use hardcoded English fallback
 }
 
 _load_systemd_i18n

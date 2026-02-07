@@ -31,5 +31,11 @@
   "T_ERROR_INIT_FAILED": "Initialization failed",
   "T_PROMPT_CONTINUE": "Continue?",
   "T_PROMPT_ABORTING": "Aborting",
-  "T_FOR_DETAILED_HELP": "For detailed help, use"
+  "T_FOR_DETAILED_HELP": "For detailed help, use",
+  "T_SYSTEMD_DETECTED": "Systemd detected and verified:",
+  "T_SYSTEMD_VERSION": "Version:",
+  "T_SYSTEMD_STATUS": "Status:",
+  "T_SYSTEMD_FUNCTIONAL": "Fully functional",
+  "T_SYSTEMD_PATHS": "Paths found:",
+  "T_SYSTEMD_LOCATIONS": "locations"
 }
