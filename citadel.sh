@@ -572,12 +572,12 @@ case "$ACTION" in
         ;;
 
     install-doh-parallel)
-        load_module "advanced-install"
+        smart_load_module "install"
         install_doh_parallel
         ;;
 
     install-editor)
-        load_module "advanced-install"
+        smart_load_module "install"
         install_editor_integration
         ;;
 
