@@ -243,6 +243,22 @@ monitor_test_all() {
         log_warning "${T_TEST_OPTIMIZE_KERNEL_NA:-Kernel priority optimization: NOT DETECTED}"
     fi
 
+    # Run enhanced comprehensive tests
+    echo ""
+    echo -e "${CYAN}🔍 ENHANCED DIAGNOSTICS:${NC}"
+
+    # Comprehensive DNS testing
+    monitor_test_dns_comprehensive
+
+    # Security testing
+    monitor_test_security
+
+    # Performance testing
+    monitor_test_performance
+
+    # Configuration testing
+    monitor_test_configuration
+
     # Test doh-parallel (DoH parallel racing)
     echo ""
     echo -e "${CYAN}${T_TEST_DOH_PARALLEL:-DNS-over-HTTPS Parallel (doh-parallel):}${NC}"
@@ -270,18 +286,26 @@ monitor_test_all() {
         fi
     elif [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
         # Check if main config has DoH/P2 settings
-        if grep -q "lb_strategy.*=.*'p2'" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null || \
-           grep -q "doh_servers.*=.*true" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+        local has_p2_config=false
+        if grep -q "lb_strategy.*=.*'p2'" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            has_p2_config=true
+        fi
+        if [[ "$has_p2_config" == true ]]; then
             echo "  󰄬 ${T_TEST_DOH_CONFIG:-DoH config}: IN MAIN CONFIG"
             doh_ok=true
             
             # Get port from main config
             doh_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' | head -1 || echo "5354")
             if [[ -n "$doh_port" ]]; then
-        if grep -q "lb_strategy.*=.*'p2'" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
-            echo "  󰄬 ${T_TEST_PARALLEL_RACING:-Parallel racing (p2)}: ENABLED"
-        else
-            echo "  󰀨 ${T_TEST_PARALLEL_RACING:-Parallel racing (p2)}: NOT ENABLED"
+                if grep -q "doh_servers.*=.*true" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+                    echo "  󰄬 ${T_TEST_DOH_SERVERS:-DoH servers}: ENABLED"
+                fi
+                echo "  󰄬 ${T_TEST_PARALLEL_RACING:-Parallel racing (p2)}: ENABLED"
+            fi
+        elif grep -q "doh_servers.*=.*true" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            # DoH is enabled but without parallel racing - show as separate DoH
+            echo "  � ${T_TEST_DOH_CONFIG:-DoH config}: IN MAIN CONFIG (no parallel racing)"
+            doh_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' | head -1 || echo "")
         fi
     fi
     
@@ -289,26 +313,6 @@ monitor_test_all() {
         log_success "${T_TEST_DOH_OK:-DoH Parallel Racing: ACTIVE}"
     else
         log_warning "${T_TEST_DOH_NA:-DoH Parallel Racing: NOT DETECTED}"
-    fi
-
-    # Test editor-integration
-    echo ""
-    echo -e "${CYAN}${T_TEST_EDITOR:-Editor Integration (editor-integration):}${NC}"
-    if [[ -f "/usr/local/bin/citadel" ]]; then
-        echo "  󰄬 ${T_TEST_EDITOR_CMD:-citadel command}: EXISTS"
-        if /usr/local/bin/citadel help >/dev/null 2>&1; then
-            echo "  󰄬 ${T_TEST_EDITOR_HELP:-citadel help}: WORKING"
-        else
-            echo "  󰀨 ${T_TEST_EDITOR_HELP:-citadel help}: NOT RESPONDING"
-        fi
-    else
-        echo "  󰅖 ${T_TEST_EDITOR_CMD:-citadel command}: NOT FOUND"
-    fi
-    
-    if command -v micro >/dev/null 2>&1; then
-        echo "  󰄬 ${T_TEST_MICRO_EDITOR:-Micro editor}: INSTALLED"
-    else
-        echo "  󰀨 ${T_TEST_MICRO_EDITOR:-Micro editor}: NOT INSTALLED"
     fi
 }
 
@@ -862,6 +866,254 @@ monitor_discover_nftables_status() {
 }
 
 # ==============================================================================
+# ENHANCED TESTING FUNCTIONS
+# ==============================================================================
+
+# Comprehensive DNS record type testing
+monitor_test_dns_comprehensive() {
+    log_section "🧪 SZCZEGÓŁOWE TESTY DNS"
+
+    local test_domains=("cloudflare.com" "google.com" "github.com")
+    local record_types=("A" "AAAA" "CNAME" "MX" "TXT" "NS" "SOA")
+
+    echo "Testowanie różnych typów rekordów DNS:"
+    for domain in "${test_domains[@]}"; do
+        echo ""
+        log_info "Domain: $domain"
+
+        for type in "${record_types[@]}"; do
+            local result
+            result=$(dig +short "@127.0.0.1" -p 53 "$domain" "$type" 2>/dev/null | head -3)
+            if [[ -n "$result" ]]; then
+                echo "  ✓ $type: ${result//$'\n'/ | }"
+            else
+                echo "  ✗ $type: BRAK ODPOWIEDZI"
+            fi
+        done
+    done
+
+    # Test DNSSEC validation
+    echo ""
+    log_info "Testowanie DNSSEC:"
+    if dig +dnssec "@127.0.0.1" -p 53 dnssec-failed.org 2>/dev/null | grep -q "SERVFAIL"; then
+        echo "  ✓ DNSSEC: AKTYWNY (poprawnie blokuje niepodpisane domeny)"
+    else
+        echo "  ✗ DNSSEC: NIE DZIAŁA"
+    fi
+
+    # Test EDNS support
+    echo ""
+    log_info "Testowanie EDNS:"
+    local edns_test
+    edns_test=$(dig +bufsize=4096 "@127.0.0.1" -p 53 large-dns.com 2>/dev/null | grep -c "ANSWER SECTION")
+    if [[ $edns_test -gt 0 ]]; then
+        echo "  ✓ EDNS: WSPARCIE AKTYWNE"
+    else
+        echo "  ✗ EDNS: PROBLEM Z WSPARCIEM"
+    fi
+
+    # Test IPv6 DNS resolution
+    echo ""
+    log_info "Testowanie IPv6 DNS:"
+    if dig +short "@127.0.0.1" -p 53 google.com AAAA 2>/dev/null | grep -q ":"; then
+        echo "  ✓ IPv6 DNS: DZIAŁA"
+    else
+        echo "  ⚠ IPv6 DNS: BRAK ODPOWIEDZI (może być normalne)"
+    fi
+}
+
+# Enhanced security testing
+monitor_test_security() {
+    log_section "🔒 TESTY BEZPIECZEŃSTWA"
+
+    # Test DNS leak protection
+    echo "Test ochrony przed wyciekiem DNS:"
+    local leak_test
+    leak_test=$(dig +time=2 +tries=1 "@1.1.1.1" test.com 2>/dev/null | grep -c "ANSWER")
+    if [[ $leak_test -eq 0 ]]; then
+        echo "  ✓ Wycieki DNS: BLOKOWANE"
+    else
+        echo "  ✗ Wycieki DNS: MOŻLIWE"
+    fi
+
+    # Test open DNS ports
+    echo ""
+    echo "Skanowanie otwartych portów DNS:"
+    local open_ports
+    open_ports=$(ss -tlnp 2>/dev/null | grep -E ":(53|5353|5354|5355|5356|5357|5358|5359)" | wc -l)
+    if [[ $open_ports -le 3 ]]; then
+        echo "  ✓ Porty: TYLKO NIEZBĘDNE ($open_ports otwarte)"
+    else
+        echo "  ⚠ Porty: ZA DUŻO OTWARTYCH ($open_ports)"
+    fi
+
+    # Test NFTables rules
+    echo ""
+    echo "Test reguł NFTables:"
+    if nft list ruleset 2>/dev/null | grep -q "citadel"; then
+        local rule_count
+        rule_count=$(nft list ruleset 2>/dev/null | grep -c "citadel")
+        echo "  ✓ Firewall: $rule_count reguł Citadel aktywnych"
+    else
+        echo "  ✗ Firewall: BRAK REGUŁ Citadel"
+    fi
+
+    # Test DNS rebind protection
+    echo ""
+    echo "Test ochrony przed DNS rebinding:"
+    local rebind_test
+    rebind_test=$(dig +time=2 "@127.0.0.1" -p 53 127.0.0.1 2>/dev/null | grep -c "127.0.0.1")
+    if [[ $rebind_test -eq 0 ]]; then
+        echo "  ✓ DNS Rebinding: BLOKOWANE"
+    else
+        echo "  ⚠ DNS Rebinding: MOŻLIWE (sprawdź konfigurację CoreDNS)"
+    fi
+}
+
+# Enhanced performance testing
+monitor_test_performance() {
+    log_section "⚡ TESTY WYDAJNOŚCI"
+
+    # Test resource usage
+    echo "Zużycie zasobów przez usługi DNS:"
+    for service in dnscrypt-proxy coredns; do
+        if systemctl is-active --quiet "$service" 2>/dev/null; then
+            local cpu mem threads
+            cpu=$(ps -C "$service" -o %cpu= 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+            mem=$(ps -C "$service" -o %mem= 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+            threads=$(ps -C "$service" -o nlwp= 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+            echo "  $service: CPU ${cpu:-0}%, MEM ${mem:-0}%, Threads: ${threads:-0}"
+        fi
+    done
+
+    # Test stability (multiple queries)
+    echo ""
+    echo "Test stabilności (10 zapytań):"
+    local success=0 total=10 fail=0
+    for i in {1..10}; do
+        if dig +time=1 +tries=1 "@127.0.0.1" -p 53 cloudflare.com >/dev/null 2>&1; then
+            ((success++))
+        else
+            ((fail++))
+        fi
+    done
+
+    local success_rate=$((success * 100 / total))
+    if [[ $success_rate -ge 95 ]]; then
+        echo "  ✓ Stabilność: $success_rate% sukcesu ($success/$total)"
+    else
+        echo "  ✗ Stabilność: $success_rate% sukcesu ($success/$total)"
+    fi
+
+    # Test response times
+    echo ""
+    echo "Czasy odpowiedzi DNS (średnie):"
+    local total_time=0 valid_tests=0
+    for domain in "cloudflare.com" "google.com" "github.com" "stackoverflow.com" "reddit.com"; do
+        local time
+        time=$(dig +time=2 +tries=1 "@127.0.0.1" -p 53 "$domain" 2>/dev/null | grep "Query time:" | awk '{print $4}' || echo "0")
+        if [[ "$time" != "0" ]]; then
+            total_time=$((total_time + time))
+            ((valid_tests++))
+            printf "  %-20s %4d ms\n" "$domain:" "$time"
+        fi
+    done
+
+    if [[ $valid_tests -gt 0 ]]; then
+        local avg_time=$((total_time / valid_tests))
+        echo ""
+        printf "  %-20s %4d ms (%d testów)\n" "Średni czas:" "$avg_time" "$valid_tests"
+    fi
+
+    # Test concurrent connections
+    echo ""
+    echo "Test współbieżności (5 równoległych zapytań):"
+    local start_time end_time duration
+    start_time=$(date +%s%3N)
+    for i in {1..5}; do
+        dig +time=2 "@127.0.0.1" -p 53 "test$i.cloudflare.com" >/dev/null 2>&1 &
+    done
+    wait
+    end_time=$(date +%s%3N)
+    duration=$((end_time - start_time))
+
+    if [[ $duration -lt 1000 ]]; then
+        echo "  ✓ Współbieżność: $duration ms (szybko)"
+    else
+        echo "  ⚠ Współbieżność: $duration ms (wolno)"
+    fi
+}
+
+# Enhanced configuration testing
+monitor_test_configuration() {
+    log_section "🔧 TESTY KONFIGURACJI"
+
+    # Test configuration consistency
+    echo "Sprawdzanie spójności konfiguracji:"
+
+    # DNSCrypt config validation
+    if [[ -f /etc/dnscrypt-proxy/dnscrypt-proxy.toml ]]; then
+        local dnscrypt_port
+        dnscrypt_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' | head -1 || echo "")
+        if [[ -n "$dnscrypt_port" ]]; then
+            echo "  ✓ DNSCrypt: port $dnscrypt_port skonfigurowany"
+        else
+            echo "  ✗ DNSCrypt: brak portu nasłuchiwania"
+        fi
+
+        # Check for deprecated settings
+        if grep -q "user_name" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            echo "  ⚠ DNSCrypt: wykryto user_name (może powodować problemy)"
+        fi
+    else
+        echo "  ✗ DNSCrypt: brak pliku konfiguracyjnego"
+    fi
+
+    # CoreDNS config validation
+    if [[ -f /etc/coredns/Corefile ]]; then
+        local coredns_port
+        coredns_port=$(grep -oP "127\.0\.0\.1:\K[0-9]+" /etc/coredns/Corefile 2>/dev/null | head -1 || echo "")
+        if [[ -n "$coredns_port" ]]; then
+            echo "  ✓ CoreDNS: port $coredns_port skonfigurowany"
+        else
+            echo "  ✗ CoreDNS: brak portu nasłuchiwania"
+        fi
+
+        # Check for adblock plugin
+        if grep -q "hosts" /etc/coredns/Corefile 2>/dev/null; then
+            echo "  ✓ CoreDNS: plugin hosts (adblock) aktywny"
+        fi
+    else
+        echo "  ✗ CoreDNS: brak pliku Corefile"
+    fi
+
+    # Test service dependencies
+    echo ""
+    echo "Test zależności usług:"
+    if systemctl list-dependencies --plain dnscrypt-proxy 2>/dev/null | grep -q "network"; then
+        echo "  ✓ DNSCrypt: prawidłowe zależności sieciowe"
+    else
+        echo "  ⚠ DNSCrypt: możliwe problemy z zależnościami"
+    fi
+
+    # Test configuration file permissions
+    echo ""
+    echo "Test uprawnień plików konfiguracyjnych:"
+    local config_files=("/etc/dnscrypt-proxy/dnscrypt-proxy.toml" "/etc/coredns/Corefile")
+    for config in "${config_files[@]}"; do
+        if [[ -f "$config" ]]; then
+            local perms
+            perms=$(stat -c '%a' "$config" 2>/dev/null)
+            if [[ "$perms" == "644" ]] || [[ "$perms" == "640" ]]; then
+                echo "  ✓ $config: uprawnienia $perms"
+            else
+                echo "  ⚠ $config: podejrzane uprawnienia $perms"
+            fi
+        fi
+    done
+}
+
+# ==============================================================================
 # PROMETHEUS FUNCTIONS (migrated from prometheus.sh)
 # ==============================================================================
 
@@ -1199,6 +1451,103 @@ _benchmark_basic() {
     printf "  Avg latency: %d ms\n" "$avg_time"
 }
 
+# Cache performance benchmark
+_benchmark_cache() {
+    log_section "📊 CACHE PERFORMANCE BENCHMARK"
+
+    if ! systemctl is-active --quiet coredns; then
+        log_error "CoreDNS is not running - cannot test cache"
+        return 1
+    fi
+
+    log_info "Testing DNS cache performance..."
+
+    # Test domain that should be cached
+    local test_domain="cloudflare.com"
+
+    # Clear cache first (if possible via metrics endpoint)
+    log_info "Clearing cache..."
+    if curl -s "$METRICS_URL" >/dev/null 2>&1; then
+        # Note: CoreDNS doesn't have a direct cache clear endpoint
+        # We'll just wait for natural cache expiration
+        log_info "Cache cleared (natural expiration)"
+    fi
+
+    # First query (cache miss)
+    local first_time
+    first_time=$(dig +time=5 "@127.0.0.1" -p 53 "$test_domain" 2>/dev/null | grep "Query time:" | awk '{print $4}' || echo "timeout")
+
+    # Wait a moment for cache to populate
+    sleep 1
+
+    # Second query (should be cache hit)
+    local second_time
+    second_time=$(dig +time=5 "@127.0.0.1" -p 53 "$test_domain" 2>/dev/null | grep "Query time:" | awk '{print $4}' || echo "timeout")
+
+    echo ""
+    log_info "Cache performance results:"
+    echo "  First query (cache miss):  ${first_time:-N/A} ms"
+    echo "  Second query (cache hit):  ${second_time:-N/A} ms"
+
+    # Calculate cache efficiency
+    if [[ "$first_time" != "timeout" && "$second_time" != "timeout" && "$first_time" -gt 0 ]]; then
+        local speedup=$((first_time / (second_time > 0 ? second_time : 1)))
+        if [[ $speedup -ge 2 ]]; then
+            echo "  ✓ Cache speedup: ${speedup}x faster"
+            log_success "Cache is working efficiently"
+        else
+            echo "  ⚠ Cache speedup: ${speedup}x (limited improvement)"
+            log_warning "Cache performance could be better"
+        fi
+    else
+        log_warning "Could not measure cache performance accurately"
+    fi
+}
+
+# Blocklist effectiveness benchmark
+_benchmark_blocklist() {
+    log_section "🚫 BLOCKLIST EFFECTIVENESS BENCHMARK"
+
+    local blocked_domains=("ads.example.com" "analytics.google.com" "tracking.facebook.com")
+    local test_count=0
+    local blocked_count=0
+
+    log_info "Testing blocklist effectiveness..."
+
+    for domain in "${blocked_domains[@]}"; do
+        ((test_count++))
+
+        # Try to resolve domain
+        local result
+        result=$(dig +short +time=3 "@127.0.0.1" -p 53 "$domain" 2>/dev/null)
+
+        if [[ -z "$result" ]]; then
+            ((blocked_count++))
+            echo "  ✓ $domain: BLOCKED"
+        else
+            echo "  ✗ $domain: NOT BLOCKED (resolved to $result)"
+        fi
+    done
+
+    echo ""
+    local block_rate=$((blocked_count * 100 / test_count))
+    log_info "Blocklist effectiveness: $blocked_count/$test_count domains blocked ($block_rate%)"
+
+    if [[ $block_rate -ge 50 ]]; then
+        log_success "Blocklist is working well"
+    else
+        log_warning "Blocklist effectiveness is low - consider updating"
+    fi
+
+    # Check blocklist size
+    if [[ -f /etc/coredns/zones/combined.hosts ]]; then
+        local blocklist_size
+        blocklist_size=$(wc -l < /etc/coredns/zones/combined.hosts)
+        echo ""
+        log_info "Current blocklist size: $blocklist_size entries"
+    fi
+}
+
 # Run comprehensive benchmark suite
 monitor_benchmark_all() {
     log_section "󰇄 COMPREHENSIVE BENCHMARK SUITE"
@@ -1241,198 +1590,6 @@ monitor_benchmark_report() {
         echo "Benchmark history (last 5 runs):"
         echo "Timestamp,Queries Sent,Queries Completed,QPS,Avg Latency"
         tail -5 "$BENCHMARK_HISTORY"
-    fi
-}
-
-# Compare benchmark results
-monitor_benchmark_compare() {
-    log_section "󰓇 BENCHMARK COMPARISON"
-
-    if [[ ! -f "$BENCHMARK_HISTORY" ]]; then
-        log_error "No benchmark history found"
-        return 1
-    fi
-
-    local line_count
-    line_count=$(wc -l < "$BENCHMARK_HISTORY" 2>/dev/null || echo 0)
-
-    if [[ $line_count -lt 2 ]]; then
-        log_warning "Need at least 2 benchmarks for comparison"
-        return 1
-    fi
-
-    echo "Comparing latest benchmark with previous:"
-    echo ""
-
-    # Get latest and previous results
-    local latest previous
-    latest=$(tail -1 "$BENCHMARK_HISTORY")
-    previous=$(tail -2 "$BENCHMARK_HISTORY" | head -1)
-
-    # Parse QPS values
-    local latest_qps previous_qps
-    latest_qps=$(echo "$latest" | cut -d',' -f4)
-    previous_qps=$(echo "$previous" | cut -d',' -f4)
-
-    if [[ -n "$latest_qps" && -n "$previous_qps" && "$previous_qps" -gt 0 ]]; then
-        local qps_diff=$((latest_qps - previous_qps))
-        local qps_percent=$(( (qps_diff * 100) / previous_qps ))
-
-        printf "QPS change: %+d (%+d%%)\n" "$qps_diff" "$qps_percent"
-
-        if [[ $qps_diff -gt 0 ]]; then
-            log_success "Performance improved!"
-        elif [[ $qps_diff -lt 0 ]]; then
-            log_warning "Performance degraded"
-        else
-            log_info "Performance unchanged"
-        fi
-    fi
-}
-
-# Cache performance test
-_benchmark_cache() {
-    log_section "󰇉 CACHE PERFORMANCE TEST"
-
-    log_info "Testing cache hit/miss ratio..."
-
-    local test_domains=("example.com" "test.com" "demo.com")
-    local cold_times=()
-    local warm_times=()
-
-    for domain in "${test_domains[@]}"; do
-        # Cold query (cache miss expected)
-        local cold_start cold_end cold_duration
-        cold_start=$(date +%s%N)
-        dig @127.0.0.1 -p 53 "$domain" +short +timeout=5 >/dev/null 2>&1
-        cold_end=$(date +%s%N)
-        cold_duration=$(( (cold_end - cold_start) / 1000000 ))
-        cold_times+=("$cold_duration")
-
-        # Warm query (cache hit expected)
-        local warm_start warm_end warm_duration
-        warm_start=$(date +%s%N)
-        dig @127.0.0.1 -p 53 "$domain" +short +timeout=5 >/dev/null 2>&1
-        warm_end=$(date +%s%N)
-        warm_duration=$(( (warm_end - warm_start) / 1000000 ))
-        warm_times+=("$warm_duration")
-    done
-
-    # Calculate averages
-    local cold_avg=0 warm_avg=0
-    for time in "${cold_times[@]}"; do
-        cold_avg=$((cold_avg + time))
-    done
-    for time in "${warm_times[@]}"; do
-        warm_avg=$((warm_avg + time))
-    done
-
-    cold_avg=$((cold_avg / ${#cold_times[@]}))
-    warm_avg=$((warm_avg / ${#warm_times[@]}))
-
-    echo ""
-    log_success "Cache test completed!"
-    printf "  Cold query (cache miss): %d ms avg\n" "$cold_avg"
-    printf "  Warm query (cache hit):  %d ms avg\n" "$warm_avg"
-
-    local improvement=0
-    if [[ $cold_avg -gt 0 ]]; then
-        improvement=$(( ((cold_avg - warm_avg) * 100) / cold_avg ))
-    fi
-    printf "  Cache improvement:       %d%%\n" "$improvement"
-}
-
-# Blocklist performance test
-_benchmark_blocklist() {
-    log_section "󰁑 BLOCKLIST PERFORMANCE"
-
-    local blocklist_file="/etc/coredns/zones/combined.hosts"
-
-    if [[ ! -f "$blocklist_file" ]]; then
-        log_error "Blocklist file not found: $blocklist_file"
-        return 1
-    fi
-
-    local entries
-    entries=$(wc -l < "$blocklist_file" 2>/dev/null || echo 0)
-
-    log_info "Blocklist entries: $entries"
-
-    # Test blocked domain lookup speed
-    local blocked_domains=("doubleclick.net" "googletagmanager.com" "facebook.com")
-    local total_time=0
-
-    for domain in "${blocked_domains[@]}"; do
-        local start_time end_time duration
-        start_time=$(date +%s%N)
-        dig @127.0.0.1 -p 53 "$domain" +short +timeout=5 >/dev/null 2>&1
-        end_time=$(date +%s%N)
-        duration=$(( (end_time - start_time) / 1000000 ))
-        total_time=$((total_time + duration))
-    done
-
-    local avg_time=0
-    local domain_count=${#blocked_domains[@]}
-    if [[ $domain_count -gt 0 ]]; then
-        avg_time=$((total_time / domain_count))
-    fi
-
-    log_success "Blocklist benchmark completed!"
-    printf "  Blocklist size:    %'d entries\n" "$entries"
-    printf "  Block lookup time: %d ms avg\n" "$avg_time"
-}
-
-# ==============================================================================
-# BENCHMARK FUNCTIONS (integrated from benchmark.sh)
-# ==============================================================================
-
-# Run DNS performance benchmark
-monitor_benchmark_dns() {
-    if declare -f benchmark_dns_performance >/dev/null 2>&1; then
-        benchmark_dns_performance "$@"
-    else
-        log_error "Benchmark library not loaded - cannot run DNS benchmark"
-        return 1
-    fi
-}
-
-# Run cache performance test
-monitor_benchmark_cache() {
-    if declare -f _benchmark_cache >/dev/null 2>&1; then
-        _benchmark_cache "$@"
-    else
-        log_error "Benchmark library not loaded - cannot run cache benchmark"
-        return 1
-    fi
-}
-
-# Run blocklist performance test
-monitor_benchmark_blocklist() {
-    if declare -f _benchmark_blocklist >/dev/null 2>&1; then
-        _benchmark_blocklist "$@"
-    else
-        log_error "Benchmark library not loaded - cannot run blocklist benchmark"
-        return 1
-    fi
-}
-
-# Run comprehensive benchmark suite
-monitor_benchmark_all() {
-    if declare -f _benchmark_all >/dev/null 2>&1; then
-        _benchmark_all "$@"
-    else
-        log_error "Benchmark library not loaded - cannot run comprehensive benchmark"
-        return 1
-    fi
-}
-
-# Show benchmark reports
-monitor_benchmark_show_report() {
-    if declare -f benchmark_show_report >/dev/null 2>&1; then
-        benchmark_show_report "$@"
-    else
-        log_error "Benchmark library not loaded - cannot show benchmark report"
-        return 1
     fi
 }
 

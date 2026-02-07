@@ -399,6 +399,9 @@ ${T_INSTALLATION_WARNING:-WARNING: Installation will modify system DNS and firew
             cmd="$cmd --backup-existing"
         fi
 
+        # Always auto-fix ports in wizard mode (user can cancel if they want)
+        cmd="$cmd --auto-fix-ports"
+
         # Always use gum enhanced
         cmd="$cmd --gum-enhanced"
 
@@ -613,22 +616,56 @@ ${T_UNINSTALL_WARNING:-Uninstallation will remove Citadel and restore original s
 }
 
 # Check if Citadel is already installed
+# PRIORITY: marker file is the MOST RELIABLE indicator
 check_existing_installation() {
     local installed=false
     
-    # Check if Citadel services are running
-    if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null || systemctl is-active --quiet coredns 2>/dev/null; then
+    # FIRST: Check for Citadel marker file (MOST RELIABLE)
+    if [[ -f "/var/lib/cytadela/.installed" ]]; then
         installed=true
+        log "Citadel detected via marker file"
+        echo "$installed"
+        return 0
     fi
     
-    # Check for Citadel configuration files
-    if [[ -f "/etc/coredns/coredns.toml" ]] || [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+    # SECOND: Check for alternative marker locations
+    if [[ -f "/opt/cytadela/.installed" ]] || [[ -f "/etc/cytadela/VERSION" ]]; then
         installed=true
+        log "Citadel detected via alternative marker"
+        echo "$installed"
+        return 0
     fi
     
-    # Check for Citadel nftables rules
+    # THIRD: Check if Citadel services are RUNNING (not just enabled)
+    # This prevents false positives when services are enabled but Citadel was uninstalled
+    if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null && [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+        # Additional check: ensure it's actually Citadel config, not stock config
+        if grep -q "Citadel" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null || \
+           grep -q "server_names.*cloudflare.*google" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            installed=true
+            log "Citadel detected via running dnscrypt with Citadel config"
+            echo "$installed"
+            return 0
+        fi
+    fi
+    
+    if systemctl is-active --quiet coredns 2>/dev/null && [[ -f "/etc/coredns/Corefile" ]]; then
+        # Additional check: ensure it's Citadel's Corefile
+        if grep -q "Citadel\|cytadela\|combined.hosts" /etc/coredns/Corefile 2>/dev/null; then
+            installed=true
+            log "Citadel detected via running coredns with Citadel config"
+            echo "$installed"
+            return 0
+        fi
+    fi
+    
+    # FOURTH: Check for Citadel-specific nftables rules (with Citadel-specific chains)
     if nft list tables 2>/dev/null | grep -q "citadel_dns"; then
-        installed=true
+        # Verify it's actually Citadel's rules by checking for specific Citadel chains
+        if nft list table inet citadel_dns 2>/dev/null | grep -q "CITADEL\|citadel"; then
+            installed=true
+            log "Citadel detected via nftables rules"
+        fi
     fi
     
     echo "$installed"

@@ -29,7 +29,8 @@ DRY_RUN=false
 VERBOSE=false
 GUM_ENHANCED=false
 BACKUP_EXISTING=true  # Enabled by default for safety
-SELECT_COMPONENTS=false
+AUTO_FIX_PORTS=false
+SELECT_COMPONENTS=false  # Added missing variable
 
 # Available profiles
 declare -A PROFILES=(
@@ -56,9 +57,32 @@ else
     GUM_AVAILABLE=false
 fi
 
-# Logging function
+# Logging functions - normal and verbose
+VERBOSE=false
+LOG_FILE="/tmp/citadel-install-$(date +%Y%m%d-%H%M%S).log"
+
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG_FILE"
+}
+
+log_verbose() {
+    log "$@"
+    if [[ "$VERBOSE" == true ]]; then
+        echo -e "${BLUE}[VERBOSE]${NC} $*"
+    fi
+}
+
+log_cmd() {
+    local cmd="$1"
+    local output="$2"
+    log "CMD: $cmd"
+    if [[ -n "$output" ]]; then
+        log "CMD_OUTPUT: $output"
+    fi
+    if [[ "$VERBOSE" == true ]]; then
+        echo -e "${BLUE}[CMD]${NC} $cmd"
+        [[ -n "$output" ]] && echo "$output"
+    fi
 }
 
 # Enhanced status output
@@ -141,8 +165,12 @@ parse_args() {
                 BACKUP_EXISTING=true
                 shift
                 ;;
-            --select-components)
-                SELECT_COMPONENTS=true
+            --auto-fix-ports)
+                AUTO_FIX_PORTS=true
+                shift
+                ;;
+            --verbose|-v)
+                VERBOSE=true
                 shift
                 ;;
             --help|-h)
@@ -169,10 +197,11 @@ OPTIONS:
     --profile=PROFILE       Installation profile (minimal|standard|security|full|custom)
     --components=LIST       Comma-separated list of components to install
     --dry-run              Show what would be installed without making changes
-    --verbose              Enable verbose output
+    --verbose|-v           Enable verbose output with detailed command logging
     --gum-enhanced         Use gum TUI for enhanced user experience (installs gum if needed)
     --backup-existing      Create backups of existing configurations (enabled by default)
     --select-components    Interactive component selection
+    --auto-fix-ports       Automatically fix port conflicts instead of aborting
     --help, -h            Show this help message
 
 PROFILES:
@@ -592,13 +621,198 @@ show_installation_plan
 
 # Continue with existing installation logic...
 
-# Function to run citadel commands
+# Source port manager if available
+PORT_MANAGER="${SCRIPT_DIR}/../lib/port-manager.sh"
+if [[ -f "$PORT_MANAGER" ]]; then
+    source "$PORT_MANAGER"
+fi
+
+# Check for port conflicts before installation - with auto-fix option
+check_port_conflicts() {
+    if declare -f port_check_conflicts >/dev/null 2>&1; then
+        log "Checking port conflicts..."
+        if ! port_check_conflicts; then
+            # Conflicts detected - try auto-fix if enabled
+            if [[ "$AUTO_FIX_PORTS" == true ]]; then
+                warning "Attempting automatic port fix..."
+                if declare -f fix_dns_ports >/dev/null 2>&1; then
+                    fix_dns_ports
+                    return 0
+                else
+                    error "Auto-fix requested but fix_dns_ports function not available"
+                fi
+            else
+                # In interactive mode (gum), ask user
+                if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
+                    if gum confirm --affirmative="Fix automatically" --negative="Cancel installation" \
+                        "Port conflicts detected. Attempt automatic fix?"; then
+                        warning "Attempting automatic port fix..."
+                        if declare -f fix_dns_ports >/dev/null 2>&1; then
+                            fix_dns_ports
+                            return 0
+                        else
+                            error "fix_dns_ports function not available"
+                        fi
+                    else
+                        error "Installation cancelled due to port conflicts"
+                    fi
+                else
+                    # Text mode - ask user
+                    echo ""
+                    warning "Port conflicts detected - DNS may not work properly"
+                    echo "Options:"
+                    echo "  1) Fix automatically (change ports)"
+                    echo "  2) Cancel installation"
+                    echo ""
+                    read -p "Choose option [1/2]: " choice
+                    case "$choice" in
+                        1)
+                            warning "Attempting automatic port fix..."
+                            if declare -f fix_dns_ports >/dev/null 2>&1; then
+                                fix_dns_ports
+                                return 0
+                            else
+                                error "fix_dns_ports function not available - install Citadel first"
+                            fi
+                            ;;
+                        *)
+                            error "Installation cancelled due to port conflicts"
+                            ;;
+                    esac
+                fi
+            fi
+        fi
+    else
+        # Fallback: basic port check
+        log "Basic port check (port-manager not available)..."
+        local critical_ports=(53 5353)
+        local has_conflict=false
+        for port in "${critical_ports[@]}"; do
+            if lsof -i :"$port" >/dev/null 2>&1; then
+                local process
+                process=$(lsof -i :"$port" 2>/dev/null | tail -n +2 | head -1 | awk '{print $1}')
+                if [[ "$port" == "53" ]]; then
+                    error "CRITICAL: Port $port is in use by $process - DNS will not work!"
+                else
+                    warning "Port $port is in use by $process"
+                    has_conflict=true
+                fi
+            fi
+        done
+        
+        if [[ "$has_conflict" == true ]] && [[ "$AUTO_FIX_PORTS" == true ]]; then
+            warning "Attempting automatic port fix..."
+            run_citadel "fix-ports"
+        fi
+    fi
+}
+
+# Check if Citadel is already installed (using marker file - most reliable)
+check_existing_installation_cli() {
+    # FIRST: Check for Citadel marker file (MOST RELIABLE)
+    if [[ -f "/var/lib/cytadela/.installed" ]]; then
+        return 0
+    fi
+    
+    # SECOND: Check for alternative marker locations
+    if [[ -f "/opt/cytadela/.installed" ]] || [[ -f "/etc/cytadela/VERSION" ]]; then
+        return 0
+    fi
+    
+    # THIRD: Check if Citadel services are RUNNING with Citadel config
+    if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null && [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+        if grep -q "Citadel\|server_names.*cloudflare.*google" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            return 0
+        fi
+    fi
+    
+    if systemctl is-active --quiet coredns 2>/dev/null && [[ -f "/etc/coredns/Corefile" ]]; then
+        if grep -q "Citadel\|cytadela\|combined.hosts" /etc/coredns/Corefile 2>/dev/null; then
+            return 0
+        fi
+    fi
+    
+    return 1
+}
+
+# Handle existing installation in CLI mode
+handle_existing_installation_cli() {
+    warning "Citadel is already installed"
+    
+    if [[ "$GUM_ENHANCED" == true ]] && [[ "$GUM_AVAILABLE" == true ]]; then
+        echo ""
+        local action
+        action=$(gum choose \
+            --header "Choose action:" \
+            --cursor.foreground "#00d7ff" \
+            --selected.foreground "#00d7ff" \
+            "Reinstall Citadel (recommended)" \
+            "Cancel installation")
+        
+        case "$action" in
+            "Reinstall Citadel (recommended)")
+                log "User chose to reinstall Citadel"
+                status "Uninstalling existing Citadel..."
+                run_citadel "uninstall --yes"
+                sleep 2
+                systemctl stop dnscrypt-proxy coredns 2>/dev/null || true
+                rm -rf /etc/coredns /etc/dnscrypt-proxy 2>/dev/null || true
+                nft delete table inet citadel_dns 2>/dev/null || true
+                status "Cleanup completed, proceeding with fresh installation..."
+                ;;
+            *)
+                info "Installation cancelled by user"
+                exit 0
+                ;;
+        esac
+    else
+        # Text mode
+        echo ""
+        echo "Citadel is already installed. Options:"
+        echo "  1) Reinstall Citadel (uninstall first, then install)"
+        echo "  2) Cancel installation"
+        echo ""
+        read -p "Choose option [1/2]: " choice
+        case "$choice" in
+            1)
+                log "User chose to reinstall Citadel"
+                status "Uninstalling existing Citadel..."
+                run_citadel "uninstall --yes"
+                sleep 2
+                systemctl stop dnscrypt-proxy coredns 2>/dev/null || true
+                rm -rf /etc/coredns /etc/dnscrypt-proxy 2>/dev/null || true
+                nft delete table inet citadel_dns 2>/dev/null || true
+                status "Cleanup completed, proceeding with fresh installation..."
+                ;;
+            *)
+                info "Installation cancelled by user"
+                exit 0
+                ;;
+        esac
+    fi
+}
 run_citadel() {
     local cmd="$1"
     local citadel_path="$(dirname "$SCRIPT_DIR")/citadel.sh"
+    local output
+    
     log "Running: $citadel_path $cmd"
-    if ! "$citadel_path" $cmd >> "$LOG_FILE" 2>&1; then
-        error "Failed to run: citadel.sh $cmd"
+    
+    if [[ "$VERBOSE" == true ]]; then
+        echo -e "${BLUE}[RUN]${NC} $citadel_path $cmd"
+        if ! output=$("$citadel_path" $cmd 2>&1 | tee -a "$LOG_FILE"); then
+            log "CMD_FAILED: $citadel_path $cmd"
+            log "CMD_ERROR: $output"
+            error "Failed to run: citadel.sh $cmd"
+        fi
+        log_cmd "$citadel_path $cmd" "$output"
+    else
+        if ! output=$("$citadel_path" $cmd 2>&1); then
+            log "CMD_FAILED: $citadel_path $cmd"
+            log "CMD_ERROR_OUTPUT: $output"
+            error "Failed to run: citadel.sh $cmd"
+        fi
+        echo "$output" >> "$LOG_FILE"
     fi
 }
 
@@ -760,6 +974,9 @@ install_component() {
 main_installation() {
     IFS=',' read -ra comp_array <<< "$COMPONENTS"
 
+    # Step 0: Check port conflicts before any installation
+    check_port_conflicts
+
     # Step 1: Check dependencies (always first)
     status "${T_CHECKING_DEPS:-Checking system dependencies...}"
     if [[ "$DRY_RUN" == false ]]; then
@@ -835,6 +1052,11 @@ main_installation() {
         status "${T_WOULD_RUN_VERIFICATION:-Would run final verification}"
     fi
 }
+
+# Check for existing installation before starting
+if check_existing_installation_cli; then
+    handle_existing_installation_cli
+fi
 
 # Run main installation
 main_installation

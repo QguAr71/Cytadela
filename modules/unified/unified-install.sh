@@ -22,6 +22,27 @@ if [[ -f "lib/i18n/${lang}.sh" ]]; then
 fi
 
 # ==============================================================================
+# FALLBACK LOGGING FUNCTIONS (for standalone operation)
+# ==============================================================================
+
+# Define fallback logging functions if not already defined
+if ! declare -f log_section >/dev/null 2>&1; then
+    log_section() { echo ""; echo "=== $* ==="; }
+fi
+if ! declare -f log_info >/dev/null 2>&1; then
+    log_info() { echo "[INFO] $*"; }
+fi
+if ! declare -f log_success >/dev/null 2>&1; then
+    log_success() { echo "[OK] $*"; }
+fi
+if ! declare -f log_warning >/dev/null 2>&1; then
+    log_warning() { echo "[WARN] $*" >&2; }
+fi
+if ! declare -f log_error >/dev/null 2>&1; then
+    log_error() { echo "[ERROR] $*" >&2; }
+fi
+
+# ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
 
@@ -826,6 +847,29 @@ install_all() {
     echo "  sudo ./Citadel.sh configure-system"
     log_info "Rollback (jeśli coś pójdzie źle):"
     echo "  sudo ./Citadel.sh restore-system"
+
+    # Create Citadel marker file for reliable installation detection
+    create_citadel_marker
+}
+
+# Create Citadel marker file
+create_citadel_marker() {
+    local marker_dir="/var/lib/cytadela"
+    local marker_file="${marker_dir}/.installed"
+    
+    mkdir -p "$marker_dir"
+    
+    cat > "$marker_file" <<EOF
+# Citadel DNS Protection - Installation Marker
+# DO NOT REMOVE THIS FILE MANUALLY - use 'citadel uninstall' instead
+version=$(cat VERSION 2>/dev/null || echo "unknown")
+install_date=$(date -Iseconds)
+install_path=$(pwd)
+components=dnscrypt,coredns,nftables
+EOF
+    
+    chmod 644 "$marker_file"
+    log_success "Citadel marker file created: $marker_file"
 }
 
 # ==============================================================================
@@ -1279,38 +1323,75 @@ fix_dns_ports() {
     local coredns_port=53
     local conflicts_found=false
 
-    # Check for conflicts on DNSCrypt port (5355)
-    if lsof -i :$dnscrypt_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$dnscrypt_port"; then
-        log_warning "Port $dnscrypt_port jest zajęty - szukam wolnego portu dla DNSCrypt..."
-        conflicts_found=true
-
-        # Find free port for DNSCrypt
-        for port in 5356 5357 5358 5359 5360 5361 5362 5363 5364 5365; do
-            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
-                dnscrypt_port=$port
+    # Use port-manager if available for detection
+    if declare -f port_is_in_use >/dev/null 2>&1; then
+        # Check for conflicts on DNSCrypt port (5355)
+        if port_is_in_use "$dnscrypt_port"; then
+            log_warning "Port $dnscrypt_port jest zajęty - szukam wolnego portu dla DNSCrypt..."
+            conflicts_found=true
+            
+            # Use port-manager to find free port
+            local free_port
+            free_port=$(port_find_available 5356 5365)
+            if [[ -n "$free_port" ]]; then
+                dnscrypt_port=$free_port
                 log_success "Znaleziono wolny port dla DNSCrypt: $dnscrypt_port"
-                break
+            else
+                log_error "Brak wolnych portów dla DNSCrypt (5356-5365)"
+                return 1
             fi
-        done
-    else
-        log_info "Port $dnscrypt_port dla DNSCrypt jest wolny"
-    fi
+        else
+            log_info "Port $dnscrypt_port dla DNSCrypt jest wolny"
+        fi
 
-    # Check for conflicts on CoreDNS port (53) - this is system port, might be occupied
-    if lsof -i :$coredns_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$coredns_port"; then
-        log_warning "Port $coredns_port jest zajęty - szukam alternatywnego portu dla CoreDNS..."
-        conflicts_found=true
-
-        # Find free port for CoreDNS (try common DNS ports)
-        for port in 5353 5354 5356 5357 5358 5359 5360; do
-            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
-                coredns_port=$port
-                log_success "Znaleziono wolny port dla CoreDNS: $coredns_port"
-                break
+        # Check for conflicts on CoreDNS port (53)
+        if port_is_in_use "$coredns_port"; then
+            log_warning "Port $coredns_port jest zajęty - szukam alternatywnego portu dla CoreDNS..."
+            conflicts_found=true
+            
+            # Find free port for CoreDNS (excluding dnscrypt_port)
+            local free_port
+            for port in 5353 5354 5356 5357 5358 5359 5360; do
+                [[ "$port" == "$dnscrypt_port" ]] && continue
+                if ! port_is_in_use "$port"; then
+                    coredns_port=$port
+                    log_success "Znaleziono wolny port dla CoreDNS: $coredns_port"
+                    break
+                fi
+            done
+            
+            if [[ "$coredns_port" == "53" ]]; then
+                log_error "Brak wolnych portów dla CoreDNS"
+                return 1
             fi
-        done
+        else
+            log_info "Port $coredns_port dla CoreDNS jest wolny"
+        fi
     else
-        log_info "Port $coredns_port dla CoreDNS jest wolny"
+        # Fallback: original detection logic
+        if lsof -i :$dnscrypt_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$dnscrypt_port"; then
+            log_warning "Port $dnscrypt_port jest zajęty - szukam wolnego portu dla DNSCrypt..."
+            conflicts_found=true
+            for port in 5356 5357 5358 5359 5360 5361 5362 5363 5364 5365; do
+                if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                    dnscrypt_port=$port
+                    log_success "Znaleziono wolny port dla DNSCrypt: $dnscrypt_port"
+                    break
+                fi
+            done
+        fi
+
+        if lsof -i :$coredns_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$coredns_port"; then
+            log_warning "Port $coredns_port jest zajęty - szukam alternatywnego portu dla CoreDNS..."
+            conflicts_found=true
+            for port in 5353 5354 5356 5357 5358 5359 5360; do
+                if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                    coredns_port=$port
+                    log_success "Znaleziono wolny port dla CoreDNS: $coredns_port"
+                    break
+                fi
+            done
+        fi
     fi
 
     # If conflicts found, update configurations
@@ -1384,25 +1465,51 @@ fix_dns_ports() {
 install_doh_parallel() {
     log_section "󱓞 DNS-OVER-HTTPS PARALLEL RACING"
 
-    # Check if port 5353 is available
-    local doh_port=5353
-    if lsof -i :$doh_port >/dev/null 2>&1 || ss -tlnp | grep -q ":$doh_port"; then
-        log_warning "Port $doh_port jest zajęty - szukam wolnego portu..."
-        # Try to find free port
-        for port in 5354 5355 5356 5357 5358 5359; do
-            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
-                doh_port=$port
-                log_info "Znaleziono wolny port: $doh_port"
-                break
-            fi
-        done
+    # Create temporary user for DoH configuration
+    local temp_user="cytadela-temp"
+    if ! id "$temp_user" &>/dev/null; then
+        log_info "Tworzenie użytkownika tymczasowego dla konfiguracji DoH..."
+        useradd -r -s /usr/bin/nologin -d /tmp "$temp_user" 2>/dev/null || true
+        # Add to dnscrypt group for file access
+        usermod -aG dnscrypt "$temp_user" 2>/dev/null || true
+    fi
+
+    # Change directory permissions temporarily to allow root writes
+    local original_owner
+    original_owner=$(stat -c '%U:%G' /etc/dnscrypt-proxy 2>/dev/null || echo "dnscrypt:dnscrypt")
+    chown root:root /etc/dnscrypt-proxy 2>/dev/null || true
+    chmod 755 /etc/dnscrypt-proxy 2>/dev/null || true
+
+    # Use port-manager if available, otherwise fallback to basic logic
+    local doh_port
+    if declare -f port_assign_doh >/dev/null 2>&1; then
+        doh_port=$(port_assign_doh)
+        if [[ -z "$doh_port" ]]; then
+            log_error "Nie można znaleźć wolnego portu dla DoH Parallel"
+            return 1
+        fi
+    else
+        # Fallback: basic port check
+        doh_port=5353
+        if lsof -i :$doh_port >/dev/null 2>&1 || ss -tlnp | grep -q ":$doh_port"; then
+            log_warning "Port $doh_port jest zajęty - szukam wolnego portu..."
+            for port in 5354 5355 5356 5357 5358 5359; do
+                if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                    doh_port=$port
+                    log_info "Znaleziono wolny port: $doh_port"
+                    break
+                fi
+            done
+        fi
     fi
 
     # Create advanced DNSCrypt config with DoH parallel racing
-    sudo tee /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml >/dev/null <<EOF
+    local doh_config_file="/etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml"
+    
+    # Ensure directory is writable by root
+    tee "$doh_config_file" >/dev/null <<EOF
 # Citadel DNSCrypt with DoH Parallel Racing
 listen_addresses = ['127.0.0.1:${doh_port}', '[::1]:${doh_port}']
-user_name = 'dnscrypt'
 
 # Enable parallel racing for faster responses
 server_names = ['cloudflare', 'google', 'quad9-dnscrypt-ip4-filter-pri']
@@ -1429,13 +1536,34 @@ keepalive = 30
 bootstrap_resolvers = ['9.9.9.9:53', '1.1.1.1:53', '149.112.112.112:53']
 ignore_system_dns = true
 
-log_level = 2
-log_file = '/var/log/dnscrypt-proxy/dnscrypt-proxy.log'
+# Sources for resolver lists (REQUIRED for server_names to work)
+[sources.'public-resolvers']
+urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md']
+minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
+cache_file = 'public-resolvers.md'
+
 EOF
 
+    # Change ownership to dnscrypt user for security
+    chown dnscrypt:dnscrypt "$doh_config_file" 2>/dev/null || true
+    
     log_success "Konfiguracja DoH Parallel Racing utworzona (port: $doh_port)"
 
-    # Auto-activation with backup
+    # SAFETY FIRST: Validate new config BEFORE replacing
+    log_info "Walidacja nowej konfiguracji DoH..."
+    # Create temporary config without user_name for validation (avoids root privilege issues)
+    local validation_config="/tmp/dnscrypt-doh-validation.toml"
+    sed 's/user_name = '\''dnscrypt'\''//' "$doh_config_file" > "$validation_config"
+    
+    if ! timeout 10 dnscrypt-proxy -config "$validation_config" -check 2>/dev/null; then
+        log_error "Nowa konfiguracja DoH jest niepoprawna - anulowano!"
+        rm -f "$doh_config_file" "$validation_config"
+        return 1
+    fi
+    rm -f "$validation_config"
+    log_success "Konfiguracja DoH poprawna"
+
+    # Backup current config
     local config_file="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
     local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
 
@@ -1445,43 +1573,128 @@ EOF
         log_success "Backup: $backup_file"
     fi
 
-    log_info "Aktywacja DoH Parallel Racing..."
-    cp /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml "$config_file"
-
-    # Validate config
-    log_info "Walidacja konfiguracji..."
-    if dnscrypt-proxy -config "$config_file" -check 2>/dev/null; then
-        log_success "Konfiguracja poprawna"
-    else
-        log_warning "Walidacja zwróciła ostrzeżenia (może być nowsza składnia)"
-    fi
-
-    # Restart service
-    log_info "Restart DNSCrypt..."
-    systemctl restart dnscrypt-proxy
+    # SAFETY: Test new config with temporary service before permanent activation
+    log_info "Testowanie nowej konfiguracji (bezpieczny test)..."
+    
+    # Stop current service temporarily
+    systemctl stop dnscrypt-proxy 2>/dev/null || true
+    sleep 1
+    
+    # Try to start with new config
+    log_info "Starting test instance of dnscrypt-proxy with DoH config..."
+    dnscrypt-proxy -config "$doh_config_file" &
+    local test_pid=$!
     sleep 3
-
-    # Test with longer timeout and retry
-    log_info "Testowanie DoH (port: $doh_port)..."
+    
+    # Check if test instance is running
+    if ! kill -0 $test_pid 2>/dev/null; then
+        log_error "Testowa instancja DoH nie wystartowała!"
+        log_info "Przywracanie starej konfiguracji..."
+        
+        # ROLLBACK: Restore old config
+        if [[ -f "$backup_file" ]]; then
+            cp "$backup_file" "$config_file"
+        fi
+        systemctl start dnscrypt-proxy
+        
+        if systemctl is-active --quiet dnscrypt-proxy; then
+            log_success "Przywrócono starą konfigurację - DNS działa"
+        else
+            log_error "KRYTYCZNY BŁĄD: DNS nie działa! Ręcznie przywróć: $backup_file"
+            return 1
+        fi
+        return 1
+    fi
+    
+    # Test DNS resolution on DoH port
     local test_passed=false
     for attempt in 1 2 3; do
-        if systemctl is-active --quiet dnscrypt-proxy; then
-            if dig +short +time=5 whoami.cloudflare @127.0.0.1 -p $doh_port >/dev/null 2>&1; then
-                test_passed=true
-                break
-            fi
+        if dig +short +time=3 whoami.cloudflare @127.0.0.1 -p $doh_port >/dev/null 2>&1; then
+            test_passed=true
+            break
         fi
-        log_info "Próba $attempt nie powiodła się, czekam..."
         sleep 2
     done
+    
+    # Kill test instance
+    kill $test_pid 2>/dev/null || true
+    wait $test_pid 2>/dev/null || true
+    
+    if [[ "$test_passed" != "true" ]]; then
+        log_error "Test DNS na porcie $doh_port nie przeszedł!"
+        log_info "Przywracanie starej konfiguracji..."
+        
+        # ROLLBACK
+        if [[ -f "$backup_file" ]]; then
+            cp "$backup_file" "$config_file"
+        fi
+        systemctl start dnscrypt-proxy
+        
+        if systemctl is-active --quiet dnscrypt-proxy; then
+            log_success "Przywrócono starą konfigurację - DNS działa"
+        else
+            log_error "KRYTYCZNY BŁĄD! Ręcznie przywróć: $backup_file"
+        fi
+        return 1
+    fi
+    
+    log_success "Test DoH przeszedł - aktywacja..."
 
-    if [[ "$test_passed" == true ]]; then
+    # Now safe to activate
+    log_info "Aktywacja DoH Parallel Racing..."
+    cp "$doh_config_file" "$config_file"
+    log_success "Konfiguracja DoH skopiowana do głównego pliku"
+
+    # Restart service with new config
+    log_info "Restart DNSCrypt z nową konfiguracją..."
+    if systemctl restart dnscrypt-proxy; then
+        log_success "DNSCrypt zrestartowany"
+    else
+        log_error "Restart DNSCrypt nie powiódł się!"
+        return 1
+    fi
+    
+    sleep 3
+
+    # Verify the service is running with new config
+    if ! systemctl is-active --quiet dnscrypt-proxy; then
+        log_error "DNSCrypt nie uruchomił się po restarcie!"
+        return 1
+    fi
+
+    # Final verification with port health check if available
+    if systemctl is-active --quiet dnscrypt-proxy; then
         log_success "DoH Parallel Racing AKTYWNY i działa (port: $doh_port)!"
         log_info "Serwery: Cloudflare, Google, Quad9 (parallel racing)"
         log_info "Strategia: p2 (Power of Two load balancing)"
+        log_info "Backup starej konfiguracji: $backup_file"
+        
+        # Use port-manager health check if available
+        if declare -f port_test_dns >/dev/null 2>&1; then
+            if port_test_dns "$doh_port"; then
+                log_success "Health check: DNS na porcie $doh_port działa poprawnie"
+            else
+                log_warning "Health check: DNS na porcie $doh_port nie odpowiada (może wymagać czasu na start)"
+            fi
+        fi
     else
-        log_warning "Test DNS nie przeszedł, ale DNSCrypt działa - konfiguracja zapisana"
-        log_info "Port DoH: $doh_port"
-        # Don't fail - the config is valid even if test doesn't pass immediately
+        log_error "DNSCrypt nie wystartował po aktywacji!"
+        log_info "Przywracanie z backupu..."
+        
+        # Emergency rollback
+        if [[ -f "$backup_file" ]]; then
+            cp "$backup_file" "$config_file"
+            systemctl restart dnscrypt-proxy
+            sleep 2
+            
+            if systemctl is-active --quiet dnscrypt-proxy; then
+                log_success "Przywrócono starą konfigurację"
+            else
+                log_error "Przywracanie nie powiodło się! Ręcznie: cp $backup_file $config_file"
+            fi
     fi
+    fi
+    
+    # Restore directory ownership for security
+    chown "$original_owner" /etc/dnscrypt-proxy 2>/dev/null || true
 }

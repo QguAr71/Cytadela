@@ -9,9 +9,16 @@ install_dnscrypt() {
 
     require_cmds ss awk grep tee systemctl dnscrypt-proxy || return 1
 
+    # Check if user and group exist, create them properly if needed
     if ! id dnscrypt &>/dev/null; then
         log_info "Tworzenie dedykowanego użytkownika 'dnscrypt'..."
-        useradd -r -s /usr/bin/nologin -d /var/lib/dnscrypt dnscrypt
+        if getent group dnscrypt &>/dev/null; then
+            # Group exists, just add user to existing group
+            useradd -r -s /usr/bin/nologin -d /var/lib/dnscrypt -g dnscrypt dnscrypt
+        else
+            # Neither user nor group exist, create both
+            useradd -r -s /usr/bin/nologin -d /var/lib/dnscrypt dnscrypt
+        fi
         log_success "User dnscrypt utworzony"
     else
         log_success "User dnscrypt już istnieje"

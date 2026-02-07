@@ -346,6 +346,11 @@ EOF
         info "${T_NO_OPTIONAL_PKGS:-No optional packages found}"
     fi
 
+    # Remove Citadel marker file (MUST be removed for proper reinstallation detection)
+    rm -f /var/lib/cytadela/.installed 2>/dev/null || true
+    rm -rf /var/lib/cytadela/ 2>/dev/null || true
+    rm -f /opt/cytadela/.installed 2>/dev/null || true
+    
     # Remove Citadel components
     status "${T_REMOVING_FILES:-Removing Citadel files and configurations...}"
     rm -rf /etc/coredns/ 2>/dev/null || true
@@ -354,6 +359,7 @@ EOF
     rm -rf /var/log/dnscrypt-proxy/ 2>/dev/null || true
     rm -rf /opt/cytadela/ 2>/dev/null || true
     rm -rf /var/cache/cytadela/ 2>/dev/null || true
+    rm -rf /etc/cytadela/ 2>/dev/null || true
 
     # Remove system components
     status "${T_REMOVING_SYSTEM:-Removing system components...}"
