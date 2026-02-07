@@ -581,6 +581,11 @@ case "$ACTION" in
         install_editor_integration
         ;;
 
+    fix-ports)
+        smart_load_module "install"
+        fix_dns_ports
+        ;;
+
     # Install Dashboard
     install-dashboard)
         load_module "install-dashboard"

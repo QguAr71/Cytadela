@@ -4,6 +4,23 @@
 # ║  Unified security functions: integrity, location, supply-chain        ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "security" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
@@ -95,17 +112,17 @@ integrity_check() {
 
     # Developer mode: bypass checks
     if [[ "$CYTADELA_MODE" == "developer" ]]; then
-        [[ -z "$silent" ]] && log_info "[DEV MODE] Integrity checks bypassed"
+        [[ -z "$silent" ]] && log_info "${T_SECURITY_DEV_MODE_BYPASS:-[DEV MODE] Integrity checks bypassed}"
         return 0
     fi
 
     # No manifest: skip (bootstrap)
     if [[ ! -f "$CYTADELA_MANIFEST" ]]; then
-        log_warning "Integrity not initialized. Run: sudo $0 integrity-init"
+        log_warning "${T_SECURITY_INTEGRITY_NOT_INITIALIZED:-Integrity not initialized. Run: sudo $0 integrity-init}"
         return 0
     fi
 
-    [[ -z "$silent" ]] && log_info "Verifying integrity from $CYTADELA_MANIFEST ..."
+    [[ -z "$silent" ]] && log_info "${T_SECURITY_VERIFYING_INTEGRITY:-Verifying integrity from $CYTADELA_MANIFEST ...}"
 
     # Read manifest and verify each file
     while IFS='  ' read -r hash filepath; do

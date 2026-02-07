@@ -1269,6 +1269,115 @@ EOF
 }
 
 # ==============================================================================
+# AUTOMATIC PORT CONFLICT RESOLUTION (fix-port feature)
+# ==============================================================================
+
+fix_dns_ports() {
+    log_section "🔧 AUTOMATIC DNS PORT CONFLICT RESOLUTION"
+
+    local dnscrypt_port=5355
+    local coredns_port=53
+    local conflicts_found=false
+
+    # Check for conflicts on DNSCrypt port (5355)
+    if lsof -i :$dnscrypt_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$dnscrypt_port"; then
+        log_warning "Port $dnscrypt_port jest zajęty - szukam wolnego portu dla DNSCrypt..."
+        conflicts_found=true
+
+        # Find free port for DNSCrypt
+        for port in 5356 5357 5358 5359 5360 5361 5362 5363 5364 5365; do
+            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                dnscrypt_port=$port
+                log_success "Znaleziono wolny port dla DNSCrypt: $dnscrypt_port"
+                break
+            fi
+        done
+    else
+        log_info "Port $dnscrypt_port dla DNSCrypt jest wolny"
+    fi
+
+    # Check for conflicts on CoreDNS port (53) - this is system port, might be occupied
+    if lsof -i :$coredns_port >/dev/null 2>&1 || ss -tlnp 2>/dev/null | grep -q ":$coredns_port"; then
+        log_warning "Port $coredns_port jest zajęty - szukam alternatywnego portu dla CoreDNS..."
+        conflicts_found=true
+
+        # Find free port for CoreDNS (try common DNS ports)
+        for port in 5353 5354 5356 5357 5358 5359 5360; do
+            if ! lsof -i :$port >/dev/null 2>&1 && ! ss -tlnp 2>/dev/null | grep -q ":$port"; then
+                coredns_port=$port
+                log_success "Znaleziono wolny port dla CoreDNS: $coredns_port"
+                break
+            fi
+        done
+    else
+        log_info "Port $coredns_port dla CoreDNS jest wolny"
+    fi
+
+    # If conflicts found, update configurations
+    if [[ "$conflicts_found" == true ]]; then
+        log_info "Znaleziono konflikty portów - aktualizuję konfiguracje..."
+
+        # Update DNSCrypt configuration
+        if [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+            log_info "Aktualizuję konfigurację DNSCrypt..."
+            sed -i "s|listen_addresses = .*|listen_addresses = ['127.0.0.1:${dnscrypt_port}', '[::1]:${dnscrypt_port}']|" /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+            log_success "DNSCrypt skonfigurowany na porcie $dnscrypt_port"
+        fi
+
+        # Update CoreDNS configuration
+        if [[ -f "/etc/coredns/Corefile" ]]; then
+            log_info "Aktualizuję konfigurację CoreDNS..."
+            # Update the listen port
+            sed -i "s|^.*:53 {$|.:${coredns_port} {|" /etc/coredns/Corefile
+            # Update the forward port to match DNSCrypt
+            sed -i "s|forward . 127.0.0.1:.*|forward . 127.0.0.1:${dnscrypt_port}|" /etc/coredns/Corefile
+            log_success "CoreDNS skonfigurowany na porcie $coredns_port, forward do $dnscrypt_port"
+        fi
+
+        # Restart services
+        log_info "Restartuję usługi DNS..."
+        systemctl restart dnscrypt-proxy 2>/dev/null
+        sleep 2
+        systemctl restart coredns 2>/dev/null
+        sleep 2
+
+        # Verify services are running
+        if systemctl is-active --quiet dnscrypt-proxy 2>/dev/null; then
+            log_success "DNSCrypt działa na porcie $dnscrypt_port"
+        else
+            log_error "DNSCrypt nie uruchomił się po zmianie portu"
+            return 1
+        fi
+
+        if systemctl is-active --quiet coredns 2>/dev/null; then
+            log_success "CoreDNS działa na porcie $coredns_port"
+        else
+            log_error "CoreDNS nie uruchomił się po zmianie portu"
+            return 1
+        fi
+
+        # Test DNS resolution
+        log_info "Testuję rozwiązywanie DNS..."
+        if dig @127.0.0.1 -p $coredns_port google.com +short +timeout=5 >/dev/null 2>&1; then
+            log_success "DNS działa poprawnie na nowych portach!"
+            log_info "DNSCrypt: $dnscrypt_port, CoreDNS: $coredns_port"
+        else
+            log_error "Test DNS nie przeszedł"
+            return 1
+        fi
+
+    else
+        log_success "Brak konfliktów portów - wszystko jest w porządku"
+    fi
+
+    # Show current port status
+    echo ""
+    log_info "Aktualny status portów DNS:"
+    echo "  DNSCrypt-proxy: $dnscrypt_port"
+    echo "  CoreDNS: $coredns_port"
+}
+
+# ==============================================================================
 # DOH PARALLEL RACING (migrated from advanced-install.sh)
 # ==============================================================================
 

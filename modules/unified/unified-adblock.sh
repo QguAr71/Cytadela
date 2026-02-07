@@ -4,6 +4,23 @@
 # ║  Unified ad blocking and blocklist management                         ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "adblock" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
@@ -351,28 +368,28 @@ adblock_status() {
 
 # List available blocklist profiles
 blocklist_list() {
-    log_section "󰓍 BLOCKLIST PROFILES"
+    log_section "󰓍 ${T_ADBLOCK_BLOCKLIST_PROFILES:-BLOCKLIST PROFILES}"
 
-    echo "Available profiles:"
-    echo "  light      - Minimal blocking (~50K domains)"
-    echo "  balanced   - Standard blocking (~500K domains) - RECOMMENDED"
-    echo "  aggressive - Heavy blocking (~1M+ domains)"
-    echo "  privacy    - Privacy-focused blocking"
-    echo "  polish     - Polish-focused blocking"
-    echo "  custom     - Custom URLs from /var/lib/cytadela/blocklist-custom-urls.txt"
+    echo "${T_ADBLOCK_AVAILABLE_PROFILES:-Available profiles:}"
+    echo "  ${T_ADBLOCK_PROFILE_LIGHT:-light      - Minimal blocking (~50K domains)}"
+    echo "  ${T_ADBLOCK_PROFILE_BALANCED:-balanced   - Standard blocking (~500K domains) - RECOMMENDED}"
+    echo "  ${T_ADBLOCK_PROFILE_AGGRESSIVE:-aggressive - Heavy blocking (~1M+ domains)}"
+    echo "  ${T_ADBLOCK_PROFILE_PRIVACY:-privacy    - Privacy-focused blocking}"
+    echo "  ${T_ADBLOCK_PROFILE_POLISH:-polish     - Polish-focused blocking}"
+    echo "  ${T_ADBLOCK_PROFILE_CUSTOM:-custom     - Custom URLs from /var/lib/cytadela/blocklist-custom-urls.txt}"
     echo ""
 
     # Show current profile
     if [[ -f "$BLOCKLIST_PROFILE_FILE" ]]; then
         local current
         current=$(cat "$BLOCKLIST_PROFILE_FILE" 2>/dev/null || echo "unknown")
-        echo "Current profile: $current"
+        echo "${T_ADBLOCK_CURRENT_PROFILE:-Current profile:} $current"
     else
-        echo "Current profile: balanced (default)"
+        echo "${T_ADBLOCK_CURRENT_PROFILE_DEFAULT:-Current profile: balanced (default)}"
     fi
 
     echo ""
-    echo "To switch profile: citadel adblock blocklist-switch <profile>"
+    echo "${T_ADBLOCK_SWITCH_PROFILE:-To switch profile: citadel adblock blocklist-switch <profile>}"
 }
 
 # Switch blocklist profile
@@ -380,7 +397,7 @@ blocklist_switch() {
     local profile="$1"
 
     if [[ -z "$profile" ]]; then
-        log_error "Usage: blocklist-switch <profile>"
+        log_error "${T_ADBLOCK_USAGE_BLOCKLIST_SWITCH:-Usage: blocklist-switch <profile>}"
         blocklist_list
         return 1
     fi
@@ -390,7 +407,7 @@ blocklist_switch() {
         light|balanced|aggressive|privacy|polish|custom)
             ;;
         *)
-            log_error "Invalid profile: $profile"
+            log_error "${T_ADBLOCK_INVALID_PROFILE:-Invalid profile:} $profile"
             blocklist_list
             return 1
             ;;
@@ -398,27 +415,27 @@ blocklist_switch() {
 
     # Save profile
     echo "$profile" > "$BLOCKLIST_PROFILE_FILE"
-    log_success "Switched to profile: $profile"
+    log_success "${T_ADBLOCK_SWITCHED_TO_PROFILE:-Switched to profile:} $profile"
 
     # Trigger update
     if declare -f lists_update >/dev/null 2>&1; then
-        log_info "Updating blocklist..."
+        log_info "${T_ADBLOCK_UPDATING_BLOCKLIST:-Updating blocklist...}"
         lists_update
     else
-        log_warning "LKG module not available for update"
+        log_warning "${T_ADBLOCK_LKG_NOT_AVAILABLE:-LKG module not available for update}"
     fi
 }
 
 # Show current blocklist status
 blocklist_status() {
-    log_section "󰓍 BLOCKLIST STATUS"
+    log_section "󰓍 ${T_ADBLOCK_BLOCKLIST_STATUS:-BLOCKLIST STATUS}"
 
     # Current profile
     local profile="balanced"
     if [[ -f "$BLOCKLIST_PROFILE_FILE" ]]; then
         profile=$(cat "$BLOCKLIST_PROFILE_FILE")
     fi
-    echo "Current profile: $profile"
+    echo "${T_ADBLOCK_CURRENT_PROFILE_STATUS:-Current profile:} $profile"
 
     # Profile URL
     local url=""
@@ -432,19 +449,19 @@ blocklist_status() {
             if [[ -f "$BLOCKLIST_CUSTOM_URLS" ]]; then
                 url=$(grep -v '^#' "$BLOCKLIST_CUSTOM_URLS" 2>/dev/null | head -1 || echo "none")
             else
-                url="none (configure $BLOCKLIST_CUSTOM_URLS)"
+                url="${T_ADBLOCK_NONE_CONFIGURE:-none (configure $BLOCKLIST_CUSTOM_URLS)}"
             fi
             ;;
     esac
-    echo "Blocklist URL: $url"
+    echo "${T_ADBLOCK_BLOCKLIST_URL:-Blocklist URL:} $url"
 
     # File status
     if [[ -f "$BLOCKLIST_FILE" ]]; then
         local lines
         lines=$(wc -l < "$BLOCKLIST_FILE")
-        echo "Blocklist file: $lines entries"
+        echo "${T_ADBLOCK_BLOCKLIST_FILE:-Blocklist file:} $lines ${T_ADBLOCK_ENTRIES:-entries}"
     else
-        echo "Blocklist file: NOT DOWNLOADED"
+        echo "${T_ADBLOCK_BLOCKLIST_FILE_NOT_DOWNLOADED:-Blocklist file: NOT DOWNLOADED}"
     fi
 }
 
@@ -453,24 +470,24 @@ blocklist_add_url() {
     local url="$1"
 
     if [[ -z "$url" ]]; then
-        log_error "Usage: blocklist-add-url <url>"
+        log_error "${T_ADBLOCK_USAGE_BLOCKLIST_ADD_URL:-Usage: blocklist-add-url <url>}"
         return 1
     fi
 
     # Basic URL validation
     if [[ ! "$url" =~ ^https?:// ]]; then
-        log_error "URL must start with http:// or https://"
+        log_error "${T_ADBLOCK_URL_MUST_START_WITH_HTTP:-URL must start with http:// or https://}"
         return 1
     fi
 
     mkdir -p "$(dirname "$BLOCKLIST_CUSTOM_URLS")"
     echo "$url" >> "$BLOCKLIST_CUSTOM_URLS"
-    log_success "Added custom URL: $url"
+    log_success "${T_ADBLOCK_ADDED_CUSTOM_URL:-Added custom URL:} $url"
 
     # Switch to custom profile if not already
     if [[ ! -f "$BLOCKLIST_PROFILE_FILE" ]] || [[ "$(cat "$BLOCKLIST_PROFILE_FILE")" != "custom" ]]; then
         echo "custom" > "$BLOCKLIST_PROFILE_FILE"
-        log_info "Switched to custom profile"
+        log_info "${T_ADBLOCK_SWITCHED_TO_CUSTOM_PROFILE:-Switched to custom profile}"
     fi
 }
 
@@ -479,30 +496,30 @@ blocklist_remove_url() {
     local url="$1"
 
     if [[ -z "$url" ]]; then
-        log_error "Usage: blocklist-remove-url <url>"
+        log_error "${T_ADBLOCK_USAGE_BLOCKLIST_REMOVE_URL:-Usage: blocklist-remove-url <url>}"
         return 1
     fi
 
     if [[ ! -f "$BLOCKLIST_CUSTOM_URLS" ]]; then
-        log_warning "No custom URLs configured"
+        log_warning "${T_ADBLOCK_NO_CUSTOM_URLS_CONFIGURED:-No custom URLs configured}"
         return 1
     fi
 
     sed -i "\|^${url}$|d" "$BLOCKLIST_CUSTOM_URLS"
-    log_success "Removed URL: $url"
+    log_success "${T_ADBLOCK_REMOVED_URL:-Removed URL:} $url"
 }
 
 # Show custom URLs
 blocklist_show_urls() {
-    log_section "󰓍 CUSTOM BLOCKLIST URLs"
+    log_section "󰓍 ${T_ADBLOCK_CUSTOM_BLOCKLIST_URLS:-CUSTOM BLOCKLIST URLs}"
 
     if [[ ! -f "$BLOCKLIST_CUSTOM_URLS" ]]; then
-        echo "No custom URLs configured"
-        echo "Add URLs with: citadel adblock blocklist-add-url <url>"
+        echo "${T_ADBLOCK_NO_CUSTOM_URLS_CONFIGURED:-No custom URLs configured}"
+        echo "${T_ADBLOCK_ADD_URLS_WITH:-Add URLs with: citadel adblock blocklist-add-url <url>}"
         return 0
     fi
 
-    echo "Custom blocklist URLs:"
+    echo "${T_ADBLOCK_CUSTOM_BLOCKLIST_URLS_LIST:-Custom blocklist URLs:}"
     local i=1
     while IFS= read -r url; do
         [[ -z "$url" || "$url" == "#"* ]] && continue

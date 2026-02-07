@@ -4,6 +4,23 @@
 # ║  Unified network configuration and tools                              ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
+# Load i18n strings - try new i18n-engine first, fallback to legacy
+local lang="${CYTADELA_LANG:-${LANG%%_*}:-en}"
+lang="${lang:-en}"
+
+# Try new i18n-engine
+if [[ -f "modules/i18n-engine/i18n-engine.sh" ]]; then
+    source "modules/i18n-engine/i18n-engine.sh" 2>/dev/null && {
+        i18n_engine_init 2>/dev/null || true
+        i18n_engine_load "network" "$lang" 2>/dev/null || true
+    }
+fi
+
+# Fallback to legacy i18n if available
+if [[ -f "lib/i18n/${lang}.sh" ]]; then
+    source "lib/i18n/${lang}.sh" 2>/dev/null || true
+fi
+
 # ==============================================================================
 # CONFIGURATION & CONSTANTS
 # ==============================================================================
@@ -37,14 +54,14 @@ ipv6_privacy_auto_ensure() {
     local iface
     iface=$(discover_active_interface)
     if [[ -z "$iface" ]]; then
-        log_warning "No active interface detected. Skipping."
+        log_warning "${T_NETWORK_NO_ACTIVE_INTERFACE:-No active interface detected. Skipping.}"
         return 0
     fi
-    log_info "Active interface: $iface"
+    log_info "${T_NETWORK_ACTIVE_INTERFACE:-Active interface:} $iface"
 
     local ipv6_global
     ipv6_global=$(ip -6 addr show dev "$iface" scope global 2>/dev/null | grep -v temporary | awk '/inet6/ {print $2; exit}' || true)
-    [[ -z "$ipv6_global" ]] && log_info "No global IPv6 on $iface. Ensuring sysctl is configured anyway."
+    [[ -z "$ipv6_global" ]] && log_info "${T_NETWORK_NO_GLOBAL_IPV6:-No global IPv6 on $iface. Ensuring sysctl is configured anyway.}"
 
     local ipv6_temp
     ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ && /preferred_lft/ {print $2; exit}' || true)
@@ -56,15 +73,15 @@ ipv6_privacy_auto_ensure() {
     fi
 
     if [[ $temp_preferred -eq 1 ]]; then
-        log_success "Usable temporary IPv6 address found: $ipv6_temp"
-        log_success "IPv6 Privacy Extensions are working correctly."
+        log_success "${T_NETWORK_TEMPORARY_IPV6_FOUND:-Usable temporary IPv6 address found:} $ipv6_temp"
+        log_success "${T_NETWORK_IPV6_PRIVACY_WORKING:-IPv6 Privacy Extensions are working correctly.}"
         return 0
     fi
 
-    log_warning "No usable temporary IPv6 address. Applying remediation..."
+    log_warning "${T_NETWORK_NO_TEMPORARY_IPV6:-No usable temporary IPv6 address. Applying remediation...}"
 
     local sysctl_file="$IPV6_SYSCTL_FILE"
-    log_info "Setting sysctl for IPv6 privacy extensions..."
+    log_info "${T_NETWORK_SETTING_SYSCTL:-Setting sysctl for IPv6 privacy extensions...}"
     cat >"$sysctl_file" <<EOF
 # Cytadela IPv6 Privacy Extensions
 net.ipv6.conf.all.use_tempaddr = 2
@@ -76,11 +93,11 @@ EOF
 
     local stack
     stack=$(discover_network_stack)
-    log_info "Network stack: $stack. Triggering address regeneration..."
+    log_info "${T_NETWORK_NETWORK_STACK:-Network stack:} $stack. ${T_NETWORK_TRIGGERING_REGENERATION:-Triggering address regeneration...}"
 
     if [[ "$stack" == "NetworkManager" ]]; then
         if command -v nmcli &>/dev/null; then
-            log_info "Reconnecting $iface via NetworkManager..."
+            log_info "${T_NETWORK_RECONNECTING_NM:-Reconnecting $iface via NetworkManager...}"
             nmcli dev disconnect "$iface" 2>/dev/null || true
             sleep 1
             nmcli dev connect "$iface" 2>/dev/null || true
@@ -88,21 +105,21 @@ EOF
         fi
     elif [[ "$stack" == "systemd-networkd" ]]; then
         if command -v networkctl &>/dev/null; then
-            log_info "Reconfiguring $iface via systemd-networkd..."
+            log_info "${T_NETWORK_RECONFIGURING_NETWORKD:-Reconfiguring $iface via systemd-networkd...}"
             networkctl reconfigure "$iface" 2>/dev/null || true
             sleep 2
         fi
     else
-        log_warning "Unknown network stack. Sysctl applied, but you may need to reconnect manually."
+        log_warning "${T_NETWORK_UNKNOWN_STACK:-Unknown network stack. Sysctl applied, but you may need to reconnect manually.}"
     fi
 
     sleep 1
     ipv6_temp=$(ip -6 addr show dev "$iface" scope global temporary 2>/dev/null | awk '/inet6/ {print $2; exit}' || true)
     if [[ -n "$ipv6_temp" ]]; then
-        log_success "Temporary IPv6 address now active: $ipv6_temp"
+        log_success "${T_NETWORK_TEMPORARY_IPV6_ACTIVE:-Temporary IPv6 address now active:} $ipv6_temp"
     else
-        log_warning "Temporary address not yet visible. It may take a moment to appear."
-        log_info "Check with: ip -6 addr show dev $iface scope global temporary"
+        log_warning "${T_NETWORK_TEMPORARY_NOT_VISIBLE:-Temporary address not yet visible. It may take a moment to appear.}"
+        log_info "${T_NETWORK_CHECK_WITH_IP:-Check with:} ip -6 addr show dev $iface scope global temporary"
     fi
 }
 
@@ -112,18 +129,18 @@ ipv6_privacy_on() {
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
-        log_error "No active interface"
+        log_error "${T_NETWORK_NO_ACTIVE_INTERFACE_ERROR:-No active interface}"
         return 1
     }
 
-    log_info "Enabling IPv6 Privacy Extensions on $iface..."
+    log_info "${T_NETWORK_ENABLING_IPV6_PRIVACY:-Enabling IPv6 Privacy Extensions on} $iface..."
     cat >"$IPV6_SYSCTL_FILE" <<EOF
 net.ipv6.conf.all.use_tempaddr = 2
 net.ipv6.conf.default.use_tempaddr = 2
 net.ipv6.conf.${iface}.use_tempaddr = 2
 EOF
     sysctl --system >/dev/null 2>&1
-    log_success "IPv6 Privacy Extensions enabled"
+    log_success "${T_NETWORK_IPV6_PRIVACY_ENABLED:-IPv6 Privacy Extensions enabled}"
     ipv6_privacy_status
 }
 
@@ -133,18 +150,18 @@ ipv6_privacy_off() {
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
-        log_error "No active interface"
+        log_error "${T_NETWORK_NO_ACTIVE_INTERFACE_ERROR:-No active interface}"
         return 1
     }
 
-    log_info "Disabling IPv6 Privacy Extensions on $iface..."
+    log_info "${T_NETWORK_DISABLING_IPV6_PRIVACY:-Disabling IPv6 Privacy Extensions on} $iface..."
     cat >"$IPV6_SYSCTL_FILE" <<EOF
 net.ipv6.conf.all.use_tempaddr = 0
 net.ipv6.conf.default.use_tempaddr = 0
 net.ipv6.conf.${iface}.use_tempaddr = 0
 EOF
     sysctl --system >/dev/null 2>&1
-    log_success "IPv6 Privacy Extensions disabled"
+    log_success "${T_NETWORK_IPV6_PRIVACY_DISABLED:-IPv6 Privacy Extensions disabled}"
     ipv6_privacy_status
 }
 
@@ -154,17 +171,17 @@ ipv6_privacy_status() {
     local iface
     iface=$(discover_active_interface)
     [[ -z "$iface" ]] && {
-        log_error "No active interface"
+        log_error "${T_NETWORK_NO_ACTIVE_INTERFACE_ERROR:-No active interface}"
         return 1
     }
 
-    echo "Interface: $iface"
-    echo "Sysctl use_tempaddr: $(sysctl -n net.ipv6.conf.${iface}.use_tempaddr 2>/dev/null || echo 'unknown')"
+    echo "${T_NETWORK_INTERFACE_LABEL:-Interface:} $iface"
+    echo "${T_NETWORK_SYSCTL_USE_TEMPADDR:-Sysctl use_tempaddr:} $(sysctl -n net.ipv6.conf.${iface}.use_tempaddr 2>/dev/null || echo 'unknown')"
 
     local ipv6_addrs
     ipv6_addrs=$(ip -6 addr show dev "$iface" scope global 2>/dev/null)
     echo ""
-    echo "IPv6 Addresses:"
+    echo "${T_NETWORK_IPV6_ADDRESSES:-IPv6 Addresses:}"
     echo "$ipv6_addrs" | grep inet6 | while read -r line; do
         if echo "$line" | grep -q temporary; then
             echo "  [TEMP] $line"
