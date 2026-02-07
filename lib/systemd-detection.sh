@@ -10,8 +10,8 @@ _load_systemd_i18n() {
     lang="${lang:-en}"
     
     # Try to use new i18n engine if available
-    if [[ -f "${CYTADELA_ROOT}/modules/i18n-engine/i18n-engine.sh" ]]; then
-        source "${CYTADELA_ROOT}/modules/i18n-engine/i18n-engine.sh"
+    if [[ -f "${CYTADELA_ROOT:-.}/modules/i18n-engine/i18n-engine.sh" ]]; then
+        source "${CYTADELA_ROOT:-.}/modules/i18n-engine/i18n-engine.sh"
         i18n_engine_init 2>/dev/null || true
         i18n_engine_load "common" "$lang" 2>/dev/null || {
             # Fallback to English
