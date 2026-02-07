@@ -249,9 +249,9 @@ monitor_test_all() {
     local doh_ok=false
     local doh_port=""
     
-    # Check if DoH config exists
+    # Check if DoH config exists (legacy separate file) OR if P2 is enabled in main config
     if [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml" ]]; then
-        echo "  󰄬 ${T_TEST_DOH_CONFIG:-DoH config}: EXISTS"
+        echo "  󰄬 ${T_TEST_DOH_CONFIG:-DoH config}: EXISTS (legacy)"
         
         # Extract port from config
         doh_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy-doh.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' || echo "")
@@ -267,6 +267,28 @@ monitor_test_all() {
             fi
         else
             echo "  󰀨 ${T_TEST_DOH_PORT:-DoH port}: NOT DETECTED in config"
+        fi
+    elif [[ -f "/etc/dnscrypt-proxy/dnscrypt-proxy.toml" ]]; then
+        # Check if main config has DoH/P2 settings
+        if grep -q "lb_strategy.*=.*'p2'" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null || \
+           grep -q "doh_servers.*=.*true" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null; then
+            echo "  󰄬 ${T_TEST_DOH_CONFIG:-DoH config}: IN MAIN CONFIG"
+            doh_ok=true
+            
+            # Get port from main config
+            doh_port=$(grep "listen_addresses" /etc/dnscrypt-proxy/dnscrypt-proxy.toml 2>/dev/null | grep -oP '127\.0\.0\.1:\K[0-9]+' | head -1 || echo "5354")
+            if [[ -n "$doh_port" ]]; then
+                echo "  󰄬 ${T_TEST_DOH_PORT:-DoH port}: $doh_port"
+                
+                # Test DNS on port
+                if dig +time=2 +tries=1 @127.0.0.1 -p "$doh_port" whoami.cloudflare +short >/dev/null 2>&1; then
+                    echo "  󰄬 ${T_TEST_DOH_DNS:-DoH DNS test}: WORKING (port $doh_port)"
+                else
+                    echo "  󰀨 ${T_TEST_DOH_DNS:-DoH DNS test}: FAILED (port $doh_port)"
+                fi
+            fi
+        else
+            echo "  󰅖 ${T_TEST_DOH_CONFIG:-DoH config}: NOT FOUND"
         fi
     else
         echo "  󰅖 ${T_TEST_DOH_CONFIG:-DoH config}: NOT FOUND"
